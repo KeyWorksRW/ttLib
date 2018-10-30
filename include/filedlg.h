@@ -2,8 +2,8 @@
 // Name:		CFileDlg
 // Purpose:		Wrapper around Windows GetOpenFileName() API
 // Author:		Ralph Walden (randalphwa)
-// Copyright:   Copyright (c) 2002-2018 KeyWorks Software (Ralph Walden)
-// License:     Apache License (see ../LICENSE)
+// Copyright:	Copyright (c) 2002-2018 KeyWorks Software (Ralph Walden)
+// License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once

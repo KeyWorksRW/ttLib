@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        CWStr.h
-// Purpose:     Wide-character string class. See CStr.h for SBCS version
-// Author:      Ralph Walden
-// Copyright:   Copyright (c) 1998-2018 KeyWorks Software (Ralph Walden)
-// License:     Apache License (see ../LICENSE)
+// Name:		CWStr.h
+// Purpose:		Wide-character string class. See CStr.h for SBCS version
+// Author:		Ralph Walden
+// Copyright:	Copyright (c) 1998-2018 KeyWorks Software (Ralph Walden)
+// License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 // This could arguably be named CYetAnotherStringClass. This one provides the basic functionality you find in most
@@ -54,11 +54,11 @@ public:
 
 	// Filename handling methods
 
-	void 	AppendFileName(const wchar_t* pszFile);
-	void 	AddTrailingSlash();	// adds a trailing forward slash if string doesn't already end with '/' or '\'
+	void	AppendFileName(const wchar_t* pszFile);
+	void	AddTrailingSlash();	// adds a trailing forward slash if string doesn't already end with '/' or '\'
 	void	ChangeExtension(const wchar_t* pszExtension);
-	void 	GetCWD();	// Caution: this will replace any current string
-	void 	RemoveExtension();
+	void	GetCWD();	// Caution: this will replace any current string
+	void	RemoveExtension();
 
 	const wchar_t* FindLastSlash();		// Handles any mix of '\' and '/' in the filename
 
@@ -88,7 +88,7 @@ public:
 	wchar_t* GetQuotedString(wchar_t* pszQuote);	// returns pointer to first character after closing quote (or nullptr if not a quoted string)
 
 	void __cdecl printf(const wchar_t* pszFormat, ...);
-	void 		 vprintf(const wchar_t* pszFormat, va_list argList);
+	void		 vprintf(const wchar_t* pszFormat, va_list argList);
 
 	bool	 IsEmpty() const { return (m_psz ? (*m_psz ? false : true) : true); }
 	bool	 IsNonEmpty() const { return (!IsEmpty()); }

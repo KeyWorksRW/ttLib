@@ -2,8 +2,8 @@
 // Name:		CTTDlg
 // Purpose:		Class for displaying a modal dialog
 // Author:		Ralph Walden (randalphwa)
-// Copyright:   Copyright (c) 2002-2018 KeyWorks Software (Ralph Walden)
-// License:     Apache License (see ../LICENSE)
+// Copyright:	Copyright (c) 2002-2018 KeyWorks Software (Ralph Walden)
+// License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -221,7 +221,7 @@ public:
 	LRESULT DeleteString(WPARAM index) const { return SendMessage(CB_DELETESTRING, index); }
 
 	LRESULT GetItemData(WPARAM index) const {	return SendMessage(CB_GETITEMDATA, index); }
-	LRESULT SetItemData(WPARAM index, LPARAM data) const {  return SendMessage(CB_SETITEMDATA, index, data); }
+	LRESULT SetItemData(WPARAM index, LPARAM data) const {	return SendMessage(CB_SETITEMDATA, index, data); }
 
 	LRESULT GetCurSel() const { return SendMessage(CB_GETCURSEL); }
 	LRESULT SetCurSel(WPARAM index = 0) const { return SendMessage(CB_SETCURSEL, index); }
@@ -280,14 +280,14 @@ public:
 	LRESULT	SendMessageA(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::SendMessageA(m_hwnd, msg, wParam, lParam); }
 	LRESULT SendMessageW(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { ASSERT(m_hwnd); return ::SendMessageW(m_hwnd, msg, wParam, lParam); }
 
-	void 	 Enable(BOOL fEnable = TRUE) const { EnableWindow(m_hwnd, fEnable); }
+	void	 Enable(BOOL fEnable = TRUE) const { EnableWindow(m_hwnd, fEnable); }
 
 	LRESULT	 GetTextLength(int index = -1) const { return SendMessage(LB_GETTEXTLEN, (index == -1) ? GetCurSel() : index); }
 
 	LRESULT	 GetText(char* psz, int index = -1) const { return SendMessageA(LB_GETTEXT, (index == -1) ? GetCurSel() : index, (LPARAM) psz); }
 	LRESULT	 GetText(wchar_t* pwsz, int index = -1) const { return SendMessageW(LB_GETTEXT, (index == -1) ? GetCurSel() : index, (LPARAM) pwsz); }	// wide char version
-	void     GetText(CStr* pcsz, int index = -1) const { pcsz->GetListBoxText(*this, (index == -1) ? GetCurSel() : index); }
-	void     GetText(CWStr* pcsz, int index = -1) const { pcsz->GetListBoxText(*this, (index == -1) ? GetCurSel() : index); }						// wide char version
+	void	 GetText(CStr* pcsz, int index = -1) const { pcsz->GetListBoxText(*this, (index == -1) ? GetCurSel() : index); }
+	void	 GetText(CWStr* pcsz, int index = -1) const { pcsz->GetListBoxText(*this, (index == -1) ? GetCurSel() : index); }						// wide char version
 
 	LRESULT	 GetCount() const { return SendMessage(LB_GETCOUNT); }
 	LRESULT	 GetSelCount() const {
@@ -403,7 +403,7 @@ public:
 	bool SetItem(LV_ITEMA* pItem) { return SendMessage(m_hwnd, LVM_SETITEMA, 0, (LPARAM) pItem) ? true : false; }
 	bool SetItem(LV_ITEMW* pItem) { return SendMessage(m_hwnd, LVM_SETITEMW, 0, (LPARAM) pItem) ? true : false; }
 
-	LRESULT InsertItem(LV_ITEMA* pitem) { return (LRESULT)  ::SendMessage(m_hwnd, LVM_INSERTITEMA, 0, (LPARAM) pitem); }
+	LRESULT InsertItem(LV_ITEMA* pitem) { return (LRESULT)	::SendMessage(m_hwnd, LVM_INSERTITEMA, 0, (LPARAM) pitem); }
 	LRESULT InsertItemW(LV_ITEMW* pitem) { return (LRESULT) ::SendMessage(m_hwnd, LVM_INSERTITEMW, 0, (LPARAM) pitem); }
 	BOOL DeleteItem(int index) { return (BOOL) ListView_DeleteItem(m_hwnd, index); }
 	void Reset() const { ListView_DeleteAllItems(m_hwnd); }

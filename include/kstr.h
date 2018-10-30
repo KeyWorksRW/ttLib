@@ -2,8 +2,8 @@
 // Name:		kstr.h
 // Purpose:		all the kstr...() functions
 // Author:		Ralph Walden
-// Copyright:   Copyright (c) 2018 KeyWorks Software (Ralph Walden)
-// License:     Apache License (see ../LICENSE)
+// Copyright:	Copyright (c) 2018 KeyWorks Software (Ralph Walden)
+// License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 // These functions offer a bit more functionality then either the C++ standard or C++ secure variants. In

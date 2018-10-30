@@ -2,8 +2,8 @@
 // Name:		CHashPair
 // Purpose:		Class utilizing an array of HASH numbers and an associated value
 // Author:		Ralph Walden
-// Copyright:   Copyright (c) 2004-2018 KeyWorks Software (Ralph Walden)
-// License:     Apache License (see ../LICENSE)
+// Copyright:	Copyright (c) 2004-2018 KeyWorks Software (Ralph Walden)
+// License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 // This class stores an array of hash numbers and an associated value. The array

@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        CStr.h
-// Purpose:     SBCS string class. See cwstr.h for wide-string equivalent
-// Author:      Ralph Walden
-// Copyright:   Copyright (c) 1998-2018 KeyWorks Software (Ralph Walden)
-// License:     Apache License (see ../LICENSE)
+// Name:		CStr.h
+// Purpose:		SBCS string class. See cwstr.h for wide-string equivalent
+// Author:		Ralph Walden
+// Copyright:	Copyright (c) 1998-2018 KeyWorks Software (Ralph Walden)
+// License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 // This could arguably be named CYetAnotherStringClass. This one provides the basic functionality you find in most
@@ -56,11 +56,11 @@ public:
 
 	// Filename handling methods
 
-	void 	AppendFileName(const char* pszFile);
-	void 	AddTrailingSlash();	// adds a trailing forward slash if string doesn't already end with '/' or '\'
+	void	AppendFileName(const char* pszFile);
+	void	AddTrailingSlash();	// adds a trailing forward slash if string doesn't already end with '/' or '\'
 	void	ChangeExtension(const char* pszExtension);
 	void	GetCWD();			// Caution: this will replace any current string
-	void 	RemoveExtension();
+	void	RemoveExtension();
 	bool	ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCaseSensitive = false);
 
 	const char* FindLastSlash();	// Handles any mix of '\' and '/' in the filename

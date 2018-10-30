@@ -2,8 +2,8 @@
 // Name:		asserts.h
 // Purpose:		Assert functionality
 // Author:		Ralph Walden (randalphwa)
-// Copyright:   Copyright (c) 2000-2018 KeyWorks Software (Ralph Walden)
-// License:     Apache License (see ../LICENSE)
+// Copyright:	Copyright (c) 2000-2018 KeyWorks Software (Ralph Walden)
+// License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 // Under a _DEBUG build, these ASSERTS will display a message box giving you the

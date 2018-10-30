@@ -2,8 +2,8 @@
 // Name:		CTTHeap
 // Purpose:		Class for utilizing Windows heap manager
 // Author:		Ralph Walden
-// Copyright:   Copyright (c) 1998-2018 KeyWorks Software (Ralph Walden)
-// License:     Apache License (see ../LICENSE)
+// Copyright:	Copyright (c) 1998-2018 KeyWorks Software (Ralph Walden)
+// License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once

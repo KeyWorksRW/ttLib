@@ -2,8 +2,8 @@
 // Name:		ttlib.h
 // Purpose:		General Purpose library
 // Author:		Ralph Walden
-// Copyright:   Copyright (c) 1998-2018 KeyWorks Software (Ralph Walden)
-// License:     Apache License (see ../LICENSE)
+// Copyright:	Copyright (c) 1998-2018 KeyWorks Software (Ralph Walden)
+// License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -32,7 +32,7 @@ void	BackslashToForwardslash(char* psz);		// convert all back slashes in the str
 void	ForwardslashToBackslash(char* psz);		// convert all forward slashes in the string to back slahes
 void	AddTrailingSlash(char* psz);			// add a trailing forward slash if the string doesn't already end in a forward or back slash
 char*	FindFilePortion(const char* pszFile);	// find the filename portion of a string
-void 	ConvertToRelative(const char* pszRoot, const char* pszFile, CStr& cszResult);	// convert pszFile to a path relative to pszRoot
+void	ConvertToRelative(const char* pszRoot, const char* pszFile, CStr& cszResult);	// convert pszFile to a path relative to pszRoot
 
 // IsValidFileChar() is used  to determine if character at current position is part of a filename versus a dir
 // name (e.g., . is only valid if it is not preceeded or followed by another .)
@@ -69,18 +69,18 @@ bool IsSameString(const wchar_t* psz1, const wchar_t* psz2);			// case-insensiti
 // Following are identical to above but starting with "is" instead of "Is" (in case you don't remember which case to use)
 
 inline bool isSameSubString(const char* pszMain, const char* pszSub) { return IsSameSubString(pszMain, pszSub); }
-inline bool isCSSameString(const char* pszMain, const char* pszSub)  { return IsCSSameSubString(pszMain, pszSub); }
+inline bool isCSSameString(const char* pszMain, const char* pszSub)	 { return IsCSSameSubString(pszMain, pszSub); }
 inline bool isSameString(const char* psz1, const char* psz2) { return IsSameString(psz1, psz2); }
 
-inline bool isSameSubString(const wchar_t* pszMain, const wchar_t* pszSub)   { return IsSameSubString(pszMain, pszSub); }
+inline bool isSameSubString(const wchar_t* pszMain, const wchar_t* pszSub)	 { return IsSameSubString(pszMain, pszSub); }
 inline bool isCSSameSubString(const wchar_t* pszMain, const wchar_t* pszSub) { return IsCSSameSubString(pszMain, pszSub); }
 inline bool isSameString(const wchar_t* psz1, const wchar_t* psz2) { return IsSameString(psz1, psz2); }
 
 // Globals
 
 #ifdef _WINDOWS_
-	extern HWND		 	_hwndParent;		// used by any function that needs a handle to the top-level parent window
-	extern HINSTANCE 	_hinstResources;	// where resources are loaded from -- handle from LoadLibrary() if they are in a dll
+	extern HWND			_hwndParent;		// used by any function that needs a handle to the top-level parent window
+	extern HINSTANCE	_hinstResources;	// where resources are loaded from -- handle from LoadLibrary() if they are in a dll
 	extern const char*	_pszMsgTitle;		// Default title for message boxes
 	extern size_t		_s_iLanguageOffset; // language offset used to load other languages from .rc file
 
@@ -151,9 +151,9 @@ wchar_t* Itoa(int32_t val, wchar_t* pszDst, size_t cbDst);	// converts using bas
 wchar_t* Itoa(int64_t val, wchar_t* pszDst, size_t cbDst);	// converts using base 10
 
 #ifdef _WINDOWS_
- 	void			InitCaller(HINSTANCE hinstCaller, HWND hwndParent, const char* pszMsgTitle);
+	void			InitCaller(HINSTANCE hinstCaller, HWND hwndParent, const char* pszMsgTitle);
 	HFONT			CreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold = false, bool fItalics = false);
-	const char* 	LoadTxtResource(int idRes, uint32_t* pcbFile = nullptr, HINSTANCE hinst = _hinstResources);
+	const char*		LoadTxtResource(int idRes, uint32_t* pcbFile = nullptr, HINSTANCE hinst = _hinstResources);
 
 	// These Message Box functions will display a message using the active window of the calling thread (if any) as the parent . On Windows, they
 	// work fine even in a console app. On a non-Windows build, you will need to link with wxWidgets, and you must have an event handler.
@@ -177,9 +177,9 @@ wchar_t* Itoa(int64_t val, wchar_t* pszDst, size_t cbDst);	// converts using bas
 	#define WMP_KEY_SCRIPT_MSG	 (WM_USER + 0x1f7)
 	#define WMP_KEY_ERROR_MSG	 (WM_USER + 0x1f8)
 	#define WMP_CLEAR_KEYVIEW	 (WM_USER + 0x1f9)	// clear the KeyView window
-	#define WMP_SET_TITLE   	 (WM_USER + 0x1fa)
+	#define WMP_SET_TITLE		 (WM_USER + 0x1fa)
 
-	void __cdecl KeyTrace(const char* lpszFormat, ...); 	// send formatted string to KeyView window
+	void __cdecl KeyTrace(const char* lpszFormat, ...);		// send formatted string to KeyView window
 
 	class CHourGlass	// changes cursor to an hourglass until destructor to indicate busy condition
 	{

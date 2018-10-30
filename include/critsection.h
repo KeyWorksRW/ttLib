@@ -2,8 +2,8 @@
 // Name:		CCritSection, CCritLock
 // Purpose:		Class for creating, locking, and unlocking a critical section
 // Author:		Ralph Walden (randalphwa)
-// Copyright:   Copyright (c) 2002-2018 KeyWorks Software (Ralph Walden)
-// License:     Apache License (see ../LICENSE)
+// Copyright:	Copyright (c) 2002-2018 KeyWorks Software (Ralph Walden)
+// License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 // Header-only class
@@ -18,7 +18,7 @@ class CCritSection
 public:
 #ifdef _WINDOWS_
 
-	CCritSection()  {
+	CCritSection()	{
 		memset(&m_cs, 0, sizeof(CRITICAL_SECTION));
 		InitializeCriticalSection(&m_cs);
 	};

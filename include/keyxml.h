@@ -1,15 +1,15 @@
 /////////////////////////////////////////////////////////////////////////////
 // Original Name: Pug XML Parser
 // Author:		Kristen Wegner
-// Copyright:   Copyright (C) 2003, by Kristen Wegner (kristen@tima.net)
+// Copyright:	Copyright (C) 2003, by Kristen Wegner (kristen@tima.net)
 // Released into the Public Domain. Use at your own risk.
 /////////////////////////////////////////////////////////////////////////////
 
 //////////////// Derivative work ////////////////////////////////////////////
 // Name:		CKeyXML, CKeyXmlBranch
 // Author:		Ralph Walden (randalphwa)
-// Copyright:   Copyright (c) 2003-2018 KeyWorks Software (Ralph Walden)
-// Licence:     Apache License (see ../LICENSE)
+// Copyright:	Copyright (c) 2003-2018 KeyWorks Software (Ralph Walden)
+// Licence:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -70,17 +70,17 @@ public:
 
 	CKeyXmlBranch*	FindFirstElement(HTML_ELEMENT element);
 	CKeyXmlBranch*	FindFirstElement(const char* pszName);
-	const char* 	GetAttribute(const char* pszName) const;
+	const char*		GetAttribute(const char* pszName) const;
 	XMLATTR*		GetAttributeAt(size_t i) { ASSERT(i < cAttributes); return (i < cAttributes) ? aAttributes[i] : NULL; }
-	size_t 			GetAttributesCount() const { return cAttributes; }
+	size_t			GetAttributesCount() const { return cAttributes; }
 	CKeyXmlBranch*	GetChildAt(size_t i) { ASSERT(i < cChildren); return (i < cChildren) ? aChildren[i] : NULL; }
-	size_t 			GetChildrenCount() const { return cChildren; }
-	const char* 	GetData() { return pszData ? pszData : ""; }
+	size_t			GetChildrenCount() const { return cChildren; }
+	const char*		GetData() { return pszData ? pszData : ""; }
 	HTML_ELEMENT	GetElementTag() const { return element; }
-	const char* 	GetName() const { return pszName ? pszName : ""; }
+	const char*		GetName() const { return pszName ? pszName : ""; }
 	CKeyXmlBranch*	GetSiblingAt(size_t i) { return (!IsRoot() && i < GetSiblingsCount()) ? parent->aChildren[i] : NULL; }
-	size_t 			GetSiblingNumber();
-	size_t 			GetSiblingsCount() const { return (!IsRoot()) ? parent->cChildren : 0; }
+	size_t			GetSiblingNumber();
+	size_t			GetSiblingsCount() const { return (!IsRoot()) ? parent->cChildren : 0; }
 	XMLENTITY		GetType() const { return type; }
 	bool			RemoveChildAt(size_t i);
 	bool			ReplaceAttributeValue(CKeyXML* pxml, const char* pszName, const char* pszNewValue);
@@ -146,7 +146,7 @@ public:
 	}
 
 	size_t GetMSHLinkCount() { return m_aMSHLinks.GetCount(); }
-	CKeyXmlBranch* GetMSHLink(size_t pos) {  return m_aMSHLinks[pos]; }
+	CKeyXmlBranch* GetMSHLink(size_t pos) {	 return m_aMSHLinks[pos]; }
 
 	size_t GetObjectTagCount() { return m_aObjectTags.GetCount(); }
 	CKeyXmlBranch* GetObjectTag(size_t pos) {  return m_aObjectTags[pos]; }
@@ -162,7 +162,7 @@ protected:
 	CKeyXmlBranch* NewBranch(XMLENTITY eType = ENTITY_ELEMENT);
 	XMLATTR*	   AddAttribute(CKeyXmlBranch* pBranch, LONG lGrow);
 	HRESULT		   WriteBranch(CKeyXmlBranch* pBranch, CKeyFile& kf, size_t iIndent);
-	HRESULT        WriteHtmlBranch(CKeyXmlBranch* pBranch, CKeyFile& kf);
+	HRESULT		   WriteHtmlBranch(CKeyXmlBranch* pBranch, CKeyFile& kf);
 	HTML_ELEMENT   ParseElementTag(PCSTR pszName, PCSTR pszCurLoc, bool bEndTag = false);
 
 	XMLATTR* NewAttribute(void) {

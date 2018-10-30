@@ -2,8 +2,8 @@
 // Name:		CKeyFile
 // Purpose:		class for reading and writing files, strings, data, etc.
 // Author:		Ralph Walden
-// Copyright:   Copyright (c) 2002-2018 KeyWorks Software (Ralph Walden)
-// License:     Apache License (see ../LICENSE)
+// Copyright:	Copyright (c) 2002-2018 KeyWorks Software (Ralph Walden)
+// License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 // This class can be used to read from or write to a file and under Windows, a stream, resource or URL
@@ -53,12 +53,12 @@ public:
 #ifdef _WINDOWS_
 	bool	ReadURL(const char* pszURL, HINTERNET hInternet = NULL);	// ERROR_INVALID_NAME, ERROR_SERVICE_DOES_NOT_EXIST if cannot access, ERROR_CANTOPEN if URL not found
 	HRESULT ReadFile(IStream* pStream);	// ERROR_INVALID_PARAMETER, ERROR_SEEK_FAILURE, ERROR_CANTREAD
-	bool 	ReadResource(DWORD idResource);
-	size_t  GetURLFileSize() { return m_cbUrlFile; }
+	bool	ReadResource(DWORD idResource);
+	size_t	GetURLFileSize() { return m_cbUrlFile; }
 	HRESULT GetErrorResult() { return m_ioResult; }
 #endif
 
-	bool 	UnicodeToAnsi();	// convert loaded file from Unicode to Ansi. Will return false if file not read.
+	bool	UnicodeToAnsi();	// convert loaded file from Unicode to Ansi. Will return false if file not read.
 
 	bool	WriteFile(const char* pszFile);	// ERROR_INVALID_NAME, ERROR_EMPTY_BUFFER, ERROR_CANTOPEN, ERROR_CANTWRITE
 

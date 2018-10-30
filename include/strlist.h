@@ -2,11 +2,11 @@
 // Name:		CStrList, CDblStrList
 // Purpose:		String arrays based off a private heap
 // Author:		Ralph Walden
-// Copyright:   Copyright (c) 2005-2018 KeyWorks Software (Ralph Walden)
-// License:     Apache License (see ../LICENSE)
+// Copyright:	Copyright (c) 2005-2018 KeyWorks Software (Ralph Walden)
+// License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
-// All the classes here use their own private heap. The advantage of this approach is that none of the individual allocations need to be freed -- the entire heap is destroyed																																																		                      //
+// All the classes here use their own private heap. The advantage of this approach is that none of the individual allocations need to be freed -- the entire heap is destroyed																																																																								//
 // when the class destructor is called. By default, all the classes use a non-serialized private heap -- which means multiple threads need to use a crit section if accessing
 // a shared class.
 
@@ -15,7 +15,7 @@
 #ifndef __TTLIB_STRLIST_H__
 #define __TTLIB_STRLIST_H__
 
-#include "ttheap.h" 	// CTTHeap
+#include "ttheap.h"		// CTTHeap
 #include "hashpair.h"	// CHashPair
 #include "cstr.h"		// CStr
 
@@ -26,8 +26,8 @@ public:
 
 	enum {
 		FLG_ADD_DUPLICATES	= 1 << 0,	// add the string even if it has already been added
-		FLG_IGNORE_CASE 	= 1 << 1,
-		FLG_URL_STRINGS 	= 1 << 2,	// string case is ignored, '\' and '/' are considered the same
+		FLG_IGNORE_CASE		= 1 << 1,
+		FLG_URL_STRINGS		= 1 << 2,	// string case is ignored, '\' and '/' are considered the same
 	};
 
 	// SetFlags() will not change any previously added strings
@@ -118,8 +118,8 @@ public:
 
 	void Add(const char* pszKey, const char* pszVal);
 
-	bool   		FindKey(const char* pszKey, size_t* ppos = nullptr) const;
-	bool   		FindVal(const char* pszVal, size_t* ppos = nullptr) const;
+	bool		FindKey(const char* pszKey, size_t* ppos = nullptr) const;
+	bool		FindVal(const char* pszVal, size_t* ppos = nullptr) const;
 	const char* GetKeyAt(size_t pos) const;
 	const char* GetValAt(size_t pos) const;
 	const char* GetMatchingVal(const char* pszKey) const;
@@ -147,8 +147,8 @@ protected:
 	// Class members
 
 	DBLPTRS* m_aptrs;
-	size_t   m_cAllocated;
-	size_t   m_cItems;
+	size_t	 m_cAllocated;
+	size_t	 m_cItems;
 
 	bool m_bSortKeys;
 	bool m_bSerialize;
@@ -162,7 +162,7 @@ class CStrIntList : public CTTHeap
 {
 public:
 	typedef struct {
-		char* 	   pszKey;
+		char*	   pszKey;
 		ptrdiff_t* pVal;
 	} DBLPTRS;
 
@@ -193,7 +193,7 @@ public:
 	const char* GetKey(size_t posKey) const;
 
 	/*
-	   	You can enumerate through all the numbers assigned to a string using code
+		You can enumerate through all the numbers assigned to a string using code
 		similar to the following:
 
 		CStrIntList strList;
@@ -213,8 +213,8 @@ protected:
 	// Class members
 
 	DBLPTRS* m_aptrs;
-	size_t   m_cAllocated;
-	size_t   m_cItems;
+	size_t	 m_cAllocated;
+	size_t	 m_cItems;
 
 	size_t	  m_posEnumKey;
 	ptrdiff_t m_posEnumVal;
@@ -222,4 +222,4 @@ protected:
 	bool m_bSerialize;
 };
 
-#endif 	// __TTLIB_STRLIST_H__
+#endif	// __TTLIB_STRLIST_H__
