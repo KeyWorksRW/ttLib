@@ -49,8 +49,8 @@ void CEnumStr::SetNewStr(const char* psz, char chSeparator)
 
 bool CEnumStr::Enum(const char** ppszCurrent)
 {
-	ASSERT_MSG(m_csz.IsNonEmpty(), "Calling Enum() without a valid master string (CEnumStr(nullptr) or SetNewStr(nullptr))!");
-	if (m_csz.IsEmpty()) {
+	ASSERT_MSG(!m_csz.IsNull(), "Calling Enum() without a valid master string (CEnumStr(nullptr) or SetNewStr(nullptr))!");
+	if (m_csz.IsNull()) {
 		if (ppszCurrent)
 			*ppszCurrent = nullptr;
 		return false;

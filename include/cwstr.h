@@ -92,6 +92,7 @@ public:
 
 	bool	 IsEmpty() const { return (m_psz ? (*m_psz ? false : true) : true); }
 	bool	 IsNonEmpty() const { return (!IsEmpty()); }
+	bool	 IsNull() const { return (m_psz == nullptr); }
 	void	 Delete() { if (m_psz) { kfree(m_psz); m_psz = nullptr; } }
 	wchar_t* Enlarge(size_t cbTotalSize);	// increase buffer size if needed
 
