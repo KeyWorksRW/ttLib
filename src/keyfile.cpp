@@ -49,9 +49,7 @@ CKeyFile::CKeyFile()
 	m_pszLine = nullptr;
 	m_hInternetSession = nullptr;
 	m_bReadlineReady = false;
-#ifndef _WINDOWS_
 	m_fUnixLF = true;
-#endif
 }
 
 CKeyFile::CKeyFile(ptrdiff_t cb)
