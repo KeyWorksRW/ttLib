@@ -44,7 +44,9 @@ public:
 
 	// Class functions
 
-	__inline void SetUnixLF(bool bUnix = true) { m_fUnixLF = bUnix; }	// Only affects WriteEol() functions
+	// Default is LF-only EOL. Call SetUnixLF(false) to get CR/LF EOL
+
+	void SetUnixLF(bool bUnix = true) { m_fUnixLF = bUnix; }	// Only affects WriteEol() functions
 
 	// For ReadFile, ReadURL and WriteFile() call GetErrorResult() for ERROR_ info
 
@@ -62,8 +64,8 @@ public:
 
 	bool	WriteFile(const char* pszFile);	// ERROR_INVALID_NAME, ERROR_EMPTY_BUFFER, ERROR_CANTOPEN, ERROR_CANTWRITE
 
-	void	PrepForReadLine() { m_pCurrent = m_pbuf; m_pszLine = m_pCurrent; m_bReadlineReady = true; }	// only needed if you aren't going to call readline
 	bool	readline(char** ppszLine = nullptr);	// note that this converts \r into 0, so you can only read lines once -- trim(pszLine) is called before returning
+	void	PrepForReadLine() { m_pCurrent = m_pbuf; m_pszLine = m_pCurrent; m_bReadlineReady = true; }	// only needed if you aren't going to call readline
 	char*	GetLnPtr() { return m_pszLine; }
 	bool	IsEndOfFile() const { return (!m_pCurrent || !*m_pCurrent) ? true : false; }
 
@@ -91,10 +93,10 @@ public:
 	char*	GetBeginPosition() const { return m_pbuf; }
 	char*	GetEndPosition() const { return m_pEnd; }
 
-	__inline char* GetCurPosition() { return m_pCurrent; }	// used for InsertStr()
-	__inline bool  isUnicode() { return (m_pbuf && m_pEnd > m_pbuf + 2 && (BYTE) m_pbuf[0] == 0xFF && (BYTE) m_pbuf[1] == 0xFE); }
+	char* GetCurPosition() { return m_pCurrent; }	// used for InsertStr()
+	bool  isUnicode() { return (m_pbuf && m_pEnd > m_pbuf + 2 && (BYTE) m_pbuf[0] == 0xFF && (BYTE) m_pbuf[1] == 0xFE); }
 
-	__inline void SetCurPosition(char* psz) {
+	void SetCurPosition(char* psz) {
 		ASSERT(psz);
 		ASSERT(psz >= m_pbuf);
 		ASSERT(psz <= m_pEnd);
