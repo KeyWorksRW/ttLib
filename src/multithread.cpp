@@ -18,6 +18,8 @@ CMultiThread::CMultiThread()
 {
 	m_cThreads = 0;
 	m_bEndThreads = m_bCanceled = false;
+	m_ahsemDone = nullptr;
+	m_aThrdInfo = nullptr;
 #ifdef _WX_WX_H_
 	m_aThrds = nullptr;
 	m_psemAvailThrd = new wxSemaphore(0, 1);
