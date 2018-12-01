@@ -102,20 +102,17 @@ protected:
 	size_t m_flags;
 };
 
-// Holds a pair of strings, referenced as Key and Val
+// Holds a pair of strings, referenced as Key and Val. Note that unlike CStrList, the default behaviour is to allow
+// duplicate keys
 
 class CDblStrList : public CTTHeap
 {
 public:
-	typedef struct {
-		char* pszKey;
-		char* pszVal;
-	} DBLPTRS;
+	void IgnoreCase() { m_bIgnoreCase = true; }	// ignore case when searching for keys or values
+	void PreventDuplicateKeys();				// key won't be added if it already exists
 
 	CDblStrList(bool bSerialize = false);
 	~CDblStrList();
-
-	void PreventDuplicateKeys();	// string won't be added if it already exists
 
 	void Add(const char* pszKey, const char* pszVal);
 
@@ -145,6 +142,11 @@ protected:
 	}
 	void qsorti(ptrdiff_t low, ptrdiff_t high);
 
+	typedef struct {
+		char* pszKey;
+		char* pszVal;
+	} DBLPTRS;
+
 	// Class members
 
 	DBLPTRS* m_aptrs;
@@ -153,6 +155,7 @@ protected:
 
 	bool m_bSortKeys;
 	bool m_bSerialize;
+	bool m_bIgnoreCase;
 
 	CHashPair* m_pHashLookup;
 };

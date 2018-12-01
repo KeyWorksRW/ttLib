@@ -357,6 +357,7 @@ CDblStrList::CDblStrList(bool bSerialize) : CTTHeap(bSerialize)
 	m_aptrs = nullptr;
 	m_bSerialize = bSerialize;
 	m_pHashLookup = nullptr;
+	m_bIgnoreCase = false;
 }
 
 CDblStrList::~CDblStrList()
@@ -403,11 +404,22 @@ bool CDblStrList::FindKey(const char* pszKey, size_t* ppos) const
 	ASSERT_MSG(*pszKey, "empty string!");
 	if (!pszKey || !*pszKey)
 		return false;
-	for (size_t i = 0; i < m_cItems; i++)	{
-		if (kstrcmp(m_aptrs[i].pszKey, pszKey))	{
-			if (ppos)
-				*ppos = i;
-			return true;
+	if (m_bIgnoreCase) {
+		for (size_t i = 0; i < m_cItems; i++)	{
+			if (IsSameString(m_aptrs[i].pszKey, pszKey)) {
+				if (ppos)
+					*ppos = i;
+				return true;
+			}
+		}
+	}
+	else {
+		for (size_t i = 0; i < m_cItems; i++)	{
+			if (kstrcmp(m_aptrs[i].pszKey, pszKey))	{
+				if (ppos)
+					*ppos = i;
+				return true;
+			}
 		}
 	}
 	return false;
@@ -418,11 +430,22 @@ bool CDblStrList::FindVal(const char* pszVal, size_t* ppos) const
 	ASSERT_MSG(pszVal, "NULL pointer!");
 	if (!pszVal)
 		return false;
-	for (size_t i = 0; i < m_cItems; i++)	{
-		if (kstrcmp(m_aptrs[i].pszVal, pszVal)) {
-			if (ppos)
-				*ppos = i;
-			return true;
+	if (m_bIgnoreCase) {
+		for (size_t i = 0; i < m_cItems; i++)	{
+			if (IsSameString(m_aptrs[i].pszVal, pszVal)) {
+				if (ppos)
+					*ppos = i;
+				return true;
+			}
+		}
+	}
+	else {
+		for (size_t i = 0; i < m_cItems; i++)	{
+			if (kstrcmp(m_aptrs[i].pszVal, pszVal)) {
+				if (ppos)
+					*ppos = i;
+				return true;
+			}
 		}
 	}
 	return false;
@@ -449,9 +472,18 @@ const char* CDblStrList::GetMatchingVal(const char* pszKey) const
 	ASSERT_MSG(pszKey, "NULL pointer!");
 	if (!pszKey)
 		return nullptr;
-	for (size_t pos = 0; pos < m_cItems; ++pos)	{
-		if (kstrcmp(m_aptrs[pos].pszKey, pszKey)) {
-			return m_aptrs[pos].pszVal;
+	if (m_bIgnoreCase) {
+		for (size_t pos = 0; pos < m_cItems; ++pos)	{
+			if (IsSameString(m_aptrs[pos].pszKey, pszKey)) {
+				return m_aptrs[pos].pszVal;
+			}
+		}
+	}
+	else {
+		for (size_t pos = 0; pos < m_cItems; ++pos)	{
+			if (kstrcmp(m_aptrs[pos].pszKey, pszKey)) {
+				return m_aptrs[pos].pszVal;
+			}
 		}
 	}
 	return nullptr;
