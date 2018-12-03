@@ -40,7 +40,7 @@ void CHashPair::Delete()
 	}
 }
 
-void CHashPair::Add(HASH hash, size_t val)
+void CHashPair::Add(size_t hash, size_t val)
 {
 	// Note that we are adding the full HASH_PAIR structure, not a pointer to the structure
 
@@ -73,14 +73,14 @@ void CHashPair::Add(HASH hash, size_t val)
 	++m_cMembers;
 }
 
-void CHashPair::SetVal(HASH hash, size_t val)
+void CHashPair::SetVal(size_t hash, size_t val)
 {
 	HASH_PAIR* pPair = GetHashPair(hash);
 	if (pPair)
 		pPair->val = val;
 }
 
-void CHashPair::Remove(HASH hashDel)
+void CHashPair::Remove(size_t hashDel)
 {
 	for (size_t pos = 0; pos < m_cMembers; pos++) {
 		if (m_pahash[pos].hash == hashDel) {
@@ -96,7 +96,7 @@ void CHashPair::Remove(HASH hashDel)
 	}
 }
 
-bool CHashPair::Find(HASH hash) const
+bool CHashPair::Find(size_t hash) const
 {
 	if (!m_pahash)
 		return false;
@@ -128,7 +128,7 @@ bool CHashPair::Find(HASH hash) const
 	return false;
 }
 
-size_t CHashPair::GetVal(HASH hash) const
+size_t CHashPair::GetVal(size_t hash) const
 {
 	if (!m_pahash)
 		return (size_t) -1;
@@ -160,7 +160,7 @@ size_t CHashPair::GetVal(HASH hash) const
 	return (size_t) -1;
 }
 
-CHashPair::HASH_PAIR* CHashPair::FindInsertionPoint(HASH hash) const
+CHashPair::HASH_PAIR* CHashPair::FindInsertionPoint(size_t hash) const
 {
 	if (m_pahash[0].hash > hash)
 		return &m_pahash[0];	// insert at beginning
@@ -196,7 +196,7 @@ CHashPair::HASH_PAIR* CHashPair::FindInsertionPoint(HASH hash) const
 	return pLow;
 }
 
-CHashPair::HASH_PAIR* CHashPair::GetHashPair(HASH hash) const
+CHashPair::HASH_PAIR* CHashPair::GetHashPair(size_t hash) const
 {
 	if (!m_pahash)
 		return nullptr;

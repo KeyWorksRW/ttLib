@@ -20,7 +20,7 @@
 
 // typedef size_t HASH;		// defined in ttlib.h
 
-HASH HashFromSz(const char* psz)
+size_t HashFromSz(const char* psz)
 {
 	ASSERT_MSG(psz, "NULL pointer!");
 	ASSERT_MSG(*psz, "empty string!");
@@ -31,21 +31,21 @@ HASH HashFromSz(const char* psz)
 	// djb2 hash algorithm
 
 #if 1	// this is a djb2 hash algorithm
-	HASH hash = 5381;
+	size_t hash = 5381;
 
 	while (*psz)
-		hash = ((hash << 5) + hash) ^ (HASH) *psz++;
+		hash = ((hash << 5) + hash) ^ (size_t) *psz++;
 
 #else	// sdbm hash algorithm
-	HASH hash = 0;
+	size_t hash = 0;
 
 	while (*psz)
-		hash = (HASH) *psz++ + (hash << 6) + (hash << 16) - hash;
+		hash = (size_t) *psz++ + (hash << 6) + (hash << 16) - hash;
 #endif
 	return hash;
 }
 
-HASH HashFromSz(const wchar_t* psz)
+size_t HashFromSz(const wchar_t* psz)
 {
 	ASSERT_MSG(psz, "NULL pointer!");
 	ASSERT_MSG(*psz, "empty string!");
@@ -53,17 +53,17 @@ HASH HashFromSz(const wchar_t* psz)
 	if (!psz || !*psz)
 		return 5381;
 
-	HASH hash = 5381;
+	size_t hash = 5381;
 
 	while (*psz)
-		hash = ((hash << 5) + hash) + (HASH) *psz++;
+		hash = ((hash << 5) + hash) + (size_t) *psz++;
 
 	return hash;
 }
 
 // Unlike a "regular" hash, this version treats forward and backslashes identically, as well as upper and lower-case letters
 
-HASH HashFromURL(const char* pszURL)
+size_t HashFromURL(const char* pszURL)
 {
 	CStr csz(pszURL);
 	BackslashToForwardslash(csz);
@@ -71,7 +71,7 @@ HASH HashFromURL(const char* pszURL)
 	return HashFromSz(csz);
 }
 
-HASH HashFromURL(const wchar_t* pszURL)
+size_t HashFromURL(const wchar_t* pszURL)
 {
 	CStr csz(pszURL);
 	BackslashToForwardslash(csz);

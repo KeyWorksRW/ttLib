@@ -117,15 +117,13 @@ inline bool isSameString(const wchar_t* psz1, const wchar_t* psz2) { return IsSa
 	#define min(a, b)  (((a) < (b)) ? (a) : (b))
 #endif
 
-typedef size_t HASH;
-
 ptrdiff_t	Atoi(const char* psz);
 ptrdiff_t	Atoi(const wchar_t* psz);
 int			GetCPUCount();
-HASH		HashFromSz(const char* pszKey);
-HASH		HashFromURL(const char* pszURL);
-HASH		HashFromSz(const wchar_t* pszKey);
-HASH		HashFromURL(const wchar_t* pszURL);
+size_t		HashFromSz(const char* pszKey);
+size_t		HashFromURL(const char* pszURL);
+size_t		HashFromSz(const wchar_t* pszKey);
+size_t		HashFromURL(const wchar_t* pszURL);
 char*		Hextoa(size_t val, char* pszDst, bool bUpperCase);	// convert number into hexadecimal string
 wchar_t*	Hextoa(size_t val, wchar_t* pszDst, bool bUpperCase);	// convert number into hexadecimal string
 void		trim(char* psz);

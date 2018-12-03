@@ -59,7 +59,7 @@ size_t CStrList::Add(const char* pszKey)
 	const char* pszNormalized = NormalizeString(pszKey, cszKey);
 
 	if (isNoDuplicates()) {
-		HASH hash = HashFromSz(pszNormalized);
+		size_t hash = HashFromSz(pszNormalized);
 		size_t pos = m_HashPair.GetVal(hash);
 		if (pos != (size_t) -1)
 			return pos;
@@ -381,7 +381,7 @@ void CDblStrList::Add(const char* pszKey, const char* pszVal)
 		return;
 
 	if (m_pHashLookup) {
-		HASH hash = HashFromSz(pszKey);
+		size_t hash = HashFromSz(pszKey);
 		if (m_pHashLookup->Find(hash)) {
 			return;
 		}

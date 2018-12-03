@@ -21,21 +21,21 @@ public:
 	~CHashPair();
 
 	typedef struct {
-		HASH hash;
+		size_t hash;
 		size_t val;
 	} HASH_PAIR;
 
 	// Class functions
 
-	void	Add(HASH hash, size_t val = 0);
+	void	Add(size_t hash, size_t val = 0);
 	void	Add(const char* psz, size_t val = 0) { Add(HashFromSz(psz), val); }
-	bool	Find(HASH hash) const;
+	bool	Find(size_t hash) const;
 	bool	Find(const char* psz) const { return Find(HashFromSz(psz)); }
-	size_t	GetVal(HASH hash) const;		// returns -1 if not found
+	size_t	GetVal(size_t hash) const;		// returns -1 if not found
 	size_t	GetVal(const char* psz) const { return GetVal(HashFromSz(psz)); }
-	void	Remove(HASH hash);
+	void	Remove(size_t hash);
 	void	Remove(const char* psz) { Remove(HashFromSz(psz)); }
-	void	SetVal(HASH hash, size_t val);
+	void	SetVal(size_t hash, size_t val);
 	void	SetVal(const char* psz, size_t val) { SetVal(HashFromSz(psz), val); }
 
 	void	Delete();	// remove all hash/val pairs
@@ -60,8 +60,8 @@ public:
 
 protected:
 
-	HASH_PAIR* FindInsertionPoint(HASH hash) const;
-	HASH_PAIR* GetHashPair(HASH hash) const;
+	HASH_PAIR* FindInsertionPoint(size_t hash) const;
+	HASH_PAIR* GetHashPair(size_t hash) const;
 
 	// Class members
 
