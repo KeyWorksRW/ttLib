@@ -3,14 +3,14 @@
 // Purpose:		Enumerate through substrings in a string
 // Author:		Ralph Walden (randalphwa)
 // Copyright:	Copyright (c) 2018 KeyWorks Software (Ralph Walden)
-// License:		MIT License (see ../LICENSE)
+// License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 /*
 	This class is used to enumerate through substrings that are separated by a single character (typically a semicolon).
 	The following example uses this to parse through each of the directories in an INCLUDE environment variable:
 
-		char* pszInclude = "c:/sdk/include;c:/github/wxwidgets/include/wx;
+		char* pszInclude = "c:/sdk/include;c:/github/wxwidgets/include/wx";
 		CEnumStr enumstr(pszInclude, ';');
 		const char* pszSubDir;
 		while (enumstr.Enum(&pszSubDir)) {
@@ -28,7 +28,8 @@
 class CEnumStr
 {
 public:
-	CEnumStr(const char* psz, char chSeparator = ';');
+	CEnumStr(const char* psz, char chSeparator = ';');	// This will make a copy of psz
+	CEnumStr();	// If using this constructor, you must call SetNewStr() before calling Enum()
 
 	// Class functions
 

@@ -11,6 +11,12 @@
 #include "../include/enumstr.h"
 #include "../include/kstr.h"	// various kstr...() functions
 
+CEnumStr::CEnumStr()
+{
+	m_pszCur = nullptr;
+	m_pszEnd = nullptr;
+}
+
 CEnumStr::CEnumStr(const char* psz, char chSeparator)
 {
 	if (psz)
