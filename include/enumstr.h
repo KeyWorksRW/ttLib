@@ -10,12 +10,9 @@
 	This class is used to enumerate through substrings that are separated by a single character (typically a semicolon).
 	The following example uses this to parse through each of the directories in an INCLUDE environment variable:
 
-		char* pszInclude = "c:/sdk/include;c:/github/wxwidgets/include/wx";
-		CEnumStr enumstr(pszInclude, ';');
-		const char* pszSubDir;
-		while (enumstr.Enum(&pszSubDir)) {
-			// after the first call, pszSubDir will point to "c:/sdk/include", after the second call it will point to
-			// c:/github/wxwidgets/include/wx
+		CEnumStr enumstr("c:/sdk/include;c:/github/wxwidgets/include/wx", ';');
+		while (enumstr.Enum())
+			puts(enumstr)
 */
 
 #pragma once
