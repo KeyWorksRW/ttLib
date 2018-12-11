@@ -739,33 +739,61 @@ size_t CKeyXmlBranch::GetSiblingNumber()
 CKeyXmlBranch* CKeyXmlBranch::FindFirstElement(const char* pszElement)
 {
 	if (cChildren > 0) {
-		for (size_t i = 0; i < cChildren; ++i) {
-			if (aChildren[i]->pszName && IsSameString(aChildren[i]->pszName, pszElement))
-				return aChildren[i];
-			else if (aChildren[i]->cChildren) {
-				CKeyXmlBranch* pBranch = aChildren[i]->FindFirstElement(pszElement);
-				if (pBranch)
-					return pBranch; //Found.
-			}
-		}
-	}
-	return NULL;
-}
-
-CKeyXmlBranch* CKeyXmlBranch::FindFirstElement(HTML_ELEMENT iElement)
-{
-	if (cChildren > 0) {
-		for (size_t i = 0; i < cChildren; ++i) {
-			if (aChildren[i]->element == iElement)
-				return aChildren[i];
-			else if (aChildren[i]->cChildren) {
-				CKeyXmlBranch* pBranch = aChildren[i]->FindFirstElement(iElement);
+		for (nextChild = 0; nextChild < cChildren; ++nextChild) {
+			if (aChildren[nextChild]->pszName && IsSameString(aChildren[nextChild]->pszName, pszElement))
+				return aChildren[nextChild];
+			else if (aChildren[nextChild]->cChildren) {
+				CKeyXmlBranch* pBranch = aChildren[nextChild]->FindFirstElement(pszElement);
 				if (pBranch)
 					return pBranch;
 			}
 		}
 	}
-	return NULL;
+	return nullptr;
+}
+
+CKeyXmlBranch* CKeyXmlBranch::FindNextElement(const char* pszElement)
+{
+	for (++nextChild; nextChild < cChildren; ++nextChild) {
+		if (aChildren[nextChild]->pszName && IsSameString(aChildren[nextChild]->pszName, pszElement))
+			return aChildren[nextChild];
+		else if (aChildren[nextChild]->cChildren) {
+			CKeyXmlBranch* pBranch = aChildren[nextChild]->FindFirstElement(pszElement);
+			if (pBranch)
+				return pBranch;
+		}
+	}
+	return nullptr;
+}
+
+CKeyXmlBranch* CKeyXmlBranch::FindFirstElement(HTML_ELEMENT element)
+{
+	if (cChildren > 0) {
+		for (nextChild = 0; nextChild < cChildren; ++nextChild) {
+			if (aChildren[nextChild]->element == element)
+				return aChildren[nextChild];
+			else if (aChildren[nextChild]->cChildren) {
+				CKeyXmlBranch* pBranch = aChildren[nextChild]->FindFirstElement(element);
+				if (pBranch)
+					return pBranch;
+			}
+		}
+	}
+	return nullptr;
+}
+
+CKeyXmlBranch* CKeyXmlBranch::FindNextElement(HTML_ELEMENT element)
+{
+	for (++nextChild; nextChild < cChildren; ++nextChild) {
+		if (aChildren[nextChild]->element == element)
+			return aChildren[nextChild];
+		else if (aChildren[nextChild]->cChildren) {
+			CKeyXmlBranch* pBranch = aChildren[nextChild]->FindFirstElement(element);
+			if (pBranch)
+				return pBranch;
+		}
+	}
+	return nullptr;
 }
 
 // Parse through all the children to see if any of them have the named attribute (pszAttribute). If pszValue is non-null,

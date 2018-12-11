@@ -42,6 +42,7 @@ typedef struct
 	XMLATTR**		aAttributes;		// Array of pointers to attributes; see XMLATTR.
 	size_t			cChildren;			// Count children in member 'child'.
 	size_t			cChildSpace;		// Available pointer space in 'child'.
+	size_t			nextChild;			// Set by FindFirstElement(), updated by FindNextElement()
 	CKeyXmlBranch**	aChildren;			// Array of pointers to children.
 	char*			pszData;			// Pointer to any associated string data.
 	HTML_ELEMENT	element;			// HTML Element -- only valid in an HTML file
@@ -69,7 +70,11 @@ public:
 	// Class functions
 
 	CKeyXmlBranch*	FindFirstElement(HTML_ELEMENT element);
+	CKeyXmlBranch*	FindNextElement(HTML_ELEMENT element);	// Must call FindFirstElement() before this
+
 	CKeyXmlBranch*	FindFirstElement(const char* pszName);
+	CKeyXmlBranch*	FindNextElement(const char* pszName);	// Must call FindFirstElement() before this
+
 	CKeyXmlBranch*	FindFirstAttribute(const char* pszAttribute, const char* pszValue = nullptr);	// find first attribute with specified name and (optional) value
 
 	const char*		GetAttribute(const char* pszName) const;
