@@ -70,6 +70,8 @@ public:
 
 	CKeyXmlBranch*	FindFirstElement(HTML_ELEMENT element);
 	CKeyXmlBranch*	FindFirstElement(const char* pszName);
+	CKeyXmlBranch*	FindFirstAttribute(const char* pszAttribute, const char* pszValue = nullptr);	// find first attribute with specified name and (optional) value
+
 	const char*		GetAttribute(const char* pszName) const;
 	XMLATTR*		GetAttributeAt(size_t i) { ASSERT(i < cAttributes); return (i < cAttributes) ? aAttributes[i] : NULL; }
 	size_t			GetAttributesCount() const { return cAttributes; }

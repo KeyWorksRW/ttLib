@@ -768,6 +768,38 @@ CKeyXmlBranch* CKeyXmlBranch::FindFirstElement(HTML_ELEMENT iElement)
 	return NULL;
 }
 
+// Parse through all the children to see if any of them have the named attribute (pszAttribute). If pszValue is non-null,
+// then if the attribute is found it must also have the same value as pszValue.
+
+CKeyXmlBranch* CKeyXmlBranch::FindFirstAttribute(const char* pszAttribute, const char* pszValue)
+{
+	ASSERT_MSG(pszAttribute, "NULL pointer!");
+	ASSERT_MSG(*pszAttribute, "Empty string!");
+	if (!pszAttribute || !*pszAttribute)
+		return nullptr;
+
+	if (cChildren > 0) {
+		for (size_t i = 0; i < cChildren; ++i) {
+			if (aChildren[i]->cAttributes) {
+				const char* pszAttrVal = aChildren[i]->GetAttribute(pszAttribute);
+				if (pszAttrVal) {
+					if (!pszValue)
+						return aChildren[i];
+					else if (isSameString(pszAttrVal, pszValue))
+						return aChildren[i];
+				}
+			}
+
+			if (aChildren[i]->cChildren) {
+				CKeyXmlBranch* pBranch = aChildren[i]->FindFirstAttribute(pszAttribute, pszValue);
+				if (pBranch)
+					return pBranch; //Found.
+			}
+		}
+	}
+	return nullptr;
+}
+
 const char* CKeyXmlBranch::GetAttribute(const char* pszAttribute) const
 {
 	ASSERT(pszAttribute);
