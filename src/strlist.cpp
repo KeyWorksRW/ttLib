@@ -136,8 +136,15 @@ void CStrList::Remove(size_t pos)
 	if (pos >= m_cItems)
 		return;
 
-	if (isNoDuplicates())
+	if (isNoDuplicates()) {
+		// The hash pair stores the position of our string which we need to update
+		CHashPair::HASH_PAIR* phshPair = m_HashPair.GetArray();
+		for (size_t posHsh = 0; posHsh < m_cItems; ++posHsh) {
+			if (phshPair[posHsh].val > pos)
+				--phshPair[posHsh].val;
+		}
 		m_HashPair.Remove(m_aptrs[pos]);
+	}
 
 	this->free((void*) m_aptrs[pos]);
 	memmove((void*) (m_aptrs + pos), (void*) (m_aptrs + pos + 1), (m_cItems - (pos + 1)) * sizeof(char*));
