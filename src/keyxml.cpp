@@ -766,14 +766,14 @@ CKeyXmlBranch* CKeyXmlBranch::FindNextElement(const char* pszElement)
 	return nullptr;
 }
 
-CKeyXmlBranch* CKeyXmlBranch::FindFirstElement(HTML_ELEMENT element)
+CKeyXmlBranch* CKeyXmlBranch::FindFirstElement(HTML_ELEMENT elementSrch)
 {
 	if (cChildren > 0) {
 		for (nextChild = 0; nextChild < cChildren; ++nextChild) {
-			if (aChildren[nextChild]->element == element)
+			if (aChildren[nextChild]->element == elementSrch)
 				return aChildren[nextChild];
 			else if (aChildren[nextChild]->cChildren) {
-				CKeyXmlBranch* pBranch = aChildren[nextChild]->FindFirstElement(element);
+				CKeyXmlBranch* pBranch = aChildren[nextChild]->FindFirstElement(elementSrch);
 				if (pBranch)
 					return pBranch;
 			}
