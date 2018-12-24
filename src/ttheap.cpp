@@ -39,105 +39,6 @@ CTTHeap::CTTHeap(bool bSerialize)
 #endif
 }
 
-void CTTHeap::Attach(HANDLE hHeap)
-{
-	ASSERT(hHeap);
-	ASSERT(!m_bCreated || m_hHeap == GetProcessHeap());
-	if (!hHeap || m_bCreated || m_hHeap != GetProcessHeap())
-		return;		// destroying an existing sub-heap to attach to a new one would destroy any previous allocations
-
-	m_bCreated = false;		// this keeps us from destroying the attatched heap during our destructor
-	m_hHeap = hHeap;
-}
-
-CTTHeap::~CTTHeap()
-{
-	if (m_bCreated && m_hHeap && m_hHeap != GetProcessHeap())
-		HeapDestroy(m_hHeap);
-}
-
-void* CTTHeap::malloc(size_t cb)
-{
-	void* pv = HeapAlloc(m_hHeap, 0, cb);
-	ASSERT(pv);
-	if (!pv)
-		OOM();
-#ifdef _DEBUG
-	memset(pv, 0xCC, cb);
-#endif
-	return pv;
-}
-
-void* CTTHeap::calloc(size_t cb)
-{
-	void* pv = HeapAlloc(m_hHeap, 0 | HEAP_ZERO_MEMORY, cb);
-	ASSERT(pv);
-	if (!pv)
-		OOM();
-	return pv;
-}
-
-void* CTTHeap::realloc(void* pv, size_t cb)
-{
-	if (!pv)
-		return malloc(cb);
-	pv = HeapReAlloc(m_hHeap, 0, pv, cb);
-	if (!pv)
-		OOM();
-	return pv;
-}
-
-void* CTTHeap::recalloc(void* pv, size_t cb)
-{
-	if (!pv)
-		return calloc(cb);
-	pv = HeapReAlloc(m_hHeap, 0 | HEAP_ZERO_MEMORY, pv, cb);
-	if (!pv)
-		OOM();
-	return pv;
-}
-
-void CTTHeap::free(void* pv)
-{
-	if (pv)
-		HeapFree(m_hHeap, 0, pv);
-}
-
-size_t CTTHeap::size(const void* pv)
-{
-	ASSERT(pv);
-	if (pv)
-		return HeapSize(m_hHeap, 0, pv);
-	else
-		return 0;
-}
-
-char* CTTHeap::strdup(const char* psz)
-{
-	ASSERT_MSG(psz, "null pointer!");
-
-	if (!psz || !*psz)
-		psz = "";
-
-	size_t cb = kstrbyte(psz);
-	char* pszDst = (char*) malloc(cb);
-	memcpy(pszDst, psz, cb);
-	return pszDst;
-}
-
-wchar_t* CTTHeap::strdup(const wchar_t* pwsz)
-{
-	ASSERT_MSG(pwsz, "null pointer!");
-
-	if (!pwsz || !*pwsz)
-		pwsz = L"";
-
-	size_t cb = kstrbyte(pwsz);
-	wchar_t* pwszDst = (wchar_t*) malloc(cb);
-	memcpy(pwszDst, pwsz, cb);
-	return pwszDst;
-}
-
 bool CTTHeap::CreateHeap(bool bSerialize)
 {
 #ifdef _WINDOWS_
@@ -156,3 +57,102 @@ bool CTTHeap::CreateHeap(bool bSerialize)
 	return false;	// TODO: [randalphwa - 08-29-2018] Replace this with something that will work on POSIX
 #endif
 };
+
+void CTTHeap::Attach(HANDLE hHeap)
+{
+	ASSERT(hHeap);
+	ASSERT(!m_bCreated || m_hHeap == GetProcessHeap());
+	if (!hHeap || m_bCreated || m_hHeap != GetProcessHeap())
+		return;		// destroying an existing sub-heap to attach to a new one would destroy any previous allocations
+
+	m_bCreated = false;		// this keeps us from destroying the attatched heap during our destructor
+	m_hHeap = hHeap;
+}
+
+CTTHeap::~CTTHeap()
+{
+	if (m_bCreated && m_hHeap && m_hHeap != GetProcessHeap())
+		HeapDestroy(m_hHeap);
+}
+
+void* CTTHeap::ttMalloc(size_t cb)
+{
+	void* pv = HeapAlloc(m_hHeap, 0, cb);
+	ASSERT(pv);
+	if (!pv)
+		OOM();
+#ifdef _DEBUG
+	memset(pv, 0xCD, cb);
+#endif
+	return pv;
+}
+
+void* CTTHeap::ttCalloc(size_t cb)
+{
+	void* pv = HeapAlloc(m_hHeap, 0 | HEAP_ZERO_MEMORY, cb);
+	ASSERT(pv);
+	if (!pv)
+		OOM();
+	return pv;
+}
+
+void* CTTHeap::ttRealloc(void* pv, size_t cb)
+{
+	if (!pv)
+		return ttMalloc(cb);
+	pv = HeapReAlloc(m_hHeap, 0, pv, cb);
+	if (!pv)
+		OOM();
+	return pv;
+}
+
+void* CTTHeap::ttRecalloc(void* pv, size_t cb)
+{
+	if (!pv)
+		return ttCalloc(cb);
+	pv = HeapReAlloc(m_hHeap, 0 | HEAP_ZERO_MEMORY, pv, cb);
+	if (!pv)
+		OOM();
+	return pv;
+}
+
+void CTTHeap::ttFree(void* pv)
+{
+	if (pv)
+		HeapFree(m_hHeap, 0, pv);
+}
+
+size_t CTTHeap::ttSize(const void* pv)
+{
+	ASSERT(pv);
+	if (pv)
+		return HeapSize(m_hHeap, 0, pv);
+	else
+		return 0;
+}
+
+char* CTTHeap::ttStrdup(const char* psz)
+{
+	ASSERT_MSG(psz, "null pointer!");
+
+	if (!psz || !*psz)
+		psz = "";
+
+	size_t cb = kstrbyte(psz);
+	char* pszDst = (char*) ttMalloc(cb);
+	memcpy(pszDst, psz, cb);
+	return pszDst;
+}
+
+wchar_t* CTTHeap::ttStrdup(const wchar_t* pwsz)
+{
+	ASSERT_MSG(pwsz, "null pointer!");
+
+	if (!pwsz || !*pwsz)
+		pwsz = L"";
+
+	size_t cb = kstrbyte(pwsz);
+	wchar_t* pwszDst = (wchar_t*) ttMalloc(cb);
+	memcpy(pwszDst, pwsz, cb);
+	return pwszDst;
+}

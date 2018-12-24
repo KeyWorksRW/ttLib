@@ -50,7 +50,7 @@ public:
 	void Add(const TKey key, const TVal val) {
 		if (m_cItems >= m_cAllocated) {
 			m_cAllocated += 32;	// add room for 32 items at a time
-			m_aMapPairs = (MAP_PAIR*) m_pHeap->realloc(m_aMapPairs, m_cAllocated * sizeof(MAP_PAIR));
+			m_aMapPairs = (MAP_PAIR*) m_pHeap->ttRealloc(m_aMapPairs, m_cAllocated * sizeof(MAP_PAIR));
 		}
 		m_aMapPairs[m_cItems].key = key;
 		m_aMapPairs[m_cItems++].val = val;
@@ -97,8 +97,8 @@ public:
 	// The following functions can be used to allocate memory that won't have to be specifically freed -- it
 	// will be freed automatically when the heap is destroyed in CTTMap's destructor
 
-	void  malloc(size_t cb) { return m_pHeap->malloc(cb); }
-	char* strdup(const char* psz) { return m_pHeap->strdup(psz); }
+	void  ttMalloc(size_t cb) { return m_pHeap->ttMalloc(cb); }
+	char* ttStrdup(const char* psz) { return m_pHeap->ttStrdup(psz); }
 
 	// Class members
 

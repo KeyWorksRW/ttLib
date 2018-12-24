@@ -244,7 +244,6 @@ void _StrWnorm(char** s)
 
 CKeyXML::CKeyXML()
 {
-	m_hHeap = HeapCreate(HEAP_NO_SERIALIZE, (4 * 1024), 0);
 	m_pRoot = NULL;
 	m_uOptions = PARSE_DEFAULT;
 	m_bAllocatedStrings = false;
@@ -259,7 +258,7 @@ CKeyXmlBranch* CKeyXML::GraftBranch(CKeyXmlBranch* pParent, XMLENTITY eType)
 	if (!pParent)
 		return NULL; // Must have a parent.
 	if (pParent->cChildren == pParent->cChildSpace) { //Out of pointer space.
-		CKeyXmlBranch** t = (CKeyXmlBranch**) realloc(pParent->aChildren, sizeof(CKeyXmlBranch*) * (pParent->cChildSpace + GROW_SIZE)); // Grow pointer space.
+		CKeyXmlBranch** t = (CKeyXmlBranch**) ttRealloc(pParent->aChildren, sizeof(CKeyXmlBranch*) * (pParent->cChildSpace + GROW_SIZE)); // Grow pointer space.
 		if (t) { //Reallocation succeeded.
 			pParent->aChildren = t;
 			pParent->cChildSpace += GROW_SIZE; //Update the available space.
@@ -274,29 +273,26 @@ CKeyXmlBranch* CKeyXML::GraftBranch(CKeyXmlBranch* pParent, XMLENTITY eType)
 
 CKeyXmlBranch* CKeyXML::NewBranch(XMLENTITY eType)
 {
-	CKeyXmlBranch* p = (CKeyXmlBranch*) malloc(sizeof(CKeyXmlBranch)); // Allocate one branch.
-	p->pszName = p->pszData = 0; // No name or data.
+	CKeyXmlBranch* p = (CKeyXmlBranch*) ttCalloc(sizeof(CKeyXmlBranch)); // Allocate one branch.
+	p->pKeyXML = this;
 	p->type = eType; // Set the desired type.
-	p->cAttributes = p->cChildren = 0; // No attributes or children.
 	p->element = ELEMENT_UNKNOWN;
 	if (
 			eType != ENTITY_ROOT	&& // None of these will have attributes.
 			eType != ENTITY_PCDATA	&&
 			eType != ENTITY_CDATA	&&
 			eType != ENTITY_INCLUDE &&
-			eType != ENTITY_COMMENT)
-		p->aAttributes = (XMLATTR**) malloc(sizeof(XMLATTR*));	// Allocate one attribute pointer.
-	else
-		p->aAttributes = NULL;
-	p->cAttributeSpace = (p->aAttributes) ? 1 : 0;
+			eType != ENTITY_COMMENT) {
+		p->aAttributes = (XMLATTR**) ttMalloc(sizeof(XMLATTR*));	// Allocate one attribute pointer.
+		p->cAttributeSpace = 1;
+	}
 	if (
 			eType == ENTITY_ELEMENT || //Only these will have children.
 			eType == ENTITY_DOCTYPE ||
-			eType == ENTITY_ROOT)
-		p->aChildren = (CKeyXmlBranch**) malloc(sizeof(CKeyXmlBranch*));	// Allocate one child.
-	else
-		p->aChildren = NULL;
-	p->cChildSpace = (p->aChildren) ? 1 : 0;
+			eType == ENTITY_ROOT) {
+		p->aChildren = (CKeyXmlBranch**) ttMalloc(sizeof(CKeyXmlBranch*));	// Allocate one child.
+		p->cChildSpace = 1;
+	}
 	return p;
 }
 
@@ -309,7 +305,7 @@ XMLATTR* CKeyXML::AddAttribute(CKeyXmlBranch* pBranch, LONG lGrow)
 	if (!a)
 		return NULL;
 	if (pBranch->cAttributes == pBranch->cAttributeSpace) { // Out of space, so grow.
-		XMLATTR** t = (XMLATTR**) realloc(pBranch->aAttributes, sizeof(CKeyXmlBranch*) *(pBranch->cAttributeSpace + lGrow));
+		XMLATTR** t = (XMLATTR**) ttRealloc(pBranch->aAttributes, sizeof(CKeyXmlBranch*) *(pBranch->cAttributeSpace + lGrow));
 		if (t) {
 			pBranch->aAttributes = t;
 			pBranch->cAttributeSpace += lGrow;
@@ -332,17 +328,17 @@ void CKeyXML::AllocateStringBuffers(CKeyXmlBranch* pBranch)
 		// REVIEW: [ralphw - 02-20-2003] Does the root every actually have any string data?
 
 		if (pBranch->pszName)
-			pBranch->pszName = kstrdup(pBranch->pszName);
+			pBranch->pszName = ttStrdup(pBranch->pszName);
 		if (pBranch->pszData)
-			pBranch->pszData = kstrdup(pBranch->pszData);
+			pBranch->pszData = ttStrdup(pBranch->pszData);
 		for (size_t iAttribute = 0; iAttribute < pBranch->GetAttributesCount(); iAttribute++) {
 			XMLATTR* pAttr = pBranch->GetAttributeAt(iAttribute);
 			ASSERT(pAttr);
 			if (pAttr) {
 				if (pAttr->pszName)
-					pAttr->pszName = kstrdup(pAttr->pszName);
+					pAttr->pszName = ttStrdup(pAttr->pszName);
 				if (pAttr->pszValue)
-					pAttr->pszValue = kstrdup(pAttr->pszValue);
+					pAttr->pszValue = ttStrdup(pAttr->pszValue);
 			}
 		}
 
@@ -354,17 +350,17 @@ void CKeyXML::AllocateStringBuffers(CKeyXmlBranch* pBranch)
 			AllocateStringBuffers(pBranch->GetChildAt(0));
 		}
 		if (pBranch->pszName)
-			pBranch->pszName = kstrdup(pBranch->pszName);
+			pBranch->pszName = ttStrdup(pBranch->pszName);
 		if (pBranch->pszData)
-			pBranch->pszData = kstrdup(pBranch->pszData);
+			pBranch->pszData = ttStrdup(pBranch->pszData);
 		for (size_t iAttribute = 0; iAttribute < pBranch->GetAttributesCount(); iAttribute++) {
 			XMLATTR* pAttr = pBranch->GetAttributeAt(iAttribute);
 			ASSERT(pAttr);
 			if (pAttr) {
 				if (pAttr->pszName)
-					pAttr->pszName = kstrdup(pAttr->pszName);
+					pAttr->pszName = ttStrdup(pAttr->pszName);
 				if (pAttr->pszValue)
-					pAttr->pszValue = kstrdup(pAttr->pszValue);
+					pAttr->pszValue = ttStrdup(pAttr->pszValue);
 			}
 		}
 
@@ -614,7 +610,7 @@ CKeyXmlBranch* CKeyXML::AddBranch(CKeyXmlBranch* pParent, const char* pszBranchN
 	ASSERT(pParent);
 
 	CKeyXmlBranch* pBranch = GraftBranch(pParent, eType);
-	pBranch->pszName = kstrdup(pszBranchName);
+	pBranch->pszName = ttStrdup(pszBranchName);
 	return pBranch;
 }
 
@@ -626,19 +622,19 @@ void CKeyXML::AddAttribute(CKeyXmlBranch* pBranch, const char* pszName, const ch
 	ASSERT(*pszName);
 	ASSERT(*pszValue);
 
-	XMLATTR* pAttr = (XMLATTR*) malloc(sizeof(XMLATTR));	// Allocate one attribute.
-	pAttr->pszName = kstrdup(pszName);
-	pAttr->pszValue = kstrdup(pszValue);
+	XMLATTR* pAttr = (XMLATTR*) ttMalloc(sizeof(XMLATTR));	// Allocate one attribute.
+	pAttr->pszName = ttStrdup(pszName);
+	pAttr->pszValue = ttStrdup(pszValue);
 
 	if (pBranch->cAttributes == pBranch->cAttributeSpace) { // Out of space, so grow.
-		XMLATTR** t = (XMLATTR**) realloc(pBranch->aAttributes, sizeof(CKeyXmlBranch*) *(pBranch->cAttributeSpace + iGrow));
+		XMLATTR** t = (XMLATTR**) ttRealloc(pBranch->aAttributes, sizeof(CKeyXmlBranch*) *(pBranch->cAttributeSpace + iGrow));
 		if (t) {
 			pBranch->aAttributes = t;
 			pBranch->cAttributeSpace += iGrow;
 		}
 		else {	// EXTREMELY unlikely -- means out of system memory
-			kfree(pAttr->pszName);
-			kfree(pAttr->pszValue);
+			ttFree(pAttr->pszName);
+			ttFree(pAttr->pszValue);
 			return;
 		}
 	}
@@ -656,7 +652,7 @@ CKeyXmlBranch* CKeyXML::AddDataChild(CKeyXmlBranch* pParent, const char* pszName
 
 	CKeyXmlBranch* pChild = AddBranch(pParent, pszName);
 	CKeyXmlBranch* pSubChild = GraftBranch(pChild, ENTITY_PCDATA);
-	pSubChild->pszData = kstrdup(pszData);
+	pSubChild->pszData = ttStrdup(pszData);
 	return pSubChild;
 }
 
@@ -681,8 +677,8 @@ bool CKeyXmlBranch::ReplaceAttributeValue(CKeyXML* pxml, const char* pszAttribut
 	for (size_t i = 0; i < cAttributes; i++) {
 		if (IsSameString(pszAttribute, aAttributes[i]->pszName)) {
 			if (pxml->isAllocatedStrings())
-				kfree(aAttributes[i]->pszValue);
-			aAttributes[i]->pszValue = kstrdup(pszNewValue);
+				pKeyXML->ttFree(aAttributes[i]->pszValue);
+			aAttributes[i]->pszValue = pKeyXML->ttStrdup(pszNewValue);
 			return true;
 		}
 	}
@@ -697,11 +693,13 @@ HRESULT CKeyXML::ParseXmlFile(const char* pszFile)
 	if (!pszFile || !*pszFile)
 		return STG_E_FILENOTFOUND;
 
-	CKeyFile kf;
-	if (!kf.ReadFile(pszFile))
+	if (!m_kf.ReadFile(pszFile))
 		return STG_E_FILENOTFOUND;
 
-	ParseXmlString(kf);
+	// CAUTION: ParseXmlString() doesn't allocate strings -- it instead uses pointers into the string buffer it is
+	// provided (m_kf in this case). That means the results are only valid while the string buffer remains in memory.
+
+	ParseXmlString(m_kf);
 
 	return S_OK;
 }
@@ -714,11 +712,13 @@ HRESULT CKeyXML::ParseHtmlFile(const char* pszFile)
 	if (!pszFile || !*pszFile)
 		return STG_E_FILENOTFOUND;
 
-	CKeyFile kf;
-	if (!kf.ReadFile(pszFile))
+	if (!m_kf.ReadFile(pszFile))
 		return STG_E_FILENOTFOUND;
 
-	ParseHtmlString(kf);
+	// CAUTION: ParseHtmlString() doesn't allocate strings -- it instead uses pointers into the string buffer it is
+	// provided (m_kf in this case). That means the results are only valid while the string buffer remains in memory.
+
+	ParseHtmlString(m_kf);
 
 	return S_OK;
 }
@@ -1498,7 +1498,7 @@ char* CKeyXML::ParseHtmlString(char* psz, CKeyXmlBranch* pRoot)
 	else {
 		pBranch = pRoot; // Tree branch cursor.
 	}
-	char cChar = 0; // Current char, in cases where we must null-terminate before we test.
+	char cChar = 0;    // Current char, in cases where we must null-terminate before we test.
 	char* pMark = psz; // Marked string position for temporary look-ahead.
 
 	while(*psz != 0) {
@@ -1515,7 +1515,7 @@ LOC_CLASSIFY: // What kind of element?
 					while (*psz && !IsPi(*psz))
 						psz++;
 					if (IsPi(*psz))
-						*psz = '/'; // Same semantics as for '<.../>', so fudge it.
+						*psz = '/';   // Same semantics as for '<.../>', so fudge it.
 					psz = pMark;
 					Push(ENTITY_PI);  // Graft a new branch on the tree.
 					char* pszElement = psz;
@@ -1541,11 +1541,11 @@ LOC_CLASSIFY: // What kind of element?
 			}
 			else if (IsSpecial(*psz)) { //'<!...'
 				++psz;
-				if (IsDash(*psz)) { //'<!-...'
+				if (IsDash(*psz)) { 	//'<!-...'
 					++psz;
 					if ((m_uOptions & PARSE_COMMENTS) && IsDash(*psz)) { //'<!--...'
 						++psz;
-						Push(ENTITY_COMMENT); // Graft a new branch on the tree.
+						Push(ENTITY_COMMENT);	// Graft a new branch on the tree.
 						pBranch->pszData = psz; // Save the offset.
 						while(*psz!=0 && *(psz+1) && *(psz+2) && !((IsDash(*psz) && IsDash(*(psz+1))) && IsLeave(*(psz+2))))
 							++psz; // Scan for terminating '-->'.
@@ -1554,8 +1554,8 @@ LOC_CLASSIFY: // What kind of element?
 						*psz = 0; // Zero-terminate this segment at the first terminating '-'.
 						if (!bInScriptSection)
 							_StrWnorm(&pBranch->pszData);
-						psz += 2; // Step over the '\0-'.
-						Pop(); // Pop since this is a standalone.
+						psz += 2;		// Step over the '\0-'.
+						Pop();	  		// Pop since this is a standalone.
 						goto LOC_LEAVE; // Look for any following PCDATA.
 					}
 					else
@@ -1786,9 +1786,9 @@ LOC_DOCTYPE_QUOTE:
 							if (IsSpace(cChar)) {
 								SkipWS(); // Eat whitespace.
 								if (e == ENTITY_DTD_ENTITY) { // Special case; may have multiple quoted sections w/anything inside.
-									pBranch->pszData = psz; // Just store everything here.
-									BOOL qq = FALSE; // Quote in/out flag.
-									while(*psz!=0) { // Loop till we find the right sequence.
+									pBranch->pszData = psz;  // Just store everything here.
+									BOOL qq = FALSE;		  // Quote in/out flag.
+									while (*psz != 0) { 	  // Loop till we find the right sequence.
 										if (!qq && IsQuote(*psz)) {
 											cChar = *psz;
 											qq = TRUE;
@@ -1972,7 +1972,7 @@ LOC_ATTRIBUTE:
 								psz = SkipAttrSymbol(psz);
 								char chSave = *psz;
 								*psz = '\0';
-								a->pszValue = kstrdup(a->pszValue);
+								a->pszValue = ttStrdup(a->pszValue);
 								*psz = chSave;
 								if (IsLeave(*psz)) {
 									++psz;
@@ -1995,7 +1995,7 @@ LOC_ATTRIBUTE:
 							}
 						}
 						if (IsLeave(cChar)) {	// attribute with no value
-							a->pszValue = kstrdup("true");
+							a->pszValue = ttStrdup("true");
 							if (IsEndTagForbidden(pBranch->element))
 								Pop();
 							goto LOC_PCDATA;

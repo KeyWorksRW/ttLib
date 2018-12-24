@@ -17,6 +17,7 @@
 #ifndef __TTLIB_KEYXML_H__
 #define __TTLIB_KEYXML_H__
 
+#include "ttheap.h" 		// CTTHeap
 #include "hashpair.h"		// CHashPair
 #include "ttarray.h"		// CTTArray
 #include "cstr.h"			// CStr
@@ -34,6 +35,7 @@ typedef struct
 
 typedef struct
 {
+	CKeyXML*		pKeyXML;			// pointer to the container class
 	CKeyXmlBranch*	parent;				// Pointer to parent
 	char*			pszName;			// Pointer to element name.
 	XMLENTITY		type;				// Branch type; see XMLENTITY.
@@ -75,6 +77,8 @@ public:
 	CKeyXmlBranch*	FindFirstElement(const char* pszName);
 	CKeyXmlBranch*	FindNextElement(const char* pszName);	// Must call FindFirstElement() before this
 
+	// Use GetAttribute() for the current branch, FindFirstAttribute to find a child branch containing the specified attribute/value
+
 	CKeyXmlBranch*	FindFirstAttribute(const char* pszAttribute, const char* pszValue = nullptr);	// find first attribute with specified name and (optional) value
 
 	const char*		GetAttribute(const char* pszName) const;
@@ -104,11 +108,10 @@ public:
 	CKeyXmlBranch* operator[](size_t i){ return (CKeyXmlBranch*) GetChildAt(i); }
 };
 
-class CKeyXML
+class CKeyXML : public CTTHeap
 {
 public:
 	CKeyXML();
-	~CKeyXML() { HeapDestroy(m_hHeap); }
 
 	void SetDocType(size_t type = DOCTYPE_XHTML_STRICT);
 
@@ -122,13 +125,6 @@ public:
 	void	SaveXmlFile(CKeyFile* pkf) { WriteBranch(nullptr, *pkf, 0); }	// nullptr means no parent
 	HRESULT SaveHtmlFile(const char* pszFileName);
 	void	SaveHtmlFile(CKeyFile* pkf) { WriteHtmlBranch(nullptr, *pkf); }
-
-	inline char* strdup(const char* psz) const {
-		size_t cb = kstrlen(psz) + 1;
-		char* pszDst = (char*) malloc(cb);
-		memcpy(pszDst, psz ? psz : "", cb);
-		return pszDst;
-	}
 
 	CKeyXmlBranch* GetRootBranch() { return m_pRoot; }
 
@@ -178,33 +174,8 @@ protected:
 		return p;
 	}
 
-	// REVIEW: [randalphwa - 10/1/2018] This needs to be changed to use CTTHeap since code below won't work on non-Windows platforms
-
-	void* malloc(size_t cb) const {
-		void* pv = HeapAlloc(m_hHeap, HEAP_NO_SERIALIZE, cb);
-		if (!pv)
-			OOM();	// doesn't return
-		return pv;
-	}
-	template <typename T> void free(T pv) const {
-		VERIFY(HeapFree(m_hHeap, HEAP_NO_SERIALIZE, (void*) pv));
-	}
-	template <typename T> T realloc(T pv, size_t cb) const {
-		if (!pv) {
-			pv = (T) HeapAlloc(m_hHeap, HEAP_NO_SERIALIZE, cb);
-			if (!pv)
-				OOM();	// doesn't return
-			return pv;
-		}
-		pv = (T) HeapReAlloc(m_hHeap, HEAP_NO_SERIALIZE, (void*) pv, cb);
-		if (!pv)
-			OOM();	// doesn't return
-		return pv;
-	}
-
 	// Class members
 
-	HANDLE	m_hHeap;
 	CKeyXmlBranch*	m_pRoot;			// Pointer to current XML Document tree root.
 	size_t		m_uOptions;				// Parser options.
 	bool		m_bAllocatedStrings;	// true if we allocated our own memory to hold strings
@@ -220,6 +191,7 @@ protected:
 	CHashPair m_lstUnknownTags;
 
 	CStr m_cszDocType;
+	CKeyFile m_kf;
 };
 
 #endif	// __TTLIB_KEYXML_H__

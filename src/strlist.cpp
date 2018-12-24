@@ -11,7 +11,7 @@
 // destructor is called. By default, all the classes use a non-serialized private heap -- which means
 // multiple threads need to use a crit section if accessing a shared instance of these classes.
 
-// In a non-Windows build the classes will be serialized if the underlying malloc() routines are serialed,
+// In a non-Windows build the classes will be serialized if the underlying ttMalloc() routines are serialed,
 // and the underlying CTTHeap destructor will free all memory allocated by this class (but because it will be
 // calling free() for every item allocated, it will be a lot slower then the _WINDOWS_ version).
 
@@ -66,9 +66,9 @@ size_t CStrList::Add(const char* pszKey)
 		else {
 			if (m_cItems + 1 >= m_cAllocated) {	// the +1 is paranoia -- it shouldn't really be necessary
 				m_cAllocated += 32;	// add room for 32 strings at a time
-				m_aptrs = (const char**) this->realloc(m_aptrs, m_cAllocated * sizeof(char*));
+				m_aptrs = (const char**) ttRealloc(m_aptrs, m_cAllocated * sizeof(char*));
 			}
-			m_aptrs[m_cItems] = this->strdup(pszNormalized);
+			m_aptrs[m_cItems] = ttStrdup(pszNormalized);
 			m_HashPair.Add(hash, m_cItems);
 			return m_cItems++;
 		}
@@ -76,9 +76,9 @@ size_t CStrList::Add(const char* pszKey)
 
 	if (m_cItems + 1 >= m_cAllocated) {	// the +1 is paranoia -- it shouldn't really be necessary
 		m_cAllocated += 32;	// add room for 32 strings at a time
-		m_aptrs = (const char**) (m_aptrs ? this->realloc(m_aptrs, m_cAllocated * sizeof(char*)) : this->malloc(m_cAllocated * sizeof(char*)));
+		m_aptrs = (const char**) (m_aptrs ? ttRealloc(m_aptrs, m_cAllocated * sizeof(char*)) : ttMalloc(m_cAllocated * sizeof(char*)));
 	}
-	m_aptrs[m_cItems] = this->strdup(pszNormalized);
+	m_aptrs[m_cItems] = ttStrdup(pszNormalized);
 	return m_cItems++;
 }
 
@@ -146,7 +146,7 @@ void CStrList::Remove(size_t pos)
 		m_HashPair.Remove(m_aptrs[pos]);
 	}
 
-	this->free((void*) m_aptrs[pos]);
+	ttFree((void*) m_aptrs[pos]);
 	memmove((void*) (m_aptrs + pos), (void*) (m_aptrs + pos + 1), (m_cItems - (pos + 1)) * sizeof(char*));
 	--m_cItems;
 }
@@ -189,12 +189,12 @@ void CStrList::Replace(size_t pos, const char* pszKey)
 	if (isNoDuplicates())
 		m_HashPair.Remove(m_aptrs[pos]);
 
-	this->free((void*) m_aptrs[pos]);
+	ttFree((void*) m_aptrs[pos]);
 
 	CStr cszKey;
 	const char* pszNormalized = NormalizeString(pszKey, cszKey);
 
-	m_aptrs[pos] = this->strdup(pszNormalized);
+	m_aptrs[pos] = ttStrdup(pszNormalized);
 
 	if (isNoDuplicates())
 		m_HashPair.Add(pszNormalized, pos);
@@ -221,7 +221,7 @@ void CStrList::InsertAt(size_t pos, const char* pszKey)
 
 	if (m_cItems + 1 >= m_cAllocated) {		// the +1 is paranoia -- it shouldn't really be necessary
 		m_cAllocated += 32;	// add room for 32 strings at a time
-		m_aptrs = (const char**) (m_aptrs ? realloc(m_aptrs, m_cAllocated * sizeof(char*)) : malloc(m_cAllocated * sizeof(char*)));
+		m_aptrs = (const char**) (m_aptrs ? ttRealloc(m_aptrs, m_cAllocated * sizeof(char*)) : ttMalloc(m_cAllocated * sizeof(char*)));
 	}
 	memmove((void*) (m_aptrs + pos + 1), (void*) (m_aptrs + pos), (m_cItems - pos + 1) * sizeof(char*));
 
@@ -236,7 +236,7 @@ void CStrList::InsertAt(size_t pos, const char* pszKey)
 	CStr cszKey;
 	const char* pszNormalized = NormalizeString(pszKey, cszKey);
 
-	m_aptrs[pos] = this->strdup(pszNormalized);
+	m_aptrs[pos] = ttStrdup(pszNormalized);
 	m_cItems++;
 
 	if (isNoDuplicates())
@@ -399,10 +399,10 @@ void CDblStrList::Add(const char* pszKey, const char* pszVal)
 
 	if (m_cItems >= m_cAllocated) {
 		m_cAllocated += 32;	// add room for 32 strings at a time
-		m_aptrs = (DBLPTRS*) (m_aptrs ? this->realloc(m_aptrs, m_cAllocated * sizeof(DBLPTRS)) : this->malloc(m_cAllocated * sizeof(DBLPTRS)));
+		m_aptrs = (DBLPTRS*) (m_aptrs ? ttRealloc(m_aptrs, m_cAllocated * sizeof(DBLPTRS)) : ttMalloc(m_cAllocated * sizeof(DBLPTRS)));
 	}
-	m_aptrs[m_cItems].pszKey = this->strdup(pszKey);
-	m_aptrs[m_cItems++].pszVal = this->strdup(pszVal);
+	m_aptrs[m_cItems].pszKey = ttStrdup(pszKey);
+	m_aptrs[m_cItems++].pszVal = ttStrdup(pszVal);
 }
 
 bool CDblStrList::FindKey(const char* pszKey, size_t* ppos) const
@@ -505,10 +505,10 @@ void CDblStrList::Replace(size_t pos, const char* pszKey, const char* pszVal)
 	if (pos >= m_cItems || !pszKey || !*pszKey || *pszVal)
 		return;
 
-	this->free((void*) m_aptrs[pos].pszKey);
-	this->free((void*) m_aptrs[pos].pszVal);
-	m_aptrs[pos].pszKey = this->strdup(pszKey);
-	m_aptrs[pos].pszVal = this->strdup(pszVal);
+	ttFree((void*) m_aptrs[pos].pszKey);
+	ttFree((void*) m_aptrs[pos].pszVal);
+	m_aptrs[pos].pszKey = ttStrdup(pszKey);
+	m_aptrs[pos].pszVal = ttStrdup(pszVal);
 }
 
 void CDblStrList::SortKeys()
@@ -602,7 +602,7 @@ void CStrIntList::Add(const char* pszKey, ptrdiff_t newVal)
 			}
 			// newVal not found, so add it
 			++cItems;
-			m_aptrs[pos].pVal = (ptrdiff_t*) this->realloc(m_aptrs[pos].pVal, (cItems + 1) * sizeof(ptrdiff_t));
+			m_aptrs[pos].pVal = (ptrdiff_t*) ttRealloc(m_aptrs[pos].pVal, (cItems + 1) * sizeof(ptrdiff_t));
 			m_aptrs[pos].pVal[0] = cItems;
 			m_aptrs[pos].pVal[cItems] = newVal;
 			return;
@@ -613,10 +613,10 @@ void CStrIntList::Add(const char* pszKey, ptrdiff_t newVal)
 
 	if (m_cItems >= m_cAllocated) {
 		m_cAllocated += 32;	// add room for 32 strings at a time
-		m_aptrs = (DBLPTRS*) (m_aptrs ? this->realloc(m_aptrs, m_cAllocated * sizeof(DBLPTRS)) : this->malloc(m_cAllocated * sizeof(DBLPTRS)));
+		m_aptrs = (DBLPTRS*) (m_aptrs ? ttRealloc(m_aptrs, m_cAllocated * sizeof(DBLPTRS)) : ttMalloc(m_cAllocated * sizeof(DBLPTRS)));
 	}
-	m_aptrs[m_cItems].pszKey = this->strdup(pszKey);
-	m_aptrs[m_cItems].pVal = (ptrdiff_t*) this->malloc(2 * sizeof(ptrdiff_t));
+	m_aptrs[m_cItems].pszKey = ttStrdup(pszKey);
+	m_aptrs[m_cItems].pVal = (ptrdiff_t*) ttMalloc(2 * sizeof(ptrdiff_t));
 	m_aptrs[m_cItems].pVal[0] = 1;
 	m_aptrs[m_cItems].pVal[1] = newVal;
 	++m_cItems;
@@ -635,7 +635,7 @@ bool CStrIntList::Add(size_t posKey, ptrdiff_t newVal)
 	}
 	// newVal not found, so add it
 	++cItems;
-	m_aptrs[posKey].pVal = (ptrdiff_t*) this->realloc(m_aptrs[posKey].pVal, (cItems + 1) * sizeof(ptrdiff_t));
+	m_aptrs[posKey].pVal = (ptrdiff_t*) ttRealloc(m_aptrs[posKey].pVal, (cItems + 1) * sizeof(ptrdiff_t));
 	m_aptrs[posKey].pVal[0] = cItems;
 	m_aptrs[posKey].pVal[cItems] = newVal;
 	return true;
