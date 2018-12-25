@@ -782,13 +782,13 @@ CKeyXmlBranch* CKeyXmlBranch::FindFirstElement(HTML_ELEMENT elementSrch)
 	return nullptr;
 }
 
-CKeyXmlBranch* CKeyXmlBranch::FindNextElement(HTML_ELEMENT element)
+CKeyXmlBranch* CKeyXmlBranch::FindNextElement(HTML_ELEMENT Element)
 {
 	for (++nextChild; nextChild < cChildren; ++nextChild) {
-		if (aChildren[nextChild]->element == element)
+		if (aChildren[nextChild]->element == Element)
 			return aChildren[nextChild];
 		else if (aChildren[nextChild]->cChildren) {
-			CKeyXmlBranch* pBranch = aChildren[nextChild]->FindFirstElement(element);
+			CKeyXmlBranch* pBranch = aChildren[nextChild]->FindFirstElement(Element);
 			if (pBranch)
 				return pBranch;
 		}
