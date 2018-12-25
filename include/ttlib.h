@@ -32,6 +32,7 @@ void	BackslashToForwardslash(char* psz);		// convert all back slashes in the str
 void	ForwardslashToBackslash(char* psz);		// convert all forward slashes in the string to back slahes
 void	AddTrailingSlash(char* psz);			// add a trailing forward slash if the string doesn't already end in a forward or back slash
 char*	FindFilePortion(const char* pszFile);	// find the filename portion of a string
+char*	FindExtPortion(const char* pszFile);	// find the extension portion of a string (if found, will point to the '.' portion of the extension)
 void	ConvertToRelative(const char* pszRoot, const char* pszFile, CStr& cszResult);	// convert pszFile to a path relative to pszRoot
 
 // IsValidFileChar() is used  to determine if character at current position is part of a filename versus a dir

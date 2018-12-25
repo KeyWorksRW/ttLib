@@ -310,6 +310,15 @@ char* FindFilePortion(const char* pszFile)
 	return (psz ? psz + 1 : (char*) pszFile);
 }
 
+char* FindExtPortion(const char* pszFile)
+{
+	char* psz = kstrchrR(pszFile, '.');
+	if (psz && !(psz == pszFile || *(psz - 1) == '.' || psz[1] == CH_BACKSLASH || psz[1] == CH_FORWARDSLASH))	// ignore .file, ./file, and ../file
+		return psz;
+	else
+		return nullptr;
+}
+
 bool IsValidFileChar(const char* psz, size_t pos)
 {
 	if (psz) {
