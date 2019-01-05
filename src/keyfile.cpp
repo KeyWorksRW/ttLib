@@ -67,7 +67,7 @@ CKeyFile::~CKeyFile()
 		InternetCloseHandle(m_hInternetSession);
 #endif
 	if (m_pbuf)
-		kfree(m_pbuf);
+		tt::free(m_pbuf);
 }
 
 // Memory allocation is always rounded up to the nearest 4K boundary. I.e., if you request 1 byte or 4095 bytes, what will actually
@@ -80,7 +80,7 @@ void CKeyFile::AllocateBuffer(size_t cbInitial)
 	cbInitial <<= 12;
 	cbInitial += 0x1000;	// round up to nearest 4K byte boundary (1-4095 becomes 4096, 4096-8191 become 8192)
 	m_cbAllocated = cbInitial;
-	m_pbuf = (char*) kmalloc(m_cbAllocated);	// won't return on failure
+	m_pbuf = (char*) tt::malloc(m_cbAllocated);	// won't return on failure
 	m_pszLine = m_pCurrent = m_pbuf;
 	m_pEnd = m_pbuf + (m_cbAllocated - CB_END_PAD);
 }
@@ -92,7 +92,7 @@ void CKeyFile::AllocateMoreMemory(size_t cbMore)
 	cbMore <<= 12;
 	cbMore += 0x1000;	// round up to nearest 4k byte boundary
 	m_cbAllocated += (cbMore);
-	m_pbuf = (char*) krealloc(m_pbuf, m_cbAllocated);
+	m_pbuf = (char*) tt::realloc(m_pbuf, m_cbAllocated);
 	m_pszLine = m_pbuf;
 	m_pCurrent = m_pbuf + cOffset;
 	m_pEnd = m_pbuf + (m_cbAllocated - CB_END_PAD);
@@ -440,7 +440,7 @@ bool CKeyFile::readline(char** ppszLine)
 void CKeyFile::Delete()
 {
 	if (m_pbuf)
-		kfree(m_pbuf);
+		tt::free(m_pbuf);
 	m_pbuf = nullptr;
 	m_pCurrent = nullptr;
 	m_pszLine = nullptr;
@@ -570,7 +570,7 @@ bool CKeyFile::UnicodeToAnsi()
 	if (err == -1)
 		return false;
 
-	char* psz = (char*) kmalloc(cbLen + 1);
+	char* psz = (char*) tt::malloc(cbLen + 1);
 	err = wcstombs_s(&cbLen, psz, cbLen, (wchar_t*) (m_pbuf + 2), cb);
 	psz[cb] = '\0';
 

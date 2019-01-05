@@ -154,9 +154,9 @@ public:
 	size_t GetObjectTagCount() { return m_aObjectTags.GetCount(); }
 	CKeyXmlBranch* GetObjectTag(size_t pos) {  return m_aObjectTags[pos]; }
 
-	char*	AllocateBuffer(size_t cb) { return (char*) malloc(cb); }
+	char*	AllocateBuffer(size_t cb) { return (char*) ttMalloc(cb); }
 	void	AllocateStringBuffers(CKeyXmlBranch* pBranch = nullptr);	// convert all strings to separately allocated buffers
-	void	FreeBuffer(char* pszBuffer) { free(pszBuffer); }
+	void	FreeBuffer(char* pszBuffer) { ttFree(pszBuffer); }
 	bool	isAllocatedStrings() { return m_bAllocatedStrings; }
 
 protected:
@@ -169,7 +169,7 @@ protected:
 	HTML_ELEMENT   ParseElementTag(PCSTR pszName, PCSTR pszCurLoc, bool bEndTag = false);
 
 	XMLATTR* NewAttribute(void) {
-		XMLATTR* p = (XMLATTR*) malloc(sizeof(XMLATTR));	// Allocate one attribute.
+		XMLATTR* p = (XMLATTR*) ttMalloc(sizeof(XMLATTR));	// Allocate one attribute.
 		p->pszName = p->pszValue = 0; // No name or value.
 		return p;
 	}

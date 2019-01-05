@@ -25,7 +25,7 @@
 // Note that the limit here of 64k is smaller then the kstr functions that use 16m (_KSTRMAX)
 
 #define MAX_STRING (64 * 1024)	// Use this to limit the length of a single string as a security precaution
-#define	DEST_SIZE (ksize(m_psz) - sizeof(char))
+#define	DEST_SIZE (tt::size(m_psz) - sizeof(char))
 
 void CStr::AppendFileName(const char* pszFile)
 {
@@ -36,7 +36,7 @@ void CStr::AppendFileName(const char* pszFile)
 		return;
 
 	if (!m_psz)	{	// no folder or drive to append to, so leave as is without adding slash
-		m_psz = kstrdup(pszFile);		// REVIEW: [ralphw - 06-03-2018] We could prefix this with ".\"
+		m_psz = tt::strdup(pszFile);		// REVIEW: [ralphw - 06-03-2018] We could prefix this with ".\"
 		return;
 	}
 
@@ -53,7 +53,7 @@ void CStr::ChangeExtension(const char* pszExtension)
 		return;
 
 	if (!m_psz)
-		m_psz = kstrdup("");
+		m_psz = tt::strdup("");
 
 	char* psz = kstrchrR(m_psz, '.');
 	if (psz && !(psz == m_psz || *(psz - 1) == '.' || psz[1] == CH_BACKSLASH || psz[1] == CH_FORWARDSLASH))	// ignore .file, ./file, and ../file
@@ -87,7 +87,7 @@ void CStr::RemoveExtension()
 void CStr::AddTrailingSlash()
 {
 	if (!m_psz) {
-		m_psz = kstrdup("/");
+		m_psz = tt::strdup("/");
 		return;
 	}
 	const char* pszLastSlash = FindLastSlash();
@@ -115,10 +115,10 @@ const char* CStr::FindLastSlash()
 void CStr::GetCWD()
 {
 	if (m_psz)
-		kfree(m_psz);
+		tt::free(m_psz);
 	char szCWD[1024];
 	_getcwd(szCWD, sizeof(szCWD));
-	m_psz = kstrdup(szCWD);
+	m_psz = tt::strdup(szCWD);
 }
 
 #ifdef _WINDOWS_
@@ -128,25 +128,25 @@ void CStr::GetFullPathName()
 	ASSERT(m_psz);
 	char szPath[MAX_PATH];
 	::GetFullPathNameA(m_psz, sizeof(szPath), szPath, NULL);
-	kfree(m_psz);
-	m_psz = kstrdup(szPath);
+	tt::free(m_psz);
+	m_psz = tt::strdup(szPath);
 }
 
 const char*	 CStr::GetListBoxText(HWND hwnd, size_t sel)
 {
 	if (m_psz)
-		kfree(m_psz);
+		tt::free(m_psz);
 	if (sel == (size_t) LB_ERR)
-		m_psz = kstrdup("");
+		m_psz = tt::strdup("");
 	else {
 		size_t cb = ::SendMessage(hwnd, LB_GETTEXTLEN, sel, 0);
 		ASSERT(cb != (size_t) LB_ERR);
 		if (cb != (size_t) LB_ERR) {
-			m_psz = (char*) kmalloc(cb + 1);
+			m_psz = (char*) tt::malloc(cb + 1);
 			::SendMessageA(hwnd, LB_GETTEXT, sel, (LPARAM) m_psz);
 		}
 		else {
-			m_psz = kstrdup("");
+			m_psz = tt::strdup("");
 		}
 	}
 	return m_psz;
@@ -168,13 +168,13 @@ const char* CStr::GetResString(size_t idString)
 		cszMsg.printf("Invalid string id: %zu", idString);
 		FAIL(cszMsg);
 		if (m_psz)
-			kfree(m_psz);
-		m_psz = kstrdup("");
+			tt::free(m_psz);
+		m_psz = tt::strdup("");
 	}
 	else {
 		if (m_psz)
-			kfree(m_psz);
-		m_psz = kstrdup(szStringBuf);
+			tt::free(m_psz);
+		m_psz = tt::strdup(szStringBuf);
 	}
 	return m_psz;
 }
@@ -182,13 +182,13 @@ const char* CStr::GetResString(size_t idString)
 bool CStr::GetWindowText(HWND hwnd)
 {
 	if (m_psz) {
-		 kfree(m_psz);
+		 tt::free(m_psz);
 		 m_psz = nullptr;
 	}
 
 	ASSERT_MSG(IsValidWindow(hwnd), "Invalid window handle");
 	if (!IsValidWindow(hwnd)) {
-		m_psz = kstrdup("");
+		m_psz = tt::strdup("");
 		return false;
 	}
 
@@ -196,15 +196,15 @@ bool CStr::GetWindowText(HWND hwnd)
 	ASSERT_MSG(cb <= MAX_STRING, "String is over 64k in size!");
 
 	if (cb == 0 || cb > MAX_STRING) {
-		m_psz = kstrdup("");
+		m_psz = tt::strdup("");
 		return false;
 	}
 
-	char* psz = (char*) kmalloc(cb + sizeof(char));
+	char* psz = (char*) tt::malloc(cb + sizeof(char));
 	cb = ::GetWindowTextA(hwnd, psz, cb + sizeof(char));
 	if (cb == 0) {
-		m_psz = kstrdup("");
-		kfree(psz);
+		m_psz = tt::strdup("");
+		tt::free(psz);
 		return false;
 	}
 	else
@@ -228,14 +228,14 @@ char* CStr::GetQuotedString(const char* pszQuote)
 	ASSERT_MSG(cb <= MAX_STRING, "String is over 64k in size!");
 
 	if (m_psz)
-		kfree(m_psz);
+		tt::free(m_psz);
 
 	if (cb == 0 || cb > MAX_STRING) {
 		m_psz = nullptr;	// it was already freed above
 		return nullptr;
 	}
 	else {
-		m_psz = (char*) kmalloc(cb);		// this won't return if it fails, so you will never get a nullptr on return
+		m_psz = (char*) tt::malloc(cb);		// this won't return if it fails, so you will never get a nullptr on return
 		*m_psz = 0;
 	}
 
@@ -276,7 +276,7 @@ char* CStr::GetQuotedString(const char* pszQuote)
 	if (cb > 32) {	// don't bother if total allocation is 32 bytes or less
 		size_t cbNew = kstrbyte(m_psz);
 		if (cbNew < cb - 32)
-			m_psz = (char*) krealloc(m_psz, cbNew);
+			m_psz = (char*) tt::realloc(m_psz, cbNew);
 	}
 	return m_psz;
 }
@@ -313,7 +313,7 @@ void CStr::MakeUpper()
 bool CStr::CopyWide(const wchar_t* pwsz)	// convert UNICODE to UTF8 and store it
 {
 	if (m_psz) {
-		kfree(m_psz);
+		tt::free(m_psz);
 		m_psz = nullptr;
 	}
 
@@ -321,7 +321,7 @@ bool CStr::CopyWide(const wchar_t* pwsz)	// convert UNICODE to UTF8 and store it
 	ASSERT_MSG(*pwsz, "empty string!");
 
 	if (!pwsz || !*pwsz) {
-		m_psz = kstrdup("");
+		m_psz = tt::strdup("");
 		return false;
 	}
 
@@ -332,15 +332,15 @@ bool CStr::CopyWide(const wchar_t* pwsz)	// convert UNICODE to UTF8 and store it
 
 	int cbNew = WideCharToMultiByte(CP_UTF8, 0, pwsz, (int) cb, nullptr, 0, NULL, NULL);
 	if (cbNew) {
-		m_psz = (char*) kmalloc(cbNew + sizeof(char));
+		m_psz = (char*) tt::malloc(cbNew + sizeof(char));
 		cb = WideCharToMultiByte(CP_UTF8, 0, pwsz, (int) cb, m_psz, cbNew, NULL, NULL);
 		if (cb == 0)
-			kfree(m_psz);
+			tt::free(m_psz);
 		else
 			m_psz[(cb * sizeof(char)) + sizeof(char)] = 0;	// sizeof(char) is 2 if compiled with UNICODE
 	}
 	if (cbNew == 0 || cb == 0) {
-		m_psz = kstrdup("");
+		m_psz = tt::strdup("");
 		return false;
 	}
 
@@ -353,14 +353,14 @@ char* CStr::Enlarge(size_t cbTotalSize)
 	if (cbTotalSize > MAX_STRING)
 		cbTotalSize = MAX_STRING;
 
-	size_t curSize = m_psz ? ksize(m_psz) : 0;
+	size_t curSize = m_psz ? tt::size(m_psz) : 0;
 	if (cbTotalSize <= curSize)
 		return m_psz;
 
 	if (m_psz)
-		m_psz = (char*) krealloc(m_psz, cbTotalSize);
+		m_psz = (char*) tt::realloc(m_psz, cbTotalSize);
 	else
-		m_psz = (char*) kmalloc(cbTotalSize);
+		m_psz = (char*) tt::malloc(cbTotalSize);
 	return m_psz;
 }
 
@@ -384,7 +384,7 @@ bool CStr::ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCase
 		char* pszEnd = m_psz + kstrbyte(m_psz);
 		ptrdiff_t cb = pszEnd - pszPos;
 		memmove(pszPos, pszPos + cbOld, cb);
-		m_psz = (char*) krealloc(m_psz, kstrbyte(m_psz));
+		m_psz = (char*) tt::realloc(m_psz, kstrbyte(m_psz));
 	}
 	else if (cbNew == cbOld) {
 		while (*pszNewText) {	// copy and return
@@ -397,7 +397,7 @@ bool CStr::ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCase
 		}
 		CStr cszTrail(pszPos);
 		*pszPos = 0;
-		m_psz = (char*) krealloc(m_psz, kstrbyte(m_psz));
+		m_psz = (char*) tt::realloc(m_psz, kstrbyte(m_psz));
 		*this += pszNewText;
 		*this += (char*) cszTrail;
 	}
@@ -409,7 +409,7 @@ bool CStr::ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCase
 		char* pszEnd = m_psz + kstrbyte(m_psz);
 		ptrdiff_t cb = pszEnd - pszPos;
 		memmove(pszPos, pszPos + cbOld, cb);
-		m_psz = (char*) krealloc(m_psz, kstrbyte(m_psz));
+		m_psz = (char*) tt::realloc(m_psz, kstrbyte(m_psz));
 	}
 	return true;
 }
@@ -422,9 +422,9 @@ void CStr::operator=(const char* psz)
 		return;
 
 	if (m_psz)
-		kfree(m_psz);
+		tt::free(m_psz);
 
-	m_psz = kstrdup(psz ? psz : "");
+	m_psz = tt::strdup(psz ? psz : "");
 }
 
 void CStr::operator+=(const char* psz)
@@ -433,16 +433,16 @@ void CStr::operator+=(const char* psz)
 	if (m_psz && m_psz == psz)
 		return;
 	if (!m_psz)
-		m_psz = kstrdup(psz && *psz ? psz : "");
+		m_psz = tt::strdup(psz && *psz ? psz : "");
 	else if (!psz || !*psz)
-		m_psz = kstrdup("");
+		m_psz = tt::strdup("");
 	else {
 		size_t cbNew = kstrbyte(psz);
 		size_t cbOld = kstrbyte(m_psz);
 		ASSERT_MSG(cbNew + cbOld <= MAX_STRING, "String is over 64k in size!");
 		if (cbNew + cbOld > MAX_STRING)
 			return;		// ignore it if it's too large
-		m_psz = (char*) krealloc(m_psz, cbNew + cbOld);
+		m_psz = (char*) tt::realloc(m_psz, cbNew + cbOld);
 		kstrcat(m_psz, psz);
 	}
 }
@@ -453,9 +453,9 @@ void CStr::operator+=(char ch)
 	szTmp[0] = ch;
 	szTmp[1] = 0;
 	if (!m_psz)
-		m_psz = kstrdup(szTmp);
+		m_psz = tt::strdup(szTmp);
 	else {
-		m_psz = (char*) krealloc(m_psz, kstrbyte(m_psz) + sizeof(char));	// include room for ch
+		m_psz = (char*) tt::realloc(m_psz, kstrbyte(m_psz) + sizeof(char));	// include room for ch
 		kstrcat(m_psz, DEST_SIZE, szTmp);
 	}
 }
@@ -495,7 +495,7 @@ const char* __cdecl CStr::printfAppend(const char* pszFormat, ...)
 const char* __cdecl CStr::printf(const char* pszFormat, ...)
 {
 	if (m_psz) {
-		kfree(m_psz);
+		tt::free(m_psz);
 		m_psz = nullptr;
 	}
 
@@ -509,7 +509,7 @@ const char* __cdecl CStr::printf(const char* pszFormat, ...)
 const char* __cdecl CStr::printf(size_t idFmtString, ...)
 {
 	if (m_psz) {
-		kfree(m_psz);
+		tt::free(m_psz);
 		m_psz = nullptr;
 	}
 
@@ -522,8 +522,8 @@ const char* __cdecl CStr::printf(size_t idFmtString, ...)
 		FAIL(cszMsg);
 #endif
 		if (m_psz)
-			kfree(m_psz);
-		m_psz = kstrdup("");
+			tt::free(m_psz);
+		m_psz = tt::strdup("");
 		return m_psz;
 	}
 
@@ -554,12 +554,12 @@ void CStr::vprintf(const char* pszFormat, va_list argList)
 		cAvail >>=8;	// remove lower bits
 		cAvail <<=8;
 		cAvail += 0x100;	// allocate 256 byte blocks at a time
-		m_psz = (char*) krealloc(m_psz, cAvail);
+		m_psz = (char*) tt::realloc(m_psz, cAvail);
 		cAvail--;	// don't include null-terminator
 	}
 	else {
 		cAvail = 255;
-		m_psz = (char*) kmalloc(cAvail + 1);
+		m_psz = (char*) tt::malloc(cAvail + 1);
 		*m_psz = 0;
 	}
 
@@ -584,7 +584,7 @@ void CStr::vprintf(const char* pszFormat, va_list argList)
 				cb >>= 7;
 				cb <<= 7;
 				cb +=  0x80;	// round up allocation size to 128
-				m_psz = (char*) krealloc(m_psz, cb);
+				m_psz = (char*) tt::realloc(m_psz, cb);
 				cAvail = cb - 1;
 				ASSERT(cAvail < 4096);
 			}
@@ -642,7 +642,7 @@ void CStr::vprintf(const char* pszFormat, va_list argList)
 				cb >>= 7;
 				cb <<= 7;
 				cb += 0x80;	// round up to 128
-				m_psz = (char*) krealloc(m_psz, cb);
+				m_psz = (char*) tt::realloc(m_psz, cb);
 				cAvail = cb - 1;
 				ASSERT(cAvail < 4096);
 			}
@@ -664,7 +664,7 @@ void CStr::vprintf(const char* pszFormat, va_list argList)
 				cb >>= 7;
 				cb <<= 7;
 				cb += 0x80;	// round up to 128
-				m_psz = (char*) krealloc(m_psz, cb);
+				m_psz = (char*) tt::realloc(m_psz, cb);
 				cAvail = cb - 1;
 				ASSERT(cAvail < 4096);
 			}
@@ -690,7 +690,7 @@ void CStr::vprintf(const char* pszFormat, va_list argList)
 				cb >>= 7;
 				cb <<= 7;
 				cb += 0x80;	// round up to 128
-				m_psz = (char*) krealloc(m_psz, cb);
+				m_psz = (char*) tt::realloc(m_psz, cb);
 				cAvail = cb - 1;
 				ASSERT(cAvail < 4096);
 			}
@@ -706,7 +706,7 @@ void CStr::vprintf(const char* pszFormat, va_list argList)
 						cb >>= 7;
 						cb <<= 7;
 						cb += 0x80;	// round up to 128
-						m_psz = (char*) krealloc(m_psz, cb);
+						m_psz = (char*) tt::realloc(m_psz, cb);
 						cAvail = cb - 1;
 						ASSERT(cAvail < 4096);
 					}
@@ -724,7 +724,7 @@ void CStr::vprintf(const char* pszFormat, va_list argList)
 				cb >>= 7;
 				cb <<= 7;
 				cb += 0x80;	// round up to 128
-				m_psz = (char*) krealloc(m_psz, cb);
+				m_psz = (char*) tt::realloc(m_psz, cb);
 				cAvail = cb - 1;
 				ASSERT(cAvail < 4096);
 			}
@@ -740,7 +740,7 @@ void CStr::vprintf(const char* pszFormat, va_list argList)
 						cb >>= 7;
 						cb <<= 7;
 						cb += 0x80;	// round up to 128
-						m_psz = (char*) krealloc(m_psz, cb);
+						m_psz = (char*) tt::realloc(m_psz, cb);
 						cAvail = cb - 1;
 						ASSERT(cAvail < 4096);
 					}
@@ -758,7 +758,7 @@ void CStr::vprintf(const char* pszFormat, va_list argList)
 				cb >>= 7;
 				cb <<= 7;
 				cb += 0x80;	// round up to 128
-				m_psz = (char*) krealloc(m_psz, cb);
+				m_psz = (char*) tt::realloc(m_psz, cb);
 				cAvail = cb - 1;
 				ASSERT(cAvail < 4096);
 			}
@@ -774,7 +774,7 @@ void CStr::vprintf(const char* pszFormat, va_list argList)
 						cb >>= 7;
 						cb <<= 7;
 						cb += 0x80;	// round up to 128
-						m_psz = (char*) krealloc(m_psz, cb);
+						m_psz = (char*) tt::realloc(m_psz, cb);
 						cAvail = cb - 1;
 						ASSERT(cAvail < 4096);
 					}
@@ -793,7 +793,7 @@ void CStr::vprintf(const char* pszFormat, va_list argList)
 				cb >>= 7;
 				cb <<= 7;
 				cb += 0x80;	// round up to 128
-				m_psz = (char*) krealloc(m_psz, cb);
+				m_psz = (char*) tt::realloc(m_psz, cb);
 				cAvail = cb - 1;
 				ASSERT(cAvail < 4096);
 			}
@@ -809,7 +809,7 @@ void CStr::vprintf(const char* pszFormat, va_list argList)
 						cb >>= 7;
 						cb <<= 7;
 						cb += 0x80;	// round up to 128
-						m_psz = (char*) krealloc(m_psz, cb);
+						m_psz = (char*) tt::realloc(m_psz, cb);
 						cAvail = cb - 1;
 						ASSERT(cAvail < 4096);
 					}
@@ -838,7 +838,7 @@ void CStr::vprintf(const char* pszFormat, va_list argList)
 				cb >>= 7;
 				cb <<= 7;
 				cb += 0x80;	// round up to 128
-				m_psz = (char*) krealloc(m_psz, cb);
+				m_psz = (char*) tt::realloc(m_psz, cb);
 				cAvail = cb - 1;
 				ASSERT(cAvail < 4096);
 			}
@@ -857,7 +857,7 @@ WideChar:
 			if (cb <= 0 || cb > MAX_STRING) // empty or invalid string
 				return;
 
-			char* psz = (char*) kmalloc(cb + 1);
+			char* psz = (char*) tt::malloc(cb + 1);
 			// BUGBUG: [ralphw - 07-14-2018] Following line is _WINDOWS_ only
 			cb = WideCharToMultiByte(CP_ACP, 0, pwsz, (_int32) (cb / sizeof(wchar_t)), psz, (_int32) cb, nullptr, nullptr);
 			psz[cb] = '\0';
@@ -867,13 +867,13 @@ WideChar:
 				cb >>= 7;
 				cb <<= 7;
 				cb += 0x80;	// round up to 128
-				m_psz = (char*) krealloc(m_psz, cb);
+				m_psz = (char*) tt::realloc(m_psz, cb);
 				cAvail = cb - 1;
 				ASSERT(cAvail < 4096);
 			}
 			kstrcat(m_psz, DEST_SIZE, psz);
 			pszEnd++;
-			kfree(psz);
+			tt::free(psz);
 			continue;
 		}
 		else if (*pszEnd == '%') {
@@ -882,7 +882,7 @@ WideChar:
 				cb >>= 7;
 				cb <<= 7;
 				cb += 0x80;	// round up to 128
-				m_psz = (char*) krealloc(m_psz, cb);
+				m_psz = (char*) tt::realloc(m_psz, cb);
 				cAvail = cb - 1;
 				ASSERT(cAvail < 4096);
 			}
@@ -902,7 +902,7 @@ WideChar:
 				cb >>= 7;
 				cb <<= 7;
 				cb += 0x80;	// round up to 128
-				m_psz = (char*) krealloc(m_psz, cb);
+				m_psz = (char*) tt::realloc(m_psz, cb);
 				cAvail = cb - 1;
 				ASSERT(cAvail < 4096);
 			}
@@ -913,7 +913,7 @@ WideChar:
 				cb >>= 7;
 				cb <<= 7;
 				cb += 0x80;	// round up to 128
-				m_psz = (char*) krealloc(m_psz, cb);
+				m_psz = (char*) tt::realloc(m_psz, cb);
 				cAvail = cb - 1;
 				ASSERT(cAvail < 4096);
 			}
@@ -925,7 +925,7 @@ WideChar:
 
 	// Now readjust the allocation to the actual size
 
-	m_psz = (char*) krealloc(m_psz, kstrbyte(m_psz));
+	m_psz = (char*) tt::realloc(m_psz, kstrbyte(m_psz));
 }
 
 const char* CStr::ProcessKFmt(const char* pszEnd, va_list* pargList)
@@ -999,11 +999,11 @@ const char* CStr::ProcessKFmt(const char* pszEnd, va_list* pargList)
 			try {
 				const char* psz = va_arg(*pargList, const char*);
 				size_t cb = kstrbyte(m_psz) + kstrbyte(psz) + (2 * sizeof(char));	// add room for both quotes
-				if (cb > ksize(m_psz)) {
+				if (cb > tt::size(m_psz)) {
 					cb >>= 7;
 					cb <<= 7;
 					cb += 0x80;	// round up to 128
-					m_psz = (char*) krealloc(m_psz, cb);
+					m_psz = (char*) tt::realloc(m_psz, cb);
 				}
 				kstrcat(m_psz, "\042");
 				kstrcat(m_psz, psz);
@@ -1017,11 +1017,11 @@ const char* CStr::ProcessKFmt(const char* pszEnd, va_list* pargList)
 	if (szBuf[0]) {
 		size_t cbCur = kstrbyte(m_psz);
 		size_t cb = cbCur + kstrbyte(szBuf) + sizeof(char);
-		if (cb > ksize(m_psz)) {
+		if (cb > tt::size(m_psz)) {
 			cb >>= 7;
 			cb <<= 7;
 			cb += 0x80;	// round up to 128
-			m_psz = (char*) krealloc(m_psz, cb);
+			m_psz = (char*) tt::realloc(m_psz, cb);
 		}
 		kstrcat(m_psz, DEST_SIZE - cbCur, szBuf);
 	}
@@ -1166,7 +1166,7 @@ char* Hextoa(size_t val, char* pszDst, bool bUpperCase)
 	static char* szBuf = NULL;
 	if (!pszDst) {
 		if (!szBuf) {
-			szBuf = (char*) kmalloc(sizeof(size_t) * sizeof(char) + sizeof(char) * 4);	// extra room for null termination and general paranoia
+			szBuf = (char*) tt::malloc(sizeof(size_t) * sizeof(char) + sizeof(char) * 4);	// extra room for null termination and general paranoia
 		}
 		pszDst = szBuf;
 	}

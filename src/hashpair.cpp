@@ -20,7 +20,7 @@ CHashPair::CHashPair(size_t EstimatedMembers)
 		m_pahash = nullptr;
 	}
 	else {
-		m_pahash = (HASH_PAIR*) kmalloc(EstimatedMembers * sizeof(HASH_PAIR));
+		m_pahash = (HASH_PAIR*) tt::malloc(EstimatedMembers * sizeof(HASH_PAIR));
 		m_cMalloced = EstimatedMembers;
 	}
 	m_cMembers = 0;
@@ -34,7 +34,7 @@ CHashPair::~CHashPair()
 void CHashPair::Delete()
 {
 	if (m_pahash) {
-		kfree(m_pahash);
+		tt::free(m_pahash);
 		m_pahash = nullptr;
 		m_cMembers = m_cMalloced = 0;
 	}
@@ -46,7 +46,7 @@ void CHashPair::Add(size_t hash, size_t val)
 
 	if (m_cMembers + 1 > m_cMalloced) {
 		m_cMalloced += GROWTH_MALLOC;
-		m_pahash = (HASH_PAIR*) krealloc(m_pahash, m_cMalloced * sizeof(HASH_PAIR));
+		m_pahash = (HASH_PAIR*) tt::realloc(m_pahash, m_cMalloced * sizeof(HASH_PAIR));
 	}
 
 	if (!m_cMembers) {

@@ -16,6 +16,8 @@
 #include <stdint.h>
 #include <inttypes.h>
 
+#define TTHEAP_DEPRECATE	// make certain we aren't using deprecated CTTHeap functions
+
 #include "../include/ttlib.h"
 
 // Don't include any other TTLib headers -- need to verify that each ttLib source module #includes any header files it needs

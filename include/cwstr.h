@@ -43,14 +43,14 @@ class CWStr
 {
 public:
 	CWStr(void)	{ m_psz = nullptr; }
-	CWStr(size_t cb) { m_psz = (wchar_t*) kmalloc(cb); }
-	CWStr(const wchar_t* psz) { m_psz = kstrdup(psz ? psz : L""); }
+	CWStr(size_t cb) { m_psz = (wchar_t*) tt::malloc(cb); }
+	CWStr(const wchar_t* psz) { m_psz = tt::strdup(psz ? psz : L""); }
 	CWStr(const char* psz) { m_psz = nullptr; CopyNarrow(psz); }
 #ifdef _WINDOWS_
 	CWStr(HWND hwnd) { m_psz = nullptr; GetWindowText(hwnd); }
 #endif // _WINDOWS_
 
-	~CWStr() { if (m_psz)  kfree(m_psz); }
+	~CWStr() { if (m_psz)  tt::free(m_psz); }
 
 	// Filename handling methods
 
@@ -93,7 +93,7 @@ public:
 	bool	 IsEmpty() const { return (m_psz ? (*m_psz ? false : true) : true); }
 	bool	 IsNonEmpty() const { return (!IsEmpty()); }
 	bool	 IsNull() const { return (m_psz == nullptr); }
-	void	 Delete() { if (m_psz) { kfree(m_psz); m_psz = nullptr; } }
+	void	 Delete() { if (m_psz) { tt::free(m_psz); m_psz = nullptr; } }
 	wchar_t* Enlarge(size_t cbTotalSize);	// increase buffer size if needed
 
 	wchar_t* getptr() { return m_psz; }	// for when casting to char* is problematic

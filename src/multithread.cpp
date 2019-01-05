@@ -53,7 +53,7 @@ CMultiThread::~CMultiThread()
 		}
 	}
 	if (m_ahsemDone)
-		kfree(m_ahsemDone);
+		tt::free(m_ahsemDone);
 #endif	// _WX_WX_H_
 }
 
@@ -80,10 +80,10 @@ void CMultiThread::InitializeThreads(size_t cThreads)	// 0 means create as many 
 	m_cThreads = (cThreads == 0) ? (size_t) cpus : cThreads;
 
 #ifdef	_WX_WX_H_
-	m_aThrds = (CMultiChildThread**) kmalloc(sizeof(CMultiChildThread**) * m_cThreads);
+	m_aThrds = (CMultiChildThread**) tt::malloc(sizeof(CMultiChildThread**) * m_cThreads);
 #else	// not _WX_WX_H_
-	m_aThrdInfo = (MULTI_THRD_INFO*) kmalloc(sizeof(MULTI_THRD_INFO) * m_cThreads);
-	m_ahsemDone = (HANDLE*) kmalloc(sizeof(HANDLE) * m_cThreads);
+	m_aThrdInfo = (MULTI_THRD_INFO*) tt::malloc(sizeof(MULTI_THRD_INFO) * m_cThreads);
+	m_ahsemDone = (HANDLE*) tt::malloc(sizeof(HANDLE) * m_cThreads);
 #endif	// _WX_WX_H_
 
 	for (size_t iThread = 0; iThread < cThreads; iThread++) {

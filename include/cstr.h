@@ -45,14 +45,14 @@ class CStr
 public:
 	CStr(void)	{ m_psz = nullptr; }
 	// CStr(size_t cb) { m_psz = (char*) kmalloc(cb); }
-	CStr(const char* psz) { m_psz = kstrdup(psz); }
+	CStr(const char* psz) { m_psz = tt::strdup(psz); }
 	CStr(const wchar_t* psz) { CopyWide(psz); }
-	CStr(CStr& csz) { m_psz = kstrdup(csz); }
+	CStr(CStr& csz) { m_psz = tt::strdup(csz); }
 #ifdef _WINDOWS_
 	CStr(HWND hwnd) { m_psz = nullptr; GetWindowText(hwnd); }
 #endif // _WINDOWS_
 
-	~CStr() { if (m_psz)  kfree(m_psz); }
+	~CStr() { if (m_psz) tt::free(m_psz); }
 
 	// Filename handling methods
 
@@ -112,7 +112,7 @@ public:
 	bool	IsEmpty() const { return (m_psz ? (*m_psz ? false : true) : true); }
 	bool	IsNonEmpty() const { return (!IsEmpty()); }
 	bool	IsNull() const { return (m_psz == nullptr); }
-	void	Delete() { if (m_psz) { kfree(m_psz); m_psz = nullptr; } }
+	void	Delete() { if (m_psz) { tt::free(m_psz); m_psz = nullptr; } }
 	char*	Enlarge(size_t cbTotalSize);	// increase buffer size if needed
 
 	char*	getptr() { return m_psz; }		// for when casting to char* is problematic

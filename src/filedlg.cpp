@@ -27,7 +27,7 @@ CFileDlg::CFileDlg(HWND hwndParent)
 	if (_osv.dwMajorVersion >= 5)
 		cbStruct += sizeof(void*) + sizeof(DWORD) + sizeof(DWORD);
 #endif
-	m_pofn = (OPENFILENAMEA*) kcalloc(cbStruct);
+	m_pofn = (OPENFILENAMEA*) tt::calloc(cbStruct);
 
 	m_cszFileName.Enlarge(MAX_PATH);
 
@@ -46,7 +46,7 @@ CFileDlg::CFileDlg(HWND hwndParent)
 
 CFileDlg::~CFileDlg()
 {
-	kfree(m_pofn);
+	tt::free(m_pofn);
 }
 
 bool CFileDlg::GetOpenFileName()

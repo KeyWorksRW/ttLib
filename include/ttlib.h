@@ -212,17 +212,17 @@ class CMem	// Header-only class
 {
 public:
 	CMem(void) { pb = nullptr; }
-	CMem(size_t size) { pb = (uint8_t*) kmalloc(size); }
+	CMem(size_t size) { pb = (uint8_t*) tt::malloc(size); }
 	~CMem(void) {
 		if (pb)
-			kfree(pb);
+			tt::free(pb);
 		pb = nullptr;
 	}
 	void resize(size_t cb) {
 		if (!pb)
-			pb = (uint8_t*) kmalloc(cb);
+			pb = (uint8_t*) tt::malloc(cb);
 		else {
-			pb = (uint8_t*) krealloc(pb, cb);
+			pb = (uint8_t*) tt::realloc(pb, cb);
 		}
 	}
 
@@ -238,10 +238,10 @@ template <typename T> class CTMem	// Header-only class
 {
 public:
 	CTMem() { p = NULL; }
-	CTMem(size_t size) { p = (T) kmalloc(size); }
+	CTMem(size_t size) { p = (T) tt::malloc(size); }
 	~CTMem() {
 		if (p)
-			kfree(p);
+			tt::free(p);
 	}
 
 	void resize(size_t cb) {

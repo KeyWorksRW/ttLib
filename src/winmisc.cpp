@@ -23,7 +23,7 @@ size_t		_s_iLanguageOffset;		// language offset used to load other languages fro
 
 void InitCaller(HINSTANCE hinstResources, HWND hwndParent, const char* pszMsgTitle)
 {
-	_pszMsgTitle = kstrdup(pszMsgTitle ? pszMsgTitle : "");
+	_pszMsgTitle = tt::strdup(pszMsgTitle ? pszMsgTitle : "");
 
 	_hinstResources = hinstResources;
 	_hwndParent = hwndParent;

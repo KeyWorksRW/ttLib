@@ -22,13 +22,13 @@ public:
 	}
 	~CTTArray() {
 		if (m_aData)
-			kfree(m_aData);
+			tt::free(m_aData);
 	}
 
 	void Add(const T t) {
 		if (m_cItems >= m_cAllocated) {
 			m_cAllocated += 32;
-			m_aData = (T*) (m_aData ? krealloc(m_aData, m_cAllocated * sizeof(T)) : kmalloc(m_cAllocated * sizeof(T)));
+			m_aData = (T*) (m_aData ? tt::realloc(m_aData, m_cAllocated * sizeof(T)) : tt::malloc(m_cAllocated * sizeof(T)));
 		}
 		m_aData[m_cItems++] = t;
 	}
