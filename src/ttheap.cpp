@@ -18,7 +18,7 @@ CTTHeap	_MainHeap;
 CTTHeap::CTTHeap()
 {
 	m_hHeap = GetProcessHeap();
-	m_bCreated = false;
+	m_bCreated = false;	// prevent deleting heap in destructor
 #ifdef _DEBUG
 	m_SerialHeap = true;	// Process heap is serialized by default
 #endif
@@ -37,6 +37,13 @@ CTTHeap::CTTHeap(bool bSerialize)
 #ifdef _DEBUG
 	m_SerialHeap = bSerialize;
 #endif
+}
+
+CTTHeap::CTTHeap(HANDLE hHeap)
+{
+	ASSERT(hHeap);
+	m_hHeap = hHeap;
+	m_bCreated = false;	// prevent deleting heap in destructor
 }
 
 bool CTTHeap::CreateHeap(bool bSerialize)

@@ -30,6 +30,16 @@ CStrList::CStrList(bool bSerialize) : CTTHeap(bSerialize)
 	m_flags = 0;
 }
 
+CStrList::CStrList(HANDLE hHeap) : CTTHeap(hHeap)
+{
+	m_cAllocated = 0;
+	m_cItems = 0;
+	m_enum = 0;
+	m_aptrs = nullptr;
+	m_bSerialize = false;
+	m_flags = 0;
+}
+
 bool CStrList::Enum(const char** ppszResult)
 {
 	ASSERT_MSG(ppszResult, "NULL pointer!");
@@ -167,10 +177,17 @@ void CStrList::Delete()
 {
 	if (m_cItems == 0)
 		return;	// we haven't added anything yet, so nothing to do!
-	if (m_bCreated && m_hHeap && m_hHeap != GetProcessHeap())
+	if (m_bCreated && m_hHeap && m_hHeap != GetProcessHeap()) {
 		HeapDestroy(m_hHeap);
-	m_hHeap = HeapCreate(m_bSerialize ? 0 : HEAP_NO_SERIALIZE, 4096, 0);
-	m_bCreated = true;
+		m_hHeap = HeapCreate(m_bSerialize ? 0 : HEAP_NO_SERIALIZE, 4096, 0);
+		m_bCreated = true;
+	}
+	else {	// if we didn't create the heap ourselves, then we need to delete each individual item
+		for (size_t pos = 0; pos < m_cItems; ++pos) {
+			ttFree((void*) m_aptrs[pos]);
+		}
+		ttFree((void*) m_aptrs);
+	}
 	m_cAllocated = 0;
 	m_cItems = 0;
 	m_enum = 0;

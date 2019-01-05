@@ -38,6 +38,7 @@ class CTTHeap
 public:
 	CTTHeap();
 	CTTHeap(bool bSerialize);	// Creates a sub-heap. Use true for thread safe, false for speed (but not thread safe)
+	CTTHeap(HANDLE hHeap);
 	~CTTHeap();
 
 	// Class functions

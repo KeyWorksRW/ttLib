@@ -23,6 +23,7 @@ class CStrList : public CTTHeap
 {
 public:
 	CStrList(bool bSerialize = true);		// true makes the class thread safe
+	CStrList(HANDLE hHeap);
 
 	enum {
 		FLG_ADD_DUPLICATES	= 1 << 0,	// add the string even if it has already been added
