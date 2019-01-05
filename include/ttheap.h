@@ -109,15 +109,36 @@ namespace tt {
 // The following are obsolete, but not yet marked as deprecated (they will be!). Applications should use the namespace
 // versions above instead. I.e., instead of kmalloc(), use tt:malloc()
 
-inline void*	kcalloc(size_t cb) { return tt::MainHeap.ttCalloc(cb); }
-inline void		kfree(void *pv) { tt::MainHeap.ttFree(pv); }
-inline void*	kmalloc(size_t cb) { return tt::MainHeap.ttMalloc(cb); }
-inline void*	krealloc(void* pv, size_t cbNew) { return tt::MainHeap.ttRealloc(pv, cbNew); }
-inline void*	krecalloc(void* pv, size_t cbNew) { return tt::MainHeap.ttRecalloc(pv, cbNew); }
-inline char*	kstrdup(const char* psz) { return tt::MainHeap.ttStrdup(psz); }
-inline wchar_t*	kstrdup(const wchar_t* pwsz) { return tt::MainHeap.ttStrdup(pwsz); }
-inline size_t	ksize(const void* pv) { return tt::MainHeap.ttSize(pv); }
-inline BOOL		kvalidate(const void* pv) { return tt::MainHeap.ttValidate(pv); }
+#ifndef TTHEAP_DEPRECATE	// define this to track down the calls that need to be changed
+	inline void*	kcalloc(size_t cb) { return tt::MainHeap.ttCalloc(cb); }
+	inline void		kfree(void *pv) { tt::MainHeap.ttFree(pv); }
+	inline void*	kmalloc(size_t cb) { return tt::MainHeap.ttMalloc(cb); }
+	inline void*	krealloc(void* pv, size_t cbNew) { return tt::MainHeap.ttRealloc(pv, cbNew); }
+	inline void*	krecalloc(void* pv, size_t cbNew) { return tt::MainHeap.ttRecalloc(pv, cbNew); }
+	inline char*	kstrdup(const char* psz) { return tt::MainHeap.ttStrdup(psz); }
+	inline wchar_t*	kstrdup(const wchar_t* pwsz) { return tt::MainHeap.ttStrdup(pwsz); }
+	inline size_t	ksize(const void* pv) { return tt::MainHeap.ttSize(pv); }
+	inline BOOL		kvalidate(const void* pv) { return tt::MainHeap.ttValidate(pv); }
+#else	// not TTHEAP_DEPRECATE
+	[[deprecated("use tt::func() instead")]]
+	inline void*	kcalloc(size_t cb) { return tt::MainHeap.ttCalloc(cb); }
+	[[deprecated("use tt::func() instead")]]
+	inline void		kfree(void *pv) { tt::MainHeap.ttFree(pv); }
+	[[deprecated("use tt::func() instead")]]
+	inline void*	kmalloc(size_t cb) { return tt::MainHeap.ttMalloc(cb); }
+	[[deprecated("use tt::func() instead")]]
+	inline void*	krealloc(void* pv, size_t cbNew) { return tt::MainHeap.ttRealloc(pv, cbNew); }
+	[[deprecated("use tt::func() instead")]]
+	inline void*	krecalloc(void* pv, size_t cbNew) { return tt::MainHeap.ttRecalloc(pv, cbNew); }
+	[[deprecated("use tt::func() instead")]]
+	inline char*	kstrdup(const char* psz) { return tt::MainHeap.ttStrdup(psz); }
+	[[deprecated("use tt::func() instead")]]
+	inline wchar_t*	kstrdup(const wchar_t* pwsz) { return tt::MainHeap.ttStrdup(pwsz); }
+	[[deprecated("use tt::func() instead")]]
+	inline size_t	ksize(const void* pv) { return tt::MainHeap.ttSize(pv); }
+	[[deprecated("use tt::func() instead")]]
+	inline BOOL		kvalidate(const void* pv) { return tt::MainHeap.ttValidate(pv); }
+#endif	// TTHEAP_DEPRECATE
 
 /////////////////////////////////////////////// non-Windows code ///////////////////////////////////////////////////
 
