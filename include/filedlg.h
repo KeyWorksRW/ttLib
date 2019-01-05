@@ -40,7 +40,7 @@ public:
 	void	SetFilter(int idResource);
 	void	SetFilter(const char* pszFilters);	// separate filters with '|' character
 	void	SetInitialDir(const char* pszFolder) { m_pofn->lpstrInitialDir = pszFolder; }
-	void	SetInitialFileName(const char* psz) { ASSERT(kstrlen(psz) < MAX_PATH); m_cszFileName = psz; }
+	void	SetInitialFileName(const char* psz) { ASSERT(tt::strlen(psz) < MAX_PATH); m_cszFileName = psz; }
 	void	ShowCreatePrompt() { m_pofn->Flags &= ~OFN_FILEMUSTEXIST; m_pofn->Flags |= OFN_CREATEPROMPT; }
 	void	ShowReadOnlyBox() { m_pofn->Flags &= ~OFN_HIDEREADONLY; }
 	void	UseCurrentDirectory() { m_cszCurDir.GetCWD(); m_pofn->lpstrInitialDir = m_cszCurDir; }

@@ -43,7 +43,7 @@ bool IsValidFileChar(const char* psz, size_t pos);
 inline bool IsAlpha(char ch) { return ( (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')); }
 inline bool IsDigit(char ch) { return ((ch >= '0' && ch <= '9') || ch == '-'); }
 inline bool IsPunct(char ch) { return (ch == '.' || ch == ',' || ch == ';' || ch == ':' || ch == '?' || ch == '!'); }
-inline bool IsWhiteSpace(char ch) { return kstrchr(" \t\r\n\f", ch) ? true : false; };	// Don't use strchr() or you'll get true if ch == 0
+inline bool IsWhiteSpace(char ch) { return tt::strchr(" \t\r\n\f", ch) ? true : false; };	// Don't use strchr() or you'll get true if ch == 0
 
 inline bool IsEmptyString(const char* psz) { return (bool) ((psz == nullptr) || (!psz[0])); }
 inline bool IsNonEmptyString(const char* psz) { return (psz != nullptr && psz[0]); }
@@ -61,11 +61,11 @@ char* FindNextSpace(const char* psz);
 
 bool IsSameSubString(const char* pszMain, const char* pszSub);		// is the sub string a case-insensitive match to the first part of the main string?
 bool IsCSSameSubString(const char* pszMain, const char* pszSub);	// case-sensitive version
-bool IsSameString(const char* psz1, const char* psz2);				// case-insensitive comparison -- use kstrcmp() if you need case-sensitive
+bool IsSameString(const char* psz1, const char* psz2);				// case-insensitive comparison -- use tt::strcmp() if you need case-sensitive
 
 bool IsSameSubString(const wchar_t* pszMain, const wchar_t* pszSub);	// is the sub string a case-insensitive match to the first part of the main string?
 bool IsCSSameSubString(const wchar_t* pszMain, const wchar_t* pszSub);	// case-sensitive version
-bool IsSameString(const wchar_t* psz1, const wchar_t* psz2);			// case-insensitive comparison -- use kstrcmp() if you need case-sensitive
+bool IsSameString(const wchar_t* psz1, const wchar_t* psz2);			// case-insensitive comparison -- use tt::strcmp() if you need case-sensitive
 
 // Following are identical to above but starting with "is" instead of "Is" (in case you don't remember which case to use)
 
@@ -246,11 +246,11 @@ public:
 
 	void resize(size_t cb) {
 		if (!p)
-			p = (T) kmalloc(cb);
+			p = (T) tt::malloc(cb);
 		else
-			p = (T) krealloc(p, cb);
+			p = (T) tt::realloc(p, cb);
 	}
-	size_t size() { return ksize(p); }
+	size_t size() { return tt::size(p); }
 
 	operator T()	{ ASSERT(p); return p; };
 	T operator->() { ASSERT(p); return p; };

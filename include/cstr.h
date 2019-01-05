@@ -132,7 +132,7 @@ public:
 	char operator[](int pos);
 	char operator[](size_t pos);
 
-	bool operator==(const char* psz) { return (IsEmpty() || !psz) ? false : kstrcmp(m_psz, psz); }
+	bool operator==(const char* psz) { return (IsEmpty() || !psz) ? false : tt::strcmp(m_psz, psz); }
 
 	bool CopyWide(const wchar_t* pwsz);	// convert UNICODE to UTF8 and store it
 

@@ -11,7 +11,7 @@
 #include "../include/kstr.h"	// kstr functions
 #include "../include/asserts.h"	// ASSERTS
 
-char* knextchr(const char*psz)
+char* tt::nextchr(const char*psz)
 {
 	ASSERT_MSG(psz, "NULL pointer!");
 	if (!psz) {
@@ -30,7 +30,7 @@ char* knextchr(const char*psz)
 // the "right" thing that will allow the program to continue, but without a buffer overun, or GPF caused by
 // NULL pointer. Note also that we have a significantly smaller max string length (16,777,215 versus 2,147,483,647)
 
-size_t kstrlen(const char* psz)
+size_t tt::strlen(const char* psz)
 {
 	ASSERT_MSG(psz, "NULL pointer!");
 	if (psz) {
@@ -44,7 +44,7 @@ size_t kstrlen(const char* psz)
 	return 0;
 }
 
-size_t kstrlen(const wchar_t* pwsz)
+size_t tt::strlen(const wchar_t* pwsz)
 {
 	ASSERT_MSG(pwsz, "NULL pointer!");
 	if (pwsz) {
@@ -64,7 +64,7 @@ size_t kstrlen(const wchar_t* pwsz)
 	return 0;
 }
 
-void kstrcpy(char* pszDst, size_t cchDest, const char* pszSrc)
+void tt::strcpy(char* pszDst, size_t cchDest, const char* pszSrc)
 {
 	ASSERT_MSG(pszDst, "NULL pointer!");
 	ASSERT_MSG(pszSrc, "NULL pointer!");
@@ -94,7 +94,7 @@ void kstrcpy(char* pszDst, size_t cchDest, const char* pszSrc)
 	*pszDst = 0;
 }
 
-void kstrcpy(wchar_t* pwszDst, size_t cchDest, const wchar_t* pwszSrc)
+void tt::strcpy(wchar_t* pwszDst, size_t cchDest, const wchar_t* pwszSrc)
 {
 	ASSERT_MSG(pwszDst, "NULL pointer!");
 	ASSERT_MSG(pwszSrc, "NULL pointer!");
@@ -124,7 +124,7 @@ void kstrcpy(wchar_t* pwszDst, size_t cchDest, const wchar_t* pwszSrc)
 	*pwszDst = L'\0';
 }
 
-void kstrcat(char* pszDst, size_t cchDest, const char* pszSrc)
+void tt::strcat(char* pszDst, size_t cchDest, const char* pszSrc)
 {
 	ASSERT_MSG(pszDst, "NULL pointer!");
 	ASSERT_MSG(pszSrc, "NULL pointer!");
@@ -167,7 +167,7 @@ void kstrcat(char* pszDst, size_t cchDest, const char* pszSrc)
 	#pragma warning(disable: 4706)	// assignment within conditional expression
 #endif
 
-void kstrcat(char* pszDst, const char* pszSrc)
+void tt::strcat(char* pszDst, const char* pszSrc)
 {
 	ASSERT_MSG(pszDst, "NULL pointer!");
 	ASSERT_MSG(pszSrc, "NULL pointer!");
@@ -187,7 +187,7 @@ void kstrcat(char* pszDst, const char* pszSrc)
 	while ((*pszDst++ = *pszSrc++));
 }
 
-void kstrcat(wchar_t* pszDst, size_t cchDest, const wchar_t* pszSrc)
+void tt::strcat(wchar_t* pszDst, size_t cchDest, const wchar_t* pszSrc)
 {
 	ASSERT_MSG(pszDst, "NULL pointer!");
 	ASSERT_MSG(pszSrc, "NULL pointer!");
@@ -202,7 +202,7 @@ void kstrcat(wchar_t* pszDst, size_t cchDest, const wchar_t* pszSrc)
 	if (pszSrc == nullptr)
 		return;	// do nothing if invalid pointer
 
-	size_t cch = kstrlen(pszDst);
+	size_t cch = tt::strlen(pszDst);
 	ASSERT_MSG(cch < _KSTRMAX, "String is too long!");
 
 	if (cch > _KSTRMAX) {
@@ -226,17 +226,17 @@ void kstrcat(wchar_t* pszDst, size_t cchDest, const wchar_t* pszSrc)
 	*pszDst = L'\0';
 }
 
-char* kstrchr(const char* psz, char ch)
+char* tt::strchr(const char* psz, char ch)
 {
 	ASSERT_MSG(psz, "NULL pointer!");
 	if (!psz)
 		return nullptr;
 	while (*psz && *psz != ch)
-		psz = knextchr(psz);
+		psz = tt::nextchr(psz);
 	return (*psz ? (char*) psz : nullptr);
 }
 
-wchar_t* kstrchr(const wchar_t* psz, wchar_t ch)
+wchar_t* tt::strchr(const wchar_t* psz, wchar_t ch)
 {
 	ASSERT_MSG(psz, "NULL pointer!");
 	if (!psz)
@@ -248,16 +248,16 @@ wchar_t* kstrchr(const wchar_t* psz, wchar_t ch)
 
 // Windows StrRChr doesn't use codepages, so won't correctly handle SBCS UTF8 string
 
-char* kstrchrR(const char* psz, char ch)
+char* tt::strchrR(const char* psz, char ch)
 {
 	ASSERT_MSG(psz, "NULL pointer!");
 	if (!psz)
 		return nullptr;
 
-	const char* pszLastFound = kstrchr(psz, ch);
+	const char* pszLastFound = tt::strchr(psz, ch);
 	if (pszLastFound) {
 		for (;;) {
-			psz = kstrchr(knextchr(pszLastFound), ch);
+			psz = tt::strchr(tt::nextchr(pszLastFound), ch);
 			if (psz)
 				pszLastFound = psz;
 			else
@@ -267,16 +267,16 @@ char* kstrchrR(const char* psz, char ch)
 	return (char*) pszLastFound;
 }
 
-wchar_t* kstrchrR(const wchar_t* psz, wchar_t ch)
+wchar_t* tt::strchrR(const wchar_t* psz, wchar_t ch)
 {
 	ASSERT_MSG(psz, "NULL pointer!");
 	if (!psz)
 		return nullptr;
 
-	const wchar_t* pszLastFound = kstrchr(psz, ch);
+	const wchar_t* pszLastFound = tt::strchr(psz, ch);
 	if (pszLastFound) {
 		for (;;) {
-			psz = kstrchr(pszLastFound + 1, ch);
+			psz = tt::strchr(pszLastFound + 1, ch);
 			if (psz)
 				pszLastFound = psz;
 			else
@@ -286,7 +286,7 @@ wchar_t* kstrchrR(const wchar_t* psz, wchar_t ch)
 	return (wchar_t*) pszLastFound;
 }
 
-bool kstrcmp(const char* psz1, const char* psz2)
+bool tt::strcmp(const char* psz1, const char* psz2)
 {
 	ASSERT_MSG(psz1, "NULL pointer!");
 	ASSERT_MSG(psz2, "NULL pointer!");
@@ -302,7 +302,7 @@ bool kstrcmp(const char* psz1, const char* psz2)
 	return false;
 }
 
-bool kstrcmp(const wchar_t* psz1, const wchar_t* psz2)
+bool tt::strcmp(const wchar_t* psz1, const wchar_t* psz2)
 {
 	ASSERT_MSG(psz1, "NULL pointer!");
 	ASSERT_MSG(psz2, "NULL pointer!");
@@ -320,14 +320,14 @@ bool kstrcmp(const wchar_t* psz1, const wchar_t* psz2)
 
 // find a case-insensitive extension in a path string
 
-const char* kstrext(const char* pszPath, const char* pszExt)
+const char* tt::strext(const char* pszPath, const char* pszExt)
 {
 	ASSERT_MSG(pszPath, "NULL pointer!");
 	ASSERT_MSG(pszExt, "NULL pointer!");
 	if (!pszPath || !pszExt)
 		return nullptr;
 
-	char* psz = kstrchrR(pszPath, '.');
+	char* psz = tt::strchrR(pszPath, '.');
 	if (!psz)
 		return pszExt;
 
@@ -342,7 +342,7 @@ const char* kstrext(const char* pszPath, const char* pszExt)
 	return nullptr;
 }
 
-char* kstristr(const char* pszMain, const char* pszSub)
+char* tt::stristr(const char* pszMain, const char* pszSub)
 {
 	ASSERT_MSG(pszMain, "NULL pointer!");
 	ASSERT_MSG(pszSub, "NULL pointer!");
@@ -396,7 +396,7 @@ char* kstristr(const char* pszMain, const char* pszSub)
 
 // Similar as C runtime strstr, only this one checks for NULL pointers and an empty sub string
 
-char* kstrstr(const char* pszMain, const char* pszSub)
+char* tt::strstr(const char* pszMain, const char* pszSub)
 {
 	ASSERT_MSG(pszMain, "NULL pointer!");
 	ASSERT_MSG(pszSub, "NULL pointer!");
@@ -439,7 +439,7 @@ char* kstrstr(const char* pszMain, const char* pszSub)
 	return nullptr;	// end of main string
 }
 
-wchar_t* kstrstr(const wchar_t* pszMain, const wchar_t* pszSub)
+wchar_t* tt::strstr(const wchar_t* pszMain, const wchar_t* pszSub)
 {
 	ASSERT_MSG(pszMain, "NULL pointer!");
 	ASSERT_MSG(pszSub, "NULL pointer!");
@@ -482,7 +482,7 @@ wchar_t* kstrstr(const wchar_t* pszMain, const wchar_t* pszSub)
 
 #ifdef _WX_WX_H_
 
-wchar_t* kstristr(const wchar_t* pszMain, const wchar_t* pszSub)
+wchar_t* tt::stristr(const wchar_t* pszMain, const wchar_t* pszSub)
 {
 	ASSERT_MSG(pszMain, "NULL pointer!");
 	ASSERT_MSG(pszSub, "NULL pointer!");
@@ -518,8 +518,8 @@ bool IsSameSubString(const char* pszMain, const char* pszSub)
 			if (tolower(*pszMain) != tolower(*pszSub))
 				return false;	// doesn't match even when case is made the same
 		}
-		pszMain = knextchr(pszMain);
-		pszSub	= knextchr(pszSub);
+		pszMain = tt::nextchr(pszMain);
+		pszSub	= tt::nextchr(pszSub);
 	}
 	return true;
 }
@@ -552,8 +552,8 @@ bool IsCSSameSubString(const char* pszMain, const char* pszSub)
 	while (*pszSub) {
 		if (*pszMain != *pszSub)
 			return false;	// doesn't match even when case is made the same
-		pszMain = knextchr(pszMain);
-		pszSub	= knextchr(pszSub);
+		pszMain = tt::nextchr(pszMain);
+		pszSub	= tt::nextchr(pszSub);
 	}
 	return true;
 }
@@ -579,7 +579,7 @@ bool IsSameString(const char* psz1, const char* psz2)
 	if (!psz1 || !psz2)
 		return false;
 
-	if (kstrlen(psz1) != kstrlen(psz2))
+	if (tt::strlen(psz1) != tt::strlen(psz2))
 		return false;
 	for (;;) {
 		if (*psz1 != *psz2)	{
@@ -588,8 +588,8 @@ bool IsSameString(const char* psz1, const char* psz2)
 		}
 		if (!*psz1)
 			return true;
-		psz1 = knextchr(psz1);
-		psz2 = knextchr(psz2);
+		psz1 = tt::nextchr(psz1);
+		psz2 = tt::nextchr(psz2);
 	}
 }
 
@@ -598,7 +598,7 @@ bool IsSameString(const wchar_t* psz1, const wchar_t* psz2)
 	if (!psz1 || !psz2)
 		return false;
 
-	if (kstrlen(psz1) != kstrlen(psz2))
+	if (tt::strlen(psz1) != tt::strlen(psz2))
 		return false;
 	for (;;) {
 		if (*psz1 != *psz2)	{

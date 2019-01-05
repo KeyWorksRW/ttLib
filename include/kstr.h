@@ -29,43 +29,87 @@
 
 #define _KSTRMAX 0x00FFFFFF		// strings limited to 16,777,215 bytes -- kstr functions will throw an exception if this is exceeded
 
+namespace tt {
+	// UTF8 versions:
+
+	void		strcat(char* pszDst, size_t cchDest, const char* pszSrc);
+	void		strcat(char* pszDst, const char* pszSrc);	// only use this if you are absolutley certain pszDst is large enough
+	char*		strchr(const char* psz, char ch);
+	char*		strchrR(const char* psz, char ch);	// returns nullptr if not found, works on UTF8 strings (unlike Windows StrChrR)
+	bool		strcmp(const char* psz1, const char* psz2);
+	void		strcpy(char* pszDst, size_t cchDest, const char* pszSrc);	// will ALWAYS null-terminate destination string (unlike std::strcpy())
+	const char* strext(const char* pszPath, const char* pszExt);			// find a case-insensitive extension in a path string
+	char*		stristr(const char* pszMain, const char* pszSub);
+	char*		strstr(const char* pszMain, const char* pszSub);
+	size_t		strlen(const char* psz);
+	char*		nextchr(const char *psz);	// handles UTF8 strings
+
+	// wide character versions:
+
+	void		strcat(wchar_t* pszDst, size_t cchDest, const wchar_t* pszSrc);
+	wchar_t*	strchr(const wchar_t* psz, wchar_t ch);
+	wchar_t*	strchrR(const wchar_t* psz, wchar_t ch);
+	bool		strcmp(const wchar_t* psz1, const wchar_t* psz2);
+	void		strcpy(wchar_t* pwszDst, size_t cchDest, const wchar_t* pwszSrc);
+	wchar_t*	stristr(const wchar_t* pszMain, const wchar_t* pszSub);
+	wchar_t*	strstr(const wchar_t* pszMain, const wchar_t* pszSub);
+	size_t		strlen(const wchar_t* pwsz);
+
+	// Use strlen() to get the number of characters without trailing zero, use strbyte() to get the number of
+	// bytes including the terminating zero
+
+	inline size_t	strbyte(const char* psz) { return tt::strlen(psz) * sizeof(char) + sizeof(char); }	// char is 1 in SBCS builds, 2 in UNICODE builds
+	inline size_t	strbyte(const wchar_t* psz) { return tt::strlen(psz) * sizeof(wchar_t) + sizeof(wchar_t); }
+
+	// The following functions allow you to call them without specifying the length of the destination buffer.
+	// This is primarily for ease of converting non-secure strcpy() and strcat() functions -- simply add a 'k' in
+	// front of the function name and you are good to go.
+
+	inline void  strcpy(char* pszDst, const char* pszSrc) { tt::strcpy(pszDst, _KSTRMAX, pszSrc); }
+	inline void  strcat(wchar_t* pwszDst, const wchar_t* pszSrc) { tt::strcat(pwszDst, _KSTRMAX, pszSrc); }
+	inline void  strcpy(wchar_t* pwszDst, const wchar_t* pszSrc) { tt::strcpy(pwszDst, _KSTRMAX, pszSrc); }
+}	// tt namespace
+
+#ifndef __TTLIB_NOREMAP_KSTR_H__	// #define this if the function names below cause conflicts with your code, or you don't intend to use them
+
 // UTF8 versions:
 
-void		kstrcat(char* pszDst, size_t cchDest, const char* pszSrc);
-void		kstrcat(char* pszDst, const char* pszSrc);	// only use this if you are absolutley certain pszDst is large enough
-char*		kstrchr(const char* psz, char ch);
-char*		kstrchrR(const char* psz, char ch);	// returns nullptr if not found, works on UTF8 strings (unlike Windows StrChrR)
-bool		kstrcmp(const char* psz1, const char* psz2);
-void		kstrcpy(char* pszDst, size_t cchDest, const char* pszSrc);	// will ALWAYS null-terminate destination string (unlike std::strcpy())
-const char* kstrext(const char* pszPath, const char* pszExt);			// find a case-insensitive extension in a path string
-char*		kstristr(const char* pszMain, const char* pszSub);
-char*		kstrstr(const char* pszMain, const char* pszSub);
-size_t		kstrlen(const char* psz);
-char*		knextchr(const char *psz);	// handles UTF8 strings
+	inline void		kstrcat(char* pszDst, size_t cchDest, const char* pszSrc) { tt::strcat(pszDst, cchDest, pszSrc); }
+	inline void		kstrcat(char* pszDst, const char* pszSrc) { tt::strcat(pszDst, pszSrc); } // only use this if you are absolutley certain pszDst is large enough
+	inline char*	kstrchr(const char* psz, char ch) { return tt::strchr(psz, ch); }
+	inline char*	kstrchrR(const char* psz, char ch) { return tt::strchrR(psz, ch); };	// returns nullptr if not found, works on UTF8 strings (unlike Windows StrChrR)
+	inline bool		kstrcmp(const char* psz1, const char* psz2) { return tt::strcmp(psz1, psz2); }
+	inline void		kstrcpy(char* pszDst, size_t cchDest, const char* pszSrc) { tt::strcpy(pszDst, cchDest, pszSrc); } // will ALWAYS null-terminate destination string (unlike std::strcpy())
+	inline char*	kstristr(const char* pszMain, const char* pszSub) { return tt::stristr(pszMain, pszSub); }
+	inline char*	kstrstr(const char* pszMain, const char* pszSub) { return tt::strstr(pszMain, pszSub); }
+	inline size_t	kstrlen(const char* psz) { return tt::strlen(psz); }
+	inline char*	knextchr(const char *psz) { return tt::nextchr(psz); }	// handles UTF8 strings
+	inline const char* kstrext(const char* pszPath, const char* pszExt) { return tt::strext(pszPath, pszExt); }	// find a case-insensitive extension in a path string
 
-// wide character versions:
+	// wide character versions:
 
-void		kstrcat(wchar_t* pszDst, size_t cchDest, const wchar_t* pszSrc);
-wchar_t*	kstrchr(const wchar_t* psz, wchar_t ch);
-wchar_t*	kstrchrR(const wchar_t* psz, wchar_t ch);
-bool		kstrcmp(const wchar_t* psz1, const wchar_t* psz2);
-void		kstrcpy(wchar_t* pwszDst, size_t cchDest, const wchar_t* pwszSrc);
-wchar_t*	kstristr(const wchar_t* pszMain, const wchar_t* pszSub);
-wchar_t*	kstrstr(const wchar_t* pszMain, const wchar_t* pszSub);
-size_t		kstrlen(const wchar_t* pwsz);
+	inline void		kstrcat(wchar_t* pwszDst, size_t cchDest, const wchar_t* pwszSrc) { tt::strcat(pwszDst, cchDest, pwszSrc); }
+	inline wchar_t*	kstrchr(const wchar_t* pwsz, wchar_t ch) { return tt::strchr(pwsz, ch); }
+	inline wchar_t*	kstrchrR(const wchar_t* pwsz, wchar_t ch) { return tt::strchrR(pwsz, ch); }
+	inline bool		kstrcmp(const wchar_t* pwsz1, const wchar_t* pwsz2) { return tt::strcmp(pwsz1, pwsz2); }
+	inline void		kstrcpy(wchar_t* pwszDst, size_t cchDst, const wchar_t* pwszSrc) { tt::strcpy(pwszDst, cchDst, pwszSrc); }
+	inline wchar_t*	kstristr(const wchar_t* pwszMain, const wchar_t* pwszSub) { return tt::stristr(pwszMain, pwszSub); }
+	inline wchar_t*	kstrstr(const wchar_t* pwszMain, const wchar_t* pwszSub) { return tt::strstr(pwszMain, pwszSub); }
+	inline size_t	kstrlen(const wchar_t* pwsz) { return tt::strlen(pwsz); }
 
-// Use kstrlen() to get the number of characters without trailing zero, use kstrbyte() to get the number of
-// bytes including the terminating zero
+	// Use tt::strlen() to get the number of characters without trailing zero, use tt::strbyte() to get the number of
+	// bytes including the terminating zero
 
-__inline size_t	kstrbyte(const char* psz) { return kstrlen(psz) * sizeof(char) + sizeof(char); }	// char is 1 in SBCS builds, 2 in UNICODE builds
-__inline size_t	kstrbyte(const wchar_t* psz) { return kstrlen(psz) * sizeof(wchar_t) + sizeof(wchar_t); }
+	inline size_t	kstrbyte(const char* psz) { return tt::strlen(psz) * sizeof(char) + sizeof(char); }	// char is 1 in SBCS builds, 2 in UNICODE builds
+	inline size_t	kstrbyte(const wchar_t* pwsz) { return tt::strlen(pwsz) * sizeof(wchar_t) + sizeof(wchar_t); }
 
-// The following functions allow you to call them without specifying the length of the destination buffer.
-// This is primarily for ease of converting non-secure strcpy() and strcat() functions -- simply add a 'k' in
-// front of the function name and you are good to go.
+	// The following functions allow you to call them without specifying the length of the destination buffer. This is
+	// primarily for ease of converting non-secure strcpy() and strcat() functions -- simply add a 'k' in front of the
+	// function name and you are good to go.
 
-__inline void  kstrcpy(char* pszDst, const char* pszSrc) { kstrcpy(pszDst, _KSTRMAX, pszSrc); }
-__inline void  kstrcat(wchar_t* pszDst, const wchar_t* pszSrc) { kstrcat(pszDst, _KSTRMAX, pszSrc); }
-__inline void  kstrcpy(wchar_t* pszDst, const wchar_t* pszSrc) { kstrcpy(pszDst, _KSTRMAX, pszSrc); }
+	inline void  kstrcpy(char* pszDst, const char* pszSrc) { tt::strcpy(pszDst, _KSTRMAX, pszSrc); }
+	inline void  kstrcat(wchar_t* pwszDst, const wchar_t* pwszSrc) { tt::strcat(pwszDst, _KSTRMAX, pwszSrc); }
+	inline void  kstrcpy(wchar_t* pwszDst, const wchar_t* pwszSrc) { tt::strcpy(pwszDst, _KSTRMAX, pwszSrc); }
 
+#endif	// __TTLIB_NOREMAP_KSTR_H__
 #endif	//__TTLIB_KSTR_H__

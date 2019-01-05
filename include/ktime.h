@@ -49,17 +49,17 @@ public:
 	}
 	const char* GetFullFormat() {	// full date/time
 			char szBuf[256];
-			kstrcpy(szBuf, sizeof(szBuf), GetDateFormat(NULL, DATE_LONGDATE));
-			kstrcat(szBuf, ", ");
-			kstrcat(szBuf, sizeof(szBuf) + strlen(szBuf), GetTimeFormat());
+			tt::strcpy(szBuf, sizeof(szBuf), GetDateFormat(NULL, DATE_LONGDATE));
+			tt::strcat(szBuf, ", ");
+			tt::strcat(szBuf, sizeof(szBuf) + tt::strlen(szBuf), GetTimeFormat());
 			m_cszFormatted = szBuf;
 			return m_cszFormatted;
 	}
 	const char* GetShortFormat() {	// short date/time
 			char szBuf[256];
-			kstrcpy(szBuf, sizeof(szBuf), GetDateFormat());
-			kstrcat(szBuf, ", ");
-			kstrcat(szBuf, sizeof(szBuf) + strlen(szBuf), GetTimeFormat());
+			tt::strcpy(szBuf, sizeof(szBuf), GetDateFormat());
+			tt::strcat(szBuf, ", ");
+			tt::strcat(szBuf, sizeof(szBuf) + tt::strlen(szBuf), GetTimeFormat());
 			m_cszFormatted = szBuf;
 			return m_cszFormatted;
 	}
