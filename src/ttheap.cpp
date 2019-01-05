@@ -6,22 +6,33 @@
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
-// TODO: [ralphw - 07-10-2018] Need to create a POSIX version (for OSX and Unix) -- probably using mmap()
-
 #include "precomp.h"		// precompiled header
 
 #include "../include/asserts.h"
 #include "../include/ttheap.h"		// CTTHeap
 
-CTTHeap	_MainHeap;
+using namespace tt;
+
+CTTHeap	tt::MainHeap;
+
+/*
+	CTTHeap can be constructed in one of three ways:
+		1) no parameter -> uses the process heap, memory is NOT freed in destructor
+		2) bool -> creates a sub-heap, the parameter indicates if the sub-heap should be thread-safe
+		3) heap handle -> uses another sub-heap, sub-heap is not freed in destructor
+
+		#3 is typically used when you want a master CTTHeap class that will share it's sub-heap with all child CTTHeap classes, and
+		free the entire sub-heap at once.
+
+			CTTHeap master(true);
+			CTTHeap child(master);	// this invokes master::HANDLE() and from then on use master's sub-heap
+
+*/
 
 CTTHeap::CTTHeap()
 {
 	m_hHeap = GetProcessHeap();
 	m_bCreated = false;	// prevent deleting heap in destructor
-#ifdef _DEBUG
-	m_SerialHeap = true;	// Process heap is serialized by default
-#endif
 }
 
 CTTHeap::CTTHeap(bool bSerialize)
@@ -34,9 +45,6 @@ CTTHeap::CTTHeap(bool bSerialize)
 	}
 
 	m_bCreated = true;
-#ifdef _DEBUG
-	m_SerialHeap = bSerialize;
-#endif
 }
 
 CTTHeap::CTTHeap(HANDLE hHeap)

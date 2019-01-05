@@ -19,17 +19,17 @@
 	return. If there is insufficient memory, the application will be terminated (see OOM()).
 
 	CTTHeap can also be used to create a sub-heap. Any individual memory allocations on the sub-heap do not
-	need be freed before the destructor as the entire sub-heap is destroyed at once. A class that wants to utilize
+	need to be freed before the destructor as the entire sub-heap is destroyed at once. A class that wants to utilize
 	this functionality should inherit from CTTHeap, and provide a serialization flag in it's constructor:
 
 		classs MyClass :  public CTTHeap
 		{
-			MyClass() : CTTHeap(true) { } // true to make MyClass thread-safe, otherwise use false
+			MyClass() : CTTHeap(true) { } // true to make MyClass thread-safe
 
 	Now all of the malloc/realloc/recalloc routines below will be allocated on the sub-heap, and do
 	not need to be specifically freed in the destructor.
 
-	Attatching CTTHeap to another heap takes advantage of the sub-heap above by elimintating the need to
+	Constructing CTTHeap using another heap takes advantage of the sub-heap above by elimintating the need to
 	individually free every memory allocation in the destructor.
 */
 
@@ -38,17 +38,11 @@ class CTTHeap
 public:
 	CTTHeap();
 	CTTHeap(bool bSerialize);	// Creates a sub-heap. Use true for thread safe, false for speed (but not thread safe)
-	CTTHeap(HANDLE hHeap);
+	CTTHeap(HANDLE hHeap);		// Pass in a heap handle or another CTTHeap class (which will call the HANDLE() operator)
+
 	~CTTHeap();
 
 	// Class functions
-
-	bool CreateHeap(bool bSerialize = true);	// This will destroy any non-process heap that was previously created
-	void Attach(HANDLE hHeap);					// attatch this heap to another heap, or a class that derives from CTTHeap
-
-	// REVIEW: [randalphwa - 12/23/2018] Using standard memory allocations routines is a possible source of errors since
-	// a user unfamiliar with CTTHeap, or who doesn't realize a class has inherited from CTTHeap will not be expecting
-	// the memory to be allocated within this class instead of via the C runtime.
 
 	void* ttMalloc(size_t cb);	// under _DEBUG, will fill with 0xCD
 	void* ttCalloc(size_t cb);
@@ -64,46 +58,70 @@ public:
 	BOOL	ttValidate(const void* pv) { return HeapValidate(m_hHeap, 0, pv); }
 
 	operator HANDLE() const { return m_hHeap; }
+
+	[[deprecated("Create heap with CTTHeap(bSerialize) instead")]]
+		bool CreateHeap(bool bSerialize = true);	// This will destroy any non-process heap that was previously created
+	[[deprecated("Create heap with CTTHeap(hHeap) instead")]]
+		void Attach(HANDLE hHeap);					// attatch this heap to another heap, or a class that derives from CTTHeap
+
 protected:
-	// [randalphwa - 12/24/2018] The following are obsolete -- use the above tt() methods instead
-	void* malloc(size_t cb) { return ttMalloc(cb); };
-	void* calloc(size_t cb) { return ttCalloc(cb); };
-	void* realloc(void* pv, size_t cb) { return ttRealloc(pv, cb); }
-	void* recalloc(void* pv, size_t cb) { return ttRecalloc(pv, cb); }
 
-	void   free(void* pv) { ttFree(pv); }
+	[[deprecated("use ttMalloc() instead")]]
+		void* malloc(size_t cb) { return ttMalloc(cb); };
+	[[deprecated("use ttCalloc() instead")]]
+		void* calloc(size_t cb) { return ttCalloc(cb); };
+	[[deprecated("use ttRealloc() instead")]]
+		void* realloc(void* pv, size_t cb) { return ttRealloc(pv, cb); }
+	[[deprecated("use ttRecalloc() instead")]]
+		void* recalloc(void* pv, size_t cb) { return ttRecalloc(pv, cb); }
 
-	char*	 strdup(const char* psz) { return ttStrdup(psz); }
-	wchar_t* strdup(const wchar_t* pwsz)  { return ttStrdup(pwsz); }
+	[[deprecated("use ttFree() instead")]]
+		void   free(void* pv) { ttFree(pv); }
 
-	size_t size(const void* pv) { return ttSize(pv); }
+	[[deprecated("use ttStrdup() instead")]]
+		char*	 strdup(const char* psz) { return ttStrdup(psz); }
+	[[deprecated("use ttStrdup() instead")]]
+		wchar_t* strdup(const wchar_t* pwsz)  { return ttStrdup(pwsz); }
+
+	[[deprecated("use ttSize() instead")]]
+		size_t size(const void* pv) { return ttSize(pv); }
 
 	// Class members
 
 	HANDLE	m_hHeap;
 	bool	m_bCreated;
-#ifdef _DEBUG
-	bool	m_SerialHeap;
-#endif
 }; // end CTTHeap
 
-extern CTTHeap _MainHeap;	// this uses the process heap rather then a sub-heap
+namespace tt {
+	extern CTTHeap MainHeap;	// this uses the process heap rather then a sub-heap
 
-// Note: the debug version of kmalloc will fill allocated memory with 0xCC.
+	inline void*	calloc(size_t cb) { return tt::MainHeap.ttCalloc(cb); }
+	inline void		free(void *pv) { tt::MainHeap.ttFree(pv); }
+	inline void*	malloc(size_t cb) { return tt::MainHeap.ttMalloc(cb); }
+	inline void*	realloc(void* pv, size_t cbNew) { return tt::MainHeap.ttRealloc(pv, cbNew); }
+	inline void*	recalloc(void* pv, size_t cbNew) { return tt::MainHeap.ttRecalloc(pv, cbNew); }
+	inline char*	strdup(const char* psz) { return tt::MainHeap.ttStrdup(psz); }
+	inline wchar_t*	strdup(const wchar_t* pwsz) { return tt::MainHeap.ttStrdup(pwsz); }
+	inline size_t	size(const void* pv) { return tt::MainHeap.ttSize(pv); }
+	inline BOOL		validate(const void* pv) { return tt::MainHeap.ttValidate(pv); }
+}	// end namespace tt
 
-inline void*	kcalloc(size_t cb) { return _MainHeap.ttCalloc(cb); }
-inline void		kfree(void *pv) { _MainHeap.ttFree(pv); }
-inline void*	kmalloc(size_t cb) { return _MainHeap.ttMalloc(cb); }
-inline void*	krealloc(void* pv, size_t cbNew) { return _MainHeap.ttRealloc(pv, cbNew); }
-inline void*	krecalloc(void* pv, size_t cbNew) { return _MainHeap.ttRecalloc(pv, cbNew); }
-inline char*	kstrdup(const char* psz) { return _MainHeap.ttStrdup(psz); }
-inline wchar_t*	kstrdup(const wchar_t* pwsz) { return _MainHeap.ttStrdup(pwsz); }
-inline size_t	ksize(const void* pv) { return _MainHeap.ttSize(pv); }
-inline BOOL		kvalidate(const void* pv) { return _MainHeap.ttValidate(pv); }
+// The following are obsolete, but not yet marked as deprecated (they will be!). Applications should use the namespace
+// versions above instead. I.e., instead of kmalloc(), use tt:malloc()
+
+inline void*	kcalloc(size_t cb) { return tt::MainHeap.ttCalloc(cb); }
+inline void		kfree(void *pv) { tt::MainHeap.ttFree(pv); }
+inline void*	kmalloc(size_t cb) { return tt::MainHeap.ttMalloc(cb); }
+inline void*	krealloc(void* pv, size_t cbNew) { return tt::MainHeap.ttRealloc(pv, cbNew); }
+inline void*	krecalloc(void* pv, size_t cbNew) { return tt::MainHeap.ttRecalloc(pv, cbNew); }
+inline char*	kstrdup(const char* psz) { return tt::MainHeap.ttStrdup(psz); }
+inline wchar_t*	kstrdup(const wchar_t* pwsz) { return tt::MainHeap.ttStrdup(pwsz); }
+inline size_t	ksize(const void* pv) { return tt::MainHeap.ttSize(pv); }
+inline BOOL		kvalidate(const void* pv) { return tt::MainHeap.ttValidate(pv); }
 
 /////////////////////////////////////////////// non-Windows code ///////////////////////////////////////////////////
 
-#else	// not _WINDOWS_
+#else	// not _WINDOWS_	(See ISSUE #5: need to implement a POSIX version for portability)
 
 // Because CTTHep is inefficient when not built on _WINDOWS_, use normal CRT allocation routines instead of _MainHeap
 
@@ -122,26 +140,27 @@ inline wchar_t*	kstrdup(const wchar_t* pwsz) { return _MainHeap.strdup(pwsz); }
 // To mimic the _WINDOWS_ functionality that cleans up all memory allocations in the destructor, we'll need to track
 // every memory allocation in order to free each one on exit.
 
+// BUGBUG!!! The following is a placeholder -- there is currently no POSIX version (see Issue #5).
+
 class CTTHeap
 {
 public:
 	CTTHeap();
 	CTTHeap(bool bSerialize);	// For compatibility with _WINDOWS_ version -- it's identical to CTTHeap()
+	CTTHeap(HANDLE hHeap);
 	~CTTHeap();
 
-	bool  CreateHeap(bool bSerialize = true);	// bSerialize will be ignored -- it's there for compatibility of _WINDOWS_ version
-	void  Attach(void* hHeap) { }	// No equivalent without _WINDOWS_
+	void* ttMalloc(size_t cb);	// under _DEBUG, will fill with 0xCD
+	void* ttCalloc(size_t cb);
+	void* ttRealloc(void* pv, size_t cb);
+	void* ttRecalloc(void* pv, size_t cb);
 
-	void* malloc(size_t cb);
-	void* calloc(size_t cb);
-	void* malloc(size_t vb);
-	void* realloc(void* pv, size_t vb);
-	void  free(void* pv);
+	void  ttFree(void* pv);
 
-	char*	 strdup(const char* psz);
-	wchar_t* strdup(const wchar_t* pwsz);
+	char*	 ttStrdup(const char* psz);
+	wchar_t* ttStrdup(const wchar_t* pwsz);
 
-	operator void*() const { return nullptr; }	// there is no equivalent without _WINDOWS_
+	operator HANDLE() const { return NULL; }	// need to return something that points to a sub-heap
 protected:
 	void*	m_aPtrs;
 	size_t	m_cAllocated;	// memory allocated to hold m_aPtrs
