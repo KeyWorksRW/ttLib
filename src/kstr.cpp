@@ -8,6 +8,9 @@
 
 #include "precomp.h"		// precompiled header
 
+#include <cstring>
+#include <cwchar>
+
 #include "../include/kstr.h"	// kstr functions
 #include "../include/asserts.h"	// ASSERTS
 
@@ -34,7 +37,7 @@ size_t tt::strlen(const char* psz)
 {
 	ASSERT_MSG(psz, "NULL pointer!");
 	if (psz) {
-		size_t cch = strlen(psz);
+		size_t cch = std::strlen(psz);
 		ASSERT_MSG(cch < _KSTRMAX, "String is too long!");
 		if (cch > _KSTRMAX)	{
 			cch = _KSTRMAX;
@@ -48,7 +51,7 @@ size_t tt::strlen(const wchar_t* pwsz)
 {
 	ASSERT_MSG(pwsz, "NULL pointer!");
 	if (pwsz) {
-		size_t cch = wcslen(pwsz);
+		size_t cch = std::wcslen(pwsz);
 		ASSERT_MSG(cch < _KSTRMAX, "String is too long!");
 		if (cch > _KSTRMAX)	{
 #if wxUSE_EXCEPTIONS
@@ -139,7 +142,7 @@ void tt::strcat(char* pszDst, size_t cchDest, const char* pszSrc)
 	if (pszSrc == nullptr)
 		return;	// do nothing if invalid pointer
 
-	size_t cch = strlen(pszDst);
+	size_t cch = std::strlen(pszDst);
 	ASSERT_MSG(cch < _KSTRMAX, "String is too long!");
 
 	if (cch > _KSTRMAX) {
@@ -182,7 +185,7 @@ void tt::strcat(char* pszDst, const char* pszSrc)
 	if (pszSrc == nullptr)
 		return;	// do nothing if invalid pointer
 
-	pszDst += strlen(pszDst);	// we use the "unsafe" version because we already know pszDst is a non-null pointer
+	pszDst += std::strlen(pszDst);	// we use the "unsafe" version because we already know pszDst is a non-null pointer
 
 	while ((*pszDst++ = *pszSrc++));
 }
