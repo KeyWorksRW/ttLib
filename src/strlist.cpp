@@ -52,6 +52,22 @@ bool CStrList::Enum(const char** ppszResult)
 	return true;
 }
 
+bool CStrList::Enum()
+{
+	if (m_cItems == 0 || m_enum == m_cItems)
+		return false;
+	++m_enum;
+	return true;
+}
+
+const char* CStrList::EnumValue()
+{
+	auto enumPos = m_enum - 1;
+	if (m_cItems == 0 || enumPos == m_cItems)
+		return nullptr;
+	return m_aptrs[enumPos];
+}
+
 void CStrList::SetFlags(size_t flags)
 {
 	m_flags = flags;

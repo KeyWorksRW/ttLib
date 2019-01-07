@@ -62,8 +62,20 @@ public:
 
 	// End CSimpleArray/CAtlArray equivalents
 
+	/*
+		Example usage:
+
+			CStrList lst;
+			// ... add a bunch of strings
+			lst.BeginEnum();
+			while(lst.Enum())
+				cout << lst.EnumValue();
+	 */
+
 	void BeginEnum() { m_enum = 0; }
-	bool Enum(const char** ppszResult);
+	bool Enum();
+	const char* EnumValue();	// returns pointer to last enumerated string, or nullptr if no string found
+	bool Enum(const char** ppszResult);	// use this if you want to receive a pointer to the string
 
 	void Sort();				// sort strings into alphabetical order
 
