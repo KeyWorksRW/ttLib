@@ -226,7 +226,7 @@ void ConvertToRelative(const char* pszRoot, const char* pszFile, CStr& cszResult
 	cszResult.Delete();
 	++pszLastSlash;
 	size_t posDiff = pszLastSlash - cszRoot.getptr();
-	ASSERT(kstrchr(pszLastSlash, '/'));	// we should never be pointing to the last slash
+	ASSERT(tt::strchr(pszLastSlash, '/'));	// we should never be pointing to the last slash
 
 	do {
 		while (*pszLastSlash != '/')
@@ -238,7 +238,6 @@ void ConvertToRelative(const char* pszRoot, const char* pszFile, CStr& cszResult
 	cszResult += (cszFile.getptr() + posDiff);
 }
 
-
 void BackslashToForwardslash(char* psz)
 {
 	ASSERT_MSG(psz, "NULL pointer!");
@@ -248,7 +247,7 @@ void BackslashToForwardslash(char* psz)
 	char* pszSlash = kstrchr(psz, '\\');
 	while (pszSlash) {
 		*pszSlash = '/';
-		pszSlash = kstrchr(knextchr(pszSlash), '\\');
+		pszSlash = tt::strchr(tt::nextchr(pszSlash), '\\');
 	}
 }
 
@@ -299,20 +298,20 @@ char* FindFilePortion(const char* pszFile)
 
 	char* psz;
 #ifdef _WINDOWS_
-	psz = kstrchrR(pszFile, '\\');	// Paths usually have back slashes under Windows
+	psz = tt::strchrR(pszFile, '\\');	// Paths usually have back slashes under Windows
 	if (psz)
 		pszFile = psz + 1;
 #endif	// _WINDOWS_
-	psz = kstrchrR(pszFile, '/');	// forward slashes are valid on all OS, so check that too
+	psz = tt::strchrR(pszFile, '/');	// forward slashes are valid on all OS, so check that too
 	if (psz)
 		return psz + 1;
-	psz = kstrchrR(pszFile, ':');
+	psz = tt::strchrR(pszFile, ':');
 	return (psz ? psz + 1 : (char*) pszFile);
 }
 
 char* FindExtPortion(const char* pszFile)
 {
-	char* psz = kstrchrR(pszFile, '.');
+	char* psz = tt::strchrR(pszFile, '.');
 	if (psz && !(psz == pszFile || *(psz - 1) == '.' || psz[1] == CH_BACKSLASH || psz[1] == CH_FORWARDSLASH))	// ignore .file, ./file, and ../file
 		return psz;
 	else
