@@ -11,6 +11,8 @@
 #include <cstring>
 #include <cwchar>
 #include <cerrno>
+#include <cctype>
+#include <cwctype>
 
 #include "../include/kstr.h"	// kstr functions
 #include "../include/asserts.h"	// ASSERTS
@@ -245,7 +247,7 @@ wchar_t* tt::strchrR(const wchar_t* psz, wchar_t ch)
 	return (wchar_t*) pszLastFound;
 }
 
-bool tt::strcmp(const char* psz1, const char* psz2)
+bool tt::samestr(const char* psz1, const char* psz2)
 {
 	ASSERT_MSG(psz1, "NULL pointer!");
 	ASSERT_MSG(psz2, "NULL pointer!");
@@ -261,7 +263,7 @@ bool tt::strcmp(const char* psz1, const char* psz2)
 	return false;
 }
 
-bool tt::strcmp(const wchar_t* psz1, const wchar_t* psz2)
+bool tt::samestr(const wchar_t* psz1, const wchar_t* psz2)
 {
 	ASSERT_MSG(psz1, "NULL pointer!");
 	ASSERT_MSG(psz2, "NULL pointer!");
@@ -275,6 +277,112 @@ bool tt::strcmp(const wchar_t* psz1, const wchar_t* psz2)
 		psz2++;
 	}
 	return false;
+}
+
+bool samestri(const char* psz1, const char* psz2)
+{
+	if (!psz1 || !psz2)
+		return false;
+
+	if (tt::strlen(psz1) != tt::strlen(psz2))
+		return false;
+	for (;;) {
+		if (*psz1 != *psz2)	{
+			if (std::tolower(*psz1) != std::tolower(*psz2))
+				return false;	// doesn't match even when case is made the same
+		}
+		if (!*psz1)
+			return true;
+		psz1 = tt::nextchr(psz1);
+		psz2 = tt::nextchr(psz2);
+	}
+}
+
+bool samestri(const wchar_t* psz1, const wchar_t* psz2)
+{
+	if (!psz1 || !psz2)
+		return false;
+
+	if (tt::strlen(psz1) != tt::strlen(psz2))
+		return false;
+	for (;;) {
+		if (*psz1 != *psz2)	{
+			if (std::towlower(*psz1) != std::towlower(*psz2))
+				return false;	// doesn't match even when case is made the same
+		}
+		if (!*psz1)
+			return true;
+		++psz1;
+		++psz2;
+	}
+}
+
+bool samesubstr(const char* pszMain, const char* pszSub)
+{
+	ASSERT_MSG(pszMain, "NULL pointer!");
+	ASSERT_MSG(pszSub, "NULL pointer!");
+	if (!pszMain || !pszSub)
+		return false;
+
+	while (*pszSub) {
+		if (*pszMain != *pszSub)
+			return false;	// doesn't match even when case is made the same
+		pszMain = tt::nextchr(pszMain);
+		pszSub	= tt::nextchr(pszSub);
+	}
+	return true;
+}
+
+bool samesubstr(const wchar_t* pszMain, const wchar_t* pszSub)
+{
+	ASSERT_MSG(pszMain, "NULL pointer!");
+	ASSERT_MSG(pszSub, "NULL pointer!");
+	if (!pszMain || !pszSub)
+		return false;
+
+	while (*pszSub) {
+		if (*pszMain != *pszSub)
+			return false;	// doesn't match even when case is made the same
+		++pszMain;
+		++pszSub;
+	}
+	return true;
+}
+
+bool samesubstri(const char* pszMain, const char* pszSub)
+{
+	ASSERT_MSG(pszMain, "NULL pointer!");
+	ASSERT_MSG(pszSub, "NULL pointer!");
+	if (!pszMain || !pszSub)
+		return false;
+
+	while (*pszSub) {
+		if (*pszMain != *pszSub) {
+			if (std::tolower(*pszMain) != std::tolower(*pszSub))
+				return false;	// doesn't match even when case is made the same
+		}
+		pszMain = tt::nextchr(pszMain);
+		pszSub	= tt::nextchr(pszSub);
+	}
+	return true;
+}
+
+bool samesubstri(const wchar_t* pszMain, const wchar_t* pszSub)
+{
+	ASSERT_MSG(pszMain, "NULL pointer!");
+	ASSERT_MSG(pszSub, "NULL pointer!");
+	if (!pszMain || !pszSub)
+		return false;
+
+	while (*pszSub) {
+		if (*pszMain != *pszSub) {
+			if (std::towlower(*pszMain) != std::towlower(*pszSub))
+				return false;	// doesn't match even when case is made the same
+		}
+		++pszMain;
+		++pszSub;
+	}
+	return true;
 }
 
 // find a case-insensitive extension in a path string
@@ -464,112 +572,6 @@ wchar_t* tt::stristr(const wchar_t* pszMain, const wchar_t* pszSub)
 
 // Extra string handling functions. Since this code is normally used in a library, adding them here should
 // not add any bloat to your project if you don't use them.
-
-bool IsSameSubString(const char* pszMain, const char* pszSub)
-{
-	ASSERT_MSG(pszMain, "NULL pointer!");
-	ASSERT_MSG(pszSub, "NULL pointer!");
-	if (!pszMain || !pszSub)
-		return false;
-
-	while (*pszSub) {
-		if (*pszMain != *pszSub) {
-			if (tolower(*pszMain) != tolower(*pszSub))
-				return false;	// doesn't match even when case is made the same
-		}
-		pszMain = tt::nextchr(pszMain);
-		pszSub	= tt::nextchr(pszSub);
-	}
-	return true;
-}
-
-bool IsSameSubString(const wchar_t* pszMain, const wchar_t* pszSub)
-{
-	ASSERT_MSG(pszMain, "NULL pointer!");
-	ASSERT_MSG(pszSub, "NULL pointer!");
-	if (!pszMain || !pszSub)
-		return false;
-
-	while (*pszSub) {
-		if (*pszMain != *pszSub) {
-			if (tolower(*pszMain) != tolower(*pszSub))
-				return false;	// doesn't match even when case is made the same
-		}
-		++pszMain;
-		++pszSub;
-	}
-	return true;
-}
-
-bool IsCSSameSubString(const char* pszMain, const char* pszSub)
-{
-	ASSERT_MSG(pszMain, "NULL pointer!");
-	ASSERT_MSG(pszSub, "NULL pointer!");
-	if (!pszMain || !pszSub)
-		return false;
-
-	while (*pszSub) {
-		if (*pszMain != *pszSub)
-			return false;	// doesn't match even when case is made the same
-		pszMain = tt::nextchr(pszMain);
-		pszSub	= tt::nextchr(pszSub);
-	}
-	return true;
-}
-
-bool IsCSSameSubString(const wchar_t* pszMain, const wchar_t* pszSub)
-{
-	ASSERT_MSG(pszMain, "NULL pointer!");
-	ASSERT_MSG(pszSub, "NULL pointer!");
-	if (!pszMain || !pszSub)
-		return false;
-
-	while (*pszSub) {
-		if (*pszMain != *pszSub)
-			return false;	// doesn't match even when case is made the same
-		++pszMain;
-		++pszSub;
-	}
-	return true;
-}
-
-bool IsSameString(const char* psz1, const char* psz2)
-{
-	if (!psz1 || !psz2)
-		return false;
-
-	if (tt::strlen(psz1) != tt::strlen(psz2))
-		return false;
-	for (;;) {
-		if (*psz1 != *psz2)	{
-			if (tolower(*psz1) != tolower(*psz2))
-				return false;	// doesn't match even when case is made the same
-		}
-		if (!*psz1)
-			return true;
-		psz1 = tt::nextchr(psz1);
-		psz2 = tt::nextchr(psz2);
-	}
-}
-
-bool IsSameString(const wchar_t* psz1, const wchar_t* psz2)
-{
-	if (!psz1 || !psz2)
-		return false;
-
-	if (tt::strlen(psz1) != tt::strlen(psz2))
-		return false;
-	for (;;) {
-		if (*psz1 != *psz2)	{
-			if (tolower(*psz1) != tolower(*psz2))
-				return false;	// doesn't match even when case is made the same
-		}
-		if (!*psz1)
-			return true;
-		++psz1;
-		++psz2;
-	}
-}
 
 char* FindNonSpace(const char* psz)
 {

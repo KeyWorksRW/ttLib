@@ -112,8 +112,8 @@ public:
 
 	wchar_t operator[](int pos);
 
-	bool operator==(const wchar_t* psz) { return (IsEmpty() || !psz) ? false : tt::strcmp(m_psz, psz); }
-	bool operator==(const CWStr* pcsz) { return (IsEmpty() || !pcsz || pcsz->IsEmpty()) ? false : tt::strcmp(m_psz, *pcsz); }
+	bool operator==(const wchar_t* psz) { return (IsEmpty() || !psz) ? false : tt::samestr(m_psz, psz); }
+	bool operator==(const CWStr* pcsz) { return (IsEmpty() || !pcsz || pcsz->IsEmpty()) ? false : tt::samestr(m_psz, *pcsz); }
 
 	bool CopyNarrow(const char* pwsz);	// convert UTF8 to UNICODE and store it
 

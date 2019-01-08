@@ -59,23 +59,26 @@ inline bool IsNonEmptyString(const wchar_t* psz) { return (psz != nullptr && psz
 char* FindNonSpace(const char* psz);
 char* FindNextSpace(const char* psz);
 
-bool IsSameSubString(const char* pszMain, const char* pszSub);		// is the sub string a case-insensitive match to the first part of the main string?
-bool IsCSSameSubString(const char* pszMain, const char* pszSub);	// case-sensitive version
-bool IsSameString(const char* psz1, const char* psz2);				// case-insensitive comparison -- use tt::strcmp() if you need case-sensitive
+// TODO: [randalphwa - 1/8/2019] All of these is...() functions should get deprecated
 
-bool IsSameSubString(const wchar_t* pszMain, const wchar_t* pszSub);	// is the sub string a case-insensitive match to the first part of the main string?
-bool IsCSSameSubString(const wchar_t* pszMain, const wchar_t* pszSub);	// case-sensitive version
-bool IsSameString(const wchar_t* psz1, const wchar_t* psz2);			// case-insensitive comparison -- use tt::strcmp() if you need case-sensitive
+inline bool IsSameSubString(const char* pszMain, const char* pszSub) { return tt::samesubstri(pszMain, pszSub); }
+inline bool IsCSSameSubString(const char* pszMain, const char* pszSub) { return tt::samesubstr(pszMain, pszSub); }
+
+inline bool IsSameString(const char* pszMain, const char* pszSub) { return tt::samestri(pszMain, pszSub); } // case-insensitive comparison -- use tt::strcmp() if you need case-sensitive
+inline bool IsCSSameSubString(const wchar_t* pszMain, const wchar_t* pszSub) { return tt::samesubstr(pszMain, pszSub); }
+
+inline bool IsSameSubString(const wchar_t* pszMain, const wchar_t* pszSub) { return tt::samesubstri(pszMain, pszSub); }
+inline bool IsSameString(const wchar_t* psz1, const wchar_t* psz2) { return tt::samestri(psz1, psz2); }
 
 // Following are identical to above but starting with "is" instead of "Is" (in case you don't remember which case to use)
 
-inline bool isSameSubString(const char* pszMain, const char* pszSub) { return IsSameSubString(pszMain, pszSub); }
-inline bool isCSSameString(const char* pszMain, const char* pszSub)	 { return IsCSSameSubString(pszMain, pszSub); }
-inline bool isSameString(const char* psz1, const char* psz2) { return IsSameString(psz1, psz2); }
+inline bool isSameSubString(const char* pszMain, const char* pszSub) { return tt::samesubstri(pszMain, pszSub); }
+inline bool isCSSameString(const char* pszMain, const char* pszSub)	 { return tt::samesubstr(pszMain, pszSub); }
+inline bool isSameString(const char* psz1, const char* psz2) { return tt::samestr(psz1, psz2); }
 
-inline bool isSameSubString(const wchar_t* pszMain, const wchar_t* pszSub)	 { return IsSameSubString(pszMain, pszSub); }
-inline bool isCSSameSubString(const wchar_t* pszMain, const wchar_t* pszSub) { return IsCSSameSubString(pszMain, pszSub); }
-inline bool isSameString(const wchar_t* psz1, const wchar_t* psz2) { return IsSameString(psz1, psz2); }
+inline bool isSameSubString(const wchar_t* pszMain, const wchar_t* pszSub) { return tt::samesubstri(pszMain, pszSub); }
+inline bool isCSSameSubString(const wchar_t* pszMain, const wchar_t* pszSub) { return tt::samesubstr(pszMain, pszSub); }
+inline bool isSameString(const wchar_t* psz1, const wchar_t* psz2) { return tt::samestr(psz1, psz2); }
 
 // Globals
 
