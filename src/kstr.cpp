@@ -10,6 +10,7 @@
 
 #include <cstring>
 #include <cwchar>
+#include <cerrno>
 
 #include "../include/kstr.h"	// kstr functions
 #include "../include/asserts.h"	// ASSERTS
@@ -38,10 +39,9 @@ size_t tt::strlen(const char* psz)
 	ASSERT_MSG(psz, "NULL pointer!");
 	if (psz) {
 		size_t cch = std::strlen(psz);
-		ASSERT_MSG(cch < _KSTRMAX, "String is too long!");
-		if (cch > _KSTRMAX)	{
-			cch = _KSTRMAX;
-		}
+		ASSERT_MSG(cch < tt::MAX_STRING_LEN, "String is too long!");
+		if (cch > tt::MAX_STRING_LEN)
+			cch = tt::MAX_STRING_LEN;
 		return cch;
 	}
 	return 0;
@@ -52,111 +52,97 @@ size_t tt::strlen(const wchar_t* pwsz)
 	ASSERT_MSG(pwsz, "NULL pointer!");
 	if (pwsz) {
 		size_t cch = std::wcslen(pwsz);
-		ASSERT_MSG(cch < _KSTRMAX, "String is too long!");
-		if (cch > _KSTRMAX)	{
-#if wxUSE_EXCEPTIONS
-			// if a truncated length is returned and the caller allocates memory based on the returned length
-			// and then does a strcpy, it will result in a buffer overflow.
-			throw std::length_error("String is too long!");
-#else
-			cch = _KSTRMAX;
-#endif
-		}
+		ASSERT_MSG(cch < tt::MAX_STRING_LEN, "String is too long!");
+		if (cch > tt::MAX_STRING_LEN)
+			cch = tt::MAX_STRING_LEN;
 		return cch;
 	}
 	return 0;
 }
 
-void tt::strcpy(char* pszDst, size_t cchDest, const char* pszSrc)
+int tt::strcpy_s(char* pszDst, size_t cchDest, const char* pszSrc)
 {
 	ASSERT_MSG(pszDst, "NULL pointer!");
 	ASSERT_MSG(pszSrc, "NULL pointer!");
 
-	if (pszDst == NULL) {
-#if wxUSE_EXCEPTIONS
-		throw std::invalid_argument("NULL pointer!");
-#endif
-		return;
-	}
+	if (pszDst == nullptr)
+		return EINVAL;
 
-	// we assume the caller can deal with an empty destination string if the src pointer is NULL, or the size
-	// is negative
-
-	if (pszSrc == NULL || cchDest > _KSTRMAX) {
+	if (pszSrc == nullptr) {
 		*pszDst = 0;
-		return;
+		return EINVAL;
 	}
 
-	// Unlike std::strncpy, characters after null termination are not copied, and the destination
-	// string is always null-terminated
+	ASSERT_COMMENT(tt::strbyte(pszSrc) <= cchDest, "buffer overflow");
+
+	int result = 0;
+	if (cchDest >= tt::MAX_STRING_LEN) {
+		cchDest = tt::MAX_STRING_LEN - sizeof(char);
+		result = EOVERFLOW;
+	}
 
 	while (cchDest > 0 && (*pszSrc != 0)) {
 		*pszDst++ = *pszSrc++;
 		cchDest--;
 	}
 	*pszDst = 0;
+	return result;
 }
 
-void tt::strcpy(wchar_t* pwszDst, size_t cchDest, const wchar_t* pwszSrc)
+int tt::strcpy_s(wchar_t* pwszDst, size_t cchDest, const wchar_t* pwszSrc)
 {
 	ASSERT_MSG(pwszDst, "NULL pointer!");
 	ASSERT_MSG(pwszSrc, "NULL pointer!");
 
-	if (pwszDst == NULL) {
-#if wxUSE_EXCEPTIONS
-		throw std::invalid_argument("NULL pointer!");
-#endif
-		return;
-	}
+	if (pwszDst == nullptr)
+		return EINVAL;
 
 	// we assume the caller can deal with an empty destination string if the src pointer is NULL, or the size
 	// is negative
 
-	if (pwszSrc == NULL || cchDest > _KSTRMAX) {
+	if (pwszSrc == NULL) {
 		*pwszDst = L'\0';
-		return;
+		return EINVAL;
 	}
 
-	// Unlike std::strncpy, characters after null termination are not copied, and the destination
-	// string is always null-terminated
+	ASSERT_COMMENT(tt::strbyte(pwszSrc) <= cchDest, "buffer overflow");
+
+	int result = 0;
+	if (cchDest >= tt::MAX_STRING_LEN) {
+		cchDest = tt::MAX_STRING_LEN - sizeof(wchar_t);
+		result = EOVERFLOW;
+	}
 
 	while (cchDest > 0 && (*pwszSrc != L'\0')) {
 		*pwszDst++ = *pwszSrc++;
 		cchDest--;
 	}
 	*pwszDst = L'\0';
+	return result;
 }
 
-void tt::strcat(char* pszDst, size_t cchDest, const char* pszSrc)
+int tt::strcat_s(char* pszDst, size_t cchDest, const char* pszSrc)
 {
 	ASSERT_MSG(pszDst, "NULL pointer!");
 	ASSERT_MSG(pszSrc, "NULL pointer!");
 
-	if (pszDst == NULL) {
-#if wxUSE_EXCEPTIONS
-		throw std::invalid_argument("NULL pointer!");
-#endif
-		return;
-	}
-
-	if (pszSrc == nullptr)
-		return;	// do nothing if invalid pointer
+	if (pszDst == nullptr || pszSrc == nullptr)
+		return EINVAL;
 
 	size_t cch = std::strlen(pszDst);
-	ASSERT_MSG(cch < _KSTRMAX, "String is too long!");
+	ASSERT_MSG(cch < tt::MAX_STRING_LEN, "String is too long!");
 
-	if (cch > _KSTRMAX) {
-#if wxUSE_EXCEPTIONS
-			// if a truncated length is returned and the caller allocates memory based on the returned length
-			// and then does a strcpy, it will result in a buffer overflow.
-			throw std::length_error("String is too long!");
-#else
-		cch = _KSTRMAX;
-#endif
+	int result = 0;
+
+	if (cch > tt::MAX_STRING_LEN) {
+		cch = tt::MAX_STRING_LEN;
+		result = EOVERFLOW;
 	}
 	ASSERT_MSG(cch < cchDest, "Destination is too small");
-	if (cch > cchDest)
+	if (cch > cchDest) {
 		cch = cchDest;
+		result = EOVERFLOW;
+	}
 	pszDst += cch;
 	cchDest -= cch;
 	while (cchDest && (*pszSrc != 0)) {
@@ -164,62 +150,31 @@ void tt::strcat(char* pszDst, size_t cchDest, const char* pszSrc)
 		cchDest--;
 	}
 	*pszDst = 0;
+	return result;
 }
 
-#ifdef	_MSC_VER
-	#pragma warning(disable: 4706)	// assignment within conditional expression
-#endif
-
-void tt::strcat(char* pszDst, const char* pszSrc)
+int tt::strcat_s(wchar_t* pszDst, size_t cchDest, const wchar_t* pszSrc)
 {
 	ASSERT_MSG(pszDst, "NULL pointer!");
 	ASSERT_MSG(pszSrc, "NULL pointer!");
 
-	if (pszDst == NULL) {
-#if wxUSE_EXCEPTIONS
-		throw std::invalid_argument("NULL pointer!");
-#endif
-		return;
-	}
+	if (pszDst == nullptr || pszSrc == nullptr)
+		return EINVAL;
 
-	if (pszSrc == nullptr)
-		return;	// do nothing if invalid pointer
-
-	pszDst += std::strlen(pszDst);	// we use the "unsafe" version because we already know pszDst is a non-null pointer
-
-	while ((*pszDst++ = *pszSrc++));
-}
-
-void tt::strcat(wchar_t* pszDst, size_t cchDest, const wchar_t* pszSrc)
-{
-	ASSERT_MSG(pszDst, "NULL pointer!");
-	ASSERT_MSG(pszSrc, "NULL pointer!");
-
-	if (pszDst == NULL) {
-#if wxUSE_EXCEPTIONS
-		throw std::invalid_argument("NULL pointer!");
-#endif
-		return;
-	}
-
-	if (pszSrc == nullptr)
-		return;	// do nothing if invalid pointer
+	int result = 0;
 
 	size_t cch = tt::strlen(pszDst);
-	ASSERT_MSG(cch < _KSTRMAX, "String is too long!");
+	ASSERT_MSG(cch < tt::MAX_STRING_LEN, "String is too long!");
 
-	if (cch > _KSTRMAX) {
-#if wxUSE_EXCEPTIONS
-			// if a truncated length is returned and the caller allocates memory based on the returned length
-			// and then does a strcpy, it will result in a buffer overflow.
-			throw std::length_error("String is too long!");
-#else
-		cch = _KSTRMAX;
-#endif
+	if (cch > tt::MAX_STRING_LEN) {
+		cch = tt::MAX_STRING_LEN;
+		result = EOVERFLOW;
 	}
 	ASSERT_MSG(cch < cchDest, "Destination is too small");
-	if (cch > cchDest)
+	if (cch > cchDest) {
 		cch = cchDest;
+		result = EOVERFLOW;
+	}
 	pszDst += cch;
 	cchDest -= cch;
 	while (cchDest && (*pszSrc != 0)) {
@@ -227,6 +182,7 @@ void tt::strcat(wchar_t* pszDst, size_t cchDest, const wchar_t* pszSrc)
 		cchDest--;
 	}
 	*pszDst = L'\0';
+	return result;
 }
 
 char* tt::strchr(const char* psz, char ch)
