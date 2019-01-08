@@ -294,7 +294,7 @@ void CStr::MakeLower()
 		char* psz = m_psz;
 		while (*psz) {
 			*psz = (char) tolower(*psz);
-			psz = knextchr(psz);	// handles utf8
+			psz = (char*) knextchr(psz);	// handles utf8
 		}
 	}
 }
@@ -305,7 +305,7 @@ void CStr::MakeUpper()
 		char* psz = m_psz;
 		while (*psz) {
 			*psz = (char) toupper(*psz);
-			psz = knextchr(psz);	// handles utf8
+			psz = (char*) knextchr(psz);	// handles utf8
 		}
 	}
 }

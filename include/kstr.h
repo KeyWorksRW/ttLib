@@ -48,7 +48,27 @@ namespace tt {
 	bool 		samesubstr(const char* pszMain, const char* pszSub);	// true if sub string matches first part of main string
 	bool 		samesubstri(const char* pszMain, const char* pszSub);	// case-insensitive comparison
 
-	char*		nextchr(const char * psz);						// handles UTF8 strings
+	const char*	nextchr(const char * psz);		// handles UTF8 strings
+	const char* nextnonspace(const char* psz);	// returns pointer to the next non-space character
+	const char* nextspace(const char* psz);		// returns pointer to the next space character
+
+	const wchar_t* nextnonspace(const wchar_t* psz);	// returns pointer to the next non-space character
+	const wchar_t* nextspace(const wchar_t* psz);		// returns pointer to the next space character
+
+	inline	bool isalpha(char ch) { return ( (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')); }
+	inline	bool isdigit(char ch) { return ((ch >= '0' && ch <= '9') || ch == '-'); }
+	inline	bool isempty(const char* psz) { return (bool) ((psz == nullptr) || (!psz[0])); }
+	inline	bool isnonempty(const char* psz) { return (psz != nullptr && psz[0]); }
+	inline	bool ispunct(char ch) { return (ch == '.' || ch == ',' || ch == ';' || ch == ':' || ch == '?' || ch == '!'); }
+	inline	bool isutf8(char ch) { return ((ch & 0xC0) != 0x80); }	// is ch the start of a utf8 sequence?
+	inline	bool iswhitespace(char ch) { return tt::strchr(" \t\r\n\f", ch) ? true : false; };
+
+	inline	bool isalpha(wchar_t ch) { return ( (ch >= L'a' && ch <= L'z') || (ch >= L'A' && ch <= L'Z')); }
+	inline	bool isdigit(wchar_t ch) { return ((ch >= L'0' && ch <= L'9') || ch == L'-'); }
+	inline	bool isempty(const wchar_t* psz) { return (bool) ((psz == nullptr) || (!psz[0])); }
+	inline	bool isnonempty(const wchar_t* psz) { return (psz != nullptr && psz[0]); }
+	inline	bool ispunct(wchar_t ch) { return (ch == L'.' || ch == L',' || ch == L';' || ch == L':' || ch == L'?' || ch == L'!'); }
+	inline	bool iswhitespace(wchar_t ch) { return (ch == L' ' || ch == L'\t' || ch == L'\r' || ch == L'\n' || ch == L'\f') ? true : false; }
 
 	// force "normal" calls to secure version
 
@@ -111,7 +131,7 @@ namespace tt {
 	inline char*	kstristr(const char* pszMain, const char* pszSub) { return tt::stristr(pszMain, pszSub); }
 	inline char*	kstrstr(const char* pszMain, const char* pszSub) { return tt::strstr(pszMain, pszSub); }
 	inline size_t	kstrlen(const char* psz) { return tt::strlen(psz); }
-	inline char*	knextchr(const char *psz) { return tt::nextchr(psz); }	// handles UTF8 strings
+	inline const char* knextchr(const char *psz) { return tt::nextchr(psz); }	// handles UTF8 strings
 	inline const char* kstrext(const char* pszPath, const char* pszExt) { return tt::strext(pszPath, pszExt); }	// find a case-insensitive extension in a path string
 
 	// wide character versions:

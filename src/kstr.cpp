@@ -17,21 +17,6 @@
 #include "../include/kstr.h"	// kstr functions
 #include "../include/asserts.h"	// ASSERTS
 
-char* tt::nextchr(const char*psz)
-{
-	ASSERT_MSG(psz, "NULL pointer!");
-	if (!psz) {
-		return nullptr;
-	}
-	ASSERT_MSG(*psz, "Empty string!");
-	if (!*psz)
-		return (char*) psz;
-	size_t i = 0;
-	(void) (isutf(psz[++i]) || isutf(psz[++i]) || isutf(psz[++i]));
-
-	return (char*) psz + i;
-}
-
 // We use our own "safe" string handling instead of strsafe.h. Rather then returning an error, we try to do
 // the "right" thing that will allow the program to continue, but without a buffer overun, or GPF caused by
 // NULL pointer. Note also that we have a significantly smaller max string length (16,777,215 versus 2,147,483,647)
@@ -279,7 +264,7 @@ bool tt::samestr(const wchar_t* psz1, const wchar_t* psz2)
 	return false;
 }
 
-bool samestri(const char* psz1, const char* psz2)
+bool tt::samestri(const char* psz1, const char* psz2)
 {
 	if (!psz1 || !psz2)
 		return false;
@@ -298,7 +283,7 @@ bool samestri(const char* psz1, const char* psz2)
 	}
 }
 
-bool samestri(const wchar_t* psz1, const wchar_t* psz2)
+bool tt::samestri(const wchar_t* psz1, const wchar_t* psz2)
 {
 	if (!psz1 || !psz2)
 		return false;
@@ -317,7 +302,7 @@ bool samestri(const wchar_t* psz1, const wchar_t* psz2)
 	}
 }
 
-bool samesubstr(const char* pszMain, const char* pszSub)
+bool tt::samesubstr(const char* pszMain, const char* pszSub)
 {
 	ASSERT_MSG(pszMain, "NULL pointer!");
 	ASSERT_MSG(pszSub, "NULL pointer!");
@@ -333,7 +318,7 @@ bool samesubstr(const char* pszMain, const char* pszSub)
 	return true;
 }
 
-bool samesubstr(const wchar_t* pszMain, const wchar_t* pszSub)
+bool tt::samesubstr(const wchar_t* pszMain, const wchar_t* pszSub)
 {
 	ASSERT_MSG(pszMain, "NULL pointer!");
 	ASSERT_MSG(pszSub, "NULL pointer!");
@@ -349,7 +334,7 @@ bool samesubstr(const wchar_t* pszMain, const wchar_t* pszSub)
 	return true;
 }
 
-bool samesubstri(const char* pszMain, const char* pszSub)
+bool tt::samesubstri(const char* pszMain, const char* pszSub)
 {
 	ASSERT_MSG(pszMain, "NULL pointer!");
 	ASSERT_MSG(pszSub, "NULL pointer!");
@@ -367,7 +352,7 @@ bool samesubstri(const char* pszMain, const char* pszSub)
 	return true;
 }
 
-bool samesubstri(const wchar_t* pszMain, const wchar_t* pszSub)
+bool tt::samesubstri(const wchar_t* pszMain, const wchar_t* pszSub)
 {
 	ASSERT_MSG(pszMain, "NULL pointer!");
 	ASSERT_MSG(pszSub, "NULL pointer!");
@@ -568,25 +553,53 @@ wchar_t* tt::stristr(const wchar_t* pszMain, const wchar_t* pszSub)
 
 #endif //  _WX_WX_H_
 
-//////////////////// Extras ////////////////////////////
-
-// Extra string handling functions. Since this code is normally used in a library, adding them here should
-// not add any bloat to your project if you don't use them.
-
-char* FindNonSpace(const char* psz)
+const char* tt::nextchr(const char*psz)
 {
-	if (!psz)
+	ASSERT_MSG(psz, "NULL pointer!");
+	if (!psz) {
 		return nullptr;
-	while (IsWhiteSpace(*psz))
-		psz++;
-	return (char*) psz;
+	}
+	ASSERT_MSG(*psz, "Empty string!");
+	if (!*psz)
+		return psz;
+	size_t i = 0;
+	(void) (tt::isutf8(psz[++i]) || tt::isutf8(psz[++i]) || tt::isutf8(psz[++i]));
+
+	return psz + i;
 }
 
-char* FindNextSpace(const char* psz)
+const char* tt::nextnonspace(const char* psz)
 {
 	if (!psz)
 		return nullptr;
-	while (*psz && !IsWhiteSpace(*psz))
+	while (tt::iswhitespace(*psz))
 		psz++;
-	return (char*) psz;
+	return psz;
+}
+
+const char* tt::nextspace(const char* psz)
+{
+	if (!psz)
+		return nullptr;
+	while (*psz && !tt::iswhitespace(*psz))
+		psz++;
+	return psz;
+}
+
+const wchar_t* tt::nextnonspace(const wchar_t* psz)
+{
+	if (!psz)
+		return nullptr;
+	while (tt::iswhitespace(*psz))
+		psz++;
+	return psz;
+}
+
+const wchar_t* tt::nextspace(const wchar_t* psz)
+{
+	if (!psz)
+		return nullptr;
+	while (*psz && !tt::iswhitespace(*psz))
+		psz++;
+	return psz;
 }

@@ -56,8 +56,8 @@ inline bool IsWhiteSpace(wchar_t ch) { return (ch == L' ' || ch == L'\t' || ch =
 inline bool IsEmptyString(const wchar_t* psz) { return (bool) ((psz == nullptr) || (!psz[0])); }
 inline bool IsNonEmptyString(const wchar_t* psz) { return (psz != nullptr && psz[0]); }
 
-char* FindNonSpace(const char* psz);
-char* FindNextSpace(const char* psz);
+inline char* FindNonSpace(const char* psz) { return (char*) tt::nextnonspace(psz); }
+inline char* FindNextSpace(const char* psz) {return (char*) tt::nextspace(psz); }
 
 // TODO: [randalphwa - 1/8/2019] All of these is...() functions should get deprecated
 
@@ -113,8 +113,6 @@ inline bool isSameString(const wchar_t* psz1, const wchar_t* psz2) { return tt::
 #define CH_TAB				'\t'
 #define CH_BACKSLASH		'\\'
 #define CH_FORWARDSLASH		'/'
-
-#define isutf(c) (((c) & 0xC0) != 0x80)	// is c the start of a utf8 sequence?
 
 #ifndef max
 	#define max(a, b)  (((a) > (b)) ? (a) : (b))
