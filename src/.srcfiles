@@ -7,7 +7,6 @@ Options:
   bit_suffix: true      # add "64" to the end of the project name (e.g., ttLib64.lib) for 64-bit builds
   WarnLevel:  4         # compiler warning level (1-4) (default if not specified is 4)
   optimize:   space     # speed or space (default)
-  Compilers: CLANG MSVC
 
 Files:
   precomp.cpp
