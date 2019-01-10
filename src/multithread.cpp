@@ -180,6 +180,20 @@ void ttMultiThrd::WaitForThreadsToComplete()
 #endif	// _WX_WX_H_
 }
 
+size_t tt::GetCPUCount()
+{
+#ifdef	_WX_WX_H_
+	auto cpus = wxThread::GetCPUCount();
+	if (cpus == -1)
+		cpus = 1;
+#else	// not _WX_WX_H_
+	SYSTEM_INFO si;
+	GetSystemInfo(&si);
+	auto cpus = si.dwNumberOfProcessors;
+#endif	// _WX_WX_H_
+	return (size_t) cpus;
+}
+
 #ifdef	_WX_WX_H_
 wxThread::ExitCode CMultiChildThread::Entry()
 {

@@ -57,6 +57,7 @@ namespace tt {
 	const char* FindExtPortion(const char* pszFile);
 	const char* FindFilePortion(const char* pszFile);
 	void		ForwardslashToBackslash(char* psz);
+	size_t		GetCPUCount();
 	size_t		HashFromSz(const char* psz);
 	bool		IsValidFileChar(const char* psz, size_t pos);
 	size_t		HashFromSz(const wchar_t* psz);
