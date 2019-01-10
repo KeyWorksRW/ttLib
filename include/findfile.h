@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		CTTFindFile
+// Name:		ttFindFile
 // Purpose:		Header-only class for locating a file
 // Author:		Ralph Walden (randalphwa)
 // Copyright:   Copyright (c) 1999-2018 KeyWorks Software (Ralph Walden)
@@ -12,13 +12,13 @@
 #define __TTLIB_FINDFILE_H__
 
 #ifndef _WINDOWS_
-	#error CTTFindFile can only be used when compiling for Windows.
+	#error ttFindFile can only be used when compiling for Windows.
 #endif
 
 /*
 		Example usage:
 
-		CTTFindFile ff("*.*");
+		ttFindFile ff("*.*");
 		if (ff.isValid()) {
 			do {
 				if (ff.isDir())
@@ -29,11 +29,11 @@
 		}
 */
 
-class CTTFindFile : public WIN32_FIND_DATA
+class ttFindFile : public WIN32_FIND_DATA
 {
 public:
-	CTTFindFile(const char* pszFilePattern) { m_hfind = FindFirstFile(pszFilePattern, this); }
-	~CTTFindFile() {
+	ttFindFile(const char* pszFilePattern) { m_hfind = FindFirstFile(pszFilePattern, this); }
+	~ttFindFile() {
 		if (m_hfind != INVALID_HANDLE_VALUE)
 			FindClose(m_hfind);
 	}
