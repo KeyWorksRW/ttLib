@@ -2,8 +2,8 @@
 // Name:		ttHeap
 // Purpose:		Class for utilizing Windows heap manager
 // Author:		Ralph Walden
-// Copyright:	Copyright (c) 1998-2018 KeyWorks Software (Ralph Walden)
-// License:		Apache License (see ../LICENSE)
+// Copyright:	Copyright (c) 1998-2019 KeyWorks Software (Ralph Walden)
+// License:		Apache License (see LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 #include "pch.h"		// precompiled header
@@ -11,9 +11,7 @@
 #include "../include/ttdebug.h"	// ASSERTs
 #include "../include/ttheap.h"	// ttHeap
 
-// using namespace tt;
-
-ttHeap	tt::MainHeap;
+ttHeap tt::MainHeap;
 
 /*
 	ttHeap can be constructed in one of three ways:
