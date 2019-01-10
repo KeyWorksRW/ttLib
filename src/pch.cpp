@@ -1,3 +1,3 @@
-// Thie file is use to create a pre-compiled header for use in the entire project
+// Thie file is required by MSVC to build the precompiled header
 
 #include "pch.h"
