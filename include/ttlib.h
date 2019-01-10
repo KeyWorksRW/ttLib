@@ -65,4 +65,23 @@ namespace tt {
 
 } // end of tt namespace
 
+namespace ttch {
+	const char CH_OPEN_PAREN =  '(';
+	const char CH_CLOSE_PAREN = ')';
+	const char CH_COLON =		':';
+	const char CH_SEMICOLON =	';';
+	const char CH_START_QUOTE = '`';
+	const char CH_SQUOTE =		'\'';
+	const char CH_END_QUOTE =	'\'';
+	const char CH_QUOTE =		'"';
+	const char CH_EQUAL =		'=';
+	const char CH_SPACE =		' ';
+	const char CH_COMMA =		',';
+	const char CH_LEFT_BRACKET = '[';
+	const char CH_RIGHT_BRACKET = ']';
+	const char CH_TAB =			'\t';
+	const char CH_BACKSLASH =	 '\\';
+	const char CH_FORWARDSLASH = '/';
+} // end of ttpriv namespace
+
 #endif	// __TTLIB_H__
