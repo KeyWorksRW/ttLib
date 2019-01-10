@@ -16,6 +16,8 @@
 #include "../include/ttstr.h"	// various kstr() functions
 #include "../include/ttmem.h"	// ttMem, ttTMem
 
+using namespace ttch;	// used for the CH_ constants
+
 namespace ttpriv {
 	void AddCommasToNumber(char* pszNum, char* pszDst, size_t cbDst);
 }
@@ -250,10 +252,10 @@ char* ttString::GetQuotedString(const char* pszQuote)
 		strncpy_s(m_psz, DEST_SIZE, pszStart, pszQuote - pszStart);
 		m_psz[pszQuote - pszStart] = 0;
 	}
-	else if (*pszQuote == ttpriv::CH_START_QUOTE || *pszQuote == ttpriv::CH_END_QUOTE) {
+	else if (*pszQuote == CH_START_QUOTE || *pszQuote == CH_END_QUOTE) {
 		pszQuote++;
 		const char* pszStart = pszQuote;
-		while (*pszQuote != ttpriv::CH_END_QUOTE && *pszQuote) {
+		while (*pszQuote != CH_END_QUOTE && *pszQuote) {
 			pszQuote = tt::nextchr(pszQuote);
 		}
 		strncpy_s(m_psz, DEST_SIZE, pszStart, pszQuote - pszStart);
