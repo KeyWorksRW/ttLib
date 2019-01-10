@@ -42,8 +42,8 @@ namespace tt {
 	#define ttReportLastError()
 #endif
 
-	#define tt::CATCH_HANDLER __noop
-	#define tt::AssertionMsg  __noop
+	#define CATCH_HANDLER __noop
+	#define AssertionMsg  __noop
 
 #endif	// _DEBUG
 

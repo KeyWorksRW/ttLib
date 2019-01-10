@@ -19,68 +19,68 @@ cflags = -nologo -DNDEBUG -showIncludes -EHsc -W4 -Zl -O1 -GL /Fp$outdir/ttLib.p
 
 rule compilePCH
   deps = msvc
-  command = cl.exe -c $cflags -Fo$outdir/ $in -Fd$outdir/ttLib.pdb -Ycprecomp.h
+  command = cl.exe -c $cflags -Fo$outdir/ $in -Fd$outdir/ttLib.pdb -Ycpch.h
   description = compiling $in
 
 rule compile
   deps = msvc
-  command = cl.exe -c $cflags -Fo$out $in -Yuprecomp.h
+  command = cl.exe -c $cflags -Fo$out $in -Yupch.h
   description = compiling $in
 
 rule lib
   command = lib.exe /MACHINE:x86 /LTCG /NOLOGO /OUT:$out $in
   description = creating library $out
 
-build $outdir/precomp.obj: compilePCH precomp.cpp
+build $outdir/pch.obj: compilePCH pch.cpp
 
-build $outdir/asserts.obj: compile asserts.cpp | $outdir/precomp.obj
+build $outdir/enumstr.obj: compile enumstr.cpp | $outdir/pch.obj
 
-build $outdir/cstr.obj: compile cstr.cpp | $outdir/precomp.obj
+build $outdir/filedir.obj: compile filedir.cpp | $outdir/pch.obj
 
-build $outdir/cwstr.obj: compile cwstr.cpp | $outdir/precomp.obj
+build $outdir/hashpair.obj: compile hashpair.cpp | $outdir/pch.obj
 
-build $outdir/enumstr.obj: compile enumstr.cpp | $outdir/precomp.obj
+build $outdir/misc.obj: compile misc.cpp | $outdir/pch.obj
 
-build $outdir/filedir.obj: compile filedir.cpp | $outdir/precomp.obj
+build $outdir/multithread.obj: compile multithread.cpp | $outdir/pch.obj
 
-build $outdir/hashpair.obj: compile hashpair.cpp | $outdir/precomp.obj
+build $outdir/ttdebug.obj: compile ttdebug.cpp | $outdir/pch.obj
 
-build $outdir/keyfile.obj: compile keyfile.cpp | $outdir/precomp.obj
+build $outdir/ttfile.obj: compile ttfile.cpp | $outdir/pch.obj
 
-build $outdir/kstr.obj: compile kstr.cpp | $outdir/precomp.obj
+build $outdir/ttheap.obj: compile ttheap.cpp | $outdir/pch.obj
 
-build $outdir/keyxml.obj: compile keyxml.cpp | $outdir/precomp.obj
+build $outdir/ttlist.obj: compile ttlist.cpp | $outdir/pch.obj
 
-build $outdir/misc.obj: compile misc.cpp | $outdir/precomp.obj
+build $outdir/ttstr.obj: compile ttstr.cpp | $outdir/pch.obj
 
-build $outdir/multithread.obj: compile multithread.cpp | $outdir/precomp.obj
+build $outdir/ttstring.obj: compile ttstring.cpp | $outdir/pch.obj
 
-build $outdir/strlist.obj: compile strlist.cpp | $outdir/precomp.obj
+build $outdir/ttwstring.obj: compile ttwstring.cpp | $outdir/pch.obj
 
-build $outdir/ttheap.obj: compile ttheap.cpp | $outdir/precomp.obj
+build $outdir/ttxml.obj: compile ttxml.cpp | $outdir/pch.obj
 
-build $outdir/cttdlg.obj: compile cttdlg.cpp | $outdir/precomp.obj
+build $outdir/filedlg.obj: compile filedlg.cpp | $outdir/pch.obj
 
-build $outdir/filedlg.obj: compile filedlg.cpp | $outdir/precomp.obj
+build $outdir/ttdlg.obj: compile ttdlg.cpp | $outdir/pch.obj
 
-build $outdir/winmisc.obj: compile winmisc.cpp | $outdir/precomp.obj
+build $outdir/winmisc.obj: compile winmisc.cpp | $outdir/pch.obj
 
 build ../lib/ttLib.lib : lib $
-  $outdir/precomp.obj $
-  $outdir/asserts.obj $
-  $outdir/cstr.obj $
-  $outdir/cwstr.obj $
+  $outdir/pch.obj $
   $outdir/enumstr.obj $
   $outdir/filedir.obj $
   $outdir/hashpair.obj $
-  $outdir/keyfile.obj $
-  $outdir/kstr.obj $
-  $outdir/keyxml.obj $
   $outdir/misc.obj $
   $outdir/multithread.obj $
-  $outdir/strlist.obj $
+  $outdir/ttdebug.obj $
+  $outdir/ttfile.obj $
   $outdir/ttheap.obj $
-  $outdir/cttdlg.obj $
+  $outdir/ttlist.obj $
+  $outdir/ttstr.obj $
+  $outdir/ttstring.obj $
+  $outdir/ttwstring.obj $
+  $outdir/ttxml.obj $
   $outdir/filedlg.obj $
+  $outdir/ttdlg.obj $
   $outdir/winmisc.obj
 

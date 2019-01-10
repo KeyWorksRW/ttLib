@@ -58,28 +58,28 @@ endif
 
 ########## release section ##########
 
-release: ttNewLib
+release: ttLib
 
-ttNewLib:
+ttLib:
 	ninja -f build/$(cmplr)Build$(bits).ninja
 
 ########## debug section ##########
 
-debug: ttNewLibD
+debug: ttLibD
 
-ttNewLibD:
+ttLibD:
 	ninja -f build/$(cmplr)Build$(bits)D.ninja
 
 ########## clean release section ##########
 
-clean: ttNewLibClean
+clean: ttLibClean
 
-ttNewLibClean:
+ttLibClean:
 	ninja -f build/$(cmplr)Build$(bits).ninja -t clean
 
 ########## clean debug section ##########
 
-cleanD: ttNewLibCleanD
+cleanD: ttLibCleanD
 
-ttNewLibCleanD:
+ttLibCleanD:
 	ninja -f build/$(cmplr)Build$(bits)D.ninja -t clean

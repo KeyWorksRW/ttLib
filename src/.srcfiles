@@ -1,5 +1,5 @@
 Options:
-  Project: ttNewLib
+  Project: ttLib
   TargetDirs:  ../lib	# both 32-bit and 64-bit libaries will be built here
   PCH: pch.h			# "none" or name of header file to use for precompilation
   exe_type:	  lib		# [window | console | lib | dll]
@@ -28,8 +28,5 @@ Files:
 # _WINDOWS_ only files
 
   filedlg.cpp
-  multibtn.cpp
-  shadebtn.cpp
-  ttdib.cpp
   ttdlg.cpp
   winmisc.cpp

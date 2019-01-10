@@ -222,7 +222,9 @@ DWORD __stdcall _MultiThread(void* pv)
 			pThis->doThreadWork(pThrdInfo->pvData1, pThrdInfo->pvData2);
 		}
 		catch (...) {
+#ifdef _DEBUG
 			tt::CATCH_HANDLER("%s (%d) : Exception in doThreadWork()", __FILE__, __LINE__);
+#endif
 		}
 
 		pThrdInfo->bDone = true;
