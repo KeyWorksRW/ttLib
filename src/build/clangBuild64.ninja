@@ -59,6 +59,12 @@ build $outdir/ttxml.obj: compile ttxml.cpp | $outdir/pch.obj
 
 build $outdir/filedlg.obj: compile filedlg.cpp | $outdir/pch.obj
 
+build $outdir/multibtn.obj: compile multibtn.cpp | $outdir/pch.obj
+
+build $outdir/shadebtn.obj: compile shadebtn.cpp | $outdir/pch.obj
+
+build $outdir/ttdib.obj: compile ttdib.cpp | $outdir/pch.obj
+
 build $outdir/ttdlg.obj: compile ttdlg.cpp | $outdir/pch.obj
 
 build $outdir/winmisc.obj: compile winmisc.cpp | $outdir/pch.obj
@@ -79,6 +85,9 @@ build ../lib/ttLib64.lib : lib $
   $outdir/ttwstring.obj $
   $outdir/ttxml.obj $
   $outdir/filedlg.obj $
+  $outdir/multibtn.obj $
+  $outdir/shadebtn.obj $
+  $outdir/ttdib.obj $
   $outdir/ttdlg.obj $
   $outdir/winmisc.obj
 

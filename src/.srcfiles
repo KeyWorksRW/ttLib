@@ -28,5 +28,8 @@ Files:
 # _WINDOWS_ only files
 
   filedlg.cpp
+  multibtn.cpp
+  shadebtn.cpp
+  ttdib.cpp
   ttdlg.cpp
   winmisc.cpp
