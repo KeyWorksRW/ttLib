@@ -1,20 +1,20 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		CMultiThread
+// Name:		ttMultiThrd
 // Purpose:		Class for utilizing Windows heap manager
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2010-2018 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
-#include "precomp.h"
+#include "pch.h"
 
-#include "../include/multithread.h"	// CMultiThread
+#include "../include/multithread.h"	// ttMultiThrd
 
 #ifndef _WX_WX_H_
 	DWORD __stdcall _MultiThread(void* pv);
 #endif
 
-CMultiThread::CMultiThread()
+ttMultiThrd::ttMultiThrd()
 {
 	m_cThreads = 0;
 	m_bEndThreads = m_bCanceled = false;
@@ -26,7 +26,7 @@ CMultiThread::CMultiThread()
 #endif
 }
 
-CMultiThread::~CMultiThread()
+ttMultiThrd::~ttMultiThrd()
 {
 #ifdef _WX_WX_H_
 	if (m_aThrds) {
@@ -57,7 +57,7 @@ CMultiThread::~CMultiThread()
 #endif	// _WX_WX_H_
 }
 
-void CMultiThread::InitializeThreads(size_t cThreads)	// 0 means create as many threads as there are CPUs
+void ttMultiThrd::InitializeThreads(size_t cThreads)	// 0 means create as many threads as there are CPUs
 {
 #ifdef	_WX_WX_H_
 	int cpus = wxThread::GetCPUCount();
@@ -69,8 +69,8 @@ void CMultiThread::InitializeThreads(size_t cThreads)	// 0 means create as many 
 	int cpus = (int) si.dwNumberOfProcessors;
 #endif	// _WX_WX_H_
 
-	ASSERT(cThreads <= (size_t) cpus);
-	ASSERT_MSG(!m_cThreads, "You cannot call InitializeThreads more then once!");
+	ttASSERT(cThreads <= (size_t) cpus);
+	ttASSERT_MSG(!m_cThreads, "You cannot call InitializeThreads more then once!");
 	if (m_cThreads)
 		return;	// already initialized
 
@@ -99,7 +99,7 @@ void CMultiThread::InitializeThreads(size_t cThreads)	// 0 means create as many 
 		DWORD thrdID;
 		// REVIEW: [ralphw - 05-20-2018] Should switch to _beginthreadex() for portability
 		m_aThrdInfo[iThread].hThread  = (HANDLE) CreateThread(NULL, 0, _MultiThread, (LPVOID) this, 0, &thrdID);
-		ASSERT(m_aThrdInfo[iThread].hThread);
+		ttASSERT(m_aThrdInfo[iThread].hThread);
 		if (!m_aThrdInfo[iThread].hThread) {
 			// TODO: [ralphw - 03-02-2010] this would be really bad...
 		}
@@ -110,7 +110,7 @@ void CMultiThread::InitializeThreads(size_t cThreads)	// 0 means create as many 
 	}
 }
 
-size_t CMultiThread::GetAvailableThreads()
+size_t ttMultiThrd::GetAvailableThreads()
 {
 	size_t nAvail = 0;
 	for (size_t iThread = 0; iThread < m_cThreads; iThread++) {
@@ -125,7 +125,7 @@ size_t CMultiThread::GetAvailableThreads()
 	return nAvail;
 }
 
-void CMultiThread::StartThread(void* pvData1, void* pvData2)
+void ttMultiThrd::StartThread(void* pvData1, void* pvData2)
 {
 #ifdef	_WX_WX_H_
 	if (!m_aThrds)
@@ -138,19 +138,19 @@ void CMultiThread::StartThread(void* pvData1, void* pvData2)
 		if (m_aThrds[iThread]->m_fDone)
 			break;
 	}
-	ASSERT(iThread < m_cThreads);	// theoretically impossible
+	ttASSERT(iThread < m_cThreads);	// theoretically impossible
 
 	m_aThrds[iThread]->m_fDone = false;
 	m_aThrds[iThread]->m_pvData1 = pvData1;
 	m_aThrds[iThread]->m_pvData2 = pvData2;
 	m_aThrds[iThread]->m_semStart.Post();
 #else
-	ASSERT_COMMENT(m_aThrdInfo, "StartThread called before InitializeThreads()");
+	ttASSERT_MSG(m_aThrdInfo, "StartThread called before InitializeThreads()");
 	if (!m_aThrdInfo)
 		InitializeThreads(0);
 
 	DWORD pos = WaitForMultipleObjects((DWORD) m_cThreads, m_ahsemDone, FALSE, INFINITE) - WAIT_OBJECT_0;
-	ASSERT(pos >= 0 && pos < (DWORD) m_cThreads);
+	ttASSERT(pos >= 0 && pos < (DWORD) m_cThreads);
 	m_aThrdInfo[pos].bDone = false;
 	m_aThrdInfo[pos].pvData1 = pvData1;
 	m_aThrdInfo[pos].pvData2 = pvData2;
@@ -158,14 +158,14 @@ void CMultiThread::StartThread(void* pvData1, void* pvData2)
 #endif
 }
 
-void CMultiThread::CancelThreads()
+void ttMultiThrd::CancelThreads()
 {
 	m_bCanceled = true;
 	WaitForThreadsToComplete();
 	m_bCanceled = false;
 }
 
-void CMultiThread::WaitForThreadsToComplete()
+void ttMultiThrd::WaitForThreadsToComplete()
 {
 #ifdef	_WX_WX_H_
 	for (size_t iThread = 0; iThread < m_cThreads; iThread++) {
@@ -206,11 +206,11 @@ wxThread::ExitCode CMultiChildThread::Entry()
 
 DWORD __stdcall _MultiThread(void* pv)
 {
-	CMultiThread* pThis = (CMultiThread*) pv;
+	ttMultiThrd* pThis = (ttMultiThrd*) pv;
 	DWORD thrdID = GetCurrentThreadId();
 	ptrdiff_t pos = pThis->m_threadMap.FindKey(thrdID);
-	ASSERT(pos >= 0);	// theoretically impossible
-	CMultiThread::MULTI_THRD_INFO* pThrdInfo = pThis->m_threadMap.GetValueAt(pos);
+	ttASSERT(pos >= 0);	// theoretically impossible
+	ttMultiThrd::MULTI_THRD_INFO* pThrdInfo = pThis->m_threadMap.GetValueAt(pos);
 
 	for (;;) {
 		if (WaitForSingleObject(pThrdInfo->hsemStart, INFINITE) != WAIT_OBJECT_0)
@@ -222,7 +222,7 @@ DWORD __stdcall _MultiThread(void* pv)
 			pThis->doThreadWork(pThrdInfo->pvData1, pThrdInfo->pvData2);
 		}
 		catch (...) {
-			CATCH_HANDLER("%s (%d) : Exception in doThreadWork()", __FILE__, __LINE__);
+			tt::CATCH_HANDLER("%s (%d) : Exception in doThreadWork()", __FILE__, __LINE__);
 		}
 
 		pThrdInfo->bDone = true;

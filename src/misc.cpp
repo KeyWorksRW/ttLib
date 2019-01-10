@@ -1,29 +1,19 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:		misc.cpp
-// Purpose:		Miscellaneous functions
+// Purpose:
 // Author:		Ralph Walden
-// Copyright:	Copyright (c) 2018 KeyWorks Software (Ralph Walden)
-// License:		Apache License (see ../LICENSE)
+// Copyright:	Copyright (c) 2018-2019 KeyWorks Software (Ralph Walden)
+// Licence:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
-#include "precomp.h"		// precompiled header
+#include "pch.h"
 
-#include "../include/cstr.h"	// CStr
+#include "../include/ttstring.h"	// ttString
 
-#if !defined(_WINDOWS_) && !defined(_WX_WX_H_)
-	#error wxWidgets is required for non-Windows builds
-#endif
-
-#ifdef _WX_WX_H_
-	#include <wx/dir.h>	// wxDir class
-#endif
-
-// typedef size_t HASH;		// defined in ttlib.h
-
-size_t HashFromSz(const char* psz)
+size_t tt::HashFromSz(const char* psz)
 {
-	ASSERT_MSG(psz, "NULL pointer!");
-	ASSERT_MSG(*psz, "empty string!");
+	ttASSERT_MSG(psz, "NULL pointer!");
+	ttASSERT_MSG(*psz, "empty string!");
 
 	if (!psz || !*psz)
 		return 0;
@@ -45,10 +35,10 @@ size_t HashFromSz(const char* psz)
 	return hash;
 }
 
-size_t HashFromSz(const wchar_t* psz)
+size_t tt::HashFromSz(const wchar_t* psz)
 {
-	ASSERT_MSG(psz, "NULL pointer!");
-	ASSERT_MSG(*psz, "empty string!");
+	ttASSERT_MSG(psz, "NULL pointer!");
+	ttASSERT_MSG(*psz, "empty string!");
 
 	if (!psz || !*psz)
 		return 5381;
@@ -63,49 +53,18 @@ size_t HashFromSz(const wchar_t* psz)
 
 // Unlike a "regular" hash, this version treats forward and backslashes identically, as well as upper and lower-case letters
 
-size_t HashFromURL(const char* pszURL)
+size_t tt::HashFromURL(const char* pszURL)
 {
-	CStr csz(pszURL);
-	BackslashToForwardslash(csz);
+	ttString csz(pszURL);
+	tt::BackslashToForwardslash(csz);
+	csz.MakeLower();
+	return tt::HashFromSz(csz);
+}
+
+size_t tt::HashFromURL(const wchar_t* pszURL)
+{
+	ttString csz(pszURL);
+	tt::BackslashToForwardslash(csz);
 	csz.MakeLower();
 	return HashFromSz(csz);
-}
-
-size_t HashFromURL(const wchar_t* pszURL)
-{
-	CStr csz(pszURL);
-	BackslashToForwardslash(csz);
-	csz.MakeLower();
-	return HashFromSz(csz);
-}
-
-void trim(char* psz)
-{
-	ASSERT_MSG(psz, "NULL pointer!");
-	if (!psz || !*psz)
-		return;
-
-	char* pszEnd = psz + strlen(psz) - 1;
-	while ((*pszEnd == ' ' || *pszEnd == '\t' || *pszEnd == '\r' || *pszEnd == '\n' || *pszEnd == '\f')) {
-		pszEnd--;
-		if (pszEnd == psz) {
-			*pszEnd = 0;
-			return;
-		}
-	}
-	pszEnd[1] = '\0';
-}
-
-int GetCPUCount()
-{
-#ifdef	_WX_WX_H_
-	int cpus = wxThread::GetCPUCount();
-	if (cpus == -1)
-		cpus = 1;
-#else	// not _WX_WX_H_
-	SYSTEM_INFO si;
-	GetSystemInfo(&si);
-	int cpus = (int) si.dwNumberOfProcessors;
-#endif	// _WX_WX_H_
-	return cpus;
 }

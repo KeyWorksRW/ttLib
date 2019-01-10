@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		CTTArray
+// Name:		ttArray
 // Purpose:		Simple templated array
 // Author:		Ralph Walden (randalphwa)
-// Copyright:   Copyright (c) 2010-2018 KeyWorks Software (Ralph Walden)
-// License:     Apache License (see ../LICENSE)
+// Copyright:	Copyright (c) 2010-2019 KeyWorks Software (Ralph Walden)
+// License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -11,16 +11,18 @@
 #ifndef __TTLIB_TTARRAY_H__
 #define __TTLIB_TTARRAY_H__
 
+#include "ttheap.h" // ttHeap
+
 // A simple array of any type
 
-template <typename T> class CTTArray
+template <typename T> class ttArray
 {
 public:
-	CTTArray() {
+	ttArray() {
 		m_cAllocated = m_cItems = 0;
 		m_aData = NULL;
 	}
-	~CTTArray() {
+	~ttArray() {
 		if (m_aData)
 			tt::free(m_aData);
 	}
@@ -49,7 +51,7 @@ public:
 
 	void operator+=(T t) { Add(t); }
 	T operator[](size_t pos) const {
-		ASSERT(pos < m_cItems);
+		ttASSERT(pos < m_cItems);
 		if (pos >= m_cItems)
 			return NULL;
 		return m_aData[pos];

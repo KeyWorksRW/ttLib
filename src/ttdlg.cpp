@@ -1,25 +1,34 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		CTTDlg
+// Name:		ttDlg
 // Purpose:		Class for creating a Modal dialog box
 // Author:		Ralph Walden (randalphwa)
-// Copyright:	Copyright (c) 1998-2018 KeyWorks Software (Ralph Walden)
+// Copyright:	Copyright (c) 1998-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
-#include "precomp.h"
+#include "pch.h"
 
 #ifndef _WINDOWS_
 	#error This code will only work on Windows
 #endif
 #include <VersionHelpers.h>
 
-#include "../include/cttdlg.h"
-
-INT_PTR WINAPI CTTDlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam);
+#include "../include/ttdlg.h"
 
 #define WMP_CENTER_WINDOW WM_USER + 0x7000
 
-CTTDlg::CTTDlg(UINT idTemplate, HWND hwnd)
+namespace ttpriv {
+	BOOL (WINAPI* pfnAnimateWindow)(HWND, DWORD, DWORD);
+	HMONITOR MonitorFromWindow(HWND hwnd, DWORD dwFlags);
+	HMONITOR MonitorFromPoint(POINT pt, DWORD dwFlags);
+	BOOL	 GetMonitorInfo(HMONITOR hMonitor, LPMONITORINFO lpmi);
+
+	HMONITOR (WINAPI* pfnMonitorFromWindow)(HWND hwnd, DWORD dwFlags);
+	HMONITOR (WINAPI* pfnMonitorFromPoint)(POINT pt, DWORD dwFlags);
+	BOOL	 (WINAPI* pfnGetMonitorInfo)(HMONITOR hMonitor, LPMONITORINFO lpmi);
+}
+
+ttDlg::ttDlg(UINT idTemplate, HWND hwnd)
 {
 	m_hWnd = NULL;
 	m_hwndParent = hwnd;
@@ -31,22 +40,22 @@ CTTDlg::CTTDlg(UINT idTemplate, HWND hwnd)
 	m_bInitializing = true;
 };
 
-INT_PTR CTTDlg::DoModal()
+INT_PTR ttDlg::DoModal()
 {
-	INT_PTR result = ::DialogBoxParam(_hinstResources, MAKEINTRESOURCE(m_idTemplate), m_hwndParent, (DLGPROC) CTTDlgProc, (LPARAM) this);
+	INT_PTR result = ::DialogBoxParam(tt::hinstResources, MAKEINTRESOURCE(m_idTemplate), m_hwndParent, (DLGPROC) ttpriv::DlgProc, (LPARAM) this);
 #ifdef _DEBUG
 	if (result == -1) {
-		HRSRC hrsrc = FindResource(_hinstResources, MAKEINTRESOURCE(m_idTemplate), RT_DIALOG);
-		ASSERT_MSG(hrsrc, "Missing dialog template");
+		HRSRC hrsrc = FindResource(tt::hinstResources, MAKEINTRESOURCE(m_idTemplate), RT_DIALOG);
+		ttASSERT_MSG(hrsrc, "Missing dialog template");
 		if (!hrsrc)
 			return result;
 	}
 #endif
-	ASSERT_COMMENT(result != -1, "Failed to create dialog box");
+	ttASSERT_MSG(result != -1, "Failed to create dialog box");
 	return result;
 }
 
-INT_PTR WINAPI CTTDlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	if (msg == WM_INITDIALOG) {	// this is the only time that pThis will be NULL
 #ifdef _WIN64
@@ -54,9 +63,9 @@ INT_PTR WINAPI CTTDlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam)
 #else
 		SetWindowLongPtr(hdlg, GWL_USERDATA, lParam);
 #endif
-		CTTDlg* pThis = (CTTDlg*) lParam;
+		ttDlg* pThis = (ttDlg*) lParam;
 		pThis->m_hWnd = hdlg;
-		if (!IsValidWindow(pThis->m_hwndParent))
+		if (!tt::IsValidWindow(pThis->m_hwndParent))
 			pThis->m_hwndParent = GetActiveWindow();
 
 		if (pThis->m_fCenterWindow) {
@@ -73,9 +82,9 @@ INT_PTR WINAPI CTTDlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 
 #ifdef _WIN64
-	CTTDlg* pThis = (CTTDlg*) GetWindowLongPtr(hdlg, GWLP_USERDATA);
+	ttDlg* pThis = (ttDlg*) GetWindowLongPtr(hdlg, GWLP_USERDATA);
 #else
-	CTTDlg* pThis = (CTTDlg*) GetWindowLongPtr(hdlg, GWL_USERDATA);
+	ttDlg* pThis = (ttDlg*) GetWindowLongPtr(hdlg, GWL_USERDATA);
 #endif
 	if (!pThis)
 		return FALSE;
@@ -89,8 +98,8 @@ INT_PTR WINAPI CTTDlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam)
 				RECT rc;
 				GetWindowRect(hdlg, &rc);
 
-				int cx = RECT_WIDTH(rc);
-				int cy = RECT_HEIGHT(rc);
+				int cx = tt::RC_WIDTH(rc);
+				int cy = tt::RC_HEIGHT(rc);
 
 				if (pThis->m_hwndParent) {
 					GetWindowRect(pThis->m_hwndParent, &rc);
@@ -99,17 +108,17 @@ INT_PTR WINAPI CTTDlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam)
 					SystemParametersInfo(SPI_GETWORKAREA, 0, &rc, 0);
 				}
 
-				int left = rc.left + (RECT_WIDTH(rc) - cx) / 2;
-				int top	 = rc.top + (RECT_HEIGHT(rc) - cy) / 2;
+				int left = rc.left + (tt::RC_WIDTH(rc) - cx) / 2;
+				int top	 = rc.top + (tt::RC_HEIGHT(rc) - cy) / 2;
 
 				// Make certain the dialog doesn't spawn between two monitors
 
 				RECT rcDesktop;
-				HMONITOR hmon = KeyMonitorFromWindow(hdlg, MONITOR_DEFAULTTOPRIMARY);
+				HMONITOR hmon = ttpriv::pfnMonitorFromWindow(hdlg, MONITOR_DEFAULTTOPRIMARY);
 				if (hmon) {
 					MONITORINFO mi;
 					mi.cbSize = sizeof(mi);
-					if (KeyGetMonitorInfo(hmon, &mi)) {
+					if (ttpriv::pfnGetMonitorInfo(hmon, &mi)) {
 						CopyRect(&rcDesktop, &mi.rcWork);
 					}
 					else {
@@ -171,23 +180,21 @@ INT_PTR WINAPI CTTDlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	return FALSE;
 }
 
-ptrdiff_t CTTDlg::GetControlInteger(ptrdiff_t id) const
+ptrdiff_t ttDlg::GetControlInteger(ptrdiff_t id) const
 {
 	char szBuf[20];
 	GetControlText(id, szBuf, sizeof(szBuf) - 1);
-	return Atoi(szBuf);
+	return tt::atoi(szBuf);
 }
 
-void CTTDlg::SetControlInteger(ptrdiff_t id, ptrdiff_t val) const
+void ttDlg::SetControlInteger(ptrdiff_t id, ptrdiff_t val) const
 {
 	char szBuf[20];
-	Itoa(val, szBuf, sizeof(szBuf));
+	tt::itoa(val, szBuf, sizeof(szBuf));
 	SetControlText(id, szBuf);
 }
 
-BOOL (WINAPI* g_pfnTTAnimateWindow)(HWND, DWORD, DWORD);
-
-void CTTDlg::FadeWindow()
+void ttDlg::FadeWindow()
 {
 
 #if (WINVER < 0x0500)
@@ -206,14 +213,14 @@ void CTTDlg::FadeWindow()
 #endif
 
 	if (IsWindowsXPOrGreater()) {
-		if (!g_pfnTTAnimateWindow) {
+		if (!ttpriv::pfnAnimateWindow) {
 			HMODULE hUser32 = GetModuleHandle(TEXT("USER32"));
 			if (hUser32 &&
-					(*(FARPROC*)&g_pfnTTAnimateWindow = GetProcAddress(hUser32, "AnimateWindow")) != NULL)
-				g_pfnTTAnimateWindow(m_hWnd, 200, AW_HIDE | AW_BLEND);
+					(*(FARPROC*)&ttpriv::pfnAnimateWindow = GetProcAddress(hUser32, "AnimateWindow")) != NULL)
+				ttpriv::pfnAnimateWindow(m_hWnd, 200, AW_HIDE | AW_BLEND);
 		}
 		else
-			g_pfnTTAnimateWindow(m_hWnd, 200, AW_HIDE | AW_BLEND);
+			ttpriv::pfnAnimateWindow(m_hWnd, 200, AW_HIDE | AW_BLEND);
 
 		// Theoretically, we may not have called AnimateWindow -- but only if an
 		// Operating System later then version 5 doesn't support it (or for some
@@ -223,9 +230,9 @@ void CTTDlg::FadeWindow()
 	}
 }
 
-LRESULT CDlgListView::AddString(const char* psz, LPARAM lParam)
+LRESULT ttListView::AddString(const char* psz, LPARAM lParam)
 {
-	ASSERT(psz);
+	ttASSERT(psz);
 	if (!psz)
 		return -1;
 	LVITEMA lvi;
@@ -239,9 +246,9 @@ LRESULT CDlgListView::AddString(const char* psz, LPARAM lParam)
 	return (LRESULT) ::SendMessage(m_hwnd, LVM_INSERTITEMA, 0, (LPARAM) &lvi);
 }
 
-LRESULT CDlgListView::AddString(const wchar_t* pwsz, LPARAM lParam)
+LRESULT ttListView::AddString(const wchar_t* pwsz, LPARAM lParam)
 {
-	ASSERT(pwsz);
+	ttASSERT(pwsz);
 	if (!pwsz)
 		return -1;
 	LVITEMW lvi;
@@ -255,9 +262,9 @@ LRESULT CDlgListView::AddString(const wchar_t* pwsz, LPARAM lParam)
 	return (LRESULT) ::SendMessage(m_hwnd, LVM_INSERTITEMW, 0, (LPARAM) &lvi);
 }
 
-BOOL CDlgListView::AddSubString(int iItem, int iSubItem, const char* psz)
+BOOL ttListView::AddSubString(int iItem, int iSubItem, const char* psz)
 {
-	ASSERT(psz);
+	ttASSERT(psz);
 	if (!psz)
 		return -1;
 	LV_ITEMA lvi;
@@ -269,9 +276,9 @@ BOOL CDlgListView::AddSubString(int iItem, int iSubItem, const char* psz)
 	return (BOOL) ::SendMessage(m_hwnd, LVM_SETITEMA, 0, (LPARAM) &lvi);
 }
 
-BOOL CDlgListView::AddSubString(int iItem, int iSubItem, const wchar_t* pwsz)
+BOOL ttListView::AddSubString(int iItem, int iSubItem, const wchar_t* pwsz)
 {
-	ASSERT(pwsz);
+	ttASSERT(pwsz);
 	if (!pwsz)
 		return -1;
 	LV_ITEMW lvi;
@@ -283,9 +290,9 @@ BOOL CDlgListView::AddSubString(int iItem, int iSubItem, const wchar_t* pwsz)
 	return (BOOL) ::SendMessage(m_hwnd, LVM_SETITEMW, 0, (LPARAM) &lvi);
 }
 
-void CDlgListView::InsertColumn(int iColumn, const char* pszText, int width)
+void ttListView::InsertColumn(int iColumn, const char* pszText, int width)
 {
-	ASSERT(pszText);
+	ttASSERT(pszText);
 	if (!pszText)
 		return;
 	LV_COLUMNA lvc;
@@ -297,9 +304,9 @@ void CDlgListView::InsertColumn(int iColumn, const char* pszText, int width)
 	::SendMessage(m_hwnd, LVM_INSERTCOLUMNA, (WPARAM) iColumn, (LPARAM) &lvc);
 }
 
-void CDlgListView::InsertColumn(int iColumn, const wchar_t* pszText, int width)
+void ttListView::InsertColumn(int iColumn, const wchar_t* pszText, int width)
 {
-	ASSERT(pszText);
+	ttASSERT(pszText);
 	if (!pszText)
 		return;
 	LV_COLUMNW lvc;
@@ -313,11 +320,11 @@ void CDlgListView::InsertColumn(int iColumn, const wchar_t* pszText, int width)
 
 #ifdef _DEBUG
 
-DWORD CTTDlg::CheckItemID(int id, const char* pszID, int line, const char* file) const {
+DWORD ttDlg::CheckItemID(int id, const char* pszID, int line, const char* file) const {
 	if (::GetDlgItem(*this, id) == NULL) {
-		CStr cszMsg;
+		ttString cszMsg;
 		cszMsg.printf("Invalid dialog control id: %s (%u)", pszID, id);
-		AssertionMsg(cszMsg, file, __func__, line);
+		tt::AssertionMsg(cszMsg, file, __func__, line);
 	}
 	return id;
 }
@@ -325,10 +332,6 @@ DWORD CTTDlg::CheckItemID(int id, const char* pszID, int line, const char* file)
 #endif	// _DEBUG
 
 ///////////////////// Monitor Code /////////////////////////////////////////
-
-static HMONITOR (WINAPI* s_pfnMonitorFromWindow)(HWND, DWORD);
-static HMONITOR	(WINAPI* s_pfnMonitorFromPoint)(POINT, DWORD);
-static BOOL		(WINAPI* s_pfnGetMonitorInfo)(HMONITOR, LPMONITORINFO);
 
 #ifndef	xPRIMARY_MONITOR
 #define xPRIMARY_MONITOR ((HMONITOR)0x12340042)
@@ -338,44 +341,48 @@ static BOOL		(WINAPI* s_pfnGetMonitorInfo)(HMONITOR, LPMONITORINFO);
 #define MONITORINFOF_PRIMARY		0x00000001
 #endif
 
-static bool InitMonitorStubs()
+namespace ttpriv {
+	bool InitMonitorStubs();
+}
+
+bool ttpriv::InitMonitorStubs()
 {
 	static bool fTried = false;
 	if (fTried)
-		return (s_pfnGetMonitorInfo != NULL);
+		return (ttpriv::pfnGetMonitorInfo != NULL);
 
 	fTried = true;
 	HMODULE hUser32 = GetModuleHandle(TEXT("USER32"));
 
 	if (hUser32 &&
-			(*(FARPROC*)&s_pfnMonitorFromWindow	  = GetProcAddress(hUser32,"MonitorFromWindow")) != NULL &&
-			(*(FARPROC*)&s_pfnMonitorFromPoint	  = GetProcAddress(hUser32,"MonitorFromPoint")) != NULL &&
-			(*(FARPROC*)&s_pfnGetMonitorInfo	  = GetProcAddress(hUser32,"GetMonitorInfoA")) != NULL)
+			(*(FARPROC*)&ttpriv::pfnMonitorFromWindow	  = GetProcAddress(hUser32,"MonitorFromWindow")) != NULL &&
+			(*(FARPROC*)&ttpriv::pfnMonitorFromPoint	  = GetProcAddress(hUser32,"MonitorFromPoint")) != NULL &&
+			(*(FARPROC*)&ttpriv::pfnGetMonitorInfo	  = GetProcAddress(hUser32,"GetMonitorInfoA")) != NULL)
 		return true;
 
 	return false;
 }
 
-HMONITOR KeyMonitorFromWindow(HWND hwnd, DWORD dwFlags)
+HMONITOR ttpriv::MonitorFromWindow(HWND hwnd, DWORD dwFlags)
 {
-	if (InitMonitorStubs())
-		return s_pfnMonitorFromWindow(hwnd, dwFlags);
+	if (ttpriv::InitMonitorStubs())
+		return ttpriv::pfnMonitorFromWindow(hwnd, dwFlags);
 	else
 		return xPRIMARY_MONITOR;
 }
 
-HMONITOR KeyMonitorFromPoint(POINT pt, DWORD dwFlags)
+HMONITOR ttpriv::MonitorFromPoint(POINT pt, DWORD dwFlags)
 {
-	if (InitMonitorStubs())
-		return s_pfnMonitorFromPoint(pt, dwFlags);
+	if (ttpriv::InitMonitorStubs())
+		return ttpriv::pfnMonitorFromPoint(pt, dwFlags);
 	else
 		return xPRIMARY_MONITOR;
 }
 
-BOOL KeyGetMonitorInfo(HMONITOR hMonitor, LPMONITORINFO lpmi)
+BOOL ttpriv::GetMonitorInfo(HMONITOR hMonitor, LPMONITORINFO lpmi)
 {
-	if (InitMonitorStubs())
-		return s_pfnGetMonitorInfo(hMonitor, lpmi);
+	if (ttpriv::InitMonitorStubs())
+		return ttpriv::pfnGetMonitorInfo(hMonitor, lpmi);
 	else {
 		SystemParametersInfo(SPI_GETWORKAREA, 0, &lpmi->rcWork, 0);
 		lpmi->rcMonitor.left = 0;

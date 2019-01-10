@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		CStrList, CDblStrList
+// Name:		ttList, ttDblList
 // Purpose:		String arrays based off a private heap
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2005-2018 KeyWorks Software (Ralph Walden)
@@ -15,15 +15,15 @@
 #ifndef __TTLIB_STRLIST_H__
 #define __TTLIB_STRLIST_H__
 
-#include "ttheap.h"		// CTTHeap
-#include "hashpair.h"	// CHashPair
-#include "cstr.h"		// CStr
+#include "ttheap.h"		// ttHeap
+#include "hashpair.h"	// ttHashPair
+#include "ttstring.h"		// ttString
 
-class CStrList : public CTTHeap
+class ttList : public ttHeap
 {
 public:
-	CStrList(bool bSerialize = true);		// true makes the class thread safe
-	CStrList(HANDLE hHeap);
+	ttList(bool bSerialize = true);		// true makes the class thread safe
+	ttList(HANDLE hHeap);
 
 	enum {
 		FLG_ADD_DUPLICATES	= 1 << 0,	// add the string even if it has already been added
@@ -65,7 +65,7 @@ public:
 	/*
 		Example usage:
 
-			CStrList lst;
+			ttList lst;
 			// ... add a bunch of strings
 			lst.BeginEnum();
 			while(lst.Enum())
@@ -96,7 +96,7 @@ protected:
 	void qsorti(ptrdiff_t low, ptrdiff_t high);
 	void qsortCol(ptrdiff_t low, ptrdiff_t high);
 
-	const char* NormalizeString(const char* pszFileName, CStr& cszKey) const;
+	const char* NormalizeString(const char* pszFileName, ttString& cszKey) const;
 
 	bool isNoDuplicates() const { return (m_flags & FLG_ADD_DUPLICATES) ? false : true; }
 
@@ -110,22 +110,22 @@ protected:
 	size_t m_cItems;
 	size_t m_enum;
 
-	CHashPair m_HashPair;
-	CStr m_cszKey;
+	ttHashPair m_HashPair;
+	ttString m_cszKey;
 	size_t m_flags;
 };
 
-// Holds a pair of strings, referenced as Key and Val. Note that unlike CStrList, the default behaviour is to allow
+// Holds a pair of strings, referenced as Key and Val. Note that unlike ttList, the default behaviour is to allow
 // duplicate keys
 
-class CDblStrList : public CTTHeap
+class ttDblList : public ttHeap
 {
 public:
 	void IgnoreCase() { m_bIgnoreCase = true; }	// ignore case when searching for keys or values
 	void PreventDuplicateKeys();				// key won't be added if it already exists
 
-	CDblStrList(bool bSerialize = false);
-	~CDblStrList();
+	ttDblList(bool bSerialize = false);
+	~ttDblList();
 
 	void Add(const char* pszKey, const char* pszVal);
 
@@ -170,12 +170,12 @@ protected:
 	bool m_bSerialize;
 	bool m_bIgnoreCase;
 
-	CHashPair* m_pHashLookup;
+	ttHashPair* m_pHashLookup;
 };
 
-// Similar to CDblStrList only the val is an array of ptrdiff_t instead of a char*
+// Similar to ttDblList only the val is an array of ptrdiff_t instead of a char*
 
-class CStrIntList : public CTTHeap
+class ttStrIntList : public ttHeap
 {
 public:
 	typedef struct {
@@ -183,7 +183,7 @@ public:
 		ptrdiff_t* pVal;
 	} DBLPTRS;
 
-	CStrIntList(bool bSerialize = false);
+	ttStrIntList(bool bSerialize = false);
 
 	/*
 		If the string already exists, but the Val doesn't, Add() will add the Val to the array of Vals
@@ -213,7 +213,7 @@ public:
 		You can enumerate through all the numbers assigned to a string using code
 		similar to the following:
 
-		CStrIntList strList;
+		ttStrIntList strList;
 		// add some string/number pairs
 		if (strList.BeginEnum("my key")) {
 			ptrdiff_t num;

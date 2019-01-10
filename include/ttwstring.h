@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		CWStr.h
-// Purpose:		Wide-character string class. See CStr.h for SBCS version
+// Name:		ttWString.h
+// Purpose:		Wide-character string class. See ttString.h for SBCS version
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 1998-2018 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
@@ -34,23 +34,20 @@
 
 #pragma once
 
-#include "ttheap.h"	// CTTHeap
-#include "kstr.h"
+#include "ttstring.h"	// ttString
 
-class CStr;	// forward definition
-
-class CWStr
+class ttWString
 {
 public:
-	CWStr(void)	{ m_psz = nullptr; }
-	CWStr(size_t cb) { m_psz = (wchar_t*) tt::malloc(cb); }
-	CWStr(const wchar_t* psz) { m_psz = tt::strdup(psz ? psz : L""); }
-	CWStr(const char* psz) { m_psz = nullptr; CopyNarrow(psz); }
+	ttWString(void)	{ m_psz = nullptr; }
+	ttWString(size_t cb) { m_psz = (wchar_t*) tt::malloc(cb); }
+	ttWString(const wchar_t* psz) { m_psz = tt::strdup(psz ? psz : L""); }
+	ttWString(const char* psz) { m_psz = nullptr; CopyNarrow(psz); }
 #ifdef _WINDOWS_
-	CWStr(HWND hwnd) { m_psz = nullptr; GetWindowText(hwnd); }
+	ttWString(HWND hwnd) { m_psz = nullptr; GetWindowText(hwnd); }
 #endif // _WINDOWS_
 
-	~CWStr() { if (m_psz)  tt::free(m_psz); }
+	~ttWString() { if (m_psz)  tt::free(m_psz); }
 
 	// Filename handling methods
 
@@ -82,8 +79,8 @@ public:
 
 	// When compiled with wxWidgets, IsSame() functions work with UTF8 strings, otherwise they only correctly handle the ANSI portion of UTF8 strings
 
-	bool	IsSameSubString(const wchar_t* psz);	// returns true if psz is an exact match to the first part of CWStr (case-insensitive)
-	bool	IsSameString(const wchar_t* psz);		// returns true if psz is an exact match to CWStr (case-insensitive)
+	bool	IsSameSubString(const wchar_t* psz);	// returns true if psz is an exact match to the first part of ttWString (case-insensitive)
+	bool	IsSameString(const wchar_t* psz);		// returns true if psz is an exact match to ttWString (case-insensitive)
 
 	wchar_t* GetQuotedString(wchar_t* pszQuote);	// returns pointer to first character after closing quote (or nullptr if not a quoted string)
 
@@ -108,14 +105,14 @@ public:
 	void operator+=(const wchar_t* psz);
 	void operator+=(wchar_t ch);
 	void operator+=(ptrdiff_t val);
-	void operator+=(CWStr csz);
+	void operator+=(ttWString csz);
 
 	wchar_t operator[](int pos);
 
-	bool operator==(const wchar_t* psz) { return (IsEmpty() || !psz) ? false : tt::samestr(m_psz, psz); }
-	bool operator==(const CWStr* pcsz) { return (IsEmpty() || !pcsz || pcsz->IsEmpty()) ? false : tt::samestr(m_psz, *pcsz); }
+	bool operator==(const wchar_t* pwsz) { return (IsEmpty() || !pwsz) ? false : tt::samestr(m_psz, pwsz); }
+	bool operator==(const ttWString* pwstr) { return (IsEmpty() || !pwstr || pwstr->IsEmpty()) ? false : tt::samestr(m_psz, *pwstr); }
 
-	bool CopyNarrow(const char* pwsz);	// convert UTF8 to UNICODE and store it
+	bool CopyNarrow(const char* psz);	// convert UTF8 to UNICODE and store it
 
 protected:
 	// Class functions
@@ -124,5 +121,5 @@ protected:
 
 	// Class members
 
-	wchar_t*	 m_psz;
+	wchar_t*	 m_psz;		// using this name instead of m_pwsz to make it a tad easier to copy similar code form ttstring.cpp
 };

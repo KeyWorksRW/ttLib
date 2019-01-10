@@ -1,8 +1,8 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		asserts.h
-// Purpose:		Assert functionality
+// Name:		ttdebug.h
+// Purpose:		Various debugging functionality
 // Author:		Ralph Walden (randalphwa)
-// Copyright:	Copyright (c) 2000-2018 KeyWorks Software (Ralph Walden)
+// Copyright:	Copyright (c) 2000-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
@@ -14,39 +14,36 @@
 #ifndef __TTLIB_ASSERTS_H__
 #define __TTLIB_ASSERTS_H__
 
-#ifdef _DEBUG
+namespace tt {
+	bool AssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFunction, int line);
+	void doReportLastError(const char* pszFile, const char* pszFunc, int line);
+	void _cdecl CATCH_HANDLER(const char* pszFormat, ...);
+	__declspec(noreturn) void OOM(void);
+}
 
-	#define ASSERT(exp) (void)((!!(exp)) || AssertionMsg(#exp, __FILE__, __func__, __LINE__))
-	#define ASSERT_MSG(exp, pszMsg) { if (!(exp)) AssertionMsg(pszMsg, __FILE__, __func__, __LINE__); }
-	#define ASSERT_COMMENT(exp, pszComment) { if (!(exp)) AssertionMsg(pszComment, __FILE__, __func__, __LINE__); }
-	#define VERIFY(exp) (void)((!!(exp)) || AssertionMsg(#exp, __FILE__, __func__, __LINE__))
-	#define FAIL(pszMsg) AssertionMsg(pszMsg, __FILE__, __func__, __LINE__)
+#ifdef _DEBUG
+	#define ttASSERT(exp) (void)((!!(exp)) || tt::AssertionMsg(#exp, __FILE__, __func__, __LINE__))
+	#define ttASSERT_MSG(exp, pszMsg) { if (!(exp)) tt::AssertionMsg(pszMsg, __FILE__, __func__, __LINE__); }
+	#define ttFAIL(pszMsg) tt::AssertionMsg(pszMsg, __FILE__, __func__, __LINE__)
 
 #ifdef _WINDOWS_
-	#define ASSERT_HRESULT(hr, pszMsg) { if (FAILED(hr)) AssertionMsg(pszMsg, __FILE__, __func__, __LINE__); }
-	#define ReportLastError() { doReportLastError(__FILE__, __func__, __LINE__); }
-	void doReportLastError(const char* pszFile, const char* pszFunc, int line);
+	#define ttASSERT_HRESULT(hr, pszMsg) { if (FAILED(hr)) tt::AssertionMsg(pszMsg, __FILE__, __func__, __LINE__); }
+	#define ttReportLastError() { tt::doReportLastError(__FILE__, __func__, __LINE__); }
 #endif
-
-	void _cdecl CATCH_HANDLER(const char* pszFormat, ...);
-	bool  AssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFunction, int line);
 
 #else	// not _DEBUG
 
-	#define ASSERT(exp)
-	#define ASSERT_MSG(exp, pszMsg)
-	#define ASSERT_COMMENT(exp, pszMsg)
-	#define VERIFY(exp) ((void)(exp))
-	#define FAIL(pszMsg)
-
+	#define ttASSERT(exp)
+	#define ttASSERT_MSG(exp, pszMsg)
+	#define ttFAIL(pszMsg)
 
 #ifdef _WINDOWS_
-	#define ASSERT_HRESULT(hr, pszMsg)
-	#define ReportLastError()
+	#define ttASSERT_HRESULT(hr, pszMsg)
+	#define ttReportLastError()
 #endif
 
-	#define CATCH_HANDLER __noop
-	#define AssertionMsg  __noop
+	#define tt::CATCH_HANDLER __noop
+	#define tt::AssertionMsg  __noop
 
 #endif	// _DEBUG
 

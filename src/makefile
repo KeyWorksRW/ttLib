@@ -15,6 +15,10 @@
 # If you are using the MSVC compiler, then you should also set a PATH64 environment variable ahead of time to point to
 # the 64-bit compiler/linker.
 
+# Remove the '#' character in the following line to always build 64-bit targets
+
+#b64=1
+
 # \
 !ifndef 0 # \
 # Following section is for nmake \
@@ -28,7 +32,7 @@ PATH=$(PATH64) # \
 !endif  # \
 !endif  # b64 \
 !ifndef cmplr # \
-cmplr=clang # \
+cmplr=msvc # \
 !endif
 
 # \
@@ -49,35 +53,33 @@ ifndef cmplr
 	cmplr=clang
 endif
 
-.DEFAULT_GOAL := debug
-
 # \
 !endif
 
 ########## release section ##########
 
-release: ttLib
+release: ttNewLib
 
-ttLib:
+ttNewLib:
 	ninja -f build/$(cmplr)Build$(bits).ninja
 
 ########## debug section ##########
 
-debug: ttLibD
+debug: ttNewLibD
 
-ttLibD:
+ttNewLibD:
 	ninja -f build/$(cmplr)Build$(bits)D.ninja
 
 ########## clean release section ##########
 
-clean: ttLibClean
+clean: ttNewLibClean
 
-ttLibClean:
+ttNewLibClean:
 	ninja -f build/$(cmplr)Build$(bits).ninja -t clean
 
 ########## clean debug section ##########
 
-cleanD: ttLibCleanD
+cleanD: ttNewLibCleanD
 
-ttLibCleanD:
+ttNewLibCleanD:
 	ninja -f build/$(cmplr)Build$(bits)D.ninja -t clean

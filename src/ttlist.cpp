@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		CStrList, CDblStrList, CStrIntList
+// Name:		ttList, ttDblList, ttStrIntList
 // Purpose:		String arrays based off a private heap
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2005-2018 KeyWorks Software (Ralph Walden)
@@ -15,12 +15,12 @@
 // and the underlying CTTHeap destructor will free all memory allocated by this class (but because it will be
 // calling free() for every item allocated, it will be a lot slower then the _WINDOWS_ version).
 
-#include "precomp.h"
+#include "pch.h"
 
-#include "../include/strlist.h"	// CStrList
-#include "../include/cstr.h"	// CStr
+#include "../include/ttlist.h"	// ttList
+#include "../include/ttstr.h"	// ttString
 
-CStrList::CStrList(bool bSerialize) : CTTHeap(bSerialize)
+ttList::ttList(bool bSerialize) : ttHeap(bSerialize)
 {
 	m_cAllocated = 0;
 	m_cItems = 0;
@@ -30,7 +30,7 @@ CStrList::CStrList(bool bSerialize) : CTTHeap(bSerialize)
 	m_flags = 0;
 }
 
-CStrList::CStrList(HANDLE hHeap) : CTTHeap(hHeap)
+ttList::ttList(HANDLE hHeap) : ttHeap(hHeap)
 {
 	m_cAllocated = 0;
 	m_cItems = 0;
@@ -40,9 +40,9 @@ CStrList::CStrList(HANDLE hHeap) : CTTHeap(hHeap)
 	m_flags = 0;
 }
 
-bool CStrList::Enum(const char** ppszResult)
+bool ttList::Enum(const char** ppszResult)
 {
-	ASSERT_MSG(ppszResult, "NULL pointer!");
+	ttASSERT_MSG(ppszResult, "NULL pointer!");
 	if (!ppszResult)
 		return false;
 
@@ -52,7 +52,7 @@ bool CStrList::Enum(const char** ppszResult)
 	return true;
 }
 
-bool CStrList::Enum()
+bool ttList::Enum()
 {
 	if (m_cItems == 0 || m_enum == m_cItems)
 		return false;
@@ -60,7 +60,7 @@ bool CStrList::Enum()
 	return true;
 }
 
-const char* CStrList::EnumValue()
+const char* ttList::EnumValue()
 {
 	auto enumPos = m_enum - 1;
 	if (m_cItems == 0 || enumPos == m_cItems)
@@ -68,24 +68,24 @@ const char* CStrList::EnumValue()
 	return m_aptrs[enumPos];
 }
 
-void CStrList::SetFlags(size_t flags)
+void ttList::SetFlags(size_t flags)
 {
 	m_flags = flags;
 	if (m_flags & FLG_ADD_DUPLICATES)
 		m_HashPair.Delete();	// Can't use a hash list if duplicates are allowed
 }
 
-size_t CStrList::Add(const char* pszKey)
+size_t ttList::Add(const char* pszKey)
 {
-	ASSERT_MSG(pszKey, "NULL pointer!");
+	ttASSERT_MSG(pszKey, "NULL pointer!");
 	if (!pszKey)
 		return (size_t) -1;
 
-	CStr cszKey;
+	ttString cszKey;
 	const char* pszNormalized = NormalizeString(pszKey, cszKey);
 
 	if (isNoDuplicates()) {
-		size_t hash = HashFromSz(pszNormalized);
+		size_t hash = tt::HashFromSz(pszNormalized);
 		size_t pos = m_HashPair.GetVal(hash);
 		if (pos != (size_t) -1)
 			return pos;
@@ -108,63 +108,63 @@ size_t CStrList::Add(const char* pszKey)
 	return m_cItems++;
 }
 
-bool CStrList::Find(const char* pszKey) const
+bool ttList::Find(const char* pszKey) const
 {
-	ASSERT_MSG(pszKey, "NULL pointer!");
-	ASSERT_MSG(*pszKey, "empty string!");
+	ttASSERT_MSG(pszKey, "NULL pointer!");
+	ttASSERT_MSG(*pszKey, "empty string!");
 	if (!pszKey || !*pszKey)
 		return false;
 
-	CStr cszKey;
+	ttString cszKey;
 	const char* pszNormalized = NormalizeString(pszKey, cszKey);
 
 	if (isNoDuplicates())
 		return m_HashPair.Find(pszNormalized);
 
 	for (size_t i = 0; i < m_cItems; i++)	{
-		if (kstrcmp(m_aptrs[i], pszNormalized))
+		if (tt::samestr(m_aptrs[i], pszNormalized))
 			return true;
 	}
 	return false;
 }
 
-size_t CStrList::GetPos(const char* pszKey) const
+size_t ttList::GetPos(const char* pszKey) const
 {
-	ASSERT_MSG(pszKey, "NULL pointer!");
-	ASSERT_MSG(*pszKey, "empty string!");
+	ttASSERT_MSG(pszKey, "NULL pointer!");
+	ttASSERT_MSG(*pszKey, "empty string!");
 	if (!pszKey || !*pszKey)
 		return (size_t) -1;
 
-	CStr cszKey;
+	ttString cszKey;
 	const char* pszNormalized = NormalizeString(pszKey, cszKey);
 
 	if (isNoDuplicates())
 		return m_HashPair.GetVal(pszNormalized);
 
 	for (size_t pos = 0; pos < m_cItems; ++pos)	{
-		if (kstrcmp(m_aptrs[pos], pszNormalized))
+		if (tt::samestr(m_aptrs[pos], pszNormalized))
 			return pos;
 	}
 	return (size_t) -1;
 }
 
-const char* CStrList::Get(size_t pos) const
+const char* ttList::Get(size_t pos) const
 {
-	ASSERT(pos < m_cItems);
+	ttASSERT(pos < m_cItems);
 	if (pos >= m_cItems)
 		return "";	// better to return a pointer to an empty string then an invalid pointer
 	return m_aptrs[pos];
 }
 
-void CStrList::Remove(size_t pos)
+void ttList::Remove(size_t pos)
 {
-	ASSERT(pos < m_cItems);
+	ttASSERT(pos < m_cItems);
 	if (pos >= m_cItems)
 		return;
 
 	if (isNoDuplicates()) {
 		// The hash pair stores the position of our string which we need to update
-		CHashPair::HASH_PAIR* phshPair = m_HashPair.GetArray();
+		ttHashPair::HASH_PAIR* phshPair = m_HashPair.GetArray();
 		for (size_t posHsh = 0; posHsh < m_cItems; ++posHsh) {
 			if (phshPair[posHsh].val > pos)
 				--phshPair[posHsh].val;
@@ -177,10 +177,10 @@ void CStrList::Remove(size_t pos)
 	--m_cItems;
 }
 
-void CStrList::Remove(const char* psz)
+void ttList::Remove(const char* psz)
 {
-	ASSERT_MSG(psz, "NULL pointer!");
-	ASSERT_MSG(*psz, "empty string!");
+	ttASSERT_MSG(psz, "NULL pointer!");
+	ttASSERT_MSG(*psz, "empty string!");
 	if (!psz || !*psz)
 		return;
 
@@ -189,7 +189,7 @@ void CStrList::Remove(const char* psz)
 		Remove(pos);
 }
 
-void CStrList::Delete()
+void ttList::Delete()
 {
 	if (m_cItems == 0)
 		return;	// we haven't added anything yet, so nothing to do!
@@ -211,11 +211,11 @@ void CStrList::Delete()
 	m_HashPair.Delete();
 }
 
-void CStrList::Replace(size_t pos, const char* pszKey)
+void ttList::Replace(size_t pos, const char* pszKey)
 {
-	ASSERT_MSG(pszKey, "NULL pointer!");
-	ASSERT_MSG(*pszKey, "empty string!");
-	ASSERT(pos < m_cItems);
+	ttASSERT_MSG(pszKey, "NULL pointer!");
+	ttASSERT_MSG(*pszKey, "empty string!");
+	ttASSERT(pos < m_cItems);
 	if (pos >= m_cItems || !pszKey || !*pszKey)
 		return;
 
@@ -224,7 +224,7 @@ void CStrList::Replace(size_t pos, const char* pszKey)
 
 	ttFree((void*) m_aptrs[pos]);
 
-	CStr cszKey;
+	ttString cszKey;
 	const char* pszNormalized = NormalizeString(pszKey, cszKey);
 
 	m_aptrs[pos] = ttStrdup(pszNormalized);
@@ -233,7 +233,7 @@ void CStrList::Replace(size_t pos, const char* pszKey)
 		m_HashPair.Add(pszNormalized, pos);
 }
 
-void CStrList::Swap(size_t posA, size_t posB)
+void ttList::Swap(size_t posA, size_t posB)
 {
 	if (posA > m_cItems || posB > m_cItems || posA == posB)
 		return;
@@ -245,7 +245,7 @@ void CStrList::Swap(size_t posA, size_t posB)
 	m_HashPair.SetVal(m_aptrs[posB], posB);
 }
 
-void CStrList::InsertAt(size_t pos, const char* pszKey)
+void ttList::InsertAt(size_t pos, const char* pszKey)
 {
 	if (pos >= m_cItems) {
 		Add(pszKey);
@@ -259,14 +259,14 @@ void CStrList::InsertAt(size_t pos, const char* pszKey)
 	memmove((void*) (m_aptrs + pos + 1), (void*) (m_aptrs + pos), (m_cItems - pos + 1) * sizeof(char*));
 
 	if (isNoDuplicates()) {
-		CHashPair::HASH_PAIR* pHashPair = m_HashPair.GetArray();
+		ttHashPair::HASH_PAIR* pHashPair = m_HashPair.GetArray();
 		for (size_t posHash = 0; posHash < m_HashPair.GetCount(); ++posHash) {
 			if (pHashPair[posHash].val >= pos)
 				pHashPair[posHash].val++;
 		}
 	}
 
-	CStr cszKey;
+	ttString cszKey;
 	const char* pszNormalized = NormalizeString(pszKey, cszKey);
 
 	m_aptrs[pos] = ttStrdup(pszNormalized);
@@ -276,7 +276,7 @@ void CStrList::InsertAt(size_t pos, const char* pszKey)
 		m_HashPair.Add(pszNormalized);
 }
 
-void CStrList::Sort()
+void ttList::Sort()
 {
 	qsorti(0, m_cItems - 1);
 	if (isNoDuplicates()) {
@@ -287,7 +287,7 @@ void CStrList::Sort()
 
 // It is the caller's responsibility to ensure that all strings have at least iColumn characters
 
-void CStrList::Sort(size_t iColumn)
+void ttList::Sort(size_t iColumn)
 {
 	m_SortColumn = iColumn;
 	qsortCol(0, m_cItems - 1);
@@ -297,22 +297,22 @@ void CStrList::Sort(size_t iColumn)
 	}
 }
 
-const char* CStrList::NormalizeString(const char* pszString, CStr& cszKey) const
+const char* ttList::NormalizeString(const char* pszString, ttString& cszKey) const
 {
-	// BUGBUG: [randalphwa - 9/20/2018] This is not thread safe, which means CStrList is not thread safe
+	// BUGBUG: [randalphwa - 9/20/2018] This is not thread safe, which means ttList is not thread safe
 
 	if (m_flags & FLG_IGNORE_CASE || m_flags & FLG_URL_STRINGS)	{
 		cszKey = pszString;
 		cszKey.MakeLower();
 		if (m_flags & FLG_URL_STRINGS)
-			BackslashToForwardslash(cszKey);
+			tt::BackslashToForwardslash(cszKey);
 		return cszKey;
 	}
 	cszKey.Delete();
 	return pszString;
 }
 
-void CStrList::qsorti(ptrdiff_t low, ptrdiff_t high)
+void ttList::qsorti(ptrdiff_t low, ptrdiff_t high)
 {
 	if (low >= high)
 		return;
@@ -347,7 +347,7 @@ void CStrList::qsorti(ptrdiff_t low, ptrdiff_t high)
 
 // This is a bit dangerous as we do NOT check to see if each string actually has at least m_SortColumn characters
 
-void CStrList::qsortCol(ptrdiff_t low, ptrdiff_t high)
+void ttList::qsortCol(ptrdiff_t low, ptrdiff_t high)
 {
 	if (low >= high)
 		return;
@@ -380,17 +380,17 @@ void CStrList::qsortCol(ptrdiff_t low, ptrdiff_t high)
 		qsortCol(end + 1, high);
 }
 
-const char* CStrList::operator[](size_t pos) const
+const char* ttList::operator[](size_t pos) const
 {
-	ASSERT(pos < m_cItems);
+	ttASSERT(pos < m_cItems);
 	if (pos >= m_cItems)
 		return "";		// better to return a pointer to an empty string then an invalid pointer
 	return m_aptrs[pos];
 }
 
-/////////////////////	CDblStrList		//////////////////////////
+/////////////////////	ttDblList		//////////////////////////
 
-CDblStrList::CDblStrList(bool bSerialize) : CTTHeap(bSerialize)
+ttDblList::ttDblList(bool bSerialize) : ttHeap(bSerialize)
 {
 	m_cAllocated = 0;
 	m_cItems = 0;
@@ -400,28 +400,28 @@ CDblStrList::CDblStrList(bool bSerialize) : CTTHeap(bSerialize)
 	m_bIgnoreCase = false;
 }
 
-CDblStrList::~CDblStrList()
+ttDblList::~ttDblList()
 {
 	delete m_pHashLookup;
 }
 
-void CDblStrList::PreventDuplicateKeys()
+void ttDblList::PreventDuplicateKeys()
 {
 	if (!m_pHashLookup)
-		m_pHashLookup = new CHashPair;
+		m_pHashLookup = new ttHashPair;
 }
 
-void CDblStrList::Add(const char* pszKey, const char* pszVal)
+void ttDblList::Add(const char* pszKey, const char* pszVal)
 {
-	ASSERT_MSG(pszKey, "NULL pointer!");
-	ASSERT_MSG(*pszKey, "empty string!");
-	ASSERT_MSG(pszVal, "NULL pointer!");	// it's okay to add an empty val string as long as it isn't a null pointer
+	ttASSERT_MSG(pszKey, "NULL pointer!");
+	ttASSERT_MSG(*pszKey, "empty string!");
+	ttASSERT_MSG(pszVal, "NULL pointer!");	// it's okay to add an empty val string as long as it isn't a null pointer
 
 	if (!pszKey || !*pszKey || !pszVal )
 		return;
 
 	if (m_pHashLookup) {
-		size_t hash = HashFromSz(pszKey);
+		size_t hash = tt::HashFromSz(pszKey);
 		if (m_pHashLookup->Find(hash)) {
 			return;
 		}
@@ -438,15 +438,15 @@ void CDblStrList::Add(const char* pszKey, const char* pszVal)
 	m_aptrs[m_cItems++].pszVal = ttStrdup(pszVal);
 }
 
-bool CDblStrList::FindKey(const char* pszKey, size_t* ppos) const
+bool ttDblList::FindKey(const char* pszKey, size_t* ppos) const
 {
-	ASSERT_MSG(pszKey, "NULL pointer!");
-	ASSERT_MSG(*pszKey, "empty string!");
+	ttASSERT_MSG(pszKey, "NULL pointer!");
+	ttASSERT_MSG(*pszKey, "empty string!");
 	if (!pszKey || !*pszKey)
 		return false;
 	if (m_bIgnoreCase) {
 		for (size_t i = 0; i < m_cItems; i++)	{
-			if (IsSameString(m_aptrs[i].pszKey, pszKey)) {
+			if (tt::samestri(m_aptrs[i].pszKey, pszKey)) {
 				if (ppos)
 					*ppos = i;
 				return true;
@@ -455,7 +455,7 @@ bool CDblStrList::FindKey(const char* pszKey, size_t* ppos) const
 	}
 	else {
 		for (size_t i = 0; i < m_cItems; i++)	{
-			if (kstrcmp(m_aptrs[i].pszKey, pszKey))	{
+			if (tt::samestr(m_aptrs[i].pszKey, pszKey))	{
 				if (ppos)
 					*ppos = i;
 				return true;
@@ -465,14 +465,14 @@ bool CDblStrList::FindKey(const char* pszKey, size_t* ppos) const
 	return false;
 }
 
-bool CDblStrList::FindVal(const char* pszVal, size_t* ppos) const
+bool ttDblList::FindVal(const char* pszVal, size_t* ppos) const
 {
-	ASSERT_MSG(pszVal, "NULL pointer!");
+	ttASSERT_MSG(pszVal, "NULL pointer!");
 	if (!pszVal)
 		return false;
 	if (m_bIgnoreCase) {
 		for (size_t i = 0; i < m_cItems; i++)	{
-			if (IsSameString(m_aptrs[i].pszVal, pszVal)) {
+			if (tt::samestri(m_aptrs[i].pszVal, pszVal)) {
 				if (ppos)
 					*ppos = i;
 				return true;
@@ -481,7 +481,7 @@ bool CDblStrList::FindVal(const char* pszVal, size_t* ppos) const
 	}
 	else {
 		for (size_t i = 0; i < m_cItems; i++)	{
-			if (kstrcmp(m_aptrs[i].pszVal, pszVal)) {
+			if (tt::samestr(m_aptrs[i].pszVal, pszVal)) {
 				if (ppos)
 					*ppos = i;
 				return true;
@@ -491,37 +491,37 @@ bool CDblStrList::FindVal(const char* pszVal, size_t* ppos) const
 	return false;
 }
 
-const char* CDblStrList::GetKeyAt(size_t pos) const
+const char* ttDblList::GetKeyAt(size_t pos) const
 {
-	ASSERT(pos < m_cItems);
+	ttASSERT(pos < m_cItems);
 	if (pos >= m_cItems)
-		return NULL;
+		return nullptr;
 	return m_aptrs[pos].pszKey;
 }
 
-const char* CDblStrList::GetValAt(size_t pos) const
+const char* ttDblList::GetValAt(size_t pos) const
 {
-	ASSERT(pos < m_cItems);
+	ttASSERT(pos < m_cItems);
 	if (pos >= m_cItems)
-		return NULL;
+		return nullptr;
 	return m_aptrs[pos].pszVal;
 }
 
-const char* CDblStrList::GetMatchingVal(const char* pszKey) const
+const char* ttDblList::GetMatchingVal(const char* pszKey) const
 {
-	ASSERT_MSG(pszKey, "NULL pointer!");
+	ttASSERT_MSG(pszKey, "NULL pointer!");
 	if (!pszKey)
 		return nullptr;
 	if (m_bIgnoreCase) {
 		for (size_t pos = 0; pos < m_cItems; ++pos)	{
-			if (IsSameString(m_aptrs[pos].pszKey, pszKey)) {
+			if (tt::samestri(m_aptrs[pos].pszKey, pszKey)) {
 				return m_aptrs[pos].pszVal;
 			}
 		}
 	}
 	else {
 		for (size_t pos = 0; pos < m_cItems; ++pos)	{
-			if (kstrcmp(m_aptrs[pos].pszKey, pszKey)) {
+			if (tt::samestr(m_aptrs[pos].pszKey, pszKey)) {
 				return m_aptrs[pos].pszVal;
 			}
 		}
@@ -529,12 +529,12 @@ const char* CDblStrList::GetMatchingVal(const char* pszKey) const
 	return nullptr;
 }
 
-void CDblStrList::Replace(size_t pos, const char* pszKey, const char* pszVal)
+void ttDblList::Replace(size_t pos, const char* pszKey, const char* pszVal)
 {
-	ASSERT_MSG(pszKey, "NULL pointer!");
-	ASSERT_MSG(*pszKey, "empty string!");
-	ASSERT_MSG(pszVal, "NULL pointer!");	// okay if pszVal is an empty string, just not a null pointer
-	ASSERT(pos < m_cItems);
+	ttASSERT_MSG(pszKey, "NULL pointer!");
+	ttASSERT_MSG(*pszKey, "empty string!");
+	ttASSERT_MSG(pszVal, "NULL pointer!");	// okay if pszVal is an empty string, just not a null pointer
+	ttASSERT(pos < m_cItems);
 	if (pos >= m_cItems || !pszKey || !*pszKey || *pszVal)
 		return;
 
@@ -544,25 +544,25 @@ void CDblStrList::Replace(size_t pos, const char* pszKey, const char* pszVal)
 	m_aptrs[pos].pszVal = ttStrdup(pszVal);
 }
 
-void CDblStrList::SortKeys()
+void ttDblList::SortKeys()
 {
-	ASSERT(m_cItems > 0);
+	ttASSERT(m_cItems > 0);
 	if (m_cItems < 2)
 		return;
 	m_bSortKeys = true;
 	qsorti(0, m_cItems - 1);
 }
 
-void CDblStrList::SortVals()
+void ttDblList::SortVals()
 {
-	ASSERT(m_cItems > 0);
+	ttASSERT(m_cItems > 0);
 	if (m_cItems < 2)
 		return;
 	m_bSortKeys = false;
 	qsorti(0, m_cItems - 1);
 }
 
-void CDblStrList::qsorti(ptrdiff_t low, ptrdiff_t high)
+void ttDblList::qsorti(ptrdiff_t low, ptrdiff_t high)
 {
 	if (low >= high)
 		return;
@@ -608,9 +608,9 @@ void CDblStrList::qsorti(ptrdiff_t low, ptrdiff_t high)
 		qsorti(end + 1, high);
 }
 
-//////////////////////////////// CStrIntList	/////////////////////////////////
+//////////////////////////////// ttStrIntList	/////////////////////////////////
 
-CStrIntList::CStrIntList(bool bSerialize) : CTTHeap(bSerialize)
+ttStrIntList::ttStrIntList(bool bSerialize) : ttHeap(bSerialize)
 {
 	m_cAllocated = 0;
 	m_cItems = 0;
@@ -619,15 +619,15 @@ CStrIntList::CStrIntList(bool bSerialize) : CTTHeap(bSerialize)
 	m_posEnumKey = (size_t) -1;
 }
 
-void CStrIntList::Add(const char* pszKey, ptrdiff_t newVal)
+void ttStrIntList::Add(const char* pszKey, ptrdiff_t newVal)
 {
-	ASSERT_MSG(pszKey, "NULL pointer!");
-	ASSERT_MSG(*pszKey, "empty string!");
+	ttASSERT_MSG(pszKey, "NULL pointer!");
+	ttASSERT_MSG(*pszKey, "empty string!");
 	if (!pszKey || !*pszKey )
 		return;
 
 	for (size_t pos = 0; pos < m_cItems; ++pos)	{
-		if (kstrcmp(m_aptrs[pos].pszKey, pszKey)) {
+		if (tt::samestr(m_aptrs[pos].pszKey, pszKey)) {
 			ptrdiff_t cItems = m_aptrs[pos].pVal[0];
 			for (ptrdiff_t valPos = 1; valPos <= cItems; ++valPos) {
 				if (newVal == m_aptrs[pos].pVal[valPos])
@@ -655,9 +655,9 @@ void CStrIntList::Add(const char* pszKey, ptrdiff_t newVal)
 	++m_cItems;
 }
 
-bool CStrIntList::Add(size_t posKey, ptrdiff_t newVal)
+bool ttStrIntList::Add(size_t posKey, ptrdiff_t newVal)
 {
-	ASSERT(posKey < m_cItems);
+	ttASSERT(posKey < m_cItems);
 	if (posKey >= m_cItems)
 		return false;
 
@@ -674,14 +674,14 @@ bool CStrIntList::Add(size_t posKey, ptrdiff_t newVal)
 	return true;
 }
 
-bool CStrIntList::FindKey(const char* pszKey, size_t* ppos) const
+bool ttStrIntList::FindKey(const char* pszKey, size_t* ppos) const
 {
-	ASSERT_MSG(pszKey, "NULL pointer!");
-	ASSERT_MSG(*pszKey, "empty string!");
+	ttASSERT_MSG(pszKey, "NULL pointer!");
+	ttASSERT_MSG(*pszKey, "empty string!");
 	if (!pszKey || !*pszKey)
 		return false;
 	for (size_t pos = 0; pos < m_cItems; ++pos)	{
-		if (kstrcmp(m_aptrs[pos].pszKey, pszKey))	{
+		if (tt::samestr(m_aptrs[pos].pszKey, pszKey))	{
 			if (ppos)
 				*ppos = pos;
 			return true;
@@ -690,16 +690,16 @@ bool CStrIntList::FindKey(const char* pszKey, size_t* ppos) const
 	return false;
 }
 
-bool CStrIntList::GetValCount(const char* pszKey, ptrdiff_t* pVal) const
+bool ttStrIntList::GetValCount(const char* pszKey, ptrdiff_t* pVal) const
 {
-	ASSERT_MSG(pszKey, "NULL pointer!");
-	ASSERT_MSG(*pszKey, "empty string!");
-	ASSERT_MSG(pVal, "NULL pointer!");
+	ttASSERT_MSG(pszKey, "NULL pointer!");
+	ttASSERT_MSG(*pszKey, "empty string!");
+	ttASSERT_MSG(pVal, "NULL pointer!");
 
 	if (!pszKey || !*pszKey || !pVal)
 		return false;
 	for (size_t posKey = 0; posKey < m_cItems; ++posKey)	{
-		if (kstrcmp(m_aptrs[posKey].pszKey, pszKey)) {
+		if (tt::samestr(m_aptrs[posKey].pszKey, pszKey)) {
 			*pVal = m_aptrs[posKey].pVal[0];
 			return true;
 		}
@@ -707,24 +707,24 @@ bool CStrIntList::GetValCount(const char* pszKey, ptrdiff_t* pVal) const
 	return false;
 }
 
-ptrdiff_t CStrIntList::GetValCount(size_t posKey) const
+ptrdiff_t ttStrIntList::GetValCount(size_t posKey) const
 {
-	ASSERT(posKey < m_cItems);
+	ttASSERT(posKey < m_cItems);
 	if (posKey >= m_cItems)
 		return 0;	// there isn't a way to indicate an error other then the ASSERT in _DEBUG builds
 	return m_aptrs[posKey].pVal[0];
 }
 
-bool CStrIntList::GetVal(const char* pszKey, ptrdiff_t* pVal, size_t posVal) const
+bool ttStrIntList::GetVal(const char* pszKey, ptrdiff_t* pVal, size_t posVal) const
 {
-	ASSERT_MSG(pszKey, "NULL pointer!");
-	ASSERT_MSG(*pszKey, "empty string!");
-	ASSERT_MSG(pVal, "NULL pointer!");
+	ttASSERT_MSG(pszKey, "NULL pointer!");
+	ttASSERT_MSG(*pszKey, "empty string!");
+	ttASSERT_MSG(pVal, "NULL pointer!");
 
 	if (!pszKey || !*pszKey || !pVal)
 		return false;
 	for (size_t posKey = 0; posKey < m_cItems; ++posKey)	{
-		if (kstrcmp(m_aptrs[posKey].pszKey, pszKey)) {
+		if (tt::samestr(m_aptrs[posKey].pszKey, pszKey)) {
 			if ((ptrdiff_t) posVal > m_aptrs[posKey].pVal[0])
 				return false;
 			*pVal = m_aptrs[posKey].pVal[posVal];
@@ -734,9 +734,9 @@ bool CStrIntList::GetVal(const char* pszKey, ptrdiff_t* pVal, size_t posVal) con
 	return false;
 }
 
-bool CStrIntList::GetVal(size_t posKey, ptrdiff_t* pVal, size_t posVal) const
+bool ttStrIntList::GetVal(size_t posKey, ptrdiff_t* pVal, size_t posVal) const
 {
-	ASSERT(posKey < m_cItems);
+	ttASSERT(posKey < m_cItems);
 	if (posKey >= m_cItems)
 		return false;
 
@@ -746,7 +746,7 @@ bool CStrIntList::GetVal(size_t posKey, ptrdiff_t* pVal, size_t posVal) const
 	return true;
 }
 
-bool CStrIntList::BeginEnum(const char* pszKey)
+bool ttStrIntList::BeginEnum(const char* pszKey)
 {
 	if (!FindKey(pszKey, &m_posEnumKey)) {
 		m_posEnumKey = (size_t) -1;	// flag it as invalid
@@ -756,7 +756,7 @@ bool CStrIntList::BeginEnum(const char* pszKey)
 	return true;
 }
 
-bool CStrIntList::Enum(ptrdiff_t* pVal)
+bool ttStrIntList::Enum(ptrdiff_t* pVal)
 {
 	if (m_posEnumKey >= m_cItems)	// this will also catch -1 as the value (since m_posEnumKey is unsigned)
 		return false;
@@ -766,9 +766,9 @@ bool CStrIntList::Enum(ptrdiff_t* pVal)
 	return true;
 }
 
-const char* CStrIntList::GetKey(size_t posKey) const
+const char* ttStrIntList::GetKey(size_t posKey) const
 {
-	ASSERT(posKey < m_cItems);
+	ttASSERT(posKey < m_cItems);
 	if (posKey >= m_cItems)
 		return nullptr;
 

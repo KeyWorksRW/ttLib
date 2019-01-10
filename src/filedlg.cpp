@@ -1,12 +1,12 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		CFileDlg
+// Name:		ttFileDlg
 // Purpose:		Class for displaying Windows File Open dialog
 // Author:		Ralph Walden (randalphwa)
-// Copyright:	Copyright (c) 2002-2018 KeyWorks Software (Ralph Walden)
+// Copyright:	Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
-#include "precomp.h"
+#include "pch.h"
 
 #ifndef _WINDOWS_
 	#error This code will only work on Windows
@@ -14,9 +14,7 @@
 
 #include "../include/filedlg.h"
 
-UINT_PTR CALLBACK _OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */, LPARAM lParam);
-
-CFileDlg::CFileDlg(HWND hwndParent)
+ttFileDlg::ttFileDlg(HWND hwndParent)
 {
 	int cbStruct = sizeof(OPENFILENAME);
 
@@ -36,7 +34,7 @@ CFileDlg::CFileDlg(HWND hwndParent)
 	*(char*) m_cszFileName = 0;
 	m_pofn->lpstrFile = m_cszFileName;
 	m_pofn->nMaxFile = MAX_PATH;
-	m_pofn->lpfnHook = _OFNHookProc;
+	m_pofn->lpfnHook = ttpriv::OFNHookProc;
 	m_pofn->Flags = OFN_ENABLESIZING | OFN_EXPLORER | OFN_ENABLEHOOK | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_DONTADDTORECENT;
 	m_pofn->lCustData = (LPARAM) this;
 
@@ -44,17 +42,17 @@ CFileDlg::CFileDlg(HWND hwndParent)
 	memset(&m_rcPosition, 0, sizeof(m_rcPosition));
 }
 
-CFileDlg::~CFileDlg()
+ttFileDlg::~ttFileDlg()
 {
 	tt::free(m_pofn);
 }
 
-bool CFileDlg::GetOpenFileName()
+bool ttFileDlg::GetOpenFileName()
 {
 	if (!::GetOpenFileNameA(m_pofn)) {
 #ifdef _DEBUG
 		DWORD error = CommDlgExtendedError();	// Will be 0 if the user cancelled, else it's an actual error
-		ASSERT_COMMENT(error == 0, "An error occurred in the Open dialog box");
+		ttASSERT_MSG(error == 0, "An error occurred in the Open dialog box");
 #endif
 		return false;
 	}
@@ -64,7 +62,7 @@ bool CFileDlg::GetOpenFileName()
 	return true;
 }
 
-bool CFileDlg::GetSaveFileName()
+bool ttFileDlg::GetSaveFileName()
 {
 	m_pofn->Flags &= ~OFN_FILEMUSTEXIST;
 	m_pofn->Flags |= OFN_NOREADONLYRETURN | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
@@ -72,7 +70,7 @@ bool CFileDlg::GetSaveFileName()
 	if (!::GetSaveFileNameA(m_pofn)) {
 #ifdef _DEBUG
 		DWORD error = CommDlgExtendedError();	// Will be 0 if the user cancelled, else it's an actual error
-		ASSERT_COMMENT(error == 0, "An error occurred in the Open dialog box");
+		ttASSERT_MSG(error == 0, "An error occurred in the Open dialog box");
 #endif
 		return false;
 	}
@@ -80,9 +78,9 @@ bool CFileDlg::GetSaveFileName()
 	return true;
 }
 
-void CFileDlg::FixExtension()
+void ttFileDlg::FixExtension()
 {
-	if (kstrchr(m_cszFileName, '.'))
+	if (tt::strchr(m_cszFileName, '.'))
 		return;	// we have an extension, return
 
 	const char* psz = m_pofn->lpstrFilter;
@@ -90,45 +88,45 @@ void CFileDlg::FixExtension()
 		psz = psz + strlen(psz) + 1;
 		psz = psz + strlen(psz) + 1;
 	}
-	psz = psz + kstrlen(psz) + 1;
-	ASSERT(psz);
-	char* pszTmp = kstrchr(psz, ';');
+	psz = psz + tt::strlen(psz) + 1;
+	ttASSERT(psz);
+	char* pszTmp = tt::strchr(psz, ';');
 	if (pszTmp)
 		*pszTmp = '\0';
 	m_cszFileName.ChangeExtension(psz + 1);
 }
 
-void CFileDlg::SetFilter(const char* pszFilters)
+void ttFileDlg::SetFilter(const char* pszFilters)
 {
-	ASSERT(pszFilters);
+	ttASSERT(pszFilters);
 	if (!pszFilters)
 		return;
 
 	m_cszFilter = pszFilters;
-	char* psz = kstrchr(m_cszFilter, '|');
+	char* psz = tt::strchr(m_cszFilter, '|');
 	while (psz) {
 		*psz = '\0';
-		psz = kstrchr(psz + 1, '|');
+		psz = tt::strchr(psz + 1, '|');
 	}
 	m_pofn->lpstrFilter = m_cszFilter.getptr();
 }
 
-void CFileDlg::SetFilter(int idResource)
+void ttFileDlg::SetFilter(int idResource)
 {
 	m_cszFilter.GetResString(idResource);
-	char* psz = kstrchr(m_cszFilter, '|');
+	char* psz = tt::strchr(m_cszFilter, '|');
 	while (psz) {
 		*psz = '\0';
-		psz = kstrchr(psz + 1, '|');
+		psz = tt::strchr(psz + 1, '|');
 	}
 	m_pofn->lpstrFilter = m_cszFilter.getptr();
 }
 
-UINT_PTR CALLBACK _OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */, LPARAM lParam)
+UINT_PTR CALLBACK ttpriv::OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */, LPARAM lParam)
 {
 	if (uMsg == WM_INITDIALOG) {
 		SetWindowLongPtr(hdlg, GWLP_USERDATA, ((OPENFILENAME*) lParam)->lCustData);
-		CFileDlg* pThis = (CFileDlg*) ((OPENFILENAME*) lParam)->lCustData;
+		ttFileDlg* pThis = (ttFileDlg*) ((OPENFILENAME*) lParam)->lCustData;
 
 #if 0
 		pThis->m_ShadedBtns.Initialize(GetParent(hdlg));
@@ -160,18 +158,18 @@ UINT_PTR CALLBACK _OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */, LPARAM
 
 			case CDN_FOLDERCHANGE:
 				{
-					CFileDlg* pThis = (CFileDlg*) GetWindowLongPtr(hdlg, GWLP_USERDATA);
+					ttFileDlg* pThis = (ttFileDlg*) GetWindowLongPtr(hdlg, GWLP_USERDATA);
 					if (pThis->m_bRepositionWindow)	{
 						pThis->m_bRepositionWindow = false;
 						MoveWindow(GetParent(hdlg), pThis->m_rcPosition.left, pThis->m_rcPosition.top,
-							RECT_WIDTH(pThis->m_rcPosition), RECT_HEIGHT(pThis->m_rcPosition), FALSE);
+							tt::RC_WIDTH(pThis->m_rcPosition), tt::RC_HEIGHT(pThis->m_rcPosition), FALSE);
 					}
 				}
 				break;
 		}
 	}
 	else if (uMsg == WM_DESTROY) {
-		CFileDlg* pThis = (CFileDlg*) GetWindowLongPtr(hdlg, GWLP_USERDATA);
+		ttFileDlg* pThis = (ttFileDlg*) GetWindowLongPtr(hdlg, GWLP_USERDATA);
 		GetWindowRect(GetParent(hdlg), &pThis->m_rcPosition);
 	}
 	return 0;

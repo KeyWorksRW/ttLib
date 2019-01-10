@@ -6,16 +6,17 @@
 /////////////////////////////////////////////////////////////////////////////
 
 //////////////// Derivative work ////////////////////////////////////////////
-// Name:		CKeyXML, CKeyXmlBranch
+// Name:		CKeyXML, ttXMLBranch
 // Author:		Ralph Walden (randalphwa)
-// Copyright:	Copyright (c) 2003-2018 KeyWorks Software (Ralph Walden)
+// Copyright:	Copyright (c) 2003-2019 KeyWorks Software (Ralph Walden)
 // Licence:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
-#include "precomp.h"
+#include "pch.h"
 
-#include "../include/keyxml.h"	// CKeyXml
-#include "../include/keyfile.h"	// CKeyFile
+#include "../include/ttxml.h"
+#include "../include/ttfile.h"	// ttFile
+#include "../include/ttmem.h"	// ttMem, ttTMem
 
 #pragma warning(disable: 4996)	// 'function' : function may be unsafe
 
@@ -23,160 +24,164 @@
 
 inline bool IsSpace(char c) { return (c > -1 && c < '!'); }		// REVIEW: [randalphwa - 10/1/2018] should this be changed to IsWhiteSpace?
 
+using namespace tt;
+
 typedef struct {
 	HTML_ELEMENT element;
 	const char* pszElementName;
 } ELEMENT_PAIRS;
 
-static const ELEMENT_PAIRS aElementPairs[] = {
-	{ ELEMENT_A,		  "a",			 },
-	{ ELEMENT_ABBR,		  "abbr",		 },
-	{ ELEMENT_ACRONYM,	  "acronym",	 },
-	{ ELEMENT_ADDRESS,	  "address",	 },
-	{ ELEMENT_ALIGN,	  "align",		 },
-	{ ELEMENT_APPLET,	  "applet",		 },
-	{ ELEMENT_AREA,		  "area",		 },
-	{ ELEMENT_B,		  "b",			 },
-	{ ELEMENT_BASE,		  "base",		 },
-	{ ELEMENT_BASEFONT,	  "basefont",	 },
-	{ ELEMENT_BDO,		  "bdo",		 },
-	{ ELEMENT_BGSOUND,	  "bgsound",	 },
-	{ ELEMENT_BIG,		  "big",		 },
-	{ ELEMENT_BLINK,	  "blink",		 },
-	{ ELEMENT_BLOCKQUOTE, "blockquote",	 },
-	{ ELEMENT_BODY,		  "body",		 },
-	{ ELEMENT_BR,		  "br",			 },
-	{ ELEMENT_BUTTON,	  "button",		 },
-	{ ELEMENT_CAPTION,	  "caption",	 },
-	{ ELEMENT_CENTER,	  "center",		 },
-	{ ELEMENT_CITE,		  "cite",		 },
-	{ ELEMENT_CODE,		  "code",		 },
-	{ ELEMENT_COL,		  "col",		 },
-	{ ELEMENT_COLGROUP,	  "colgroup",	 },
-	{ ELEMENT_COMMENT,	  "comment",	 },
-	{ ELEMENT_DD,		  "dd",			 },
-	{ ELEMENT_DEL,		  "del",		 },
-	{ ELEMENT_DFN,		  "dfn",		 },
-	{ ELEMENT_DIR,		  "dir",		 },
-	{ ELEMENT_DIV,		  "div",		 },
-	{ ELEMENT_DL,		  "dl",			 },
-	{ ELEMENT_DT,		  "dt",			 },
-	{ ELEMENT_EM,		  "em",			 },
-	{ ELEMENT_EMBED,	  "embed",		 },
-	{ ELEMENT_FIELDSET,	  "fieldset",	 },
-	{ ELEMENT_FONT,		  "font",		 },
-	{ ELEMENT_FORM,		  "form",		 },
-	{ ELEMENT_FRAME,	  "frame",		 },
-	{ ELEMENT_FRAMESET,	  "frameset",	 },
-	{ ELEMENT_H1,		  "h1",			 },
-	{ ELEMENT_H2,		  "h2",			 },
-	{ ELEMENT_H3,		  "h3",			 },
-	{ ELEMENT_H4,		  "h4",			 },
-	{ ELEMENT_H5,		  "h5",			 },
-	{ ELEMENT_H6,		  "h6",			 },
-	{ ELEMENT_HEAD,		  "head",		 },
-	{ ELEMENT_HR,		  "hr",			 },
-	{ ELEMENT_HTML,		  "html",		 },
-	{ ELEMENT_I,		  "i",			 },
-	{ ELEMENT_IFRAME,	  "iframe",		 },
-	{ ELEMENT_ILAYER,	  "ilayer",		 },
-	{ ELEMENT_IMG,		  "img",		 },
-	{ ELEMENT_INPUT,	  "input",		 },
-	{ ELEMENT_INS,		  "ins",		 },
-	{ ELEMENT_ISINDEX,	  "isindex",	 },
-	{ ELEMENT_KBD,		  "kbd",		 },
-	{ ELEMENT_KEYGEN,	  "keygen",		 },
-	{ ELEMENT_LABEL,	  "label",		 },
-	{ ELEMENT_LAYER,	  "layer",		 },
-	{ ELEMENT_LEGEND,	  "legend",		 },
-	{ ELEMENT_LI,		  "li",			 },
-	{ ELEMENT_LINK,		  "link",		 },
-	{ ELEMENT_LISTING,	  "listing",	 },
-	{ ELEMENT_MAP,		  "map",		 },
-	{ ELEMENT_MARQUEE,	  "marquee",	 },
-	{ ELEMENT_MENU,		  "menu",		 },
-	{ ELEMENT_META,		  "meta",		 },
-	{ ELEMENT_MULTICOL,	  "multicol"	 },
-	{ ELEMENT_NEXTID,	  "nextid",		 },
-	{ ELEMENT_NOBR,		  "nobr",		 },
-	{ ELEMENT_NOEMBED,	  "noembed",	 },
-	{ ELEMENT_NOFRAMES,	  "noframes",	 },
-	{ ELEMENT_NOLAYER,	  "nolayer",	 },
-	{ ELEMENT_NOSAVE,	  "nosave",		 },
-	{ ELEMENT_NOSCRIPT,	  "noscript",	 },
-	{ ELEMENT_OBJECT,	  "object",		 },
-	{ ELEMENT_OL,		  "ol",			 },
-	{ ELEMENT_OPTGROUP,	  "optgroup",	 },
-	{ ELEMENT_OPTION,	  "option",		 },
-	{ ELEMENT_P,		  "p",			 },
-	{ ELEMENT_PARAM,	  "param",		 },
-	{ ELEMENT_PLAINTEXT,  "plaintext"	 },
-	{ ELEMENT_PRE,		  "pre",		 },
-	{ ELEMENT_Q,		  "q",			 },
-	{ ELEMENT_RB,		  "rb",			 },
-	{ ELEMENT_RBC,		  "rbc",		 },
-	{ ELEMENT_RP,		  "rp",			 },
-	{ ELEMENT_RT,		  "rt",			 },
-	{ ELEMENT_RTC,		  "rtc",		 },
-	{ ELEMENT_RUBY,		  "ruby",		 },
-	{ ELEMENT_S,		  "s",			 },
-	{ ELEMENT_SAMP,		  "samp",		 },
-	{ ELEMENT_SCRIPT,	  "script",		 },
-	{ ELEMENT_SELECT,	  "select",		 },
-	{ ELEMENT_SERVER,	  "server",		 },
-	{ ELEMENT_SERVLET,	  "servlet",	 },
-	{ ELEMENT_SMALL,	  "small",		 },
-	{ ELEMENT_SPACER,	  "spacer",		 },
-	{ ELEMENT_SPAN,		  "span",		 },
-	{ ELEMENT_STRIKE,	  "strike",		 },
-	{ ELEMENT_STRONG,	  "strong",		 },
-	{ ELEMENT_STYLE,	  "style",		 },
-	{ ELEMENT_SUB,		  "sub",		 },
-	{ ELEMENT_SUP,		  "sup",		 },
-	{ ELEMENT_TABLE,	  "table",		 },
-	{ ELEMENT_TBODY,	  "tbody",		 },
-	{ ELEMENT_TD,		  "td",			 },
-	{ ELEMENT_TEXTAREA,	  "textarea",	 },
-	{ ELEMENT_TFOOT,	  "tfoot",		 },
-	{ ELEMENT_TH,		  "th",			 },
-	{ ELEMENT_THEAD,	  "thead",		 },
-	{ ELEMENT_TITLE,	  "title",		 },
-	{ ELEMENT_TR,		  "tr",			 },
-	{ ELEMENT_TT,		  "tt",			 },
-	{ ELEMENT_U,		  "u",			 },
-	{ ELEMENT_UL,		  "ul",			 },
-	{ ELEMENT_VAR,		  "var",		 },
-	{ ELEMENT_WBR,		  "wbr",		 },
-	{ ELEMENT_XMP,		  "xmp",		 },
-	{ ELEMENT_NOLOC,	  "noloc",		 },
-	{ ELEMENT_XML,		  "xml",		 },
+namespace {
+	const ELEMENT_PAIRS aElementPairs[] = {
+		{ ELEMENT_A,		  "a",			 },
+		{ ELEMENT_ABBR,		  "abbr",		 },
+		{ ELEMENT_ACRONYM,	  "acronym",	 },
+		{ ELEMENT_ADDRESS,	  "address",	 },
+		{ ELEMENT_ALIGN,	  "align",		 },
+		{ ELEMENT_APPLET,	  "applet",		 },
+		{ ELEMENT_AREA,		  "area",		 },
+		{ ELEMENT_B,		  "b",			 },
+		{ ELEMENT_BASE,		  "base",		 },
+		{ ELEMENT_BASEFONT,	  "basefont",	 },
+		{ ELEMENT_BDO,		  "bdo",		 },
+		{ ELEMENT_BGSOUND,	  "bgsound",	 },
+		{ ELEMENT_BIG,		  "big",		 },
+		{ ELEMENT_BLINK,	  "blink",		 },
+		{ ELEMENT_BLOCKQUOTE, "blockquote",	 },
+		{ ELEMENT_BODY,		  "body",		 },
+		{ ELEMENT_BR,		  "br",			 },
+		{ ELEMENT_BUTTON,	  "button",		 },
+		{ ELEMENT_CAPTION,	  "caption",	 },
+		{ ELEMENT_CENTER,	  "center",		 },
+		{ ELEMENT_CITE,		  "cite",		 },
+		{ ELEMENT_CODE,		  "code",		 },
+		{ ELEMENT_COL,		  "col",		 },
+		{ ELEMENT_COLGROUP,	  "colgroup",	 },
+		{ ELEMENT_COMMENT,	  "comment",	 },
+		{ ELEMENT_DD,		  "dd",			 },
+		{ ELEMENT_DEL,		  "del",		 },
+		{ ELEMENT_DFN,		  "dfn",		 },
+		{ ELEMENT_DIR,		  "dir",		 },
+		{ ELEMENT_DIV,		  "div",		 },
+		{ ELEMENT_DL,		  "dl",			 },
+		{ ELEMENT_DT,		  "dt",			 },
+		{ ELEMENT_EM,		  "em",			 },
+		{ ELEMENT_EMBED,	  "embed",		 },
+		{ ELEMENT_FIELDSET,	  "fieldset",	 },
+		{ ELEMENT_FONT,		  "font",		 },
+		{ ELEMENT_FORM,		  "form",		 },
+		{ ELEMENT_FRAME,	  "frame",		 },
+		{ ELEMENT_FRAMESET,	  "frameset",	 },
+		{ ELEMENT_H1,		  "h1",			 },
+		{ ELEMENT_H2,		  "h2",			 },
+		{ ELEMENT_H3,		  "h3",			 },
+		{ ELEMENT_H4,		  "h4",			 },
+		{ ELEMENT_H5,		  "h5",			 },
+		{ ELEMENT_H6,		  "h6",			 },
+		{ ELEMENT_HEAD,		  "head",		 },
+		{ ELEMENT_HR,		  "hr",			 },
+		{ ELEMENT_HTML,		  "html",		 },
+		{ ELEMENT_I,		  "i",			 },
+		{ ELEMENT_IFRAME,	  "iframe",		 },
+		{ ELEMENT_ILAYER,	  "ilayer",		 },
+		{ ELEMENT_IMG,		  "img",		 },
+		{ ELEMENT_INPUT,	  "input",		 },
+		{ ELEMENT_INS,		  "ins",		 },
+		{ ELEMENT_ISINDEX,	  "isindex",	 },
+		{ ELEMENT_KBD,		  "kbd",		 },
+		{ ELEMENT_KEYGEN,	  "keygen",		 },
+		{ ELEMENT_LABEL,	  "label",		 },
+		{ ELEMENT_LAYER,	  "layer",		 },
+		{ ELEMENT_LEGEND,	  "legend",		 },
+		{ ELEMENT_LI,		  "li",			 },
+		{ ELEMENT_LINK,		  "link",		 },
+		{ ELEMENT_LISTING,	  "listing",	 },
+		{ ELEMENT_MAP,		  "map",		 },
+		{ ELEMENT_MARQUEE,	  "marquee",	 },
+		{ ELEMENT_MENU,		  "menu",		 },
+		{ ELEMENT_META,		  "meta",		 },
+		{ ELEMENT_MULTICOL,	  "multicol"	 },
+		{ ELEMENT_NEXTID,	  "nextid",		 },
+		{ ELEMENT_NOBR,		  "nobr",		 },
+		{ ELEMENT_NOEMBED,	  "noembed",	 },
+		{ ELEMENT_NOFRAMES,	  "noframes",	 },
+		{ ELEMENT_NOLAYER,	  "nolayer",	 },
+		{ ELEMENT_NOSAVE,	  "nosave",		 },
+		{ ELEMENT_NOSCRIPT,	  "noscript",	 },
+		{ ELEMENT_OBJECT,	  "object",		 },
+		{ ELEMENT_OL,		  "ol",			 },
+		{ ELEMENT_OPTGROUP,	  "optgroup",	 },
+		{ ELEMENT_OPTION,	  "option",		 },
+		{ ELEMENT_P,		  "p",			 },
+		{ ELEMENT_PARAM,	  "param",		 },
+		{ ELEMENT_PLAINTEXT,  "plaintext"	 },
+		{ ELEMENT_PRE,		  "pre",		 },
+		{ ELEMENT_Q,		  "q",			 },
+		{ ELEMENT_RB,		  "rb",			 },
+		{ ELEMENT_RBC,		  "rbc",		 },
+		{ ELEMENT_RP,		  "rp",			 },
+		{ ELEMENT_RT,		  "rt",			 },
+		{ ELEMENT_RTC,		  "rtc",		 },
+		{ ELEMENT_RUBY,		  "ruby",		 },
+		{ ELEMENT_S,		  "s",			 },
+		{ ELEMENT_SAMP,		  "samp",		 },
+		{ ELEMENT_SCRIPT,	  "script",		 },
+		{ ELEMENT_SELECT,	  "select",		 },
+		{ ELEMENT_SERVER,	  "server",		 },
+		{ ELEMENT_SERVLET,	  "servlet",	 },
+		{ ELEMENT_SMALL,	  "small",		 },
+		{ ELEMENT_SPACER,	  "spacer",		 },
+		{ ELEMENT_SPAN,		  "span",		 },
+		{ ELEMENT_STRIKE,	  "strike",		 },
+		{ ELEMENT_STRONG,	  "strong",		 },
+		{ ELEMENT_STYLE,	  "style",		 },
+		{ ELEMENT_SUB,		  "sub",		 },
+		{ ELEMENT_SUP,		  "sup",		 },
+		{ ELEMENT_TABLE,	  "table",		 },
+		{ ELEMENT_TBODY,	  "tbody",		 },
+		{ ELEMENT_TD,		  "td",			 },
+		{ ELEMENT_TEXTAREA,	  "textarea",	 },
+		{ ELEMENT_TFOOT,	  "tfoot",		 },
+		{ ELEMENT_TH,		  "th",			 },
+		{ ELEMENT_THEAD,	  "thead",		 },
+		{ ELEMENT_TITLE,	  "title",		 },
+		{ ELEMENT_TR,		  "tr",			 },
+		{ ELEMENT_TT,		  "tt",			 },
+		{ ELEMENT_U,		  "u",			 },
+		{ ELEMENT_UL,		  "ul",			 },
+		{ ELEMENT_VAR,		  "var",		 },
+		{ ELEMENT_WBR,		  "wbr",		 },
+		{ ELEMENT_XMP,		  "xmp",		 },
+		{ ELEMENT_NOLOC,	  "noloc",		 },
+		{ ELEMENT_XML,		  "xml",		 },
 
-	{ ELEMENT_MSH_LINK, "MSHelp:link",	},
-	{ ELEMENT_MSH_TAG,	"MSHelp:",		},
+		{ ELEMENT_MSH_LINK, "MSHelp:link",	},
+		{ ELEMENT_MSH_TAG,	"MSHelp:",		},
 
-	{ ELEMENT_UNKNOWN, NULL }
-};
+		{ ELEMENT_UNKNOWN, NULL }
+	};
+} // end of anonymous namespace
 
-HTML_ELEMENT CKeyXML::ParseElementTag(const char* pszName, const char* pszCurLoc, bool bEndTag)
+HTML_ELEMENT ttXML::ParseElementTag(const char* pszName, const char* pszCurLoc, bool bEndTag)
 {
 	const ELEMENT_PAIRS* pElem = aElementPairs;
 	while (pElem->pszElementName) {
-		if (IsSameString(pszName, pElem->pszElementName))
+		if (tt::samestri(pszName, pElem->pszElementName))
 			return pElem->element;
 		pElem++;
 	}
 
-	if (IsSameString(pszName, "MSHelp:")) {
+	if (tt::samestri(pszName, "MSHelp:")) {
 		return ELEMENT_MSH_TAG;
 	}
 
 	// The tag name is unknown. We look for a close tag with the same name, and if found, we assume this is an XML tag.
 
-	if (pszCurLoc && strlen(pszName) < 254) {
+	if (pszCurLoc && tt::strlen(pszName) < 254) {
 		char szClose[256];
 		szClose[0] = '\\';
-		kstrcpy(szClose, pszName);
-		if (kstristr(pszCurLoc, szClose)) {
+		tt::strcpy(szClose, pszName);
+		if (tt::stristr(pszCurLoc, szClose)) {
 			if (!m_lstXmlTags.Find(pszName)) {
 				m_lstXmlTags.Add(pszName);
 			}
@@ -194,14 +199,14 @@ HTML_ELEMENT CKeyXML::ParseElementTag(const char* pszName, const char* pszCurLoc
 
 bool StrWtrim(char** s)
 {
-	ASSERT(s);
+	ttASSERT(s);
 	if (!s || !*s)
 		return false;
 
 	while(**s > 0 && **s < '!') // skip over leading whitespace
 		++(*s);
 
-	char* pszEnd = *s + (strlen(*s) - 1);
+	char* pszEnd = *s + (tt::strlen(*s) - 1);
 	while (IsSpace(*pszEnd) && pszEnd > *s)
 		pszEnd--;
 	pszEnd++;
@@ -212,7 +217,7 @@ bool StrWtrim(char** s)
 
 void _StrWnorm(char** s)
 {
-	ASSERT(s);
+	ttASSERT(s);
 	if (!s || !*s)
 		return;
 
@@ -221,8 +226,8 @@ void _StrWnorm(char** s)
 
 	// Now we "normalize" by combining multiple spaces into a single space
 
-	size_t n = kstrbyte(*s);
-	CTMem<char*> pszNorm(sizeof(char) * n);
+	size_t n = tt::strbyte(*s);
+	ttTMem<char*> pszNorm(sizeof(char) * n);
 	size_t j = 1;
 	pszNorm[0] = (*s)[0];
 	n--;	// ignore zero-terminating character
@@ -238,11 +243,11 @@ void _StrWnorm(char** s)
 	}
 	if (j < n) {	// Normalization buffer is actually different then input.
 		pszNorm[j] = 0;
-		kstrcpy(*s, pszNorm); // Copy it back to input.
+		tt::strcpy(*s, pszNorm); // Copy it back to input.
 	}
 }
 
-CKeyXML::CKeyXML()
+ttXML::ttXML()
 {
 	m_pRoot = NULL;
 	m_uOptions = PARSE_DEFAULT;
@@ -252,28 +257,28 @@ CKeyXML::CKeyXML()
 	m_pBodyBranch = NULL;
 }
 
-CKeyXmlBranch* CKeyXML::GraftBranch(CKeyXmlBranch* pParent, XMLENTITY eType)
+ttXMLBranch* ttXML::GraftBranch(ttXMLBranch* pParent, XMLENTITY eType)
 {
-	ASSERT(pParent);
+	ttASSERT(pParent);
 	if (!pParent)
 		return NULL; // Must have a parent.
 	if (pParent->cChildren == pParent->cChildSpace) { //Out of pointer space.
-		CKeyXmlBranch** t = (CKeyXmlBranch**) ttRealloc(pParent->aChildren, sizeof(CKeyXmlBranch*) * (pParent->cChildSpace + GROW_SIZE)); // Grow pointer space.
+		ttXMLBranch** t = (ttXMLBranch**) ttRealloc(pParent->aChildren, sizeof(ttXMLBranch*) * (pParent->cChildSpace + GROW_SIZE)); // Grow pointer space.
 		if (t) { //Reallocation succeeded.
 			pParent->aChildren = t;
 			pParent->cChildSpace += GROW_SIZE; //Update the available space.
 		}
 	}
-	CKeyXmlBranch* pChild = NewBranch(eType); // Allocate a new child.
+	ttXMLBranch* pChild = NewBranch(eType); // Allocate a new child.
 	pChild->parent = pParent; // Set it's parent pointer.
 	pParent->aChildren[pParent->cChildren] = pChild; // Set the parent's child pointer.
 	pParent->cChildren++; //One more child.
 	return pChild;
 }
 
-CKeyXmlBranch* CKeyXML::NewBranch(XMLENTITY eType)
+ttXMLBranch* ttXML::NewBranch(XMLENTITY eType)
 {
-	CKeyXmlBranch* p = (CKeyXmlBranch*) ttCalloc(sizeof(CKeyXmlBranch)); // Allocate one branch.
+	ttXMLBranch* p = (ttXMLBranch*) ttCalloc(sizeof(ttXMLBranch)); // Allocate one branch.
 	p->pKeyXML = this;
 	p->type = eType; // Set the desired type.
 	p->element = ELEMENT_UNKNOWN;
@@ -290,22 +295,22 @@ CKeyXmlBranch* CKeyXML::NewBranch(XMLENTITY eType)
 			eType == ENTITY_ELEMENT || //Only these will have children.
 			eType == ENTITY_DOCTYPE ||
 			eType == ENTITY_ROOT) {
-		p->aChildren = (CKeyXmlBranch**) ttMalloc(sizeof(CKeyXmlBranch*));	// Allocate one child.
+		p->aChildren = (ttXMLBranch**) ttMalloc(sizeof(ttXMLBranch*));	// Allocate one child.
 		p->cChildSpace = 1;
 	}
 	return p;
 }
 
-XMLATTR* CKeyXML::AddAttribute(CKeyXmlBranch* pBranch, LONG lGrow)
+XMLATTR* ttXML::AddAttribute(ttXMLBranch* pBranch, LONG lGrow)
 {
-	ASSERT(pBranch);
+	ttASSERT(pBranch);
 	if (!pBranch)
 		return NULL;
 	XMLATTR* a = NewAttribute();
 	if (!a)
 		return NULL;
 	if (pBranch->cAttributes == pBranch->cAttributeSpace) { // Out of space, so grow.
-		XMLATTR** t = (XMLATTR**) ttRealloc(pBranch->aAttributes, sizeof(CKeyXmlBranch*) *(pBranch->cAttributeSpace + lGrow));
+		XMLATTR** t = (XMLATTR**) ttRealloc(pBranch->aAttributes, sizeof(ttXMLBranch*) *(pBranch->cAttributeSpace + lGrow));
 		if (t) {
 			pBranch->aAttributes = t;
 			pBranch->cAttributeSpace += lGrow;
@@ -316,12 +321,12 @@ XMLATTR* CKeyXML::AddAttribute(CKeyXmlBranch* pBranch, LONG lGrow)
 	return a;
 }
 
-void CKeyXML::AllocateStringBuffers(CKeyXmlBranch* pBranch)
+void ttXML::AllocateStringBuffers(ttXMLBranch* pBranch)
 {
 	if (!pBranch) {
 		pBranch = GetRootBranch();
-		ASSERT(pBranch);
-		ASSERT(pBranch->GetChildrenCount());
+		ttASSERT(pBranch);
+		ttASSERT(pBranch->GetChildrenCount());
 		if (pBranch->GetChildrenCount())
 			AllocateStringBuffers(pBranch->GetChildAt(0));
 
@@ -333,7 +338,7 @@ void CKeyXML::AllocateStringBuffers(CKeyXmlBranch* pBranch)
 			pBranch->pszData = ttStrdup(pBranch->pszData);
 		for (size_t iAttribute = 0; iAttribute < pBranch->GetAttributesCount(); iAttribute++) {
 			XMLATTR* pAttr = pBranch->GetAttributeAt(iAttribute);
-			ASSERT(pAttr);
+			ttASSERT(pAttr);
 			if (pAttr) {
 				if (pAttr->pszName)
 					pAttr->pszName = ttStrdup(pAttr->pszName);
@@ -355,7 +360,7 @@ void CKeyXML::AllocateStringBuffers(CKeyXmlBranch* pBranch)
 			pBranch->pszData = ttStrdup(pBranch->pszData);
 		for (size_t iAttribute = 0; iAttribute < pBranch->GetAttributesCount(); iAttribute++) {
 			XMLATTR* pAttr = pBranch->GetAttributeAt(iAttribute);
-			ASSERT(pAttr);
+			ttASSERT(pAttr);
 			if (pAttr) {
 				if (pAttr->pszName)
 					pAttr->pszName = ttStrdup(pAttr->pszName);
@@ -370,9 +375,9 @@ void CKeyXML::AllocateStringBuffers(CKeyXmlBranch* pBranch)
 	}
 }
 
-HRESULT CKeyXML::SaveXmlFile(const char* pszFileName)
+HRESULT ttXML::SaveXmlFile(const char* pszFileName)
 {
-	CKeyFile kf;
+	ttFile kf;
 	WriteBranch(NULL, kf, 0);
 	if (kf.WriteFile(pszFileName))
 		return S_OK;
@@ -382,13 +387,13 @@ HRESULT CKeyXML::SaveXmlFile(const char* pszFileName)
 
 #pragma warning(disable : 4062) // switch doesn't handle all enumerated types
 
-HRESULT CKeyXML::WriteBranch(CKeyXmlBranch* pBranch, CKeyFile& kf, size_t iIndent)
+HRESULT ttXML::WriteBranch(ttXMLBranch* pBranch, ttFile& kf, size_t iIndent)
 {
 	if (!pBranch) {
 		pBranch = GetRootBranch();
-		ASSERT(pBranch);
-		ASSERT(pBranch->GetChildrenCount());
-		ASSERT(pBranch->type == ENTITY_ROOT);
+		ttASSERT(pBranch);
+		ttASSERT(pBranch->GetChildrenCount());
+		ttASSERT(pBranch->type == ENTITY_ROOT);
 		HRESULT hr = S_OK;
 		if (pBranch->GetChildrenCount())
 			hr = WriteBranch(pBranch->GetChildAt(0), kf, 0);
@@ -413,9 +418,9 @@ HRESULT CKeyXML::WriteBranch(CKeyXmlBranch* pBranch, CKeyFile& kf, size_t iInden
 				for (size_t iAttribute = 0; iAttribute < pBranch->GetAttributesCount(); iAttribute++) {
 					XMLATTR* pAttr = pBranch->GetAttributeAt(iAttribute);
 					if (pAttr->pszName) {
-						cbAttrs += strlen(pAttr->pszName);
+						cbAttrs += tt::strlen(pAttr->pszName);
 						if (pAttr->pszValue)
-							cbAttrs += strlen(pAttr->pszValue);
+							cbAttrs += tt::strlen(pAttr->pszValue);
 						cbAttrs += 2;	// include room for spacing
 					}
 				}
@@ -440,7 +445,7 @@ HRESULT CKeyXML::WriteBranch(CKeyXmlBranch* pBranch, CKeyFile& kf, size_t iInden
 				}
 				if (pBranch->GetChildrenCount()) {
 					kf.WriteStr(">");
-					CKeyXmlBranch* pFirstChild = pBranch->GetChildAt(0);
+					ttXMLBranch* pFirstChild = pBranch->GetChildAt(0);
 					if (pFirstChild->type != ENTITY_PCDATA)
 						kf.WriteEol("");
 
@@ -484,8 +489,8 @@ HRESULT CKeyXML::WriteBranch(CKeyXmlBranch* pBranch, CKeyFile& kf, size_t iInden
 			case ENTITY_PCDATA:
 				if (pBranch->pszData)
 					kf.WriteStr(pBranch->pszData);
-				ASSERT(!pBranch->GetAttributesCount());
-				ASSERT(!pBranch->GetChildrenCount());
+				ttASSERT(!pBranch->GetAttributesCount());
+				ttASSERT(!pBranch->GetChildrenCount());
 				break;
 
 			default:
@@ -499,9 +504,9 @@ HRESULT CKeyXML::WriteBranch(CKeyXmlBranch* pBranch, CKeyFile& kf, size_t iInden
 	return S_OK;
 }
 
-HRESULT CKeyXML::SaveHtmlFile(const char* pszFileName)
+HRESULT ttXML::SaveHtmlFile(const char* pszFileName)
 {
-	CKeyFile kf;
+	ttFile kf;
 	WriteHtmlBranch(NULL, kf);
 	if (kf.WriteFile(pszFileName))
 		return S_OK;
@@ -509,13 +514,13 @@ HRESULT CKeyXML::SaveHtmlFile(const char* pszFileName)
 		return E_FAIL;
 }
 
-HRESULT CKeyXML::WriteHtmlBranch(CKeyXmlBranch* pBranch, CKeyFile& kf)
+HRESULT ttXML::WriteHtmlBranch(ttXMLBranch* pBranch, ttFile& kf)
 {
 	if (!pBranch) {
 		pBranch = GetRootBranch();
-		ASSERT(pBranch);
-		ASSERT(pBranch->GetChildrenCount());
-		ASSERT(pBranch->type == ENTITY_ROOT);
+		ttASSERT(pBranch);
+		ttASSERT(pBranch->GetChildrenCount());
+		ttASSERT(pBranch->type == ENTITY_ROOT);
 		HRESULT hr = S_OK;
 
 		if (m_cszDocType.IsNonEmpty()) {
@@ -552,7 +557,7 @@ HRESULT CKeyXML::WriteHtmlBranch(CKeyXmlBranch* pBranch, CKeyFile& kf)
 				}
 				if (pBranch->GetChildrenCount()) {
 					kf.WriteStr(">");
-					CKeyXmlBranch* pFirstChild = pBranch->GetChildAt(0);
+					ttXMLBranch* pFirstChild = pBranch->GetChildAt(0);
 					if (pFirstChild->type != ENTITY_PCDATA)
 						kf.WriteEol();
 
@@ -590,8 +595,8 @@ HRESULT CKeyXML::WriteHtmlBranch(CKeyXmlBranch* pBranch, CKeyFile& kf)
 			case ENTITY_PCDATA:
 				if (pBranch->pszData)
 					kf.WriteStr(pBranch->pszData);
-				ASSERT(!pBranch->GetAttributesCount());
-				ASSERT(!pBranch->GetChildrenCount());
+				ttASSERT(!pBranch->GetAttributesCount());
+				ttASSERT(!pBranch->GetChildrenCount());
 				break;
 
 			default:
@@ -605,29 +610,29 @@ HRESULT CKeyXML::WriteHtmlBranch(CKeyXmlBranch* pBranch, CKeyFile& kf)
 	return S_OK;
 }
 
-CKeyXmlBranch* CKeyXML::AddBranch(CKeyXmlBranch* pParent, const char* pszBranchName, XMLENTITY eType)
+ttXMLBranch* ttXML::AddBranch(ttXMLBranch* pParent, const char* pszBranchName, XMLENTITY eType)
 {
-	ASSERT(pParent);
+	ttASSERT(pParent);
 
-	CKeyXmlBranch* pBranch = GraftBranch(pParent, eType);
+	ttXMLBranch* pBranch = GraftBranch(pParent, eType);
 	pBranch->pszName = ttStrdup(pszBranchName);
 	return pBranch;
 }
 
-void CKeyXML::AddAttribute(CKeyXmlBranch* pBranch, const char* pszName, const char* pszValue, size_t iGrow)
+void ttXML::AddAttribute(ttXMLBranch* pBranch, const char* pszName, const char* pszValue, size_t iGrow)
 {
-	ASSERT(pBranch);
-	ASSERT(pszName);
-	ASSERT(pszValue);
-	ASSERT(*pszName);
-	ASSERT(*pszValue);
+	ttASSERT(pBranch);
+	ttASSERT(pszName);
+	ttASSERT(pszValue);
+	ttASSERT(*pszName);
+	ttASSERT(*pszValue);
 
 	XMLATTR* pAttr = (XMLATTR*) ttMalloc(sizeof(XMLATTR));	// Allocate one attribute.
 	pAttr->pszName = ttStrdup(pszName);
 	pAttr->pszValue = ttStrdup(pszValue);
 
 	if (pBranch->cAttributes == pBranch->cAttributeSpace) { // Out of space, so grow.
-		XMLATTR** t = (XMLATTR**) ttRealloc(pBranch->aAttributes, sizeof(CKeyXmlBranch*) *(pBranch->cAttributeSpace + iGrow));
+		XMLATTR** t = (XMLATTR**) ttRealloc(pBranch->aAttributes, sizeof(ttXMLBranch*) *(pBranch->cAttributeSpace + iGrow));
 		if (t) {
 			pBranch->aAttributes = t;
 			pBranch->cAttributeSpace += iGrow;
@@ -642,16 +647,16 @@ void CKeyXML::AddAttribute(CKeyXmlBranch* pBranch, const char* pszName, const ch
 	pBranch->cAttributes++;
 }
 
-CKeyXmlBranch* CKeyXML::AddDataChild(CKeyXmlBranch* pParent, const char* pszName, const char* pszData)
+ttXMLBranch* ttXML::AddDataChild(ttXMLBranch* pParent, const char* pszName, const char* pszData)
 {
-	ASSERT(pParent);
-	ASSERT(pszName);
-	ASSERT(*pszName);
-	ASSERT(pszData);
-	ASSERT(*pszData);
+	ttASSERT(pParent);
+	ttASSERT(pszName);
+	ttASSERT(*pszName);
+	ttASSERT(pszData);
+	ttASSERT(*pszData);
 
-	CKeyXmlBranch* pChild = AddBranch(pParent, pszName);
-	CKeyXmlBranch* pSubChild = GraftBranch(pChild, ENTITY_PCDATA);
+	ttXMLBranch* pChild = AddBranch(pParent, pszName);
+	ttXMLBranch* pSubChild = GraftBranch(pChild, ENTITY_PCDATA);
 	pSubChild->pszData = ttStrdup(pszData);
 	return pSubChild;
 }
@@ -660,9 +665,9 @@ CKeyXmlBranch* CKeyXML::AddDataChild(CKeyXmlBranch* pParent, const char* pszName
 // If the caller needs to free this memory, he should free the pointer to the deleted child and its attributes either before or
 // after this call.
 
-bool CKeyXmlBranch::RemoveChildAt(size_t i)
+bool ttXMLBranch::RemoveChildAt(size_t i)
 {
-	ASSERT(i < cChildren);
+	ttASSERT(i < cChildren);
 	if (i >= cChildren)
 		return false;
 
@@ -673,9 +678,9 @@ bool CKeyXmlBranch::RemoveChildAt(size_t i)
 	return false;
 }
 
-bool CKeyXmlBranch::ReplaceAttributeValue(CKeyXML* pxml, const char* pszAttribute, const char* pszNewValue) {
+bool ttXMLBranch::ReplaceAttributeValue(ttXML* pxml, const char* pszAttribute, const char* pszNewValue) {
 	for (size_t i = 0; i < cAttributes; i++) {
-		if (IsSameString(pszAttribute, aAttributes[i]->pszName)) {
+		if (tt::samestri(pszAttribute, aAttributes[i]->pszName)) {
 			if (pxml->isAllocatedStrings())
 				pKeyXML->ttFree(aAttributes[i]->pszValue);
 			aAttributes[i]->pszValue = pKeyXML->ttStrdup(pszNewValue);
@@ -685,10 +690,10 @@ bool CKeyXmlBranch::ReplaceAttributeValue(CKeyXML* pxml, const char* pszAttribut
 	return false;
 }
 
-HRESULT CKeyXML::ParseXmlFile(const char* pszFile)
+HRESULT ttXML::ParseXmlFile(const char* pszFile)
 {
-	ASSERT_MSG(pszFile, "NULL pointer!");
-	ASSERT_MSG(*pszFile, "Empty string!");
+	ttASSERT_MSG(pszFile, "NULL pointer!");
+	ttASSERT_MSG(*pszFile, "Empty string!");
 
 	if (!pszFile || !*pszFile)
 		return STG_E_FILENOTFOUND;
@@ -704,10 +709,10 @@ HRESULT CKeyXML::ParseXmlFile(const char* pszFile)
 	return S_OK;
 }
 
-HRESULT CKeyXML::ParseHtmlFile(const char* pszFile)
+HRESULT ttXML::ParseHtmlFile(const char* pszFile)
 {
-	ASSERT_MSG(pszFile, "NULL pointer!");
-	ASSERT_MSG(*pszFile, "Empty string!");
+	ttASSERT_MSG(pszFile, "NULL pointer!");
+	ttASSERT_MSG(*pszFile, "Empty string!");
 
 	if (!pszFile || !*pszFile)
 		return STG_E_FILENOTFOUND;
@@ -723,7 +728,7 @@ HRESULT CKeyXML::ParseHtmlFile(const char* pszFile)
 	return S_OK;
 }
 
-size_t CKeyXmlBranch::GetSiblingNumber()
+size_t ttXMLBranch::GetSiblingNumber()
 {
 	if (!parent)
 		return 0;
@@ -736,14 +741,14 @@ size_t CKeyXmlBranch::GetSiblingNumber()
 	return 0;
 }
 
-CKeyXmlBranch* CKeyXmlBranch::FindFirstElement(const char* pszElement)
+ttXMLBranch* ttXMLBranch::FindFirstElement(const char* pszElement)
 {
 	if (cChildren > 0) {
 		for (nextChild = 0; nextChild < cChildren; ++nextChild) {
-			if (aChildren[nextChild]->pszName && IsSameString(aChildren[nextChild]->pszName, pszElement))
+			if (aChildren[nextChild]->pszName && tt::samestri(aChildren[nextChild]->pszName, pszElement))
 				return aChildren[nextChild];
 			else if (aChildren[nextChild]->cChildren) {
-				CKeyXmlBranch* pBranch = aChildren[nextChild]->FindFirstElement(pszElement);
+				ttXMLBranch* pBranch = aChildren[nextChild]->FindFirstElement(pszElement);
 				if (pBranch)
 					return pBranch;
 			}
@@ -752,13 +757,13 @@ CKeyXmlBranch* CKeyXmlBranch::FindFirstElement(const char* pszElement)
 	return nullptr;
 }
 
-CKeyXmlBranch* CKeyXmlBranch::FindNextElement(const char* pszElement)
+ttXMLBranch* ttXMLBranch::FindNextElement(const char* pszElement)
 {
 	for (++nextChild; nextChild < cChildren; ++nextChild) {
-		if (aChildren[nextChild]->pszName && IsSameString(aChildren[nextChild]->pszName, pszElement))
+		if (aChildren[nextChild]->pszName && tt::samestri(aChildren[nextChild]->pszName, pszElement))
 			return aChildren[nextChild];
 		else if (aChildren[nextChild]->cChildren) {
-			CKeyXmlBranch* pBranch = aChildren[nextChild]->FindFirstElement(pszElement);
+			ttXMLBranch* pBranch = aChildren[nextChild]->FindFirstElement(pszElement);
 			if (pBranch)
 				return pBranch;
 		}
@@ -766,14 +771,14 @@ CKeyXmlBranch* CKeyXmlBranch::FindNextElement(const char* pszElement)
 	return nullptr;
 }
 
-CKeyXmlBranch* CKeyXmlBranch::FindFirstElement(HTML_ELEMENT elementSrch)
+ttXMLBranch* ttXMLBranch::FindFirstElement(HTML_ELEMENT elementSrch)
 {
 	if (cChildren > 0) {
 		for (nextChild = 0; nextChild < cChildren; ++nextChild) {
 			if (aChildren[nextChild]->element == elementSrch)
 				return aChildren[nextChild];
 			else if (aChildren[nextChild]->cChildren) {
-				CKeyXmlBranch* pBranch = aChildren[nextChild]->FindFirstElement(elementSrch);
+				ttXMLBranch* pBranch = aChildren[nextChild]->FindFirstElement(elementSrch);
 				if (pBranch)
 					return pBranch;
 			}
@@ -782,13 +787,13 @@ CKeyXmlBranch* CKeyXmlBranch::FindFirstElement(HTML_ELEMENT elementSrch)
 	return nullptr;
 }
 
-CKeyXmlBranch* CKeyXmlBranch::FindNextElement(HTML_ELEMENT Element)
+ttXMLBranch* ttXMLBranch::FindNextElement(HTML_ELEMENT Element)
 {
 	for (++nextChild; nextChild < cChildren; ++nextChild) {
 		if (aChildren[nextChild]->element == Element)
 			return aChildren[nextChild];
 		else if (aChildren[nextChild]->cChildren) {
-			CKeyXmlBranch* pBranch = aChildren[nextChild]->FindFirstElement(Element);
+			ttXMLBranch* pBranch = aChildren[nextChild]->FindFirstElement(Element);
 			if (pBranch)
 				return pBranch;
 		}
@@ -799,10 +804,10 @@ CKeyXmlBranch* CKeyXmlBranch::FindNextElement(HTML_ELEMENT Element)
 // Parse through all the children to see if any of them have the named attribute (pszAttribute). If pszValue is non-null,
 // then if the attribute is found it must also have the same value as pszValue.
 
-CKeyXmlBranch* CKeyXmlBranch::FindFirstAttribute(const char* pszAttribute, const char* pszValue)
+ttXMLBranch* ttXMLBranch::FindFirstAttribute(const char* pszAttribute, const char* pszValue)
 {
-	ASSERT_MSG(pszAttribute, "NULL pointer!");
-	ASSERT_MSG(*pszAttribute, "Empty string!");
+	ttASSERT_MSG(pszAttribute, "NULL pointer!");
+	ttASSERT_MSG(*pszAttribute, "Empty string!");
 	if (!pszAttribute || !*pszAttribute)
 		return nullptr;
 
@@ -813,13 +818,13 @@ CKeyXmlBranch* CKeyXmlBranch::FindFirstAttribute(const char* pszAttribute, const
 				if (pszAttrVal) {
 					if (!pszValue)
 						return aChildren[i];
-					else if (isSameString(pszAttrVal, pszValue))
+					else if (tt::samestri(pszAttrVal, pszValue))
 						return aChildren[i];
 				}
 			}
 
 			if (aChildren[i]->cChildren) {
-				CKeyXmlBranch* pBranch = aChildren[i]->FindFirstAttribute(pszAttribute, pszValue);
+				ttXMLBranch* pBranch = aChildren[i]->FindFirstAttribute(pszAttribute, pszValue);
 				if (pBranch)
 					return pBranch; //Found.
 			}
@@ -828,9 +833,9 @@ CKeyXmlBranch* CKeyXmlBranch::FindFirstAttribute(const char* pszAttribute, const
 	return nullptr;
 }
 
-const char* CKeyXmlBranch::GetAttribute(const char* pszAttribute) const
+const char* ttXMLBranch::GetAttribute(const char* pszAttribute) const
 {
-	ASSERT(pszAttribute);
+	ttASSERT(pszAttribute);
 	if (!pszAttribute)
 		return NULL;
 	XMLATTR* pAttr = MapStringToAttributePtr(pszAttribute);
@@ -840,7 +845,7 @@ const char* CKeyXmlBranch::GetAttribute(const char* pszAttribute) const
 		return NULL;
 }
 
-void CKeyXML::SetDocType(size_t type)
+void ttXML::SetDocType(size_t type)
 {
 	switch (type) {
 		case DOCTYPE_XHTML_STRICT:
@@ -860,14 +865,14 @@ void CKeyXML::SetDocType(size_t type)
 			break;
 
 		default:
-			FAIL("Unsupported DOCTYPE");
+			ttFAIL("Unsupported DOCTYPE");
 			break;
 	}
 }
 
 #define GROW_SIZE 1 // Default child element & attribute space growth increment.
 
-inline bool IsSymbol(char c) { return (IsAlpha(c) || IsDigit(c) || c=='_' || c==':' || c=='-' || c=='.'); }
+inline bool IsSymbol(char c) { return (tt::isalpha(c) || tt::isdigit(c) || c=='_' || c==':' || c=='-' || c=='.'); }
 inline bool IsEnter(char c) { return (c == '<'); }
 inline bool IsLeave(char c) { return (c == '>'); }
 inline bool IsDash(char c) { return (c=='-'); }
@@ -876,7 +881,7 @@ inline bool IsAttrSymbol(char c) { return (!IsSpace(c) && !IsEnter(c) && !IsLeav
 inline char* SkipSymbol(char* psz) { while (IsSymbol(*psz)) psz++; return psz; }
 inline char* SkipAttrSymbol(char* psz) { while (IsAttrSymbol(*psz)) psz++; return psz; }
 
-inline bool	 IsFormatableElement(CKeyXmlBranch* pBranch) {
+inline bool	 IsFormatableElement(ttXMLBranch* pBranch) {
 	if (pBranch->element == ELEMENT_PRE || pBranch->element == ELEMENT_SCRIPT)
 		return true;
 	while (pBranch->parent && pBranch->type != ENTITY_ROOT) {
@@ -900,12 +905,12 @@ inline bool	 IsFormatableElement(CKeyXmlBranch* pBranch) {
 #define ScanUntil(x)		{ while(*psz != 0 && !(x)) ++psz; if (!*psz) return psz; }
 #define ScanWhile(x)		{ while((x)) ++psz; if (*psz==0) return psz; }
 
-char* CKeyXML::ParseXmlString(char* psz, CKeyXmlBranch* pRoot)
+char* ttXML::ParseXmlString(char* psz, ttXMLBranch* pRoot)
 {
-	ASSERT(psz);
+	ttASSERT(psz);
 	if (!psz)
 		return psz;
-	CKeyXmlBranch* pBranch;
+	ttXMLBranch* pBranch;
 
 	if (!pRoot) {
 		m_pRoot = NewBranch(ENTITY_ROOT); // Allocate a new root.
@@ -1204,11 +1209,11 @@ LOC_DOCTYPE_QUOTE:
 					if (!*psz)
 						return psz;
 					XMLENTITY e = ENTITY_DTD_ENTITY;
-					if (IsSameString(pMark,"ATTLIST"))
+					if (tt::samestri(pMark, "ATTLIST"))
 						e = ENTITY_DTD_ATTLIST;
-					else if (IsSameString(pMark,"ELEMENT"))
+					else if (tt::samestri(pMark, "ELEMENT"))
 						e = ENTITY_DTD_ELEMENT;
-					else if (IsSameString(pMark,"NOTATION"))
+					else if (tt::samestri(pMark, "NOTATION"))
 						e = ENTITY_DTD_NOTATION;
 					Push(e); // Graft a new branch on the tree.
 					if (*psz != 0 && IsSpace(cChar)) {
@@ -1306,7 +1311,7 @@ LOC_ELEMENT: // Scan for & store element name.
 				else if (!IsSpace(cChar))
 					goto LOC_PCDATA; // No attributes, so scan for PCDATA.
 				else {
-					ASSERT(IsSpace(cChar));
+					ttASSERT(IsSpace(cChar));
 					SkipWS(); // Eat any whitespace.
 LOC_ATTRIBUTE:
 					if (IsSymbol(*psz) || *psz =='%') { //<... #...
@@ -1329,7 +1334,7 @@ LOC_ATTRIBUTE:
 								cChar = *psz; // Save quote char to avoid breaking on "''" -or- '""'.
 								++psz; // Step over the quote.
 								a->pszValue = psz; // Save the offset.
-								psz = kstrchr(psz, cChar);
+								psz = tt::strchr(psz, cChar);
 								if (!psz)
 									return NULL;
 								*psz++ = 0;
@@ -1481,12 +1486,12 @@ bool DoesEndTagCloseChildren(HTML_ELEMENT element) // returns true if the elemen
 		return false;
 }
 
-char* CKeyXML::ParseHtmlString(char* psz, CKeyXmlBranch* pRoot)
+char* ttXML::ParseHtmlString(char* psz, ttXMLBranch* pRoot)
 {
-	ASSERT(psz);
+	ttASSERT(psz);
 	if (!psz)
 		return psz;
-	CKeyXmlBranch* pBranch;
+	ttXMLBranch* pBranch;
 	bool bInScriptSection = false;
 	HTML_ELEMENT elemNew;
 
@@ -1665,7 +1670,7 @@ LOC_CLASSIFY: // What kind of element?
 					}
 					continue; // Probably a corrupted CDATA section, so just eat it.
 				}
-				else if (IsSameSubString(psz, "DOCTYPE")) {
+				else if (tt::samesubstri(psz, "DOCTYPE")) {
 					psz += sizeof("DOCTYPE");
 					while(IsSpace(*psz))
 						++psz;
@@ -1755,11 +1760,11 @@ LOC_DOCTYPE_QUOTE:
 					if (!*psz)
 						return psz;
 					XMLENTITY e = ENTITY_DTD_ENTITY;
-					if (IsSameString(pMark,"ATTLIST"))
+					if (tt::samestri(pMark,"ATTLIST"))
 						e = ENTITY_DTD_ATTLIST;
-					else if (IsSameString(pMark,"ELEMENT"))
+					else if (tt::samestri(pMark,"ELEMENT"))
 						e = ENTITY_DTD_ELEMENT;
-					else if (IsSameString(pMark,"NOTATION"))
+					else if (tt::samestri(pMark,"NOTATION"))
 						e = ENTITY_DTD_NOTATION;
 					Push(e); // Graft a new branch on the tree.
 					if (*psz != 0 && IsSpace(cChar)) {
@@ -1874,7 +1879,7 @@ LOC_ELEMENT: // Scan for & store element name.
 					return psz;
 				cChar = *psz;
 				*psz++ = 0;
-				ASSERT(elemNew == ParseElementTag(pBranch->pszName, psz + 1));
+				ttASSERT(elemNew == ParseElementTag(pBranch->pszName, psz + 1));
 				pBranch->element = elemNew;
 				if (!*psz)
 					return psz;
@@ -1891,7 +1896,7 @@ LOC_ELEMENT: // Scan for & store element name.
 					m_pTitleBranch = pBranch;
 
 				if (IsClose(cChar)) {	//'</...'
-					char* pszStart = FindNonSpace(psz + 1);
+					const char* pszStart = tt::nextnonspace(psz + 1);
 					while (*psz && !IsLeave(*psz))	// Scan for '>', stepping over the tag name.
 						psz++;
 					char chSave = *psz;
@@ -1916,7 +1921,7 @@ LOC_ELEMENT: // Scan for & store element name.
 					goto LOC_PCDATA; // No attributes, so scan for PCDATA.
 
 				else {
-					ASSERT(IsSpace(cChar));
+					ttASSERT(IsSpace(cChar));
 					bInScriptSection = (pBranch->element == ELEMENT_SCRIPT);
 					SkipWS(); // Eat any whitespace.
 LOC_ATTRIBUTE:
@@ -1941,7 +1946,7 @@ LOC_ATTRIBUTE:
 								cChar = *psz; // Save quote char to avoid breaking on "''" -or- '""'.
 								++psz; // Step over the quote.
 								a->pszValue = psz; // Save the offset.
-								psz = kstrchr(psz, cChar);
+								psz = tt::strchr(psz, cChar);
 								if (!psz)
 									return NULL;
 								*psz++ = 0;
@@ -2024,7 +2029,7 @@ LOC_PCDATA: //'>...<'
 						SkipWS(); // Eat whitespace if no genuine PCDATA here.
 					if (IsEnter(*psz)) { // We hit a '<...', with only whitespace, so don't bother storing anything.
 						if (IsClose(psz[1])) { //'</...'
-							char* pszStart = FindNonSpace(psz + 2);
+							const char* pszStart = tt::nextnonspace(psz + 2);
 							while (*psz && !IsLeave(*psz))	// Scan for '>', stepping over the tag name.
 								psz++;
 							*psz = 0;
@@ -2057,7 +2062,7 @@ LOC_PCDATA: //'>...<'
 								// if we are within a <form> section.
 
 								if (elemClose == ELEMENT_FORM && pBranch->element != ELEMENT_FORM) {
-									CKeyXmlBranch* pParent = pBranch->parent;
+									ttXMLBranch* pParent = pBranch->parent;
 									while (pParent->element != ELEMENT_FORM && pParent->type != ENTITY_ROOT)	{
 										pParent = pParent->parent;
 									}
@@ -2113,7 +2118,7 @@ LOC_PCDATA: //'>...<'
 							bInScriptSection = false;
 							break;
 						}
-						if (IsSameSubString(FindNonSpace(psz + 1), "/script")) {
+						if (tt::samesubstri(tt::nextnonspace(psz + 1), "/script")) {
 							bInScriptSection = false;
 							break;
 						}
@@ -2185,7 +2190,7 @@ LOC_PCDATA: //'>...<'
 							goto LOC_LEAVE;
 						}
 						SkipWS();	// skip over any whitespite
-						if (IsAlpha(*psz)) {
+						if (tt::isalpha(*psz)) {
 							char* pszElement = psz;
 							ScanWhile(IsSymbol(*psz));
 							char chSave = *psz;

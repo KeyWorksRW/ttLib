@@ -1,12 +1,12 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		CKeyFile
-// Purpose:		class for reading and writing line-oriented files
+// Name:		ttFile
+// Purpose:		class for reading and writing
 // Author:		Ralph Walden
-// Copyright:	Copyright (c) 2002-2018 KeyWorks Software (Ralph Walden)
+// Copyright:	Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
-#include "precomp.h"
+#include "pch.h"
 
 #include <stdlib.h>	// for wcstombs_s
 
@@ -14,10 +14,10 @@
 	#include <wx/file.h>
 #endif
 
-#include "../include/keyfile.h"
+#include "../include/ttfile.h"
 
 #ifdef _WINDOWS_
-	#define CHECK_URL_PTR(str)	{ ASSERT(str); if (!str || !str[0] || kstrlen(str) >= INTERNET_MAX_URL_LENGTH) { m_ioResult = ERROR_BAD_NAME; return false; } }
+	#define CHECK_URL_PTR(str)	{ ttASSERT(str); if (!str || !str[0] || tt::strlen(str) >= INTERNET_MAX_URL_LENGTH) { m_ioResult = ERROR_BAD_NAME; return false; } }
 
 	#pragma comment(lib, "Wininet.lib")
 #endif
@@ -39,9 +39,9 @@
 	#define ERROR_INVALID_NAME 123
 #endif
 
-#define CHECK_FILE_PTR(str) { ASSERT(str); if (!str || !str[0] || kstrlen(str) >= FILENAME_MAX) { m_ioResult = ERROR_BAD_NAME; return false; } }
+#define CHECK_FILE_PTR(str) { ttASSERT(str); if (!str || !str[0] || tt::strlen(str) >= FILENAME_MAX) { m_ioResult = ERROR_BAD_NAME; return false; } }
 
-CKeyFile::CKeyFile()
+ttFile::ttFile()
 {
 	m_cbAllocated = 0;	// nothing is allocated until a file is read, or the first output (e.g., WriteStr()) is called
 	m_pbuf = NULL;
@@ -52,7 +52,7 @@ CKeyFile::CKeyFile()
 	m_fUnixLF = true;
 }
 
-CKeyFile::CKeyFile(ptrdiff_t cb)
+ttFile::ttFile(ptrdiff_t cb)
 {
 	// It's likely we're being give the exact file size, and AllocateBuffer() will round up (to nearest 256 byte boundary)
 	// The upside to calling AllocateBuffer() and AllocateMoreMemory() is keeping all memory allocation in just two places
@@ -60,7 +60,7 @@ CKeyFile::CKeyFile(ptrdiff_t cb)
 	AllocateBuffer(cb);
 }
 
-CKeyFile::~CKeyFile()
+ttFile::~ttFile()
 {
 #ifdef _WINDOWS_
 	if (m_hInternetSession)
@@ -73,9 +73,9 @@ CKeyFile::~CKeyFile()
 // Memory allocation is always rounded up to the nearest 4K boundary. I.e., if you request 1 byte or 4095 bytes, what will actually
 // be allocated is 4096 bytes.
 
-void CKeyFile::AllocateBuffer(size_t cbInitial)
+void ttFile::AllocateBuffer(size_t cbInitial)
 {
-	ASSERT_MSG(!m_pbuf, "Buffer already allocated!");
+	ttASSERT_MSG(!m_pbuf, "Buffer already allocated!");
 	cbInitial >>= 12;		// remove 1-4095 no matter what bit-width cbInitial is
 	cbInitial <<= 12;
 	cbInitial += 0x1000;	// round up to nearest 4K byte boundary (1-4095 becomes 4096, 4096-8191 become 8192)
@@ -85,7 +85,7 @@ void CKeyFile::AllocateBuffer(size_t cbInitial)
 	m_pEnd = m_pbuf + (m_cbAllocated - CB_END_PAD);
 }
 
-void CKeyFile::AllocateMoreMemory(size_t cbMore)
+void ttFile::AllocateMoreMemory(size_t cbMore)
 {
 	size_t cOffset = m_pCurrent - m_pbuf;
 	cbMore >>= 12;
@@ -98,10 +98,10 @@ void CKeyFile::AllocateMoreMemory(size_t cbMore)
 	m_pEnd = m_pbuf + (m_cbAllocated - CB_END_PAD);
 }
 
-bool CKeyFile::WriteFile(const char* pszFile)
+bool ttFile::WriteFile(const char* pszFile)
 {
 	CHECK_FILE_PTR(pszFile);	// returns false on failure
-	ASSERT_MSG(m_pCurrent > m_pbuf, "Trying to write an empty file!");
+	ttASSERT_MSG(m_pCurrent > m_pbuf, "Trying to write an empty file!");
 	if (m_pCurrent == m_pbuf) {
 		m_ioResult = ERROR_EMPTY_BUFFER;
 		return false;	// we refuse to write an empty file
@@ -133,7 +133,7 @@ bool CKeyFile::WriteFile(const char* pszFile)
 #endif
 }
 
-bool CKeyFile::ReadFile(const char* pszFile)
+bool ttFile::ReadFile(const char* pszFile)
 {
 	Delete();
 	CHECK_FILE_PTR(pszFile);	// returns on failure
@@ -185,7 +185,7 @@ bool CKeyFile::ReadFile(const char* pszFile)
 	CloseHandle(hf);
 #endif	// _WX_WX_H_
 
-	ASSERT_MSG((size_t) cbRead < m_cbAllocated, "Read more bytes than buffer size!");
+	ttASSERT_MSG((size_t) cbRead < m_cbAllocated, "Read more bytes than buffer size!");
 	m_pCurrent[(size_t) cbRead] = 0;	// null-terminate the file
 	m_ioResult = ERROR_NONE;
 	m_pCurrent += (size_t) cbRead;	// note that we do NOT change m_pszLine
@@ -193,7 +193,7 @@ bool CKeyFile::ReadFile(const char* pszFile)
 }
 
 #ifdef _WINDOWS_
-bool CKeyFile::ReadURL(const char* pszURL, HINTERNET hInternet)	// _WINDOWS_ only
+bool ttFile::ReadURL(const char* pszURL, HINTERNET hInternet)	// _WINDOWS_ only
 {
 	Delete();
 	m_cbUrlFile = 0;
@@ -255,14 +255,14 @@ __inline DWORD GetFileSize(IStream* pStream)	// _WINDOWS_ only
 	ULARGE_INTEGER liNewPos;
 	HRESULT hr = pStream->Seek(liOffset, FILE_END, &liNewPos);
 	if (FAILED(hr)) {
-		ASSERT_MSG(!FAILED(hr), "Seek failed");
+		ttASSERT_MSG(!FAILED(hr), "Seek failed");
 		return 0;
 	}
 	pStream->Seek(liOffset, FILE_BEGIN, NULL);
 	return liNewPos.LowPart;
 }
 
-HRESULT CKeyFile::ReadFile(IStream* pStream)	// _WINDOWS_ only
+HRESULT ttFile::ReadFile(IStream* pStream)	// _WINDOWS_ only
 {
 	Delete();
 	if (!pStream)
@@ -282,7 +282,7 @@ HRESULT CKeyFile::ReadFile(IStream* pStream)	// _WINDOWS_ only
 	ULONG cbRead;
 	HRESULT hr = pStream->Read(m_pCurrent, cbFile, &cbRead);
 	if (FAILED(hr)) {
-		ASSERT_MSG(!FAILED(hr), "Read failed");
+		ttASSERT_MSG(!FAILED(hr), "Read failed");
 		m_ioResult = ERROR_CANT_READ;
 		return E_FAIL;
 	}
@@ -292,18 +292,18 @@ HRESULT CKeyFile::ReadFile(IStream* pStream)	// _WINDOWS_ only
 	return hr;
 }
 
-bool CKeyFile::ReadResource(DWORD idResource)	// _WINDOWS_ only
+bool ttFile::ReadResource(DWORD idResource)	// _WINDOWS_ only
 {
 	Delete();
-	HRSRC hrsrc	 = FindResource(_hinstResources, MAKEINTRESOURCE(idResource), RT_RCDATA);
-	ASSERT(hrsrc);
+	HRSRC hrsrc	 = FindResource(tt::hinstResources, MAKEINTRESOURCE(idResource), RT_RCDATA);
+	ttASSERT(hrsrc);
 	if (!hrsrc) {
 		m_ioResult = ERROR_CANT_OPEN;
 		return false;
 	}
-	uint32_t cbFile = SizeofResource(_hinstResources, hrsrc);
-	HGLOBAL hglb = LoadResource(_hinstResources, hrsrc);
-	ASSERT(hglb);
+	uint32_t cbFile = SizeofResource(tt::hinstResources, hrsrc);
+	HGLOBAL hglb = LoadResource(tt::hinstResources, hrsrc);
+	ttASSERT(hglb);
 	if (!hglb) {
 		m_ioResult = ERROR_CANT_READ;
 		return false;
@@ -320,9 +320,9 @@ bool CKeyFile::ReadResource(DWORD idResource)	// _WINDOWS_ only
 
 #endif	// _WINDOWS_
 
-void CKeyFile::WriteChar(char ch)
+void ttFile::WriteChar(char ch)
 {
-	ASSERT(!m_bReadlineReady);
+	ttASSERT(!m_bReadlineReady);
 	if (!m_pbuf)
 		AllocateBuffer();
 	*m_pCurrent++ = ch;
@@ -330,7 +330,7 @@ void CKeyFile::WriteChar(char ch)
 		AllocateMoreMemory();
 }
 
-void CKeyFile::WriteEol()	// Write only \n if m_fUnixLF, else \r\n
+void ttFile::WriteEol()	// Write only \n if m_fUnixLF, else \r\n
 {
 	if (!m_pbuf)
 		AllocateBuffer();
@@ -342,20 +342,20 @@ void CKeyFile::WriteEol()	// Write only \n if m_fUnixLF, else \r\n
 	*m_pCurrent = 0;
 }
 
-void CKeyFile::WriteEol(const char* psz)
+void ttFile::WriteEol(const char* psz)
 {
-	ASSERT(!m_bReadlineReady);
-	ASSERT_MSG(psz, "NULL pointer!");
+	ttASSERT(!m_bReadlineReady);
+	ttASSERT_MSG(psz, "NULL pointer!");
 	if (!psz)
 		return;
 
 	if (!m_pbuf)
 		AllocateBuffer(4097);
 
-	size_t cb = kstrlen(psz) + 2;	// include room for cr/lf (even if set for Unix -- the extra byte won't hurt)
+	size_t cb = tt::strlen(psz) + 2;	// include room for cr/lf (even if set for Unix -- the extra byte won't hurt)
 	if (m_pCurrent + cb > m_pEnd)
 		AllocateMoreMemory(max(cb + 1024, 16 * 1024));
-	kstrcpy(m_pCurrent, psz);
+	tt::strcpy(m_pCurrent, psz);
 	m_pCurrent += (cb - 2);
 
 	if (!m_fUnixLF)
@@ -364,42 +364,42 @@ void CKeyFile::WriteEol(const char* psz)
 	*m_pCurrent = 0;
 }
 
-void CKeyFile::WriteStr(const char* psz)
+void ttFile::WriteStr(const char* psz)
 {
-	ASSERT(!m_bReadlineReady);
-	ASSERT_MSG(psz, "NULL pointer!");
-	ASSERT_MSG(*psz, "empty string!");
+	ttASSERT(!m_bReadlineReady);
+	ttASSERT_MSG(psz, "NULL pointer!");
+	ttASSERT_MSG(*psz, "empty string!");
 	if (!psz || !*psz)
 		return;
 	if (!m_pbuf)
 		AllocateBuffer(strlen(psz) + 4);
 
-	size_t cb = kstrlen(psz);
+	size_t cb = tt::strlen(psz);
 	if (m_pCurrent + cb + 2 > m_pEnd)
 		AllocateMoreMemory(max(cb + 1024, 16 * 1024));
-	kstrcpy(m_pCurrent, psz);
+	tt::strcpy(m_pCurrent, psz);
 	m_pCurrent += cb;
 }
 
-void __cdecl CKeyFile::printf(const char* pszFormat, ...)
+void __cdecl ttFile::printf(const char* pszFormat, ...)
 {
-	ASSERT(!m_bReadlineReady);
-	ASSERT_MSG(pszFormat, "NULL pointer!");
-	ASSERT_MSG(*pszFormat, "empty string!");
+	ttASSERT(!m_bReadlineReady);
+	ttASSERT_MSG(pszFormat, "NULL pointer!");
+	ttASSERT_MSG(*pszFormat, "empty string!");
 	if (!pszFormat || !*pszFormat)
 		return;
 
 	va_list argList;
 	va_start(argList, pszFormat);
-	CStr cszTmp;
+	ttString cszTmp;
 	cszTmp.vprintf(pszFormat, argList);
 	va_end(argList);
 	WriteStr(cszTmp);
 }
 
-bool CKeyFile::readline(char** ppszLine)
+bool ttFile::readline(char** ppszLine)
 {
-	ASSERT_MSG(m_pbuf, "Attempting to read a line from an empty CKeyFile!");
+	ttASSERT_MSG(m_pbuf, "Attempting to read a line from an empty ttFile!");
 	if (!m_pbuf)
 		return false;
 
@@ -437,7 +437,7 @@ bool CKeyFile::readline(char** ppszLine)
 	return true;
 }
 
-void CKeyFile::Delete()
+void ttFile::Delete()
 {
 	if (m_pbuf)
 		tt::free(m_pbuf);
@@ -448,18 +448,18 @@ void CKeyFile::Delete()
 	m_bReadlineReady = false;
 }
 
-void CKeyFile::InsertStr(const char* pszText, char* pszPosition)
+void ttFile::InsertStr(const char* pszText, char* pszPosition)
 {
-	ASSERT(pszText);
-	ASSERT(*pszText);
-	ASSERT(pszPosition);
-	ASSERT(pszPosition >= m_pbuf);
-	ASSERT(pszPosition <= m_pbuf + m_cbAllocated);
+	ttASSERT(pszText);
+	ttASSERT(*pszText);
+	ttASSERT(pszPosition);
+	ttASSERT(pszPosition >= m_pbuf);
+	ttASSERT(pszPosition <= m_pbuf + m_cbAllocated);
 
 	if (!pszText || !*pszText || !pszPosition || pszPosition < m_pbuf || pszPosition > m_pbuf + m_cbAllocated)
 		return;
 
-	size_t cb = kstrlen(pszText);
+	size_t cb = tt::strlen(pszText);
 	ptrdiff_t offset = pszPosition - m_pbuf;
 	while ((m_pCurrent - m_pbuf) + cb >= m_cbAllocated)
 		AllocateMoreMemory();
@@ -470,33 +470,33 @@ void CKeyFile::InsertStr(const char* pszText, char* pszPosition)
 	m_pCurrent += cb;
 }
 
-bool CKeyFile::ReplaceStr(const char* pszOldText, const char* pszNewText, bool fCaseSensitive)
+bool ttFile::ReplaceStr(const char* pszOldText, const char* pszNewText, bool fCaseSensitive)
 {
-	ASSERT_MSG(pszOldText, "NULL pointer!");
-	ASSERT(*pszOldText);
-	ASSERT(pszNewText);
-	ASSERT_MSG(!*m_pCurrent, "m_pCurrent does not appear to be pointing to the end of the buffer. Did you call readline?");
+	ttASSERT_MSG(pszOldText, "NULL pointer!");
+	ttASSERT(*pszOldText);
+	ttASSERT(pszNewText);
+	ttASSERT_MSG(!*m_pCurrent, "m_pCurrent does not appear to be pointing to the end of the buffer. Did you call readline?");
 
 	if (!pszOldText || !*pszOldText || !pszNewText)
 		return false;
 
-	char* pszPos = fCaseSensitive ? kstrstr(m_pbuf, pszOldText) : kstristr(m_pbuf, pszOldText);
+	char* pszPos = fCaseSensitive ? tt::strstr(m_pbuf, pszOldText) : tt::stristr(m_pbuf, pszOldText);
 	if (!pszPos)
 		return false;
 
-	ASSERT_MSG(pszPos < m_pCurrent, "m_pCurrent does not appear to be pointing to the end of the buffer. Did you call readline?");
+	ttASSERT_MSG(pszPos < m_pCurrent, "m_pCurrent does not appear to be pointing to the end of the buffer. Did you call readline?");
 	if (pszPos >= m_pCurrent)
 		return false;
 
-	size_t cbOld = kstrlen(pszOldText);
-	size_t cbNew = kstrlen(pszNewText);
+	size_t cbOld = tt::strlen(pszOldText);
+	size_t cbNew = tt::strlen(pszNewText);
 
 	if (cbNew == 0) {	// delete the old text since new text is empty
 		ptrdiff_t cb = m_pCurrent - pszPos;
-		ASSERT_MSG(cb > 0, "m_pCurrent does not appear to be pointing to the end of the buffer. Did you call readline()? You can't use ReplaceStr() if you called readline()");
+		ttASSERT_MSG(cb > 0, "m_pCurrent does not appear to be pointing to the end of the buffer. Did you call readline()? You can't use ReplaceStr() if you called readline()");
 		memmove(pszPos, pszPos + cbOld, cb);
 		m_pCurrent -= cbOld;
-		ASSERT_MSG(!*m_pCurrent, "m_pCurrent did not get changed correctly");
+		ttASSERT_MSG(!*m_pCurrent, "m_pCurrent did not get changed correctly");
 	}
 
 	else if (cbNew == cbOld) {
@@ -510,7 +510,7 @@ bool CKeyFile::ReplaceStr(const char* pszOldText, const char* pszNewText, bool f
 			*pszPos++ = *pszNewText++;
 		}
 		InsertStr(pszNewText, pszPos);
-		ASSERT_MSG(!*m_pCurrent, "m_pCurrent did not get changed correctly");
+		ttASSERT_MSG(!*m_pCurrent, "m_pCurrent did not get changed correctly");
 	}
 	else {	// new text is shorter
 		cbOld -= cbNew;
@@ -518,55 +518,55 @@ bool CKeyFile::ReplaceStr(const char* pszOldText, const char* pszNewText, bool f
 			*pszPos++ = *pszNewText++;
 		}
 		ptrdiff_t cb = m_pCurrent - pszPos;
-		ASSERT_MSG(cb > 0, "m_pCurrent does not appear to be pointing to the end of the buffer. Did you call readline()? You can't use ReplaceStr() if you called readline()");
+		ttASSERT_MSG(cb > 0, "m_pCurrent does not appear to be pointing to the end of the buffer. Did you call readline()? You can't use ReplaceStr() if you called readline()");
 		memmove(pszPos, pszPos + cbOld, cb);
 		m_pCurrent -= cbOld;
-		ASSERT_MSG(!*m_pCurrent, "m_pCurrent did not get changed correctly");
+		ttASSERT_MSG(!*m_pCurrent, "m_pCurrent did not get changed correctly");
 	}
 	return true;
 }
 
-size_t CKeyFile::GetCurLineLength()
+size_t ttFile::GetCurLineLength()
 {
 	if (!m_pCurrent || !m_pbuf)
 		return 0;
 
 	if (m_bReadlineReady && m_pszLine)
-		return kstrlen(m_pszLine);
+		return tt::strlen(m_pszLine);
 
 	const char* pszBeginLine = m_pCurrent;
 	while (pszBeginLine > m_pbuf && *pszBeginLine != '\n')
 		pszBeginLine--;
 
-	return kstrlen(pszBeginLine) - 1;
+	return tt::strlen(pszBeginLine) - 1;
 }
 
-bool CKeyFile::isThisPreviousString(const char* pszPrev)
+bool ttFile::isThisPreviousString(const char* pszPrev)
 {
-	ASSERT_MSG(pszPrev, "NULL pointer!");
-	ASSERT_MSG(*pszPrev, "empty string!");
-	ASSERT(m_pCurrent);
+	ttASSERT_MSG(pszPrev, "NULL pointer!");
+	ttASSERT_MSG(*pszPrev, "empty string!");
+	ttASSERT(m_pCurrent);
 
 	if (!pszPrev || !*pszPrev || !m_pCurrent)
 		return false;
 
-	size_t cb = kstrlen(pszPrev);
+	size_t cb = tt::strlen(pszPrev);
 
 	if (m_pCurrent - cb < m_pbuf)
 		return false;
-	return kstrcmp(m_pCurrent - cb, pszPrev);
+	return tt::samestr(m_pCurrent - cb, pszPrev);
 }
 
-bool CKeyFile::UnicodeToAnsi()
+bool ttFile::UnicodeToAnsi()
 {
 	if (!m_pbuf || m_pEnd < m_pbuf + 2 || (uint8_t) m_pbuf[0] != 0xFF || (uint8_t) m_pbuf[1] != 0xFE)
 		return false;
 
-	size_t cb = kstrlen((wchar_t*) (m_pbuf + 2)) * sizeof(wchar_t);
+	size_t cb = tt::strlen((wchar_t*) (m_pbuf + 2)) * sizeof(wchar_t);
 	size_t cbLen;
 	int err = wcstombs_s(&cbLen, nullptr, cb, (wchar_t*) (m_pbuf + 2), cb);
 	// cb = wcstombs(nullptr, (wchar_t*) (m_pbuf + 2), cb);
-	ASSERT(err != -1);
+	ttASSERT(err != -1);
 	if (err == -1)
 		return false;
 
@@ -574,7 +574,7 @@ bool CKeyFile::UnicodeToAnsi()
 	err = wcstombs_s(&cbLen, psz, cbLen, (wchar_t*) (m_pbuf + 2), cb);
 	psz[cb] = '\0';
 
-	free(m_pbuf);
+	tt::free(m_pbuf);
 	m_pbuf = psz;
 	m_pszLine = m_pCurrent = m_pbuf;
 	m_pEnd = m_pbuf + cb;
@@ -585,7 +585,7 @@ bool CKeyFile::UnicodeToAnsi()
 // Add a single EOL to the current buffer. Do this by first backing up over any trailing whitespace. Then see if we already
 // have a EOL, and if not, add one.
 
-void CKeyFile::AddSingleLF()
+void ttFile::AddSingleLF()
 {
 	if (!m_pCurrent)
 		return;
@@ -594,7 +594,7 @@ void CKeyFile::AddSingleLF()
 		return;
 	}
 	m_pCurrent--;
-	while (m_pCurrent > m_pbuf && (*m_pCurrent == CH_SPACE || *m_pCurrent == CH_TAB))
+	while (m_pCurrent > m_pbuf && (*m_pCurrent == ' ' || *m_pCurrent == '\t'))
 		m_pCurrent--;
 	if (m_pCurrent == m_pbuf)
 		WriteEol();
@@ -606,15 +606,15 @@ void CKeyFile::AddSingleLF()
 		m_pCurrent++;
 }
 
-void CKeyFile::ReCalcSize()
+void ttFile::ReCalcSize()
 {
 	if (m_pbuf)
-		m_pCurrent = m_pbuf + kstrlen(m_pbuf);
+		m_pCurrent = m_pbuf + tt::strlen(m_pbuf);
 }
 
-void CKeyFile::Backup(size_t cch)
+void ttFile::Backup(size_t cch)
 {
-	ASSERT(m_pCurrent);
+	ttASSERT(m_pCurrent);
 	if (!m_pCurrent)
 		return;
 	if (m_pCurrent - cch > m_pbuf)
@@ -622,24 +622,24 @@ void CKeyFile::Backup(size_t cch)
 	memset(m_pCurrent, 0, cch);
 }
 
-char* CKeyFile::GetParsedYamlLine()
+char* ttFile::GetParsedYamlLine()
 {
 	if (!m_bReadlineReady)
 		readline();
-	ASSERT_MSG(m_bReadlineReady, "Attempting to call GetParsedYamlLine() without a properly read file!");
+	ttASSERT_MSG(m_bReadlineReady, "Attempting to call GetParsedYamlLine() without a properly read file!");
 
-	char* pszLine = FindNonSpace(m_pszLine);	// ignore any leading spaces
-	if (IsSameSubString(pszLine, "%YAML"))
+	const char* pszLine = tt::nextnonspace(m_pszLine);	// ignore any leading spaces
+	if (tt::samesubstri(pszLine, "%YAML"))
 		return nullptr;
 
-	if (IsEmptyString(pszLine) || pszLine[0] == '#' || (pszLine[0] == '-' && pszLine[1] == '-' && pszLine[2] == '-'))	// ignore empty, comment or divider lines
+	if (tt::isempty(pszLine) || pszLine[0] == '#' || (pszLine[0] == '-' && pszLine[1] == '-' && pszLine[2] == '-'))	// ignore empty, comment or divider lines
 		return nullptr;
 
-	char* pszComment = kstrchr(pszLine, '#');	// strip off any comments
+	char* pszComment = tt::strchr(pszLine, '#');	// strip off any comments
 	if (pszComment)
 		*pszComment = 0;
 
-	trim(pszLine);		// remove any trailing white space
+	tt::trim_right((char*) pszLine);		// remove any trailing white space
 
-	return pszLine;
+	return (char*) pszLine;
 }

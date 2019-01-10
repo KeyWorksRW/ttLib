@@ -1,23 +1,23 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		CEnumStr
+// Name:		ttEnumStr
 // Purpose:		Enumerate through substrings in a string
 // Author:		Ralph Walden (randalphwa)
-// Copyright:	Copyright (c) 2018 KeyWorks Software (Ralph Walden)
+// Copyright:	Copyright (c) 2018-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
-#include "precomp.h"
+#include "pch.h"
 
 #include "../include/enumstr.h"
-#include "../include/kstr.h"	// various kstr...() functions
+#include "../include/ttstr.h"	// various functions dealing with strings
 
-CEnumStr::CEnumStr()
+ttEnumStr::ttEnumStr()
 {
 	m_pszCur = nullptr;
 	m_pszEnd = nullptr;
 }
 
-CEnumStr::CEnumStr(const char* psz, char chSeparator)
+ttEnumStr::ttEnumStr(const char* psz, char chSeparator)
 {
 	if (psz)
 		m_csz = psz;
@@ -26,7 +26,7 @@ CEnumStr::CEnumStr(const char* psz, char chSeparator)
 	ResetEnum(chSeparator);
 }
 
-void CEnumStr::ResetEnum(char chSeparator)
+void ttEnumStr::ResetEnum(char chSeparator)
 {
 	if (m_csz.IsEmpty()) {
 		m_pszCur = nullptr;
@@ -42,7 +42,7 @@ void CEnumStr::ResetEnum(char chSeparator)
 	m_pszEnd = nullptr;
 }
 
-void CEnumStr::SetNewStr(const char* psz, char chSeparator)
+void ttEnumStr::SetNewStr(const char* psz, char chSeparator)
 {
 	if (psz)
 		m_csz = psz;
@@ -53,9 +53,9 @@ void CEnumStr::SetNewStr(const char* psz, char chSeparator)
 	ResetEnum(chSeparator);
 }
 
-bool CEnumStr::Enum(const char** ppszCurrent)
+bool ttEnumStr::Enum(const char** ppszCurrent)
 {
-	ASSERT_MSG(!m_csz.IsNull(), "Calling Enum() without a valid master string (CEnumStr(nullptr) or SetNewStr(nullptr))!");
+	ttASSERT_MSG(!m_csz.IsNull(), "Calling Enum() without a valid master string (ttEnumStr(nullptr) or SetNewStr(nullptr))!");
 	if (m_csz.IsNull()) {
 		if (ppszCurrent)
 			*ppszCurrent = nullptr;
@@ -64,7 +64,7 @@ bool CEnumStr::Enum(const char** ppszCurrent)
 
 	if (m_pszCur == nullptr) {	// means we haven't been called before, or ResetEnum() was called to reset
 		m_pszCur = (const char*) m_csz;
-		m_pszEnd = kstrchr(m_pszCur, m_chSeparator);
+		m_pszEnd = tt::strchr(m_pszCur, m_chSeparator);
 		if (m_pszEnd)
 			*m_pszEnd = 0;
 		if (ppszCurrent)
@@ -80,8 +80,8 @@ bool CEnumStr::Enum(const char** ppszCurrent)
 		else {
 			*m_pszEnd = m_chSeparator;
 			do {	// handle doubled characters, or characters with only space between them (";;" or "; ;")
-				m_pszCur = FindNonSpace(m_pszEnd + 1);
-				m_pszEnd = kstrchr(m_pszCur, m_chSeparator);
+				m_pszCur = tt::nextnonspace(m_pszEnd + 1);
+				m_pszEnd = tt::strchr(m_pszCur, m_chSeparator);
 			} while(*m_pszCur == m_chSeparator && m_pszEnd);
 
 			if (*m_pszCur == m_chSeparator) {	// means we got to the end with no more separators

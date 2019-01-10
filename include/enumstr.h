@@ -1,8 +1,8 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		CEnumStr
+// Name:		ttEnumStr
 // Purpose:		Enumerate through substrings in a string
 // Author:		Ralph Walden (randalphwa)
-// Copyright:	Copyright (c) 2018 KeyWorks Software (Ralph Walden)
+// Copyright:	Copyright (c) 2018-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
@@ -10,7 +10,7 @@
 	This class is used to enumerate through substrings that are separated by a single character (typically a semicolon).
 	The following example uses this to parse through each of the directories in an INCLUDE environment variable:
 
-		CEnumStr enumstr("c:/sdk/include;c:/github/wxwidgets/include/wx", ';');
+		ttEnumStr enumstr("c:/sdk/include;c:/github/wxwidgets/include/wx", ';');
 		while (enumstr.Enum())
 			puts(enumstr)
 */
@@ -20,13 +20,13 @@
 #ifndef __TTLIB_CENUMSTR_H__
 #define __TTLIB_CENUMSTR_H__
 
-#include "../include/cstr.h"	// CStr
+#include "../include/ttstring.h"						// ttString
 
-class CEnumStr
+class ttEnumStr
 {
 public:
-	CEnumStr(const char* psz, char chSeparator = ';');	// This will make a copy of psz
-	CEnumStr();	// If using this constructor, you must call SetNewStr() before calling Enum()
+	ttEnumStr(const char* psz, char chSeparator = ';');	// This will make a copy of psz
+	ttEnumStr();	// If using this constructor, you must call SetNewStr() before calling Enum()
 
 	// Class functions
 
@@ -40,7 +40,7 @@ public:
 protected:
 	// Class members
 
-	CStr		m_csz;
+	ttString	m_csz;
 	const char* m_pszCur;
 	char*		m_pszEnd;
 	char		m_chSeparator;

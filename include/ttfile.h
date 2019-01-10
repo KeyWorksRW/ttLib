@@ -1,8 +1,8 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		CKeyFile
+// Name:		ttFile
 // Purpose:		class for reading and writing files, strings, data, etc.
 // Author:		Ralph Walden
-// Copyright:	Copyright (c) 2002-2018 KeyWorks Software (Ralph Walden)
+// Copyright:	Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
@@ -18,19 +18,19 @@
 #ifndef __TTLIB_KEYFILE_H__
 #define __TTLIB_KEYFILE_H__
 
-#include "cstr.h"	// CStr
+#include "ttstring.h"	// ttString
 
 #ifdef _WINDOWS_
 	#include <Wininet.h>
 	#include <objidl.h>	// for IStream interface
 #endif
 
-class CKeyFile
+class ttFile
 {
 public:
-	CKeyFile();
-	CKeyFile(ptrdiff_t cb);
-	~CKeyFile();
+	ttFile();
+	ttFile(ptrdiff_t cb);
+	~ttFile();
 
 	typedef enum {
 		ERROR_NONE,
@@ -97,9 +97,9 @@ public:
 	bool  isUnicode() { return (m_pbuf && m_pEnd > m_pbuf + 2 && (BYTE) m_pbuf[0] == 0xFF && (BYTE) m_pbuf[1] == 0xFE); }
 
 	void SetCurPosition(char* psz) {
-		ASSERT(psz);
-		ASSERT(psz >= m_pbuf);
-		ASSERT(psz <= m_pEnd);
+		ttASSERT(psz);
+		ttASSERT(psz >= m_pbuf);
+		ttASSERT(psz <= m_pEnd);
 		if (psz >= m_pbuf && psz <= m_pEnd)
 			m_pCurrent = psz;
 	}
@@ -112,7 +112,7 @@ public:
 	operator const char*() const { return m_pszLine; }
 	void operator+=(const char* psz) { WriteStr(psz); }
 	void operator=(const char* psz) {
-		ASSERT_MSG(psz, "NULL pointer!");
+		ttASSERT_MSG(psz, "NULL pointer!");
 		if (m_pbuf)
 			Delete();
 		WriteStr(psz);

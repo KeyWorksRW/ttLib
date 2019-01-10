@@ -10,14 +10,27 @@
 #define _WIN32_WINNT 	0x0600
 #define _WIN32_IE 	 	0x0700
 
-#define _RICHEDIT_VER	0x0300
-
 #include <windows.h>
 #include <stdint.h>
 #include <inttypes.h>
 
-#define TTHEAP_DEPRECATE	// make certain we aren't using deprecated CTTHeap functions
-
 #include "../include/ttlib.h"
 
-// Don't include any other TTLib headers -- need to verify that each ttLib source module #includes any header files it needs
+namespace ttpriv {
+	const char CH_OPEN_PAREN =  '(';
+	const char CH_CLOSE_PAREN = ')';
+	const char CH_COLON =		':';
+	const char CH_SEMICOLON =	';';
+	const char CH_START_QUOTE = '`';
+	const char CH_SQUOTE =		'\'';
+	const char CH_END_QUOTE =	'\'';
+	const char CH_QUOTE =		'"';
+	const char CH_EQUAL =		'=';
+	const char CH_SPACE =		' ';
+	const char CH_COMMA =		',';
+	const char CH_LEFT_BRACKET = '[';
+	const char CH_RIGHT_BRACKET = ']';
+	const char CH_TAB =			'\t';
+	const char CH_BACKSLASH =	 '\\';
+	const char CH_FORWARDSLASH = '/';
+} // end of ttpriv namespace

@@ -2,72 +2,74 @@
 // Name:		winmisc.cpp
 // Purpose:		Miscellaneous functions for use on Windows
 // Author:		Ralph Walden
-// Copyright:	Copyright (c) 2018 KeyWorks Software (Ralph Walden)
+// Copyright:	Copyright (c) 1992-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 // All the functions in this module will ONLY work on a Windows OS
 
-#include "precomp.h"		// precompiled header
+#include "pch.h"		// precompiled header
+
+#ifndef _WINDOWS_
+	#error This code will only work on Windows
+#endif
 
 #include "../include/critsection.h"	// CCritSection, CCritLock
-#include "../include/cstr.h"		// CStr
+#include "../include/ttstring.h"	// ttString
 
-const char* _pszMsgTitle;
-
-#ifdef _WINDOWS_
-
-HWND		_hwndParent;
-HINSTANCE	_hinstResources;		// Used to determine where to load resources from. If nullptr, it will us
-size_t		_s_iLanguageOffset;		// language offset used to load other languages from .rc file
-
-void InitCaller(HINSTANCE hinstResources, HWND hwndParent, const char* pszMsgTitle)
-{
-	_pszMsgTitle = tt::strdup(pszMsgTitle ? pszMsgTitle : "");
-
-	_hinstResources = hinstResources;
-	_hwndParent = hwndParent;
+namespace tt {
+	const char* pszMsgTitle;
+	HWND		hwndParent;
+	HINSTANCE	hinstResources;		// Used to determine where to load resources from. If nullptr, it will us
+	size_t		LanguageOffset;		// language offset used to load other languages from .rc file
 }
 
-// Unlike wxMessageDialog, these work in a console app
-
-int MsgBox(const char* pszMsg, UINT uType)
+void tt::InitCaller(HINSTANCE hinstRes, HWND hwnd, const char* pszTitle)
 {
-	return MessageBoxA(GetActiveWindow(), pszMsg, (_pszMsgTitle ? _pszMsgTitle : ""), uType);
+	tt::pszMsgTitle = tt::strdup(pszTitle ? pszTitle : "");
+
+	tt::hinstResources = hinstRes;
+	tt::hwndParent = hwnd;
 }
 
-int MsgBox(UINT idResource, UINT uType)
+// Note that these message boxes will work in a console app as well as a windowed app
+
+int tt::MsgBox(const char* pszMsg, UINT uType)
 {
-	CStr csz, cszRes;
-	cszRes.GetResString(idResource);
-	return MessageBoxA(GetActiveWindow(), cszRes.IsNonEmpty() ? (char*) cszRes : "missing resource id", (_pszMsgTitle ? _pszMsgTitle : ""), uType);
+	return MessageBoxA(GetActiveWindow(), pszMsg, (tt::pszMsgTitle ? tt::pszMsgTitle : ""), uType);
 }
 
-int __cdecl MsgBoxFmt(const char* pszFormat, UINT uType, ...)
+int tt::MsgBox(UINT idResource, UINT uType)
+{
+	ttString str, strRes;
+	strRes.GetResString(idResource);
+	return MessageBoxA(GetActiveWindow(), strRes.IsNonEmpty() ? (char*) strRes : "missing resource id", (tt::pszMsgTitle ? tt::pszMsgTitle : ""), uType);
+}
+
+int __cdecl tt::MsgBoxFmt(const char* pszFormat, UINT uType, ...)
 {
 	va_list argList;
 	va_start(argList, uType);
-	CStr csz;
-	csz.vprintf(pszFormat, argList);
+	ttString str;
+	str.vprintf(pszFormat, argList);
 	va_end(argList);
-	return MessageBoxA(GetActiveWindow(), (char*) csz, _pszMsgTitle ? _pszMsgTitle : "", uType);
+	return MessageBoxA(GetActiveWindow(), (char*) str, tt::pszMsgTitle ? tt::pszMsgTitle : "", uType);
 }
 
-int __cdecl MsgBoxFmt(int idResource, UINT uType, ...)
+int __cdecl tt::MsgBoxFmt(int idResource, UINT uType, ...)
 {
 	va_list argList;
 	va_start(argList, uType);
-	CStr cszFmt;
-	cszFmt.GetResString(idResource);
-	CStr csz;
-	csz.vprintf(cszFmt, argList);
+	ttString strFmt;
+	strFmt.GetResString(idResource);
+	ttString str;
+	str.vprintf(strFmt, argList);
 	va_end(argList);
-	return MessageBoxA(GetActiveWindow(), (char*) csz, _pszMsgTitle ? _pszMsgTitle : "", uType);
+	return MessageBoxA(GetActiveWindow(), (char*) str, tt::pszMsgTitle ? tt::pszMsgTitle : "", uType);
 }
 
-HFONT CreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold, bool fItalics)
+HFONT tt::CreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold, bool fItalics)
 {
-#ifdef _WINDOWS_
 	HDC hdc = CreateCompatibleDC(NULL);
 	SetMapMode(hdc, MM_TEXT);
 
@@ -83,14 +85,10 @@ HFONT CreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold, bool fItali
 	lf.lfItalic = (BYTE) fItalics;
 	if (fBold)
 		lf.lfWeight = FW_BOLD;
-	kstrcpy(lf.lfFaceName, LF_FACESIZE, pszTypeFace);
+	tt::strcpy_s(lf.lfFaceName, LF_FACESIZE, pszTypeFace);
 
 	HFONT hfont = CreateFontIndirectA(&lf);
 	DeleteDC(hdc);
-#else	// not _WINDOWS_
-	#error Need to implement wxWidgets version
-#endif	// _WINDOWS_
-
 
 	return hfont;
 }
@@ -98,7 +96,7 @@ HFONT CreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold, bool fItali
 // The system API CompareFileTime() will say write access time was different if the files are only 2 seconds apart -- which they can be on networked or FAT drives.
 // We roll our own to account for this.
 
-ptrdiff_t kCompareFileTime(FILETIME* pftSrc, FILETIME* pftDst)
+ptrdiff_t tt::CompareFileTime(FILETIME* pftSrc, FILETIME* pftDst)
 {
 	SYSTEMTIME stSrc, stDst;
 	FileTimeToSystemTime(pftSrc, &stSrc);
@@ -139,7 +137,7 @@ ptrdiff_t kCompareFileTime(FILETIME* pftSrc, FILETIME* pftDst)
 	return 0;	// Note that we do NOT check milliseconds
 }
 
-const char* LoadTxtResource(int idRes, uint32_t* pcbFile, HINSTANCE hinst)
+const char* tt::LoadTxtResource(int idRes, uint32_t* pcbFile, HINSTANCE hinst)
 {
 	HRSRC hrsrc	 = FindResource(hinst, MAKEINTRESOURCE(idRes), RT_RCDATA);
 	if (!hrsrc)
@@ -172,24 +170,24 @@ const char* LoadTxtResource(int idRes, uint32_t* pcbFile, HINSTANCE hinst)
 
 */
 
-const char* GetResString(size_t idString)
+const char* tt::GetResString(size_t idString)
 {
 	static char szStringBuf[1024];
 
-	if (LoadStringA(_hinstResources, (UINT) (idString + _s_iLanguageOffset), szStringBuf, (int) sizeof(szStringBuf)) == 0) {
+	if (LoadStringA(tt::hinstResources, (UINT) (idString + tt::LanguageOffset), szStringBuf, (int) sizeof(szStringBuf)) == 0) {
 		// Is the English resource available?
-		if (_s_iLanguageOffset && LoadStringA(_hinstResources, (UINT) idString, szStringBuf, sizeof(szStringBuf)) != 0) {
+		if (tt::LanguageOffset && LoadStringA(tt::hinstResources, (UINT) idString, szStringBuf, sizeof(szStringBuf)) != 0) {
 #ifdef _DEBUG
-			CStr cszMsg;
-			cszMsg.printf("Non-localized resource id: %zu", idString);
-			FAIL(cszMsg);
+			ttString strMsg;
+			strMsg.printf("Non-localized resource id: %zu", idString);
+			ttFAIL(strMsg);
 #endif
 			return (const char*) szStringBuf;
 		}
 #ifdef _DEBUG
-		CStr cszMsg;
-		cszMsg.printf("Invalid string id: %zu", idString);
-		FAIL(cszMsg);
+		ttString strMsg;
+		strMsg.printf("Invalid string id: %zu", idString);
+		ttFAIL(strMsg);
 #endif
 		szStringBuf[0] = '\0';
 	}
@@ -199,65 +197,58 @@ const char* GetResString(size_t idString)
 // KeyTrace can be used to send text messages that will be displayed by KeyView.exe (if it is running)
 // See https://github.com/Randalphwa/KeyHelp/KeyView for details of how KeyView works
 
-HANDLE g_hKeyViewMapping;
-HWND   g_hwndKeyView;
-CCritSection g_csKeyView;
-char*  g_pszKeyViewMap;		 // points to data in shared memory
+namespace {
+	HANDLE hKeyViewMapping;
+	HWND   hwndKeyView;
+	ttCritSection g_csKeyView;
+	char*  g_pszKeyViewMap;		 // points to data in shared memory
+}
 
-void __cdecl KeyTrace(const char* pszFormat, ...)
+#define WMP_GENERAL_MSG		 (WM_USER + 0x1f3)
+#define WMP_KEY_TRACE_MSG	 (WM_USER + 0x1f5)
+#define WMP_CLEAR_KEYVIEW	 (WM_USER + 0x1f9)	// clear the KeyView window
+
+void __cdecl tt::KeyTrace(const char* pszFormat, ...)
 {
 	if (!pszFormat || !*pszFormat)
 		return;
 
-	if (!IsWindow(g_hwndKeyView)) {
-		g_hwndKeyView = FindWindowA("KeyViewMsgs", NULL);
-		if (!g_hwndKeyView)
+	if (!IsWindow(hwndKeyView)) {
+		hwndKeyView = FindWindowA("KeyViewMsgs", NULL);
+		if (!hwndKeyView)
 			return;
 	}
 
 	va_list args;
 	va_start(args, pszFormat);
 
-	// CStr csz("KeyTrace: ");
-	CStr csz;
-	csz.vprintf(pszFormat, args);
-	// csz += "\r\n";
+	ttString str;
+	str.vprintf(pszFormat, args);
+	// str += "\r\n";
 
 	// We don't want two threads trying to send text at the same time, so we wrap the rest of this in a critical section
 
-	CCritLock lock(&g_csKeyView);
+	ttCritLock lock(&g_csKeyView);
 
-	if (!g_hKeyViewMapping) {
-		g_hKeyViewMapping = CreateFileMappingA((HANDLE) -1, NULL, PAGE_READWRITE, 0, 4096, "hhw_share");
-		if (!g_hKeyViewMapping) {
-			g_hwndKeyView = NULL;
+	if (!hKeyViewMapping) {
+		hKeyViewMapping = CreateFileMappingA((HANDLE) -1, NULL, PAGE_READWRITE, 0, 4096, "hhw_share");
+		if (!hKeyViewMapping) {
+			hwndKeyView = NULL;
 			return;
 		}
-		g_pszKeyViewMap = (PSTR) MapViewOfFile(g_hKeyViewMapping, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+		g_pszKeyViewMap = (PSTR) MapViewOfFile(hKeyViewMapping, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
 		if (!g_pszKeyViewMap) {
-			g_hwndKeyView = NULL;
+			hwndKeyView = NULL;
 			return;
 		}
 	}
 
-	ASSERT(kstrlen(csz) < 4094);
+	ttASSERT(tt::strlen(str) < 4094);
 
-	if (kstrlen(csz) >= 4094)
-		csz.getptr()[4093] = 0;	// truncate to size KeyView can handle
+	if (tt::strlen(str) >= 4094)
+		str.getptr()[4093] = 0;	// truncate to size KeyView can handle
 
-	kstrcpy(g_pszKeyViewMap, 4093, csz);
+	tt::strcpy_s(g_pszKeyViewMap, 4093, str);
 
-	SendMessage(g_hwndKeyView, WMP_KEY_TRACE_MSG, 0, 0);
+	SendMessage(hwndKeyView, WMP_KEY_TRACE_MSG, 0, 0);
 }
-
-#else	// not _WINDOWS_
-
-////////////////////////////////////////////////////// non-Windows section //////////////////////////////////////////////////////
-
-void InitCaller(void* /* hinstCaller */, void* /* hwndParent */, const char* pszMsgTitle)
-{
-	_pszMsgTitle = kstrdup(pszMsgTitle ? pszMsgTitle : "");
-}
-
-
-#endif // _WINDOWS_

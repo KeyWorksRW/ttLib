@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		CTTMap
+// Name:		ttMap
 // Purpose:		Class for storing key/value pairs
 // Author:		Ralph Walden
-// Copyright:   Copyright (c) 2018 KeyWorks Software (Ralph Walden)
-// License:     Apache License (see ../LICENSE)
+// Copyright:	Copyright (c) 2018-2019 KeyWorks Software (Ralph Walden)
+// License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -11,25 +11,20 @@
 #ifndef __TTLIB_TTMAP_H__
 #define __TTLIB_TTMAP_H__
 
-// As of 2018, ATL::CSimpleMap still uses int instead of size_t/ptrdiff_t resulting in a minor performance
-// penalty when running on a 64 bit platform. In addition, if you do use size_t or ptrdiff_t, you have to
-// cast it to (int) every time you use a CSimpleMap function.
+#include "ttheap.h" // ttHeap
 
-// On Windows, this class uses a sub-heap for malloc() and strdup(). When the class is deleted, the entire
-// sub-heap is deleted, rather then walking through and deleting each individual allocation.
+// As of 2018, ATL::CSimpleMap still uses int instead of size_t/ptrdiff_t resulting in a minor performance penalty when
+// running on a 64 bit platform. In addition, if you do use size_t or ptrdiff_t, you have to cast it to (int) every time
+// you use a CSimpleMap function.
 
-// This class contains all the methods of CSimpleMap with the exception of Set() and Remove() -- i.e., you
-// cannot remove or change a key/value pair once added to CTTMap.
+// On Windows, this class uses a sub-heap for malloc() and strdup(). When the class is deleted, the entire sub-heap is
+// deleted, rather then walking through and deleting each individual allocation.
 
-// Support is built in for finding keys or values of type char* key or val. Other key or value types are
-// searched for using a == comparison.
-
-// Because the sub-heap is created non-serialized (because allocations are faster that way), this class is
-// not thread-safe -- i.e., you can't have two threads accessing it at the same time unless they put their
-// own critical section around any access to the class.
+// This class contains all the methods of CSimpleMap with the exception of Set() and Remove() -- i.e., you cannot remove
+// or change a key/value pair once added to ttMap.
 
 template <class TKey, class TVal>
-class CTTMap
+class ttMap
 {
 public:
 	typedef struct {
@@ -37,13 +32,13 @@ public:
 		TVal val;
 	} MAP_PAIR;
 
-	CTTMap() {
+	ttMap() {
 		m_cAllocated = 0;
 		m_cItems = 0;
 		m_aMapPairs = nullptr;
-		m_pHeap = new CTTHeap(true);
+		m_pHeap = new ttHeap(true);
 	}
-	~CTTMap() {
+	~ttMap() {
 		delete m_pHeap;
 	}
 
@@ -95,7 +90,7 @@ public:
 	size_t GetSize()  const { return m_cItems; }	// for compatibility with CSimpleMap
 
 	// The following functions can be used to allocate memory that won't have to be specifically freed -- it
-	// will be freed automatically when the heap is destroyed in CTTMap's destructor
+	// will be freed automatically when the heap is destroyed in ttMap's destructor
 
 	void  ttMalloc(size_t cb) { return m_pHeap->ttMalloc(cb); }
 	char* ttStrdup(const char* psz) { return m_pHeap->ttStrdup(psz); }
@@ -103,7 +98,7 @@ public:
 	// Class members
 
 protected:
-	CTTHeap*  m_pHeap;
+	ttHeap*  m_pHeap;
 	MAP_PAIR* m_aMapPairs;
 	ptrdiff_t m_cAllocated;
 	ptrdiff_t m_cItems;

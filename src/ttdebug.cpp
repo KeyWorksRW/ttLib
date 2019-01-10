@@ -1,17 +1,17 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		asserts.cpp
-// Purpose:		Various assertion messages
+// Name:		ttdebug.cpp
+// Purpose:		Various debugging functionality
 // Author:		Ralph Walden (randalphwa)
-// Copyright:	Copyright (c) 1998-2018 KeyWorks Software (Ralph Walden)
+// Copyright:	Copyright (c) 1998-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
-#include "precomp.h"
+#include "pch.h"	// precompiled header
 
 #include <stdio.h>
 
-#include "../include/asserts.h"
-#include "../include/cstr.h"		// CStr
+#include "../include/ttdebug.h"
+#include "../include/ttstring.h"
 #include "../include/critsection.h"	// CCritSection
 
 #ifndef _INC_STDLIB
@@ -21,7 +21,7 @@
 // OOM() is the one function here which also exists in non-DEBUG builds. Everything else is DEBUG-only.
 // Under both _DEBUG and _NDEBUG builds, it always exits the program
 
-__declspec(noreturn) void OOM(void)
+__declspec(noreturn) void tt::OOM(void)
 {
 #ifdef _DEBUG
 
@@ -31,8 +31,8 @@ __declspec(noreturn) void OOM(void)
 	if (answer == IDYES)
 		DebugBreak();
 	// Don't use GetCurrentWindowHandle() since that might only return an active window
-	if (_hwndParent && IsWindow(_hwndParent))
-		SendMessage(_hwndParent, WM_CLOSE, 0, 0);	// attempt to give the application window a graceful way to shut down
+	if (tt::hwndParent && IsWindow(tt::hwndParent))
+		SendMessage(tt::hwndParent, WM_CLOSE, 0, 0);	// attempt to give the application window a graceful way to shut down
 #elif _WX_WX_H_
 	wxFAIL_MSG("Out of Memory!!!");
 #endif	// __WINDOWS_ and _WX_WX_H_
@@ -44,13 +44,9 @@ __declspec(noreturn) void OOM(void)
 
 #ifdef _DEBUG
 
-#ifdef _WINDOWS_
-
-extern HWND _hwndParent;		// If set, it will receive a WM_CLOSE message if user chooses ABORT before process exits
-
-#endif
-
-static CCritSection crtAssert;
+namespace {
+	ttCritSection crtAssert;
+}
 
 // Displays a message box displaying the ASSERT with an option to ignore, break into a debugger, or exit the program
 
@@ -78,8 +74,8 @@ bool AssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFuncti
 		return false;
 	}
 
-	if (_hwndParent && IsWindow(_hwndParent))
-		SendMessage(_hwndParent, WM_CLOSE, 0, 0);	// attempt to give the application window a graceful way to shut down
+	if (tt::hwndParent && IsWindow(tt::hwndParent))
+		SendMessage(tt::hwndParent, WM_CLOSE, 0, 0);	// attempt to give the application window a graceful way to shut down
 
 	crtAssert.Unlock();
 	ExitProcess((UINT) -1);
@@ -109,34 +105,34 @@ bool AssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFuncti
 
 void _cdecl CATCH_HANDLER(const char* pszFormat, ...)
 {
-	ASSERT(pszFormat);
+	ttASSERT(pszFormat);
 	if (!pszFormat)
 		return;
 
 	va_list argList;
 	va_start(argList, pszFormat);
-	CStr cszMsg;
-	cszMsg.vprintf(pszFormat, argList);
+	ttString strMsg;
+	strMsg.vprintf(pszFormat, argList);
 	va_end(argList);
 
 #ifdef _WINDOWS_
 
-	int answer = MessageBoxA(GetActiveWindow(), cszMsg, "Retry to call DebugBreak()", MB_ABORTRETRYIGNORE);
+	int answer = MessageBoxA(GetActiveWindow(), strMsg, "Retry to call DebugBreak()", MB_ABORTRETRYIGNORE);
 
 	if (answer == IDRETRY) {
 		DebugBreak();
 		return;
 	}
 	else if (answer != IDIGNORE) {
-		if (_hwndParent && IsWindow(_hwndParent))
-			SendMessage(_hwndParent, WM_CLOSE, 0, 0);	// attempt to give the application window a graceful way to shut down
+		if (tt::hwndParent && IsWindow(tt::hwndParent))
+			SendMessage(tt::hwndParent, WM_CLOSE, 0, 0);	// attempt to give the application window a graceful way to shut down
 		ExitProcess((UINT) -1);
 	}
 
 #else	// not _WINDOWS_
 
 #ifdef _WX_WX_H_
-	wxFAIL_MSG(cszMsg);
+	wxFAIL_MSG(strMsg);
 #else	// not _WX_WX_H_
 	asm volatile ("int $3");
 #endif	// _WX_WX_H_

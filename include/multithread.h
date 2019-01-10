@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		CMultiThread, CMultiChildThread
+// Name:		ttMultiThrd, CMultiChildThread
 // Purpose:		Class for handling multiple thread
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2010-2018 KeyWorks Software (Ralph Walden)
@@ -28,17 +28,17 @@
 
 // a try/catch section is placed around the call to doThreadWork
 
-#include "ttmap.h"	// CTTMap
+#include "ttmap.h"	// ttMap
 
 #ifdef _WX_WX_H_
 	class CMultiChildThread;	// forward definition
 #endif
 
-class CMultiThread
+class ttMultiThrd
 {
 public:
-	CMultiThread();
-	~CMultiThread();
+	ttMultiThrd();
+	~ttMultiThrd();
 
 	virtual void doThreadWork(void* pvData1, void* pvData2) = NULL;	 // Derived class MUST supply this! While running, call isCancelled() to return
 
@@ -71,7 +71,7 @@ protected:
 		bool   bDone;
 	} MULTI_THRD_INFO;
 
-	CTTMap<DWORD /* threadID */, MULTI_THRD_INFO*> m_threadMap;
+	ttMap<DWORD /* threadID */, MULTI_THRD_INFO*> m_threadMap;
 
 	friend DWORD __stdcall _MultiThread(void* pv);
 	MULTI_THRD_INFO* m_aThrdInfo;
@@ -87,11 +87,11 @@ public:
 
 	wxSemaphore m_semStart;
 
-	// The following two are created and set by CMultiThread
+	// The following two are created and set by ttMultiThrd
 
 	wxSemaphore* m_psemTerminate;
 	wxSemaphore* m_psemAvailThrd;
-	CMultiThread* m_pMultiThrd;
+	ttMultiThrd* m_pMultiThrd;
 
 	void* m_pvData1;	// additional data passed to the worker thread
 	void* m_pvData2;	// additional data passed to the worker thread

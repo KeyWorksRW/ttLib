@@ -1,8 +1,8 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		CFileDlg
+// Name:		ttFileDlg
 // Purpose:		Wrapper around Windows GetOpenFileName() API
 // Author:		Ralph Walden (randalphwa)
-// Copyright:	Copyright (c) 2002-2018 KeyWorks Software (Ralph Walden)
+// Copyright:	Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
@@ -17,17 +17,21 @@
 
 #include <commdlg.h>
 
-#include "cstr.h"	// CStr
+#include "ttstring.h"	// ttString
 
 #ifndef OFN_DONTADDTORECENT
 	#define OFN_DONTADDTORECENT			 0x02000000
 #endif
 
-class CFileDlg
+namespace ttpriv {
+	UINT_PTR CALLBACK OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */, LPARAM lParam);
+}
+
+class ttFileDlg
 {
 public:
-	CFileDlg(HWND hwndParent = NULL);
-	~CFileDlg();
+	ttFileDlg(HWND hwndParent = NULL);
+	~ttFileDlg();
 
 	// Class functions
 
@@ -40,12 +44,12 @@ public:
 	void	SetFilter(int idResource);
 	void	SetFilter(const char* pszFilters);	// separate filters with '|' character
 	void	SetInitialDir(const char* pszFolder) { m_pofn->lpstrInitialDir = pszFolder; }
-	void	SetInitialFileName(const char* psz) { ASSERT(tt::strlen(psz) < MAX_PATH); m_cszFileName = psz; }
+	void	SetInitialFileName(const char* psz) { ttASSERT(tt::strlen(psz) < MAX_PATH); m_cszFileName = psz; }
 	void	ShowCreatePrompt() { m_pofn->Flags &= ~OFN_FILEMUSTEXIST; m_pofn->Flags |= OFN_CREATEPROMPT; }
 	void	ShowReadOnlyBox() { m_pofn->Flags &= ~OFN_HIDEREADONLY; }
 	void	UseCurrentDirectory() { m_cszCurDir.GetCWD(); m_pofn->lpstrInitialDir = m_cszCurDir; }
 
-	void  SetWindowRect(const RECT* prc) { ASSERT(!IsRectEmpty(prc)); CopyRect(&m_rcPosition, prc); }
+	void  SetWindowRect(const RECT* prc) { ttASSERT(!IsRectEmpty(prc)); CopyRect(&m_rcPosition, prc); }
 	RECT* GetWindowRect() { return &m_rcPosition; }
 
 	// By default, the file must exist
@@ -58,15 +62,15 @@ public:
 private:
 	void FixExtension();
 
-	friend UINT_PTR CALLBACK _OFNHookProc(HWND hdlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	friend UINT_PTR CALLBACK ttpriv::OFNHookProc(HWND hdlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	// Class members
 
 protected:
 	bool  m_bRepositionWindow;
-	CStr  m_cszFileName;
-	CStr  m_cszCurDir;
-	CStr  m_cszFilter;
+	ttString  m_cszFileName;
+	ttString  m_cszCurDir;
+	ttString  m_cszFilter;
 	int	  m_idOpenIcon;
 	int	  m_idCancelIcon;
 	RECT  m_rcPosition;

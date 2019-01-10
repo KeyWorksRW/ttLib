@@ -37,22 +37,22 @@
 #ifndef __TTLIB_CSTR_H__
 #define __TTLIB_CSTR_H__
 
-#include "ttheap.h"	// CTTHeap
-#include "kstr.h"
+#include "ttheap.h" // ttHeap
+#include "ttstr.h"	// various functions dealing with strings
 
-class CStr
+class ttString
 {
 public:
-	CStr(void)	{ m_psz = nullptr; }
-	// CStr(size_t cb) { m_psz = (char*) kmalloc(cb); }
-	CStr(const char* psz) { m_psz = tt::strdup(psz); }
-	CStr(const wchar_t* psz) { CopyWide(psz); }
-	CStr(CStr& csz) { m_psz = tt::strdup(csz); }
+	ttString(void)	{ m_psz = nullptr; }
+	// ttString(size_t cb) { m_psz = (char*) tt::malloc(cb); }
+	ttString(const char* psz) { m_psz = tt::strdup(psz); }
+	ttString(const wchar_t* psz) { CopyWide(psz); }
+	ttString(ttString& csz) { m_psz = tt::strdup(csz); }
 #ifdef _WINDOWS_
-	CStr(HWND hwnd) { m_psz = nullptr; GetWindowText(hwnd); }
+	ttString(HWND hwnd) { m_psz = nullptr; GetWindowText(hwnd); }
 #endif // _WINDOWS_
 
-	~CStr() { if (m_psz) tt::free(m_psz); }
+	~ttString() { if (m_psz) tt::free(m_psz); }
 
 	// Filename handling methods
 
@@ -87,8 +87,8 @@ public:
 
 	// When compiled with wxWidgets, IsSame() functions work with UTF8 strings, otherwise they only correctly handle the ANSI portion of UTF8 strings
 
-	bool	IsSameSubString(const char* psz);	// returns true if psz is an exact match to the first part of CStr (case-insensitive)
-	bool	IsSameString(const char* psz) { return ::IsSameString(m_psz, psz); } // returns true if psz is an exact match to CStr (case-insensitive)
+	bool	samesubstri(const char* psz) { return tt::samesubstri(m_psz, psz); }
+	bool	samestri(const char* psz) { return tt::samestri(m_psz, psz); }
 
 	char*	GetQuotedString(const char* pszQuote);	// Handles `', '', "", <> -- copies the string inside and returns a pointer to it
 
@@ -103,7 +103,7 @@ public:
 			va_list args;
 			va_start(args, pszFormat);
 
-			CStr csz;
+			ttString csz;
 			csz.vprintf(pszFormat, args);
 	*/
 
@@ -123,7 +123,7 @@ public:
 
 	void operator=(const char* psz);
 	void operator=(const wchar_t* pwsz) { CopyWide(pwsz); };
-	void operator=(CStr& csz) { *this = (char*) csz; }
+	void operator=(ttString& csz) { *this = (char*) csz; }
 
 	void operator+=(const char* psz);
 	void operator+=(char ch);
