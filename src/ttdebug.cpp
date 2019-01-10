@@ -50,7 +50,7 @@ namespace {
 
 // Displays a message box displaying the ASSERT with an option to ignore, break into a debugger, or exit the program
 
-bool AssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFunction, int line)
+bool tt::AssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFunction, int line)
 {
 	crtAssert.Lock();
 
@@ -103,7 +103,7 @@ bool AssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFuncti
 //	   CATCH_HANDLER("%s (%d) : Exception in %s()", __FILE__, __LINE__, __func__);
 // }
 
-void _cdecl CATCH_HANDLER(const char* pszFormat, ...)
+void _cdecl tt::CATCH_HANDLER(const char* pszFormat, ...)
 {
 	ttASSERT(pszFormat);
 	if (!pszFormat)
@@ -143,7 +143,7 @@ void _cdecl CATCH_HANDLER(const char* pszFormat, ...)
 
 #ifdef _WINDOWS_
 
-void doReportLastError(const char* pszFile, const char* pszFunc, int line)
+void tt::doReportLastError(const char* pszFile, const char* pszFunc, int line)
 {
 	char* pszMsg;
 
