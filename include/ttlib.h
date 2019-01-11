@@ -25,15 +25,17 @@ namespace tt {
 	extern const char* pszMsgTitle;		// title for message boxes
 	extern size_t LanguageOffset;		// language offset used to load other languages from .rc file
 
-	void InitCaller(HINSTANCE hinstRes, HWND hwndParent, const char* pszMsgTitle);
-	int MsgBox(const char* pszMsg, UINT uType);
-	int MsgBox(UINT idResource, UINT uType);
+	ptrdiff_t	CompareFileTime(FILETIME* pftSrc, FILETIME* pftDst);
+	HFONT		CreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold = false, bool fItalics = false);
+	const char* GetResString(size_t idString);
+	void		InitCaller(HINSTANCE hinstRes, HWND hwndParent, const char* pszMsgTitle);
+	inline void	InitCaller(const char* pszMsgTitle) { InitCaller(GetModuleHandle(nullptr), nullptr, pszMsgTitle); }
+	const char* LoadTxtResource(int idRes, uint32_t* pcbFile = nullptr, HINSTANCE hinst = tt::hinstResources);
+	int 		MsgBox(UINT idResource, UINT uType = MB_OK | MB_ICONWARNING);
+	int 		MsgBox(const char* pszMsg, UINT uType = MB_OK | MB_ICONWARNING);
 	int __cdecl MsgBoxFmt(const char* pszFormat, UINT uType, ...);
 	int __cdecl MsgBoxFmt(int idResource, UINT uType, ...);
-	HFONT CreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold = false, bool fItalics = false);
-	ptrdiff_t CompareFileTime(FILETIME* pftSrc, FILETIME* pftDst);
-	const char* LoadTxtResource(int idRes, uint32_t* pcbFile, HINSTANCE hinst);
-	const char* GetResString(size_t idString);
+
 	void __cdecl KeyTrace(const char* pszFormat, ...);
 
 	inline int RC_HEIGHT(const RECT* prc) { return prc->bottom - prc->top; };
