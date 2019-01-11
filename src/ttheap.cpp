@@ -10,6 +10,7 @@
 
 #include "../include/ttdebug.h"	// ASSERTs
 #include "../include/ttheap.h"	// ttHeap
+#include "../include/ttstr.h"	// ttStr
 
 ttHeap tt::MainHeap;
 

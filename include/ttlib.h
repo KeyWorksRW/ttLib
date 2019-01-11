@@ -11,6 +11,8 @@
 #ifndef __TTLIB_H__
 #define __TTLIB_H__
 
+class ttString;			// forward definition
+
 namespace tt {
 #ifdef _WINDOWS_
 	extern HWND hwndParent;	// parent for MessageBox, and if Abort is requested in ttASSERT, will receive a WM_CLOSE message prior to shut down
@@ -18,15 +20,7 @@ namespace tt {
 	extern const char* pszMsgTitle;		// title for message boxes
 	extern size_t LanguageOffset;		// language offset used to load other languages from .rc file
 #endif
-}
 
-#include "ttdebug.h"	// Various debugging functionality (ttASSERT, ttReportLastError, etc.)
-#include "ttheap.h" 	// ttHeap class
-#include "ttstr.h"		// various functions that work with strings
-
-class ttString;			// forward definition
-
-namespace tt {
 	void		AddTrailingSlash(char* psz);
 	void		BackslashToForwardslash(char* psz);
 	void		ConvertToRelative(const char* pszRoot, const char* pszFile, ttString& cszResult);
@@ -90,3 +84,12 @@ namespace ttch {
 } // end of ttpriv namespace
 
 #endif	// __TTLIB_H__
+
+#ifdef __TTLIB_INCLUDE_MAJOR__	// include major ttLib header files
+	#include "ttdebug.h"		// ttASSERT and friends
+	#include "ttheap.h" 		// memory management
+	#include "ttstr.h"			// string handling
+	#include "ttstring.h"		// string class
+	#include "ttlist.h" 		// class for handling lists of strings
+	#include "ttfile.h" 		// class for reading and writing to files
+#endif
