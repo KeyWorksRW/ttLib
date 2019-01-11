@@ -29,6 +29,9 @@
 #ifndef __TTLIB_STR_H__
 #define __TTLIB_STR_H__
 
+#include "../include/ttdebug.h"	// ASSERTs
+#include "../include/ttheap.h"	// ttHeap
+
 namespace tt
 {
 	const size_t MAX_STRING_LEN = 0x00FFFFFF;	// strings limited to 16,777,215 bytes
@@ -123,5 +126,130 @@ namespace tt
 	wchar_t*	utoa(uint64_t val, wchar_t* pszDst, size_t cbDst);
 
 } // end of tt namespace
+
+/*
+  ttStr can be used as a lightweight, header-only container for a zero-terminated string. It uses the above string functions
+  for handling null pointers, overflows, etc. Use the ttString class for a full blown string-handling class (see ttstring.h)
+
+  if (some condition) {
+	ttStr szBuf(256);
+	tt::strcpy_s(szBuf, szBuf.sizeBuffer(), "some text");
+	szBuf.strcat(" and some more text");	// this will truncate if string to add is too long
+	cout << (char*) szBuf;
+  } // szBuf is freed because it went out of scope
+*/
+
+// ttStr can be used as a lightweight, header-only container for a zero-terminated UTF8 string. It uses the ttLib string
+// functions for handling null pointers, overflows, etc. Use the ttString (ttstring.h) class if you need a full blown
+// string-handling class
+
+// CAUTION! strcat() and += are provided but they do NOT allocate more memory -- if the current buffer for ttStr is too
+// small, the additional string will be truncated. Use the ttString class if you need dynamic memory allocation
+
+class ttStr
+{
+public:
+	ttStr(void) { m_psz = nullptr; }
+	ttStr(size_t size) { m_psz = (char*) tt::malloc(size); }
+	ttStr(const char* psz) { m_psz = (char*) tt::strdup(psz); }
+	~ttStr(void) {
+		if (m_psz)
+			tt::free(m_psz);
+	}
+	void resize(size_t cb) { m_psz = m_psz ? (char*) tt::realloc(m_psz, cb) : (char*) tt::malloc(cb); }
+
+	size_t	strbyte() { return tt::strbyte(m_psz); }	// length of string including 0 terminator
+	void	strcat(const char* psz) { tt::strcat_s(m_psz, tt::size(m_psz) - tt::strlen(m_psz), psz); }	// Does NOT reallocate string!
+	char*	strchr(char ch) { return tt::strchr(m_psz, ch); }
+	char*	strchrR(char ch) { return tt::strchrR(m_psz, ch); }
+	void	strcpy(const char* psz) { tt::strcpy_s(m_psz, tt::size(m_psz), psz); }
+	char*	strext(const char* pszExt) { return (char*) tt::strext(m_psz, pszExt); }	// find filename extension
+	char*	stristr(const char* psz) { return tt::stristr(m_psz, psz); }
+	size_t	strlen() { return tt::strlen(m_psz); }		// number of characters (use strbyte() for buffer size calculations)
+	char*	strstr(const char* psz) { return tt::strstr(m_psz, psz); }
+
+	bool	samestr(const char* psz) { return tt::samestr(m_psz, psz); }
+	bool	samestri(const char* psz) { return tt::samestri(m_psz, psz); }
+	bool	samesubstr(const char* psz) { return tt::samesubstr(m_psz, psz); }
+	bool	samesubstri(const char* psz) { return tt::samesubstri(m_psz, psz); }
+
+	char*	nextnonspace() { return (char*) tt::nextnonspace(m_psz); }
+	char*	nextspace() { return (char*) tt::nextspace(m_psz); }
+
+	ptrdiff_t atoi() { return tt::atoi(m_psz); }
+
+	char*	itoa(int32_t val)  { return tt::itoa(val, m_psz, tt::size(m_psz)); };
+	char*	itoa(int64_t val)  { return tt::itoa(val, m_psz, tt::size(m_psz)); };
+	char*	utoa(uint32_t val) { return tt::utoa(val, m_psz, tt::size(m_psz)); };
+	char*	utoa(uint64_t val) { return tt::utoa(val, m_psz, tt::size(m_psz)); };
+
+	void	trim_right() { tt::trim_right(m_psz); }
+
+	bool	IsEmpty() { return (!m_psz || !*m_psz)  ? true : false; }
+	bool	IsNonEmpty() const { return (m_psz && *m_psz) ? true : false; }
+	bool	IsNull() const { return (m_psz == nullptr); }
+
+	size_t	sizeBuffer() { return tt::size(m_psz); }	// returns 0 if m_psz is null
+
+#ifdef _WINDOWS_
+	char* getResource(size_t idString) {
+		resize(1024);
+		int cb = LoadStringA(tt::hinstResources, (UINT) idString, m_psz, 1024);
+		m_psz[cb] = 0;	// in case LoadStringA() failed
+		resize(cb + sizeof(char));
+		return m_psz;
+	}
+
+	char* getCWD() {
+		resize(MAX_PATH);
+		DWORD cb = GetCurrentDirectoryA(MAX_PATH, m_psz);	// we don't use _getcwd() because it would require loading <direct.h> for everyone using ttLib
+		m_psz[cb] = 0;	// in case GetCurrentDirectory() failed
+		return m_psz;	// we leave the full buffer allocated in case you want to add a filename to the end
+	}
+
+	void AppendFileName(const char* pszName) {
+#ifdef _DEBUG
+		ttASSERT_MSG(m_psz, "NULL pointer!");
+		ttASSERT(sizeBuffer() >= MAX_PATH);
+#endif
+		if (m_psz) {
+			tt::AddTrailingSlash(m_psz);
+			strcat(pszName);
+		}
+	}
+
+#else
+	char* getCWD() {
+		resize(4096);
+		char* psz = getcwd(m_psz, 4096);
+		if (!psz)
+			m_psz[0] = 0;	// in case getcwd() failed
+		return m_psz;	// we leave the full buffer allocated in case you want to add a filename to the end
+	}
+#endif
+
+
+
+	operator const char*() { return (const char*) m_psz; };
+	operator char*()  { return (char*) m_psz; };
+	operator void*()  { return (void*) m_psz; }
+
+	char operator[](size_t pos) { return (m_psz ? m_psz[pos] : 0); }	// Beware! no check for pos beyond end of string!
+	char operator[](int pos)    { return (m_psz ? m_psz[pos] : 0); }	// Beware! no check for pos beyond end of string!
+
+	void operator=(const char* psz) { if (m_psz) tt::free(m_psz); m_psz = tt::strdup(psz); }
+
+	bool operator==(const char* psz) { return (IsEmpty() || !psz) ? false : tt::samestr(m_psz, psz); }	// samestr will check for m_psz == null
+
+	void operator+=(const char* psz) { tt::strcat_s(m_psz, tt::size(m_psz) - tt::strlen(m_psz), psz); }	// Does NOT reallocate string!
+	void operator+=(char ch) {		// Does NOT reallocate string!
+		char szTmp[2];
+		szTmp[0] = ch;
+		szTmp[1] = 0;
+		tt::strcat_s(m_psz, tt::size(m_psz) - tt::strlen(m_psz), szTmp);
+	}
+
+	char* m_psz;
+};
 
 #endif	//__TTLIB_STR_H__
