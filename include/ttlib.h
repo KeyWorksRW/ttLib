@@ -46,7 +46,7 @@ namespace tt {
 	HFONT		CreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold = false, bool fItalics = false);
 	const char* GetResString(size_t idString);
 	void		InitCaller(HINSTANCE hinstRes, HWND hwndParent, const char* pszMsgTitle);
-	inline void	InitCaller(const char* pszMsgTitle) { InitCaller(GetModuleHandle(nullptr), nullptr, pszMsgTitle); }
+	inline void	InitCaller(const char* pszTitle) { InitCaller(GetModuleHandle(nullptr), nullptr, pszTitle); }
 	const char* LoadTxtResource(int idRes, uint32_t* pcbFile = nullptr, HINSTANCE hinst = tt::hinstResources);
 	int 		MsgBox(UINT idResource, UINT uType = MB_OK | MB_ICONWARNING);
 	int 		MsgBox(const char* pszMsg, UINT uType = MB_OK | MB_ICONWARNING);
