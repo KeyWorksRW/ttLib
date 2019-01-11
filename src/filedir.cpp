@@ -264,32 +264,6 @@ void tt::ForwardslashToBackslash(char* psz)
 	}
 }
 
-void tt::AddTrailingSlash(char* psz)
-{
-	ttASSERT_MSG(psz, "NULL pointer!");
-	if (!psz)
-		return;
-
-#ifdef _WINDOWS_
-	size_t cb = tt::strlen(psz);
-	char ch = *(CharPrevExA(CP_UTF8, psz, psz + cb, 0));
-	if (ch != '/' && ch != '\\' && ch != ':') {
-		tt::strcat(psz, "/");
-	}
-
-#else	// not _WINDOWS_
-
-	char* pszLast = kstrchrR(psz, '/');
-	if (pszLast && !pszLast[1])
-		return;	// already has a trailing slash
-	char* pszColon = kstrchrR(psz, ':');
-	if (pszColon && !pszColon[1])
-		return;	// e.g., if the string is something like "c:" then do NOT add a trailing slash
-	tt::strcat(psz, "/");
-
-#endif	// _WINDOWS_
-}
-
 const char* tt::FindFilePortion(const char* pszFile)
 {
 	ttASSERT_MSG(pszFile, "NULL pointer!");
