@@ -29,28 +29,34 @@
 #ifndef __TTLIB_STR_H__
 #define __TTLIB_STR_H__
 
-#include "../include/ttdebug.h"	// ASSERTs
-#include "../include/ttheap.h"	// ttHeap
+#include "ttdebug.h"	// ASSERTs
+#include "ttheap.h"	// ttHeap
 
 namespace tt
 {
 	const size_t MAX_STRING_LEN = 0x00FFFFFF;	// strings limited to 16,777,215 bytes
 
-	// UTF8 versions:
+	char* findchr(const char* psz, char ch);
+	char* findlastchr(const char* psz, char ch);	// returns nullptr if not found, works on UTF8 strings
+	char* findstr(const char* pszMain, const char* pszSub);
+	char* findstri(const char* pszMain, const char* pszSub);
+	char* findext(const char* pszPath, const char* pszExt);			// find a case-insensitive extension in a path string
 
-	int			strcat_s(char* pszDst, size_t cchDest, const char* pszSrc);	// always zero-terminates, returns EOVERFLOW if truncated
-	char*		strchr(const char* psz, char ch);
-	char*		strchrR(const char* psz, char ch);	// returns nullptr if not found, works on UTF8 strings
-	int			strcpy_s(char* pszDst, size_t cchDest, const char* pszSrc);	// will ALWAYS null-terminate destination string (unlike std::strcpy_s())
-	const char* strext(const char* pszPath, const char* pszExt);			// find a case-insensitive extension in a path string
-	char*		stristr(const char* pszMain, const char* pszSub);
-	char*		strstr(const char* pszMain, const char* pszSub);
-	size_t		strlen(const char* psz);
+	wchar_t* findchr(const wchar_t* psz, wchar_t ch);
+	wchar_t* findlastchr(const wchar_t* psz, wchar_t ch);	// returns nullptr if not found, works on UTF8 strings
+	wchar_t* findstr(const wchar_t* pszMain, const wchar_t* pszSub);
+	wchar_t* findstri(const wchar_t* pszMain, const wchar_t* pszSub);
+	wchar_t* findext(const wchar_t* pszPath, const wchar_t* pszExt);			// find a case-insensitive extension in a path string
 
-	bool		samestr(const char* psz1, const char* psz2);	// same as strcmp, but returns true/false
-	bool		samestri(const char* psz1, const char* psz2);	// case-insensitive comparison
-	bool 		samesubstr(const char* pszMain, const char* pszSub);	// true if sub string matches first part of main string
-	bool 		samesubstri(const char* pszMain, const char* pszSub);	// case-insensitive comparison
+	bool samestr(const char* psz1, const char* psz2);	// same as strcmp, but returns true/false
+	bool samestri(const char* psz1, const char* psz2);	// case-insensitive comparison
+	bool samesubstr(const char* pszMain, const char* pszSub);	// true if sub string matches first part of main string
+	bool samesubstri(const char* pszMain, const char* pszSub);	// case-insensitive comparison
+
+	bool samestr(const wchar_t* psz1, const wchar_t* psz2); 			// same as strcmp, but returns true/false
+	bool samestri(const wchar_t* psz1, const wchar_t* psz2);			// case-insensitive comparison
+	bool samesubstr(const wchar_t* pszMain, const wchar_t* pszSub);		// true if sub string matches first part of main string
+	bool samesubstri(const wchar_t* pszMain, const wchar_t* pszSub);	// case-insensitive comparison
 
 	const char*	nextchr(const char * psz);		// handles UTF8 strings
 	const char* nextnonspace(const char* psz);	// returns pointer to the next non-space character
@@ -65,7 +71,7 @@ namespace tt
 	inline	bool isnonempty(const char* psz) { return (psz != nullptr && psz[0]); }
 	inline	bool ispunct(char ch) { return (ch == '.' || ch == ',' || ch == ';' || ch == ':' || ch == '?' || ch == '!'); }
 	inline	bool isutf8(char ch) { return ((ch & 0xC0) != 0x80); }	// is ch the start of a utf8 sequence?
-	inline	bool iswhitespace(char ch) { return tt::strchr(" \t\r\n\f", ch) ? true : false; };
+	inline	bool iswhitespace(char ch) { return tt::findchr(" \t\r\n\f", ch) ? true : false; };
 
 	inline	bool isalpha(wchar_t ch) { return ( (ch >= L'a' && ch <= L'z') || (ch >= L'A' && ch <= L'Z')); }
 	inline	bool isdigit(wchar_t ch) { return ((ch >= L'0' && ch <= L'9') || ch == L'-'); }
@@ -74,38 +80,38 @@ namespace tt
 	inline	bool ispunct(wchar_t ch) { return (ch == L'.' || ch == L',' || ch == L';' || ch == L':' || ch == L'?' || ch == L'!'); }
 	inline	bool iswhitespace(wchar_t ch) { return (ch == L' ' || ch == L'\t' || ch == L'\r' || ch == L'\n' || ch == L'\f') ? true : false; }
 
-	// force "normal" calls to secure version
+	inline char* strchr(const char* psz, char ch) { return findchr(psz, ch); }
+	inline char* strchrR(const char* psz, char ch) { return findlastchr(psz, ch); }
+	inline char* strstr(const char* pszMain, const char* pszSub) { return findstr(pszMain, pszSub); }
+	inline char* stristr(const char* pszMain, const char* pszSub){ return findstri(pszMain, pszSub); }
 
-	inline char* strcat(char* pszDst, const char* pszSrc) { strcat_s(pszDst, MAX_STRING_LEN, pszSrc); return pszDst; }
-	inline char* strcpy(char* pszDst, const char* pszSrc) { strcpy_s(pszDst, MAX_STRING_LEN, pszSrc); return pszDst; }
+	inline wchar_t* strchr(const wchar_t* psz, char ch) { return findchr(psz, ch); }
+	inline wchar_t* strchrR(const wchar_t* psz, char ch) { return findlastchr(psz, ch); }
+	inline wchar_t* strstr(const wchar_t* pszMain, const wchar_t* pszSub) { return findstr(pszMain, pszSub); }
+	inline wchar_t* stristr(const wchar_t* pszMain, const wchar_t* pszSub){ return findstri(pszMain, pszSub); }
 
-	// wide character versions:
+	int			strcat_s(char* pszDst, size_t cchDest, const char* pszSrc);	// always zero-terminates, returns EOVERFLOW if truncated
+	int			strcpy_s(char* pszDst, size_t cchDest, const char* pszSrc);	// will ALWAYS null-terminate destination string (unlike std::strcpy_s())
+	size_t		strlen(const char* psz);
 
 	int			strcat_s(wchar_t* pszDst, size_t cchDest, const wchar_t* pszSrc);
-	wchar_t*	strchr(const wchar_t* psz, wchar_t ch);
-	wchar_t*	strchrR(const wchar_t* psz, wchar_t ch);
 	int			strcpy_s(wchar_t* pwszDst, size_t cchDest, const wchar_t* pwszSrc);
-	wchar_t*	stristr(const wchar_t* pszMain, const wchar_t* pszSub);
-	wchar_t*	strstr(const wchar_t* pszMain, const wchar_t* pszSub);
 	size_t		strlen(const wchar_t* pwsz);
 
-	bool		samestr(const wchar_t* psz1, const wchar_t* psz2);	// same as strcmp, but returns true/false
-	bool 		samestri(const wchar_t* psz1, const wchar_t* psz2);	// case-insensitive comparison
-	bool 		samesubstr(const wchar_t* pszMain, const wchar_t* pszSub);	// true if sub string matches first part of main string
-	bool		samesubstri(const wchar_t* pszMain, const wchar_t* pszSub);	// case-insensitive comparison
+	// force "normal" calls to secure version -- possible buffer overflow if destination isn't large enough
+
+	inline char* strcat(char* pszDst, const char* pszSrc) { strcat_s(pszDst, tt::MAX_STRING_LEN, pszSrc); return pszDst; }
+	inline char* strcpy(char* pszDst, const char* pszSrc) { strcpy_s(pszDst, tt::MAX_STRING_LEN, pszSrc); return pszDst; }
+
+	inline void  strcat(wchar_t* pwszDst, const wchar_t* pszSrc) { tt::strcat_s(pwszDst, tt::MAX_STRING_LEN, pszSrc); }
+	inline void  strcpy(wchar_t* pwszDst, const wchar_t* pszSrc) { tt::strcpy_s(pwszDst, tt::MAX_STRING_LEN, pszSrc); }
 
 	// Use strlen() to get the number of characters without trailing zero, use strbyte() to get the number of
 	// bytes including the terminating zero
 
 	inline size_t	strbyte(const char* psz) { return tt::strlen(psz) * sizeof(char) + sizeof(char); }	// char is 1 in SBCS builds, 2 in UNICODE builds
-	inline size_t	strbyte(const wchar_t* psz) { return tt::strlen(psz) * sizeof(wchar_t) + sizeof(wchar_t); }
+	inline size_t	strbyte(const wchar_t* pwsz) { return tt::strlen(pwsz) * sizeof(wchar_t) + sizeof(wchar_t); }
 
-	// The following functions allow you to call them without specifying the length of the destination buffer.
-	// This is primarily for ease of converting non-secure strcpy() and strcat() functions -- simply add 'tt::' in
-	// front of the function name and you are good to go.
-
-	inline void  strcat(wchar_t* pwszDst, const wchar_t* pszSrc) { tt::strcat_s(pwszDst, tt::MAX_STRING_LEN, pszSrc); }
-	inline void  strcpy(wchar_t* pwszDst, const wchar_t* pszSrc) { tt::strcpy_s(pwszDst, tt::MAX_STRING_LEN, pszSrc); }
 
 	void trim_right(char* psz);
 
@@ -115,8 +121,6 @@ namespace tt
 	char*	  itoa(int64_t val, char* pszDst, size_t cbDst);
 	char*	  utoa(uint32_t val, char* pszDst, size_t cbDst);
 	char*	  utoa(uint64_t val, char* pszDst, size_t cbDst);
-
-	// wide-char versions
 
 	ptrdiff_t	atoi(const wchar_t* psz);
 	wchar_t*	hextoa(size_t val, wchar_t* pszDst, bool bUpperCase);
@@ -158,15 +162,16 @@ public:
 	}
 	void resize(size_t cb) { m_psz = m_psz ? (char*) tt::realloc(m_psz, cb) : (char*) tt::malloc(cb); }
 
+	char*	findext(const char* pszExt) { return (char*) tt::findext(m_psz, pszExt); }	// find filename extension
+	char*	findstr(const char* psz) { return tt::findstr(m_psz, psz); }
+	char*	findstri(const char* psz) { return tt::findstri(m_psz, psz); }
+	char*	findchr(char ch) { return tt::findchr(m_psz, ch); }
+	char*	findlastchr(char ch) { return tt::findlastchr(m_psz, ch); }
+
 	size_t	strbyte() { return tt::strbyte(m_psz); }	// length of string including 0 terminator
 	void	strcat(const char* psz) { tt::strcat_s(m_psz, tt::size(m_psz) - tt::strlen(m_psz), psz); }	// Does NOT reallocate string!
-	char*	strchr(char ch) { return tt::strchr(m_psz, ch); }
-	char*	strchrR(char ch) { return tt::strchrR(m_psz, ch); }
 	void	strcpy(const char* psz) { tt::strcpy_s(m_psz, tt::size(m_psz), psz); }
-	char*	strext(const char* pszExt) { return (char*) tt::strext(m_psz, pszExt); }	// find filename extension
-	char*	stristr(const char* psz) { return tt::stristr(m_psz, psz); }
 	size_t	strlen() { return tt::strlen(m_psz); }		// number of characters (use strbyte() for buffer size calculations)
-	char*	strstr(const char* psz) { return tt::strstr(m_psz, psz); }
 
 	bool	samestr(const char* psz) { return tt::samestr(m_psz, psz); }
 	bool	samestri(const char* psz) { return tt::samestri(m_psz, psz); }

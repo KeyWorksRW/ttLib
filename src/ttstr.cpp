@@ -172,7 +172,7 @@ int tt::strcat_s(wchar_t* pszDst, size_t cchDest, const wchar_t* pszSrc)
 	return result;
 }
 
-char* tt::strchr(const char* psz, char ch)
+char* tt::findchr(const char* psz, char ch)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 	if (!psz)
@@ -182,28 +182,16 @@ char* tt::strchr(const char* psz, char ch)
 	return (*psz ? (char*) psz : nullptr);
 }
 
-wchar_t* tt::strchr(const wchar_t* psz, wchar_t ch)
-{
-	ttASSERT_MSG(psz, "NULL pointer!");
-	if (!psz)
-		return nullptr;
-	while (*psz && *psz != ch)
-		psz++;
-	return (*psz ? (wchar_t*) psz : nullptr);
-}
-
-// Windows StrRChr doesn't use codepages, so won't correctly handle SBCS UTF8 string
-
-char* tt::strchrR(const char* psz, char ch)
+char* tt::findlastchr(const char* psz, char ch)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 	if (!psz)
 		return nullptr;
 
-	const char* pszLastFound = tt::strchr(psz, ch);
+	const char* pszLastFound = tt::findchr(psz, ch);
 	if (pszLastFound) {
 		for (;;) {
-			psz = tt::strchr(tt::nextchr(pszLastFound), ch);
+			psz = tt::findchr(tt::nextchr(pszLastFound), ch);
 			if (psz)
 				pszLastFound = psz;
 			else
@@ -213,18 +201,28 @@ char* tt::strchrR(const char* psz, char ch)
 	return (char*) pszLastFound;
 }
 
-wchar_t* tt::strchrR(const wchar_t* psz, wchar_t ch)
+wchar_t* tt::findchr(const wchar_t* psz, wchar_t ch)
+{
+	ttASSERT_MSG(psz, "NULL pointer!");
+	if (!psz)
+		return nullptr;
+	while (*psz && *psz != ch)
+		psz++;
+	return (*psz ? (wchar_t*) psz : nullptr);
+}
+
+wchar_t* tt::findlastchr(const wchar_t* psz, wchar_t ch)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 	if (!psz)
 		return nullptr;
 
-	const wchar_t* pszLastFound = tt::strchr(psz, ch);
+	wchar_t* pszLastFound = tt::findchr(psz, ch);
 	if (pszLastFound) {
 		for (;;) {
-			psz = tt::strchr(pszLastFound + 1, ch);
+			psz = tt::findchr(pszLastFound + 1, ch);
 			if (psz)
-				pszLastFound = psz;
+				pszLastFound = (wchar_t*) psz;
 			else
 				break;
 		}
@@ -372,29 +370,29 @@ bool tt::samesubstri(const wchar_t* pszMain, const wchar_t* pszSub)
 
 // find a case-insensitive extension in a path string
 
-const char* tt::strext(const char* pszPath, const char* pszExt)
+char* tt::findext(const char* pszPath, const char* pszExt)
 {
 	ttASSERT_MSG(pszPath, "NULL pointer!");
 	ttASSERT_MSG(pszExt, "NULL pointer!");
 	if (!pszPath || !pszExt)
 		return nullptr;
 
-	char* psz = tt::strchrR(pszPath, '.');
-	if (!psz)
-		return pszExt;
-
-#ifdef _WX_WX_H_
-	wxString s(psz);
-	if (s.CmpNoCase(pszExt) == 0)
-		return psz;
-#else
-	if (lstrcmpi(psz, pszExt) == 0)	// may not handle UTF8 correctly
-		return psz;
-#endif
-	return nullptr;
+	char* psz = tt::findlastchr(pszPath, '.');
+	return (psz && tt::samestri(psz, pszExt)) ? psz : nullptr;
 }
 
-char* tt::stristr(const char* pszMain, const char* pszSub)
+wchar_t* tt::findext(const wchar_t* pszPath, const wchar_t* pszExt)
+{
+	ttASSERT_MSG(pszPath, "NULL pointer!");
+	ttASSERT_MSG(pszExt, "NULL pointer!");
+	if (!pszPath || !pszExt)
+		return nullptr;
+
+	wchar_t* psz = tt::findlastchr(pszPath, '.');
+	return (psz && tt::samestri(psz, pszExt)) ? psz : nullptr;
+}
+
+char* tt::findstri(const char* pszMain, const char* pszSub)
 {
 	ttASSERT_MSG(pszMain, "NULL pointer!");
 	ttASSERT_MSG(pszSub, "NULL pointer!");
@@ -448,7 +446,7 @@ char* tt::stristr(const char* pszMain, const char* pszSub)
 
 // Similar as C runtime strstr, only this one checks for NULL pointers and an empty sub string
 
-char* tt::strstr(const char* pszMain, const char* pszSub)
+char* tt::findstr(const char* pszMain, const char* pszSub)
 {
 	ttASSERT_MSG(pszMain, "NULL pointer!");
 	ttASSERT_MSG(pszSub, "NULL pointer!");
@@ -491,7 +489,7 @@ char* tt::strstr(const char* pszMain, const char* pszSub)
 	return nullptr;	// end of main string
 }
 
-wchar_t* tt::strstr(const wchar_t* pszMain, const wchar_t* pszSub)
+wchar_t* tt::findstr(const wchar_t* pszMain, const wchar_t* pszSub)
 {
 	ttASSERT_MSG(pszMain, "NULL pointer!");
 	ttASSERT_MSG(pszSub, "NULL pointer!");
@@ -534,7 +532,7 @@ wchar_t* tt::strstr(const wchar_t* pszMain, const wchar_t* pszSub)
 
 #ifdef _WX_WX_H_
 
-wchar_t* tt::stristr(const wchar_t* pszMain, const wchar_t* pszSub)
+wchar_t* tt::findstri(const wchar_t* pszMain, const wchar_t* pszSub)
 {
 	ttASSERT_MSG(pszMain, "NULL pointer!");
 	ttASSERT_MSG(pszSub, "NULL pointer!");
@@ -980,8 +978,8 @@ const char* tt::FindLastSlash(const char* psz)
 	if (!psz || !*psz)
 		return nullptr;
 
-	const char* pszLastBackSlash = tt::strchrR(psz, '\\');
-	const char* pszLastFwdSlash	 = tt::strchrR(psz, '/');
+	const char* pszLastBackSlash = tt::findlastchr(psz, '\\');
+	const char* pszLastFwdSlash	 = tt::findlastchr(psz, '/');
 	if (!pszLastBackSlash)
 		return pszLastFwdSlash ? pszLastFwdSlash : nullptr;
 	else if (!pszLastFwdSlash)
