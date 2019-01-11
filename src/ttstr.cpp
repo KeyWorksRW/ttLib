@@ -972,3 +972,30 @@ wchar_t* tt::utoa(uint64_t val, wchar_t* pszDst, size_t cbDst)
 	} while (firstdig < pszDst);
 	return pszRet;
 }
+
+const char* tt::FindLastSlash(const char* psz)
+{
+	ttASSERT_MSG(psz, "NULL pointer!");
+
+	if (!psz || !*psz)
+		return nullptr;
+
+	const char* pszLastBackSlash = tt::strchrR(psz, '\\');
+	const char* pszLastFwdSlash	 = tt::strchrR(psz, '/');
+	if (!pszLastBackSlash)
+		return pszLastFwdSlash ? pszLastFwdSlash : nullptr;
+	else if (!pszLastFwdSlash)
+		return pszLastBackSlash ? pszLastBackSlash : nullptr;
+	else
+		return pszLastFwdSlash > pszLastBackSlash ? pszLastFwdSlash : pszLastBackSlash;		// Impossible for them to be equal
+}
+
+void tt::AddTrailingSlash(char* psz)
+{
+	ttASSERT_MSG(psz, "NULL pointer!");
+	if (!psz)
+		return;
+	const char* pszLastSlash = tt::FindLastSlash(psz);
+	if (!pszLastSlash || pszLastSlash[1])	// only add if there was no slash or there was something after the slash
+		tt::strcat(psz, "/");
+}

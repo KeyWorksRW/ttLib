@@ -38,6 +38,7 @@ namespace tt {
 	bool		FileExists(const wchar_t* pszFile);
 	const char* FindExtPortion(const char* pszFile);
 	const char* FindFilePortion(const char* pszFile);
+	const char* FindLastSlash(const char* psz);
 	void		ForwardslashToBackslash(char* psz);
 	size_t		GetCPUCount();
 	size_t		HashFromSz(const char* psz);
