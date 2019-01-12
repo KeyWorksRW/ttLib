@@ -92,7 +92,7 @@ bool tt::CreateDir(const char* pszDir)
 	ttString cszDir(pszDir);
 	tt::BackslashToForwardslash(cszDir);
 
-	char* psz = tt::strchrR(cszDir, '/');
+	char* psz = tt::findlastchr(cszDir, '/');
 	if (!psz)
 		return false;
 	*psz = '\0';
@@ -125,7 +125,7 @@ bool tt::CreateDir(const wchar_t* pszDir)
 	ttString cszDir(pszDir);
 	tt::BackslashToForwardslash(cszDir);
 
-	char* psz = tt::strchrR(cszDir, '/');
+	char* psz = tt::findlastchr(cszDir, '/');
 	if (!psz)
 		return false;
 	*psz = '\0';
@@ -226,7 +226,7 @@ void tt::ConvertToRelative(const char* pszRoot, const char* pszFile, ttString& c
 	cszResult.Delete();
 	++pszLastSlash;
 	size_t posDiff = pszLastSlash - cszRoot.getptr();
-	ttASSERT(tt::strchr(pszLastSlash, '/'));	// we should never be pointing to the last slash
+	ttASSERT(tt::findchr(pszLastSlash, '/'));	// we should never be pointing to the last slash
 
 	do {
 		while (*pszLastSlash != '/')
@@ -244,10 +244,10 @@ void tt::BackslashToForwardslash(char* psz)
 	if (!psz)
 		return;
 
-	char* pszSlash = tt::strchr(psz, '\\');
+	char* pszSlash = tt::findchr(psz, '\\');
 	while (pszSlash) {
 		*pszSlash = '/';
-		pszSlash = tt::strchr(tt::nextchr(pszSlash), '\\');
+		pszSlash = tt::findchr(tt::nextchr(pszSlash), '\\');
 	}
 }
 
@@ -257,10 +257,10 @@ void tt::ForwardslashToBackslash(char* psz)
 	if (!psz)
 		return;
 
-	char* pszSlash = tt::strchr(psz, '/');
+	char* pszSlash = tt::findchr(psz, '/');
 	while (pszSlash) {
 		*pszSlash = '\\';
-		pszSlash = tt::strchr(tt::nextchr(pszSlash), '/');
+		pszSlash = tt::findchr(tt::nextchr(pszSlash), '/');
 	}
 }
 
@@ -272,20 +272,20 @@ char* tt::FindFilePortion(const char* pszFile)
 
 	char* psz;
 #ifdef _WINDOWS_
-	psz = tt::strchrR(pszFile, '\\');	// Paths usually have back slashes under Windows
+	psz = tt::findlastchr(pszFile, '\\');	// Paths usually have back slashes under Windows
 	if (psz)
 		pszFile = psz + 1;
 #endif	// _WINDOWS_
-	psz = tt::strchrR(pszFile, '/');	// forward slashes are valid on all OS, so check that too
+	psz = tt::findlastchr(pszFile, '/');	// forward slashes are valid on all OS, so check that too
 	if (psz)
 		return psz + 1;
-	psz = tt::strchrR(pszFile, ':');
-	return (psz ? psz + 1 : nullptr);
+	psz = tt::findlastchr(pszFile, ':');
+	return (psz ? psz + 1 : (char*) pszFile);
 }
 
 char* tt::FindExtPortion(const char* pszFile)
 {
-	char* psz = tt::strchrR(pszFile, '.');
+	char* psz = tt::findlastchr(pszFile, '.');
 	if (psz && !(psz == pszFile || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/'))	// ignore .file, ./file, and ../file
 		return psz;
 	else
