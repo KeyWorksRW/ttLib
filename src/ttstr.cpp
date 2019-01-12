@@ -137,7 +137,8 @@ int tt::strcat_s(char* pszDst, size_t cchDest, const char* pszSrc)
 		cchDest--;
 	}
 	*pszDst = 0;
-	return result;
+	ttASSERT_MSG(!*pszSrc, "Buffer overflow!");
+	return (*pszSrc ? EOVERFLOW : result);
 }
 
 int tt::strcat_s(wchar_t* pszDst, size_t cchDest, const wchar_t* pszSrc)
@@ -169,7 +170,8 @@ int tt::strcat_s(wchar_t* pszDst, size_t cchDest, const wchar_t* pszSrc)
 		cchDest--;
 	}
 	*pszDst = L'\0';
-	return result;
+	ttASSERT_MSG(!*pszSrc, "Buffer overflow!");
+	return (*pszSrc ? EOVERFLOW : result);
 }
 
 char* tt::findchr(const char* psz, char ch)
