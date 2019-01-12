@@ -169,7 +169,7 @@ public:
 	char*	findlastchr(char ch) { return tt::findlastchr(m_psz, ch); }
 
 	size_t	strbyte() { return tt::strbyte(m_psz); }	// length of string including 0 terminator
-	void	strcat(const char* psz) { tt::strcat_s(m_psz, tt::size(m_psz) - tt::strlen(m_psz), psz); }	// Does NOT reallocate string!
+	int		strcat(const char* psz) { return tt::strcat_s(m_psz, tt::size(m_psz), psz); }	// Does NOT reallocate string!
 	void	strcpy(const char* psz) { tt::strcpy_s(m_psz, tt::size(m_psz), psz); }
 	size_t	strlen() { return tt::strlen(m_psz); }		// number of characters (use strbyte() for buffer size calculations)
 
