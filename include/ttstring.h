@@ -63,8 +63,8 @@ public:
 	void	RemoveExtension();
 	bool	ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCaseSensitive = false);
 
-	const char* FindLastSlash();	// Handles any mix of '\' and '/' in the filename
-	const char* FindExt() const;	// will return pointer to "" if no extension
+	char* FindLastSlash();	// Handles any mix of '\' and '/' in the filename
+	char* FindExt() const;	// will return nullptr if no extension
 
 #ifdef _WINDOWS_
 	void GetFullPathName();
@@ -73,13 +73,13 @@ public:
 	// UI retrieving methods
 
 #ifdef _WINDOWS_
-	const char* __cdecl printf(size_t idFmtString, ...);	// retrieves the format string from the specified resource
+	char* __cdecl printf(size_t idFmtString, ...);	// retrieves the format string from the specified resource
 	bool GetWindowText(HWND hwnd);
 
 	// The following will always return a pointer, but if an error occurred, it will point to an empty string
-	const char* GetListBoxText(HWND hwnd) { return GetListBoxText(hwnd, ::SendMessage(hwnd, LB_GETCURSEL, 0, 0)); }
-	const char* GetListBoxText(HWND hwnd, size_t sel);
-	const char* GetResString(size_t idString);
+	char* GetListBoxText(HWND hwnd) { return GetListBoxText(hwnd, ::SendMessage(hwnd, LB_GETCURSEL, 0, 0)); }
+	char* GetListBoxText(HWND hwnd, size_t sel);
+	char* GetResString(size_t idString);
 #endif	// _WINDOWS_
 
 	void	MakeLower();
@@ -92,8 +92,8 @@ public:
 
 	char*	GetQuotedString(const char* pszQuote);	// Handles `', '', "", <> -- copies the string inside and returns a pointer to it
 
-	const char* __cdecl printf(const char* pszFormat, ...);			// Deletes any current string before printing
-	const char* __cdecl printfAppend(const char* pszFormat, ...);	// Appends to the end of any current string
+	char* __cdecl printf(const char* pszFormat, ...);			// Deletes any current string before printing
+	char* __cdecl printfAppend(const char* pszFormat, ...);	// Appends to the end of any current string
 
 	/*
 		Typical use for vprintf:
@@ -117,7 +117,6 @@ public:
 
 	char*	getptr() { return m_psz; }		// for when casting to char* is problematic
 
-	operator const char*() const { return (const char*) m_psz; }
 	operator char*() const { return (char*) m_psz; }
 	operator void*() const { return (void*) m_psz; }
 
@@ -137,7 +136,7 @@ public:
 	bool CopyWide(const wchar_t* pwsz);	// convert UNICODE to UTF8 and store it
 
 protected:
-	const char* ProcessKFmt(const char* pszEnd, va_list* pargList);
+	char* ProcessKFmt(const char* pszEnd, va_list* pargList);
 
 	// Class members
 

@@ -551,7 +551,7 @@ wchar_t* tt::findstri(const wchar_t* pszMain, const wchar_t* pszSub)
 
 #endif //  _WX_WX_H_
 
-const char* tt::nextchr(const char*psz)
+char* tt::nextchr(const char*psz)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 	if (!psz) {
@@ -559,47 +559,47 @@ const char* tt::nextchr(const char*psz)
 	}
 	ttASSERT_MSG(*psz, "Empty string!");
 	if (!*psz)
-		return psz;
+		return (char*) psz;
 	size_t i = 0;
 	(void) (tt::isutf8(psz[++i]) || tt::isutf8(psz[++i]) || tt::isutf8(psz[++i]));
 
-	return psz + i;
+	return (char*) psz + i;
 }
 
-const char* tt::nextnonspace(const char* psz)
+char* tt::nextnonspace(const char* psz)
 {
 	if (!psz)
 		return nullptr;
 	while (tt::iswhitespace(*psz))
 		psz++;
-	return psz;
+	return (char*) psz;
 }
 
-const char* tt::nextspace(const char* psz)
+char* tt::nextspace(const char* psz)
 {
 	if (!psz)
 		return nullptr;
 	while (*psz && !tt::iswhitespace(*psz))
 		psz++;
-	return psz;
+	return (char*) psz;
 }
 
-const wchar_t* tt::nextnonspace(const wchar_t* psz)
+wchar_t* tt::nextnonspace(const wchar_t* psz)
 {
 	if (!psz)
 		return nullptr;
 	while (tt::iswhitespace(*psz))
 		psz++;
-	return psz;
+	return (wchar_t*) psz;
 }
 
-const wchar_t* tt::nextspace(const wchar_t* psz)
+wchar_t* tt::nextspace(const wchar_t* psz)
 {
 	if (!psz)
 		return nullptr;
 	while (*psz && !tt::iswhitespace(*psz))
 		psz++;
-	return psz;
+	return (wchar_t*) psz;
 }
 
 void tt::trim_right(char* psz)
@@ -971,15 +971,15 @@ wchar_t* tt::utoa(uint64_t val, wchar_t* pszDst, size_t cbDst)
 	return pszRet;
 }
 
-const char* tt::FindLastSlash(const char* psz)
+char* tt::FindLastSlash(const char* psz)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 
 	if (!psz || !*psz)
 		return nullptr;
 
-	const char* pszLastBackSlash = tt::findlastchr(psz, '\\');
-	const char* pszLastFwdSlash	 = tt::findlastchr(psz, '/');
+	char* pszLastBackSlash = tt::findlastchr(psz, '\\');
+	char* pszLastFwdSlash	 = tt::findlastchr(psz, '/');
 	if (!pszLastBackSlash)
 		return pszLastFwdSlash ? pszLastFwdSlash : nullptr;
 	else if (!pszLastFwdSlash)
@@ -993,7 +993,7 @@ void tt::AddTrailingSlash(char* psz)
 	ttASSERT_MSG(psz, "NULL pointer!");
 	if (!psz)
 		return;
-	const char* pszLastSlash = tt::FindLastSlash(psz);
+	char* pszLastSlash = tt::FindLastSlash(psz);
 	if (!pszLastSlash || pszLastSlash[1])	// only add if there was no slash or there was something after the slash
 		tt::strcat(psz, "/");
 }

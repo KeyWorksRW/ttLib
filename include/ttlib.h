@@ -30,9 +30,9 @@ namespace tt {
 	bool		DirExists(const wchar_t* pszFolder);
 	bool		FileExists(const char* pszFile);
 	bool		FileExists(const wchar_t* pszFile);
-	const char* FindExtPortion(const char* pszFile);
-	const char* FindFilePortion(const char* pszFile);
-	const char* FindLastSlash(const char* psz);
+	char*		FindExtPortion(const char* pszFile);
+	char*		FindFilePortion(const char* pszFile);
+	char*		FindLastSlash(const char* psz);
 	void		ForwardslashToBackslash(char* psz);
 	size_t		GetCPUCount();
 	size_t		HashFromSz(const char* psz);

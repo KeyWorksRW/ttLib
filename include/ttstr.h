@@ -58,12 +58,12 @@ namespace tt
 	bool samesubstr(const wchar_t* pszMain, const wchar_t* pszSub);		// true if sub string matches first part of main string
 	bool samesubstri(const wchar_t* pszMain, const wchar_t* pszSub);	// case-insensitive comparison
 
-	const char*	nextchr(const char * psz);		// handles UTF8 strings
-	const char* nextnonspace(const char* psz);	// returns pointer to the next non-space character
-	const char* nextspace(const char* psz);		// returns pointer to the next space character
+	char*	nextchr(const char * psz);		// handles UTF8 strings
+	char* nextnonspace(const char* psz);	// returns pointer to the next non-space character
+	char* nextspace(const char* psz);		// returns pointer to the next space character
 
-	const wchar_t* nextnonspace(const wchar_t* psz);	// returns pointer to the next non-space character
-	const wchar_t* nextspace(const wchar_t* psz);		// returns pointer to the next space character
+	wchar_t* nextnonspace(const wchar_t* psz);	// returns pointer to the next non-space character
+	wchar_t* nextspace(const wchar_t* psz);		// returns pointer to the next space character
 
 	inline	bool isalpha(char ch) { return ( (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')); }
 	inline	bool isdigit(char ch) { return ((ch >= '0' && ch <= '9') || ch == '-'); }

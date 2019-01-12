@@ -264,13 +264,13 @@ void tt::ForwardslashToBackslash(char* psz)
 	}
 }
 
-const char* tt::FindFilePortion(const char* pszFile)
+char* tt::FindFilePortion(const char* pszFile)
 {
 	ttASSERT_MSG(pszFile, "NULL pointer!");
 	if (!pszFile)
 		return nullptr;
 
-	const char* psz;
+	char* psz;
 #ifdef _WINDOWS_
 	psz = tt::strchrR(pszFile, '\\');	// Paths usually have back slashes under Windows
 	if (psz)
@@ -280,12 +280,12 @@ const char* tt::FindFilePortion(const char* pszFile)
 	if (psz)
 		return psz + 1;
 	psz = tt::strchrR(pszFile, ':');
-	return (psz ? psz + 1 :  pszFile);
+	return (psz ? psz + 1 : nullptr);
 }
 
-const char* tt::FindExtPortion(const char* pszFile)
+char* tt::FindExtPortion(const char* pszFile)
 {
-	const char* psz = tt::strchrR(pszFile, '.');
+	char* psz = tt::strchrR(pszFile, '.');
 	if (psz && !(psz == pszFile || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/'))	// ignore .file, ./file, and ../file
 		return psz;
 	else

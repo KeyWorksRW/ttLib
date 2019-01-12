@@ -68,11 +68,11 @@ void ttString::ChangeExtension(const char* pszExtension)
 	*this += pszExtension;
 }
 
-const char* ttString::FindExt() const
+char* ttString::FindExt() const
 {
-	const char* psz = tt::strchrR(m_psz, '.');
+	char* psz = tt::strchrR(m_psz, '.');
 	if (psz == m_psz || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/')	// ignore .file, ./file, and ../file
-		return "";
+		return nullptr;
 	return psz;
 }
 
@@ -99,15 +99,15 @@ void ttString::AddTrailingSlash()
 		*this += "/";
 }
 
-const char* ttString::FindLastSlash()
+char* ttString::FindLastSlash()
 {
 	ttASSERT_MSG(m_psz, "NULL pointer!");
 
 	if (!m_psz || !*m_psz)
 		return nullptr;
 
-	const char* pszLastBackSlash = tt::strchrR(m_psz, '\\');
-	const char* pszLastFwdSlash	 = tt::strchrR(m_psz, '/');
+	char* pszLastBackSlash = tt::strchrR(m_psz, '\\');
+	char* pszLastFwdSlash	 = tt::strchrR(m_psz, '/');
 	if (!pszLastBackSlash)
 		return pszLastFwdSlash ? pszLastFwdSlash : nullptr;
 	else if (!pszLastFwdSlash)
@@ -136,7 +136,7 @@ void ttString::GetFullPathName()
 	m_psz = tt::strdup(szPath);
 }
 
-const char*	 ttString::GetListBoxText(HWND hwnd, size_t sel)
+char* ttString::GetListBoxText(HWND hwnd, size_t sel)
 {
 	if (m_psz)
 		tt::free(m_psz);
@@ -163,7 +163,7 @@ const char*	 ttString::GetListBoxText(HWND hwnd, size_t sel)
 		tt::hinstResources = LoadLibrary("dll name");
 */
 
-const char* ttString::GetResString(size_t idString)
+char* ttString::GetResString(size_t idString)
 {
 	char szStringBuf[1024];
 
@@ -480,7 +480,7 @@ char ttString::operator[](size_t pos)
 		return m_psz[pos];
 }
 
-const char* __cdecl ttString::printfAppend(const char* pszFormat, ...)
+char* __cdecl ttString::printfAppend(const char* pszFormat, ...)
 {
 	va_list argList;
 	va_start(argList, pszFormat);
@@ -489,7 +489,7 @@ const char* __cdecl ttString::printfAppend(const char* pszFormat, ...)
 	return m_psz;
 }
 
-const char* __cdecl ttString::printf(const char* pszFormat, ...)
+char* __cdecl ttString::printf(const char* pszFormat, ...)
 {
 	if (m_psz) {
 		tt::free(m_psz);
@@ -503,7 +503,7 @@ const char* __cdecl ttString::printf(const char* pszFormat, ...)
 	return m_psz;
 }
 
-const char* __cdecl ttString::printf(size_t idFmtString, ...)
+char* __cdecl ttString::printf(size_t idFmtString, ...)
 {
 	if (m_psz) {
 		tt::free(m_psz);
@@ -923,7 +923,7 @@ WideChar:
 	m_psz = (char*) tt::realloc(m_psz, tt::strbyte(m_psz));
 }
 
-const char* ttString::ProcessKFmt(const char* pszEnd, va_list* pargList)
+char* ttString::ProcessKFmt(const char* pszEnd, va_list* pargList)
 {
 	char szBuf[256];
 	szBuf[0] = '\0';
@@ -1020,7 +1020,7 @@ const char* ttString::ProcessKFmt(const char* pszEnd, va_list* pargList)
 		}
 		tt::strcat_s(m_psz, DEST_SIZE - cbCur, szBuf);
 	}
-	return pszEnd + 1;
+	return (char*) (pszEnd + 1);
 }
 
 // We allow for pszNum and pszDst to be different in case the pszNum buffer is only large

@@ -49,7 +49,7 @@ public:
 	bool	IsEmpty() const { return m_cItems == 0; }
 	void	Delete();	// deletes all strings
 
-	const char* Get(size_t pos) const;
+	char*   Get(size_t pos) const;	// zero-based index, will return nullptr if pos >= GetCount()
 
 	// CSimpleArray/CAtlArray equivalents
 
@@ -74,7 +74,7 @@ public:
 
 	void BeginEnum() { m_enum = 0; }
 	bool Enum();
-	const char* EnumValue();	// returns pointer to last enumerated string, or nullptr if no string found
+	char* EnumValue();	// returns pointer to last enumerated string, or nullptr if no string found
 	bool Enum(const char** ppszResult);	// use this if you want to receive a pointer to the string
 
 	void Sort();				// sort strings into alphabetical order
@@ -84,19 +84,19 @@ public:
 	void Sort(size_t iColumn);	// sort strings using the offset (equivalent to strcmp(str1 + iColumn, str2 + iColumn)
 
 	void operator+=(const char* psz) { Add(psz); }
-	const char* operator[](size_t pos) const;
+	char* operator[](size_t pos) const { return Get(pos); }
 
 protected:
 	void inline swap(ptrdiff_t pos1, ptrdiff_t pos2)
 	{
-		const char* pszTmp = m_aptrs[pos1];
+		char* pszTmp = m_aptrs[pos1];
 		m_aptrs[pos1] = m_aptrs[pos2];
 		m_aptrs[pos2] = pszTmp;
 	}
 	void qsorti(ptrdiff_t low, ptrdiff_t high);
 	void qsortCol(ptrdiff_t low, ptrdiff_t high);
 
-	const char* NormalizeString(const char* pszFileName, ttString& cszKey) const;
+	char* NormalizeString(const char* pszFileName, ttString& cszKey) const;
 
 	bool isNoDuplicates() const { return (m_flags & FLG_ADD_DUPLICATES) ? false : true; }
 
@@ -105,7 +105,7 @@ protected:
 	size_t m_SortColumn;
 	bool   m_bSerialize;
 
-	const char** m_aptrs;
+	char** m_aptrs;
 	size_t m_cAllocated;
 	size_t m_cItems;
 	size_t m_enum;
@@ -129,13 +129,13 @@ public:
 
 	void Add(const char* pszKey, const char* pszVal);
 
-	bool		FindKey(const char* pszKey, size_t* ppos = nullptr) const;
-	bool		FindVal(const char* pszVal, size_t* ppos = nullptr) const;
-	const char* GetKeyAt(size_t pos) const;
-	const char* GetValAt(size_t pos) const;
-	const char* GetMatchingVal(const char* pszKey) const;
+	bool  FindKey(const char* pszKey, size_t* ppos = nullptr) const;
+	bool  FindVal(const char* pszVal, size_t* ppos = nullptr) const;
+	char* GetKeyAt(size_t pos) const;
+	char* GetValAt(size_t pos) const;
+	char* GetMatchingVal(const char* pszKey) const;
 
-	const char* GetValueAt(size_t pos) const { return GetValAt(pos); }	// to match CSimpleArray::GetValueAt
+	char* GetValueAt(size_t pos) const { return GetValAt(pos); }	// to match CSimpleArray::GetValueAt
 
 	void Replace(size_t pos, const char* pszKey, const char* pszVal);
 	size_t inline GetCount() const { return m_cItems; }
@@ -205,9 +205,9 @@ public:
 	bool GetValCount(const char* pszKey, ptrdiff_t* pVal) const;
 	ptrdiff_t GetValCount(size_t posKey) const;
 
-	bool GetVal(const char* pszKey, ptrdiff_t* pVal, size_t posVal = 0) const;
-	bool GetVal(size_t posKey, ptrdiff_t* pVal, size_t posVal = 0) const;
-	const char* GetKey(size_t posKey) const;
+	bool  GetVal(const char* pszKey, ptrdiff_t* pVal, size_t posVal = 0) const;
+	bool  GetVal(size_t posKey, ptrdiff_t* pVal, size_t posVal = 0) const;
+	char* GetKey(size_t posKey) const;
 
 	/*
 		You can enumerate through all the numbers assigned to a string using code
