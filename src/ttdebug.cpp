@@ -44,14 +44,20 @@ __declspec(noreturn) void tt::OOM(void)
 
 #ifdef _DEBUG
 
-namespace {
+namespace ttdbg {
 	ttCritSection crtAssert;
+	bool bNoAssert = false;
 }
+
+using namespace ttdbg;
 
 // Displays a message box displaying the ASSERT with an option to ignore, break into a debugger, or exit the program
 
 bool tt::AssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFunction, int line)
 {
+	if (ttdbg::bNoAssert)
+		return false;
+
 	crtAssert.Lock();
 
 	char szBuf[2048];
