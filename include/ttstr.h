@@ -155,10 +155,7 @@ public:
 	ttStr(void) { m_psz = nullptr; }
 	ttStr(size_t size) { m_psz = (char*) tt::malloc(size); }
 	ttStr(const char* psz) { m_psz = (char*) tt::strdup(psz); }
-	~ttStr(void) {
-		if (m_psz)
-			tt::free(m_psz);
-	}
+	~ttStr(void) { if (m_psz) tt::free(m_psz); }
 
 	void	resize(size_t cb) { m_psz = m_psz ? (char*) tt::realloc(m_psz, cb) : (char*) tt::malloc(cb); }
 	size_t	sizeBuffer() { return tt::size(m_psz); }	// returns 0 if m_psz is null
@@ -228,27 +225,28 @@ public:
 		char* psz = getcwd(m_psz, 4096);
 		if (!psz)
 			m_psz[0] = 0;	// in case getcwd() failed
-		return m_psz;	// we leave the full buffer allocated in case you want to add a filename to the end
+		return m_psz;		// we leave the full buffer allocated in case you want to add a filename to the end
 	}
 #endif	// _WINDOWS_
 
 	operator char*()  { return (char*) m_psz; };
 	operator void*()  { return (void*) m_psz; }
 
-	char operator[](size_t pos) { return (m_psz ? m_psz[pos] : 0); }	// Beware! no check for pos beyond end of string!
-	char operator[](int pos)    { return (m_psz ? m_psz[pos] : 0); }	// Beware! no check for pos beyond end of string!
+	char operator [] (size_t pos) { return (m_psz ? m_psz[pos] : 0); }	// Beware! no check for pos beyond end of string!
+	char operator [] (int pos)    { return (m_psz ? m_psz[pos] : 0); }	// Beware! no check for pos beyond end of string!
 
-	void operator=(const char* psz) { if (m_psz) tt::free(m_psz); m_psz = tt::strdup(psz); }
+	void operator = (const char* psz) { if (m_psz) tt::free(m_psz); m_psz = tt::strdup(psz); }
 
-	bool operator==(const char* psz) { return (IsEmpty() || !psz) ? false : tt::samestr(m_psz, psz); }	// samestr will check for m_psz == null
+	bool operator == (const char* psz) { return (IsEmpty() || !psz) ? false : tt::samestr(m_psz, psz); } // samestr will check for m_psz == null
+	bool operator == (char* psz) { return (IsEmpty() || !psz) ? false : tt::samestr(m_psz, psz); }		 // samestr will check for m_psz == null
 
-	void operator+=(const char* psz) { tt::strcat_s(m_psz, tt::size(m_psz), psz); }	// Does NOT reallocate string!
-	void operator+=(char ch) {		// Does NOT reallocate string!
-		char szTmp[2];
-		szTmp[0] = ch;
-		szTmp[1] = 0;
-		tt::strcat_s(m_psz, tt::size(m_psz), szTmp);
-	}
+	void operator += (const char* psz) { tt::strcat_s(m_psz, tt::size(m_psz), psz); }	// Does NOT reallocate string!
+	void operator += (char ch) {	// Does NOT reallocate string!
+						char szTmp[2];
+						szTmp[0] = ch;
+						szTmp[1] = 0;
+						tt::strcat_s(m_psz, tt::size(m_psz), szTmp);
+					}
 
 	char* m_psz;
 };
