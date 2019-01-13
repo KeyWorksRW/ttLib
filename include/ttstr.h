@@ -130,10 +130,10 @@ namespace tt
 	wchar_t*	utoa(uint32_t val, wchar_t* pszDst, size_t cbDst);
 	wchar_t*	utoa(uint64_t val, wchar_t* pszDst, size_t cbDst);
 
-	// The printf()/vprintf() methods are similar to the CRT versions only these don't support precision, width, or padding
-	// These methods support c, C, d, u, x, X, s, S
-
-	// The following non-standard options are supported:
+	// printf/vprintf provides a sub-set of the standard sprintf format codes, with automatic allocation of sufficient memory to hold
+	// the result, along with some special format specifiers.
+	//
+	//		standard: c, C, d, i, u, x, X, s, S 	(no floating point, precision or padding)
 	//
 	//		%kd - formats an integer with commas. I.e., 54321 would be formatted as 54,321
 	//		%kq - outputs quotation marks around the string
