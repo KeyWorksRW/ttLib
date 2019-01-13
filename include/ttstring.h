@@ -75,7 +75,7 @@ public:
 	// UI retrieving methods
 
 #ifdef _WINDOWS_
-	char* __cdecl printf(size_t idFmtString, ...);	// retrieves the format string from the specified resource
+	char* cdecl printf(size_t idFmtString, ...);	// retrieves the format string from the specified resource
 	bool GetWindowText(HWND hwnd);
 
 	// The following will always return a pointer, but if an error occurred, it will point to an empty string

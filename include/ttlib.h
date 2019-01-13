@@ -50,10 +50,10 @@ namespace tt {
 	const char* LoadTxtResource(int idRes, uint32_t* pcbFile = nullptr, HINSTANCE hinst = tt::hinstResources);
 	int 		MsgBox(UINT idResource, UINT uType = MB_OK | MB_ICONWARNING);
 	int 		MsgBox(const char* pszMsg, UINT uType = MB_OK | MB_ICONWARNING);
-	int __cdecl MsgBoxFmt(const char* pszFormat, UINT uType, ...);
-	int __cdecl MsgBoxFmt(int idResource, UINT uType, ...);
+	int cdecl	MsgBoxFmt(const char* pszFormat, UINT uType, ...);
+	int cdecl	MsgBoxFmt(int idResource, UINT uType, ...);
 
-	void __cdecl KeyTrace(const char* pszFormat, ...);
+	void cdecl	KeyTrace(const char* pszFormat, ...);
 
 	inline int RC_HEIGHT(const RECT* prc) { return prc->bottom - prc->top; };
 	inline int RC_HEIGHT(const RECT rc) { return rc.bottom - rc.top; };

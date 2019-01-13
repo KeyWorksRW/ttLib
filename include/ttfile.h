@@ -83,7 +83,7 @@ public:
 	bool	isThisPreviousString(const char* pszPrev);
 	void	ReCalcSize();	// reset the current position based on string length of entire buffer
 
-	void __cdecl printf(const char* pszFormat, ...);
+	void cdecl printf(const char* pszFormat, ...);
 
 	void	InsertStr(const char* pszText, char* pszPosition);		// pszPosition derived from previous call to GetCurPosition()
 	bool	ReplaceStr(const char* pszOldText, const char* pszNewText, bool fCaseSensitive = false);
