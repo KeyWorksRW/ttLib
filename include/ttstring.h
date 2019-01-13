@@ -54,6 +54,8 @@ public:
 
 	~ttString() { if (m_psz) tt::free(m_psz); }
 
+	bool CopyWide(const wchar_t* pwsz);	// convert UNICODE to UTF8 and store it
+
 	// Filename handling methods
 
 	void	AppendFileName(const char* pszFile);
@@ -92,22 +94,8 @@ public:
 
 	char*	GetQuotedString(const char* pszQuote);	// Handles `', '', "", <> -- copies the string inside and returns a pointer to it
 
-	char* __cdecl printf(const char* pszFormat, ...);			// Deletes any current string before printing
-	char* __cdecl printfAppend(const char* pszFormat, ...);	// Appends to the end of any current string
-
-	/*
-		Typical use for vprintf:
-
-		void _cdecl MyFunc(const char* pszFormat, ...) {
-
-			va_list args;
-			va_start(args, pszFormat);
-
-			ttString csz;
-			csz.vprintf(pszFormat, args);
-	*/
-
-	void vprintf(const char* pszFormat, va_list argList);	// Appends to the end of any current string before printing
+	char* cdecl printf(const char* pszFormat, ...);			// Deletes any current string before printing
+	char* cdecl printfAppend(const char* pszFormat, ...);	// Appends to the end of any current string
 
 	bool	IsEmpty() const { return (m_psz ? (*m_psz ? false : true) : true); }
 	bool	IsNonEmpty() const { return (!IsEmpty()); }
@@ -117,27 +105,25 @@ public:
 
 	char*	getptr() { return m_psz; }		// for when casting to char* is problematic
 
+
 	operator char*() const { return (char*) m_psz; }
 	operator void*() const { return (void*) m_psz; }
 
-	void operator=(const char* psz);
-	void operator=(const wchar_t* pwsz) { CopyWide(pwsz); };
-	void operator=(ttString& csz) { *this = (char*) csz; }
+	void operator = (const char* psz);
+	void operator = (const wchar_t* pwsz) { CopyWide(pwsz); };
+	void operator = (ttString & csz) { *this = (char*) csz; }
 
-	void operator+=(const char* psz);
-	void operator+=(char ch);
-	void operator+=(ptrdiff_t val);
+	void operator += (const char* psz);
+	void operator += (char ch);
+	void operator += (ptrdiff_t val);
 
-	char operator[](int pos);
-	char operator[](size_t pos);
+	char operator [] (int pos);
+	char operator [] (size_t pos);
 
-	bool operator==(const char* psz) { return (IsEmpty() || !psz) ? false : tt::samestr(m_psz, psz); }
-
-	bool CopyWide(const wchar_t* pwsz);	// convert UNICODE to UTF8 and store it
+	bool operator == (const char* psz)	{ return (IsEmpty() || !psz) ? false : tt::samestr(m_psz, psz); }
+	bool operator == (char* psz)		{ return (IsEmpty() || !psz) ? false : tt::samestr(m_psz, psz); }
 
 protected:
-	char* ProcessKFmt(const char* pszEnd, va_list* pargList);
-
 	// Class members
 
 	char*	 m_psz;
