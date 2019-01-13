@@ -1022,38 +1022,3 @@ char* ttString::ProcessKFmt(const char* pszEnd, va_list* pargList)
 	}
 	return (char*) (pszEnd + 1);
 }
-
-// We allow for pszNum and pszDst to be different in case the pszNum buffer is only large
-// enough to hold the number and not the commas
-
-void ttpriv::AddCommasToNumber(char* pszNum, char* pszDst, size_t cbDst)
-{
-	if (pszDst != pszNum)
-		tt::strcpy_s(pszDst, cbDst, pszNum);	// copy the number, performa all additional work in-place in the destination buffer
-
-	ptrdiff_t cbNum = tt::strlen(pszDst);	// needs to be signed because it can go negative
-	if (cbNum < 4) {
-		ttASSERT(cbNum < (ptrdiff_t) cbDst);
-		return;
-	}
-	ttASSERT(cbNum + (cbNum / 3) < (ptrdiff_t) cbDst);
-	if (cbNum + (cbNum / 3) >= (ptrdiff_t) cbDst)
-		return;
-
-	if (*pszDst == '-')	{
-		cbNum--;
-		if (cbNum < 4)
-			return;
-	}
-
-	ptrdiff_t cbStart = cbNum % 3;
-	if (cbStart == 0)
-		cbStart += 3;
-	while (cbStart < cbNum) {
-		memmove(pszDst + cbStart + 1, pszDst + cbStart, tt::strbyte(pszDst + cbStart));	// make space for a comma
-		pszDst[cbStart] = ',';
-		++cbNum;		// track that we added a comma for loop comparison
-		cbStart += 4;	// 3 numbers plus the comma
-	}
-}
-

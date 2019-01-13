@@ -114,7 +114,6 @@ namespace tt
 	inline size_t	strbyte(const char* psz) { return tt::strlen(psz) * sizeof(char) + sizeof(char); }	// char is 1 in SBCS builds, 2 in UNICODE builds
 	inline size_t	strbyte(const wchar_t* pwsz) { return tt::strlen(pwsz) * sizeof(wchar_t) + sizeof(wchar_t); }
 
-
 	void trim_right(char* psz);
 
 	ptrdiff_t atoi(const char* psz);
@@ -130,6 +129,29 @@ namespace tt
 	wchar_t*	itoa(int64_t val, wchar_t* pszDst, size_t cbDst);
 	wchar_t*	utoa(uint32_t val, wchar_t* pszDst, size_t cbDst);
 	wchar_t*	utoa(uint64_t val, wchar_t* pszDst, size_t cbDst);
+
+	// The printf()/vprintf() methods are similar to the CRT versions only these don't support precision, width, or padding
+	// These methods support c, C, d, u, x, X, s, S
+
+	// The following non-standard options are supported:
+	//
+	//		%kd - formats an integer with commas. I.e., 54321 would be formatted as 54,321
+	//		%kq - outputs quotation marks around the string
+	//		%ks - adds a 's' to the current buffer if the integer is zero or greater then 1, e.g., printf("item%ks", cItems);
+	//		%kS - adds a 's' to the current buffer if the __int64 is zero or greater then 1
+	//		%kt - formats a size_t value with commas
+	//		%ku - formats an unsigned integer with commas
+
+	//		%kI64d -- handles int64_t, adding commas if needed
+	//		%kI64u -- handles uint64_t, adding commas if needed
+
+	// The following are only valid when compiling for _WINDOWS_
+
+	//		%ke - formats a system message assuming the argument is an error number
+	//		%kr - argument is a resource identifier to a string
+
+	char* cdecl printf(char** ppszDst, const char* pszFormat, ...);		// CAUTION! The memory ppszDst points to will be modified by ttHeap functions
+	void vprintf(char** ppszDst, const char* pszFormat, va_list argList);
 
 } // end of tt namespace
 
@@ -228,6 +250,14 @@ public:
 		return m_psz;		// we leave the full buffer allocated in case you want to add a filename to the end
 	}
 #endif	// _WINDOWS_
+
+	char* cdecl printf(const char* pszFormat, ...) {	// This will free m_psz if needed, and automatically malloc the needed size
+						va_list argList;
+						va_start(argList, pszFormat);
+ 						tt::vprintf(&m_psz, pszFormat, argList);
+						va_end(argList);
+						return m_psz;
+					}
 
 	operator char*()  { return (char*) m_psz; };
 	operator void*()  { return (void*) m_psz; }
