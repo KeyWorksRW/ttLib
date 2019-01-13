@@ -560,9 +560,8 @@ wchar_t* tt::findstri(const wchar_t* pszMain, const wchar_t* pszSub)
 char* tt::nextchr(const char*psz)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
-	if (!psz) {
+	if (!psz)
 		return nullptr;
-	}
 	ttASSERT_MSG(*psz, "Empty string!");
 	if (!*psz)
 		return (char*) psz;
@@ -605,6 +604,28 @@ wchar_t* tt::nextspace(const wchar_t* psz)
 		return nullptr;
 	while (*psz && !tt::iswhitespace(*psz))
 		psz++;
+	return (wchar_t*) psz;
+}
+
+char* tt::stepover(const char* psz)
+{
+	if (!psz)
+		return nullptr;
+	while (*psz && *psz != ' ' && *psz != '\t' && *psz != '\r' && *psz != '\n' && *psz != '\f')	// step over all non whitespace
+		++psz;
+	while (*psz == ' ' || *psz == '\t' || *psz == '\r' || *psz == '\n' || *psz == '\f') 		// step over all whitespace
+		++psz;
+	return (char*) psz;
+}
+
+wchar_t* tt::stepover(const wchar_t* psz)
+{
+	if (!psz)
+		return nullptr;
+	while (*psz && *psz != L' ' && *psz != L'\t' && *psz != L'\r' && *psz != L'\n' && *psz != L'\f')	// step over all non whitespace
+		++psz;
+	while (*psz == L' ' || *psz == L'\t' || *psz == L'\r' || *psz == L'\n' || *psz == L'\f')			// step over all whitespace
+		++psz;
 	return (wchar_t*) psz;
 }
 
