@@ -58,7 +58,7 @@ namespace tt
 	bool samesubstr(const wchar_t* pszMain, const wchar_t* pszSub);		// true if sub string matches first part of main string
 	bool samesubstri(const wchar_t* pszMain, const wchar_t* pszSub);	// case-insensitive comparison
 
-	char*	nextchr(const char * psz);		// handles UTF8 strings
+	char* nextchr(const char * psz);		// handles UTF8 strings
 	char* nextnonspace(const char* psz);	// returns pointer to the next non-space character
 	char* nextspace(const char* psz);		// returns pointer to the next space character
 
@@ -90,12 +90,12 @@ namespace tt
 	inline wchar_t* strstr(const wchar_t* pszMain, const wchar_t* pszSub) { return findstr(pszMain, pszSub); }
 	inline wchar_t* stristr(const wchar_t* pszMain, const wchar_t* pszSub){ return findstri(pszMain, pszSub); }
 
-	int			strcat_s(char* pszDst, size_t cchDest, const char* pszSrc);	// always zero-terminates, returns EOVERFLOW if truncated
-	int			strcpy_s(char* pszDst, size_t cchDest, const char* pszSrc);	// will ALWAYS null-terminate destination string (unlike std::strcpy_s())
+	int			strcat_s(char* pszDst, size_t cbDest, const char* pszSrc);	// always zero-terminates, returns EOVERFLOW if truncated
+	int			strcpy_s(char* pszDst, size_t cbDest, const char* pszSrc);	// always zero-terminates, returns EOVERFLOW if truncated
 	size_t		strlen(const char* psz);
 
-	int			strcat_s(wchar_t* pszDst, size_t cchDest, const wchar_t* pszSrc);
-	int			strcpy_s(wchar_t* pwszDst, size_t cchDest, const wchar_t* pwszSrc);
+	int			strcat_s(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc);
+	int			strcpy_s(wchar_t* pwszDst, size_t cbDest, const wchar_t* pwszSrc);
 	size_t		strlen(const wchar_t* pwsz);
 
 	// force "normal" calls to secure version -- possible buffer overflow if destination isn't large enough
@@ -137,18 +137,15 @@ namespace tt
 
   if (some condition) {
 	ttStr szBuf(256);
-	tt::strcpy_s(szBuf, szBuf.sizeBuffer(), "some text");
+	szBuf.strcpy("some text");	// equivalent to strcpy_s(szBuf, sizeof(szBuf), "some text");
 	szBuf.strcat(" and some more text");	// this will truncate if string to add is too long
 	cout << (char*) szBuf;
   } // szBuf is freed because it went out of scope
 */
 
-// ttStr can be used as a lightweight, header-only container for a zero-terminated UTF8 string. It uses the ttLib string
-// functions for handling null pointers, overflows, etc. Use the ttString (ttstring.h) class if you need a full blown
-// string-handling class
-
 // CAUTION! strcat() and += are provided but they do NOT allocate more memory -- if the current buffer for ttStr is too
-// small, the additional string will be truncated. Use the ttString class if you need dynamic memory allocation
+// small, the additional string will be truncated. Use the ttString class if you need dynamic memory allocation when adding
+// to an existing string.
 
 class ttStr
 {
@@ -160,7 +157,9 @@ public:
 		if (m_psz)
 			tt::free(m_psz);
 	}
-	void resize(size_t cb) { m_psz = m_psz ? (char*) tt::realloc(m_psz, cb) : (char*) tt::malloc(cb); }
+
+	void	resize(size_t cb) { m_psz = m_psz ? (char*) tt::realloc(m_psz, cb) : (char*) tt::malloc(cb); }
+	size_t	sizeBuffer() { return tt::size(m_psz); }	// returns 0 if m_psz is null
 
 	char*	findext(const char* pszExt) { return (char*) tt::findext(m_psz, pszExt); }	// find filename extension
 	char*	findstr(const char* psz) { return tt::findstr(m_psz, psz); }
@@ -168,9 +167,9 @@ public:
 	char*	findchr(char ch) { return tt::findchr(m_psz, ch); }
 	char*	findlastchr(char ch) { return tt::findlastchr(m_psz, ch); }
 
-	size_t	strbyte() { return tt::strbyte(m_psz); }	// length of string including 0 terminator
+	size_t	strbyte() { return tt::strbyte(m_psz); }	// length of string in bytes including 0 terminator
 	int		strcat(const char* psz) { return tt::strcat_s(m_psz, tt::size(m_psz), psz); }	// Does NOT reallocate string!
-	void	strcpy(const char* psz) { tt::strcpy_s(m_psz, tt::size(m_psz), psz); }
+	int		strcpy(const char* psz) { return tt::strcpy_s(m_psz, tt::size(m_psz), psz); }
 	size_t	strlen() { return tt::strlen(m_psz); }		// number of characters (use strbyte() for buffer size calculations)
 
 	bool	samestr(const char* psz) { return tt::samestr(m_psz, psz); }
@@ -193,8 +192,6 @@ public:
 	bool	IsEmpty() { return (!m_psz || !*m_psz)  ? true : false; }
 	bool	IsNonEmpty() const { return (m_psz && *m_psz) ? true : false; }
 	bool	IsNull() const { return (m_psz == nullptr); }
-
-	size_t	sizeBuffer() { return tt::size(m_psz); }	// returns 0 if m_psz is null
 
 #ifdef _WINDOWS_
 	char* getResource(size_t idString) {
@@ -223,7 +220,7 @@ public:
 		}
 	}
 
-#else
+#else	// not _WINDOWS_
 	char* getCWD() {
 		resize(4096);
 		char* psz = getcwd(m_psz, 4096);
@@ -231,11 +228,8 @@ public:
 			m_psz[0] = 0;	// in case getcwd() failed
 		return m_psz;	// we leave the full buffer allocated in case you want to add a filename to the end
 	}
-#endif
+#endif	// _WINDOWS_
 
-
-
-	operator const char*() { return (const char*) m_psz; };
 	operator char*()  { return (char*) m_psz; };
 	operator void*()  { return (void*) m_psz; }
 
@@ -246,12 +240,12 @@ public:
 
 	bool operator==(const char* psz) { return (IsEmpty() || !psz) ? false : tt::samestr(m_psz, psz); }	// samestr will check for m_psz == null
 
-	void operator+=(const char* psz) { tt::strcat_s(m_psz, tt::size(m_psz) - tt::strlen(m_psz), psz); }	// Does NOT reallocate string!
+	void operator+=(const char* psz) { tt::strcat_s(m_psz, tt::size(m_psz), psz); }	// Does NOT reallocate string!
 	void operator+=(char ch) {		// Does NOT reallocate string!
 		char szTmp[2];
 		szTmp[0] = ch;
 		szTmp[1] = 0;
-		tt::strcat_s(m_psz, tt::size(m_psz) - tt::strlen(m_psz), szTmp);
+		tt::strcat_s(m_psz, tt::size(m_psz), szTmp);
 	}
 
 	char* m_psz;
