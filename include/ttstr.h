@@ -270,14 +270,6 @@ public:
 	bool operator == (const char* psz) { return (IsEmpty() || !psz) ? false : tt::samestr(m_psz, psz); } // samestr will check for m_psz == null
 	bool operator == (char* psz) { return (IsEmpty() || !psz) ? false : tt::samestr(m_psz, psz); }		 // samestr will check for m_psz == null
 
-	void operator += (const char* psz) { tt::strcat_s(m_psz, tt::size(m_psz), psz); }	// Does NOT reallocate string!
-	void operator += (char ch) {	// Does NOT reallocate string!
-						char szTmp[2];
-						szTmp[0] = ch;
-						szTmp[1] = 0;
-						tt::strcat_s(m_psz, tt::size(m_psz), szTmp);
-					}
-
 	char* m_psz;
 };
 
