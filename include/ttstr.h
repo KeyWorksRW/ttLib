@@ -181,6 +181,7 @@ public:
 
 	void	resize(size_t cb) { m_psz = m_psz ? (char*) tt::realloc(m_psz, cb) : (char*) tt::malloc(cb); }
 	size_t	sizeBuffer() { return tt::size(m_psz); }	// returns 0 if m_psz is null
+	void	Delete() { if (m_psz) { tt::free(m_psz); m_psz = nullptr; } }
 
 	char*	findext(const char* pszExt) { return (char*) tt::findext(m_psz, pszExt); }	// find filename extension
 	char*	findstr(const char* psz) { return tt::findstr(m_psz, psz); }
@@ -210,9 +211,9 @@ public:
 
 	void	trim_right() { tt::trim_right(m_psz); }
 
-	bool	IsEmpty() { return (!m_psz || !*m_psz)  ? true : false; }
-	bool	IsNonEmpty() const { return (m_psz && *m_psz) ? true : false; }
-	bool	IsNull() const { return (m_psz == nullptr); }
+	bool	isempty() { return (!m_psz || !*m_psz)  ? true : false; }
+	bool	isnonempty() const { return (m_psz && *m_psz) ? true : false; }
+	bool	isnull() const { return (m_psz == nullptr); }
 
 #ifdef _WINDOWS_
 	char* getResource(size_t idString) {
@@ -267,8 +268,8 @@ public:
 
 	void operator = (const char* psz) { if (m_psz) tt::free(m_psz); m_psz = tt::strdup(psz); }
 
-	bool operator == (const char* psz) { return (IsEmpty() || !psz) ? false : tt::samestr(m_psz, psz); } // samestr will check for m_psz == null
-	bool operator == (char* psz) { return (IsEmpty() || !psz) ? false : tt::samestr(m_psz, psz); }		 // samestr will check for m_psz == null
+	bool operator == (const char* psz) { return (isempty() || !psz) ? false : tt::samestr(m_psz, psz); } // samestr will check for m_psz == null
+	bool operator == (char* psz) { return (isempty() || !psz) ? false : tt::samestr(m_psz, psz); }		 // samestr will check for m_psz == null
 
 	char* m_psz;
 };
