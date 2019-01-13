@@ -29,7 +29,7 @@ ttEnumStr::ttEnumStr(const char* psz, char chSeparator)
 
 void ttEnumStr::ResetEnum(char chSeparator)
 {
-	if (m_csz.IsEmpty()) {
+	if (m_csz.isempty()) {
 		m_pszCur = nullptr;
 		m_pszEnd = nullptr;
 		return;
@@ -56,16 +56,16 @@ void ttEnumStr::SetNewStr(const char* psz, char chSeparator)
 
 bool ttEnumStr::Enum(const char** ppszCurrent)
 {
-	ttASSERT_MSG(!m_csz.IsNull(), "Calling Enum() without a valid master string (ttEnumStr(nullptr) or SetNewStr(nullptr))!");
-	if (m_csz.IsNull()) {
+	ttASSERT_MSG(!m_csz.isnull(), "Calling Enum() without a valid master string (ttEnumStr(nullptr) or SetNewStr(nullptr))!");
+	if (m_csz.isnull()) {
 		if (ppszCurrent)
 			*ppszCurrent = nullptr;
 		return false;
 	}
 
 	if (m_pszCur == nullptr) {	// means we haven't been called before, or ResetEnum() was called to reset
-		m_pszCur = (const char*) m_csz;
-		m_pszEnd = tt::strchr(m_pszCur, m_chSeparator);
+		m_pszCur = m_csz;
+		m_pszEnd = tt::findchr(m_pszCur, m_chSeparator);
 		if (m_pszEnd)
 			*m_pszEnd = 0;
 		if (ppszCurrent)
@@ -82,7 +82,7 @@ bool ttEnumStr::Enum(const char** ppszCurrent)
 			*m_pszEnd = m_chSeparator;
 			do {	// handle doubled characters, or characters with only space between them (";;" or "; ;")
 				m_pszCur = tt::nextnonspace(m_pszEnd + 1);
-				m_pszEnd = tt::strchr(m_pszCur, m_chSeparator);
+				m_pszEnd = tt::findchr(m_pszCur, m_chSeparator);
 			} while(*m_pszCur == m_chSeparator && m_pszEnd);
 
 			if (*m_pszCur == m_chSeparator) {	// means we got to the end with no more separators
