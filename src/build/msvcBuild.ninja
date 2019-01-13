@@ -51,6 +51,8 @@ build $outdir/ttheap.obj: compile ttheap.cpp | $outdir/pch.obj
 
 build $outdir/ttlist.obj: compile ttlist.cpp | $outdir/pch.obj
 
+build $outdir/ttprintf.obj: compile ttprintf.cpp | $outdir/pch.obj
+
 build $outdir/ttstr.obj: compile ttstr.cpp | $outdir/pch.obj
 
 build $outdir/ttstring.obj: compile ttstring.cpp | $outdir/pch.obj
@@ -76,6 +78,7 @@ build ../lib/ttLib.lib : lib $
   $outdir/ttfile.obj $
   $outdir/ttheap.obj $
   $outdir/ttlist.obj $
+  $outdir/ttprintf.obj $
   $outdir/ttstr.obj $
   $outdir/ttstring.obj $
   $outdir/ttwstring.obj $
