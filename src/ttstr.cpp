@@ -19,15 +19,15 @@
 
 // We use our own "safe" string handling instead of strsafe.h. Rather then returning an error, we try to do
 // the "right" thing that will allow the program to continue, but without a buffer overun, or GPF caused by
-// NULL pointer. Note also that we have a significantly smaller max string length (16,777,215 versus 2,147,483,647)
+// a NULL pointer. Note also that we have a significantly smaller max string length (16 megs versus 2 gigs).
 
 size_t tt::strlen(const char* psz)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 	if (psz) {
-		size_t cch = std::strlen(psz);
+		size_t cch = ::strlen(psz);	// now that we know it's not a null pointer, call the standard version of strlen
 		ttASSERT_MSG(cch < tt::MAX_STRING_LEN, "String is too long!");
-		if (cch > tt::MAX_STRING_LEN)
+		if (cch > tt::MAX_STRING_LEN)	// make certain the string length fits within out standard limits for string length
 			cch = tt::MAX_STRING_LEN;
 		return cch;
 	}
@@ -38,16 +38,17 @@ size_t tt::strlen(const wchar_t* pwsz)
 {
 	ttASSERT_MSG(pwsz, "NULL pointer!");
 	if (pwsz) {
-		size_t cch = std::wcslen(pwsz);
-		ttASSERT_MSG(cch < tt::MAX_STRING_LEN, "String is too long!");
-		if (cch > tt::MAX_STRING_LEN)
-			cch = tt::MAX_STRING_LEN;
+		size_t cch = wcslen(pwsz);
+		// We use MAX_STRING_LEN as a max buffer size, so we need to divide by the size of wchar_t
+		ttASSERT_MSG(cch < tt::MAX_STRING_LEN / sizeof(wchar_t), "String is too long!");
+		if (cch > tt::MAX_STRING_LEN / sizeof(wchar_t))
+			cch = tt::MAX_STRING_LEN / sizeof(wchar_t);
 		return cch;
 	}
 	return 0;
 }
 
-int tt::strcpy_s(char* pszDst, size_t cchDest, const char* pszSrc)
+int tt::strcpy_s(char* pszDst, size_t cbDest, const char* pszSrc)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");
 	ttASSERT_MSG(pszSrc, "NULL pointer!");
@@ -60,88 +61,58 @@ int tt::strcpy_s(char* pszDst, size_t cchDest, const char* pszSrc)
 		return EINVAL;
 	}
 
-	ttASSERT_MSG(tt::strbyte(pszSrc) <= cchDest, "buffer overflow");
+	ttASSERT_MSG(tt::strbyte(pszSrc) <= cbDest, "buffer overflow");
 
 	int result = 0;
-	if (cchDest >= tt::MAX_STRING_LEN) {
-		cchDest = tt::MAX_STRING_LEN - sizeof(char);
+
+	if (cbDest > tt::MAX_STRING_LEN) {
+		cbDest = tt::MAX_STRING_LEN - sizeof(char);
 		result = EOVERFLOW;
 	}
 
-	while (cchDest > 0 && (*pszSrc != 0)) {
+	cbDest -= sizeof(char);		// leave room for trailing zero
+	while (cbDest > 0 && (*pszSrc != 0)) {
 		*pszDst++ = *pszSrc++;
-		cchDest--;
-	}
-	*pszDst = 0;
-	return result;
-}
-
-int tt::strcpy_s(wchar_t* pwszDst, size_t cchDest, const wchar_t* pwszSrc)
-{
-	ttASSERT_MSG(pwszDst, "NULL pointer!");
-	ttASSERT_MSG(pwszSrc, "NULL pointer!");
-
-	if (pwszDst == nullptr)
-		return EINVAL;
-
-	// we assume the caller can deal with an empty destination string if the src pointer is NULL, or the size
-	// is negative
-
-	if (pwszSrc == NULL) {
-		*pwszDst = L'\0';
-		return EINVAL;
-	}
-
-	ttASSERT_MSG(tt::strbyte(pwszSrc) <= cchDest, "buffer overflow");
-
-	int result = 0;
-	if (cchDest >= tt::MAX_STRING_LEN) {
-		cchDest = tt::MAX_STRING_LEN - sizeof(wchar_t);
-		result = EOVERFLOW;
-	}
-
-	while (cchDest > 0 && (*pwszSrc != L'\0')) {
-		*pwszDst++ = *pwszSrc++;
-		cchDest--;
-	}
-	*pwszDst = L'\0';
-	return result;
-}
-
-int tt::strcat_s(char* pszDst, size_t cchDest, const char* pszSrc)
-{
-	ttASSERT_MSG(pszDst, "NULL pointer!");
-	ttASSERT_MSG(pszSrc, "NULL pointer!");
-
-	if (pszDst == nullptr || pszSrc == nullptr)
-		return EINVAL;
-
-	size_t cch = std::strlen(pszDst);
-	ttASSERT_MSG(cch < tt::MAX_STRING_LEN, "String is too long!");
-
-	int result = 0;
-
-	if (cch > tt::MAX_STRING_LEN) {
-		cch = tt::MAX_STRING_LEN;
-		result = EOVERFLOW;
-	}
-	ttASSERT_MSG(cch < cchDest, "Destination is too small");
-	if (cch > cchDest) {
-		cch = cchDest;
-		result = EOVERFLOW;
-	}
-	pszDst += cch;
-	cchDest -= cch;
-	while (cchDest && (*pszSrc != 0)) {
-		*pszDst++ = *pszSrc++;
-		cchDest--;
+		cbDest -= sizeof(char);
 	}
 	*pszDst = 0;
 	ttASSERT_MSG(!*pszSrc, "Buffer overflow!");
 	return (*pszSrc ? EOVERFLOW : result);
 }
 
-int tt::strcat_s(wchar_t* pszDst, size_t cchDest, const wchar_t* pszSrc)
+int tt::strcpy_s(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
+{
+	ttASSERT_MSG(pszDst, "NULL pointer!");
+	ttASSERT_MSG(pszSrc, "NULL pointer!");
+
+	if (pszDst == nullptr)
+		return EINVAL;
+
+	if (pszSrc == nullptr) {
+		*pszDst = 0;
+		return EINVAL;
+	}
+
+	ttASSERT_MSG(tt::strbyte(pszSrc) <= cbDest, "buffer overflow");
+
+	int result = 0;
+
+	if (cbDest > tt::MAX_STRING_LEN / sizeof(wchar_t)) {
+		cbDest = tt::MAX_STRING_LEN / sizeof(wchar_t) - sizeof(wchar_t);
+		result = EOVERFLOW;
+	}
+
+	cbDest -= sizeof(char);		// leave room for trailing zero
+	while (cbDest > 0 && (*pszSrc != 0)) {
+		*pszDst++ = *pszSrc++;
+		cbDest -= sizeof(wchar_t);
+	}
+	*pszDst = 0;
+	ttASSERT_MSG(!*pszSrc, "Buffer overflow!");
+	return (*pszSrc ? EOVERFLOW : result);
+}
+
+int tt::strcat_s(char* pszDst, size_t cbDest, const char* pszSrc)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");
 	ttASSERT_MSG(pszSrc, "NULL pointer!");
@@ -151,25 +122,58 @@ int tt::strcat_s(wchar_t* pszDst, size_t cchDest, const wchar_t* pszSrc)
 
 	int result = 0;
 
-	size_t cch = tt::strlen(pszDst);
-	ttASSERT_MSG(cch < tt::MAX_STRING_LEN, "String is too long!");
+	size_t cbInUse = strbyte(pszDst);
+	ttASSERT_MSG(cbInUse <= tt::MAX_STRING_LEN, "String is too long!");
 
-	if (cch > tt::MAX_STRING_LEN) {
-		cch = tt::MAX_STRING_LEN;
+	if (cbInUse > tt::MAX_STRING_LEN) {
+		cbInUse = tt::MAX_STRING_LEN;
 		result = EOVERFLOW;
 	}
-	ttASSERT_MSG(cch < cchDest, "Destination is too small");
-	if (cch > cchDest) {
-		cch = cchDest;
-		result = EOVERFLOW;
-	}
-	pszDst += cch;
-	cchDest -= cch;
-	while (cchDest && (*pszSrc != 0)) {
+
+	ttASSERT_MSG(cbInUse < cbDest, "Destination is too small");
+	if (cbInUse >= cbDest)
+		return EOVERFLOW;	// we've already maxed out the destination buffer, so we can't add anything
+
+	pszDst += (cbInUse - sizeof(char));
+	cbDest -= cbInUse;
+	while (cbDest && (*pszSrc != 0)) {
 		*pszDst++ = *pszSrc++;
-		cchDest--;
+		cbDest -= sizeof(char);
 	}
-	*pszDst = L'\0';
+	*pszDst = 0;
+	ttASSERT_MSG(!*pszSrc, "Buffer overflow!");
+	return (*pszSrc ? EOVERFLOW : result);
+}
+
+int tt::strcat_s(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
+{
+	ttASSERT_MSG(pszDst, "NULL pointer!");
+	ttASSERT_MSG(pszSrc, "NULL pointer!");
+
+	if (pszDst == nullptr || pszSrc == nullptr)
+		return EINVAL;
+
+	int result = 0;
+
+	size_t cbInUse = strbyte(pszDst);
+	ttASSERT_MSG(cbInUse <= tt::MAX_STRING_LEN / sizeof(wchar_t), "String is too long!");
+
+	if (cbInUse > tt::MAX_STRING_LEN / sizeof(wchar_t)) {
+		cbInUse = tt::MAX_STRING_LEN / sizeof(wchar_t);
+		result = EOVERFLOW;
+	}
+
+	ttASSERT_MSG(cbInUse < cbDest, "Destination is too small");
+	if (cbInUse >= cbDest)
+		return EOVERFLOW;	// we've already maxed out the destination buffer, so we can't add anything
+
+	pszDst += (cbInUse - sizeof(wchar_t));
+	cbDest -= cbInUse;
+	while (cbDest && (*pszSrc != 0)) {
+		*pszDst++ = *pszSrc++;
+		cbDest -= sizeof(wchar_t);
+	}
+	*pszDst = 0;
 	ttASSERT_MSG(!*pszSrc, "Buffer overflow!");
 	return (*pszSrc ? EOVERFLOW : result);
 }
