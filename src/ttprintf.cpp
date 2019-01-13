@@ -358,7 +358,7 @@ char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargLi
 		case 'r':
 			{
 				ttStr cszRes;
-				cszRes.getResource(va_arg(*pargList, int));
+				cszRes.GetResString(va_arg(*pargList, int));
 				sptr.strcat(cszRes);
 			}
 			break;

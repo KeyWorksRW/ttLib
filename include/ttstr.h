@@ -216,7 +216,7 @@ public:
 	bool	isnull() const { return (m_psz == nullptr); }
 
 #ifdef _WINDOWS_
-	char* getResource(size_t idString) {
+	char* GetResString(size_t idString) {
 		resize(1024);
 		int cb = LoadStringA(tt::hinstResources, (UINT) idString, m_psz, 1024);
 		m_psz[cb] = 0;	// in case LoadStringA() failed
