@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttWString.h
-// Purpose:		Wide-character string class. See ttString.h for SBCS version
+// Name:		ttwstring.h
+// Purpose:		Wide-character string class. See ttstring.h for SBCS version
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 1998-2018 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)

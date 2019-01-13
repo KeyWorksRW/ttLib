@@ -1,8 +1,8 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		CStr.h
-// Purpose:		SBCS string class. See cwstr.h for wide-string equivalent
+// Name:		ttstring.h
+// Purpose:		SBCS string class. See ttwstring.h for wide-string equivalent
 // Author:		Ralph Walden
-// Copyright:	Copyright (c) 1998-2018 KeyWorks Software (Ralph Walden)
+// Copyright:	Copyright (c) 1998-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
