@@ -381,7 +381,7 @@ void ttFile::WriteStr(const char* psz)
 	m_pCurrent += cb;
 }
 
-void __cdecl ttFile::printf(const char* pszFormat, ...)
+void cdecl ttFile::printf(const char* pszFormat, ...)
 {
 	ttASSERT(!m_bReadlineReady);
 	ttASSERT_MSG(pszFormat, "NULL pointer!");
@@ -389,12 +389,13 @@ void __cdecl ttFile::printf(const char* pszFormat, ...)
 	if (!pszFormat || !*pszFormat)
 		return;
 
+	ttStr csz;
 	va_list argList;
 	va_start(argList, pszFormat);
-	ttString cszTmp;
-	cszTmp.vprintf(pszFormat, argList);
+	tt::vprintf(&csz.m_psz, pszFormat, argList);
 	va_end(argList);
-	WriteStr(cszTmp);
+
+	WriteStr(csz);
 }
 
 bool ttFile::readline(char** ppszLine)

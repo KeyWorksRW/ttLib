@@ -41,31 +41,34 @@ int tt::MsgBox(const char* pszMsg, UINT uType)
 
 int tt::MsgBox(UINT idResource, UINT uType)
 {
-	ttString str, strRes;
+	ttStr strRes;
 	strRes.GetResString(idResource);
-	return MessageBoxA(GetActiveWindow(), strRes.IsNonEmpty() ? (char*) strRes : "missing resource id", (tt::pszMsgTitle ? tt::pszMsgTitle : ""), uType);
+	return MessageBoxA(GetActiveWindow(), strRes.isnonempty() ? (char*) strRes : "missing resource id", (tt::pszMsgTitle ? tt::pszMsgTitle : ""), uType);
 }
 
 int __cdecl tt::MsgBoxFmt(const char* pszFormat, UINT uType, ...)
 {
+	ttStr csz;
 	va_list argList;
 	va_start(argList, uType);
-	ttString str;
-	str.vprintf(pszFormat, argList);
+	tt::vprintf(&csz.m_psz, pszFormat, argList);
 	va_end(argList);
-	return MessageBoxA(GetActiveWindow(), (char*) str, tt::pszMsgTitle ? tt::pszMsgTitle : "", uType);
+
+	return MessageBoxA(GetActiveWindow(), csz, tt::pszMsgTitle ? tt::pszMsgTitle : "", uType);
 }
 
 int __cdecl tt::MsgBoxFmt(int idResource, UINT uType, ...)
 {
+	ttStr cszTmp;
+	cszTmp.GetResString(idResource);
+
+	ttStr csz;
 	va_list argList;
 	va_start(argList, uType);
-	ttString strFmt;
-	strFmt.GetResString(idResource);
-	ttString str;
-	str.vprintf(strFmt, argList);
+	tt::vprintf(&csz.m_psz, cszTmp, argList);
 	va_end(argList);
-	return MessageBoxA(GetActiveWindow(), (char*) str, tt::pszMsgTitle ? tt::pszMsgTitle : "", uType);
+
+	return MessageBoxA(GetActiveWindow(), csz, tt::pszMsgTitle ? tt::pszMsgTitle : "", uType);
 }
 
 HFONT tt::CreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold, bool fItalics)
@@ -219,12 +222,11 @@ void __cdecl tt::KeyTrace(const char* pszFormat, ...)
 			return;
 	}
 
-	va_list args;
-	va_start(args, pszFormat);
-
-	ttString str;
-	str.vprintf(pszFormat, args);
-	// str += "\r\n";
+	ttStr csz;
+	va_list argList;
+	va_start(argList, pszFormat);
+	tt::vprintf(&csz.m_psz, pszFormat, argList);
+	va_end(argList);
 
 	// We don't want two threads trying to send text at the same time, so we wrap the rest of this in a critical section
 
@@ -243,12 +245,12 @@ void __cdecl tt::KeyTrace(const char* pszFormat, ...)
 		}
 	}
 
-	ttASSERT(tt::strlen(str) < 4094);
+	ttASSERT(tt::strlen(csz) < 4094);
 
-	if (tt::strlen(str) >= 4094)
-		str.getptr()[4093] = 0;	// truncate to size KeyView can handle
+	if (tt::strlen(csz) >= 4094)
+		csz.m_psz[4093] = 0;	// truncate to size KeyView can handle
 
-	tt::strcpy_s(g_pszKeyViewMap, 4093, str);
+	tt::strcpy_s(g_pszKeyViewMap, 4093, csz);
 
 	SendMessage(hwndKeyView, WMP_KEY_TRACE_MSG, 0, 0);
 }

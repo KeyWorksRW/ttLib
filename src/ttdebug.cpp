@@ -115,10 +115,10 @@ void _cdecl tt::CATCH_HANDLER(const char* pszFormat, ...)
 	if (!pszFormat)
 		return;
 
+	ttStr strMsg;
 	va_list argList;
 	va_start(argList, pszFormat);
-	ttString strMsg;
-	strMsg.vprintf(pszFormat, argList);
+	tt::vprintf(&strMsg.m_psz, pszFormat, argList);
 	va_end(argList);
 
 #ifdef _WINDOWS_
