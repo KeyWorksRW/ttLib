@@ -104,6 +104,13 @@ public:
 			m_pCurrent = psz;
 	}
 
+	// Calling readline() will modify the contents -- which means you can't compare two ttFile objects if you parsed one
+	// with readline(). To allow for this, call MakeCopy() after you have read the file into memory, and RestoreCopy() if
+	// you need to reset the file contents to they way they were before readline() was called.
+
+	void MakeCopy();
+	void RestoreCopy();
+
 	void AllocateMoreMemory(size_t cbMore = 16 * 1024);
 
 	operator void*() { return (void*) m_pszLine; };
@@ -139,6 +146,7 @@ protected:
 	char* m_pEnd;
 	bool  m_bReadlineReady;
 	bool  m_fUnixLF;
+	char* m_pCopy;
 };
 
 #endif	// __TTLIB_KEYFILE_H__

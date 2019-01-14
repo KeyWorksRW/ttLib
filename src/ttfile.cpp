@@ -44,7 +44,7 @@
 ttFile::ttFile()
 {
 	m_cbAllocated = 0;	// nothing is allocated until a file is read, or the first output (e.g., WriteStr()) is called
-	m_pbuf = NULL;
+	m_pbuf = m_pCopy = nullptr;
 	m_pCurrent = nullptr;
 	m_pszLine = nullptr;
 	m_hInternetSession = nullptr;
@@ -442,7 +442,10 @@ void ttFile::Delete()
 {
 	if (m_pbuf)
 		tt::free(m_pbuf);
-	m_pbuf = nullptr;
+	if (m_pCopy)
+		tt::free(m_pCopy);
+
+	m_pbuf = m_pCopy = nullptr;
 	m_pCurrent = nullptr;
 	m_pszLine = nullptr;
 	m_cbAllocated = 0;
@@ -643,4 +646,34 @@ char* ttFile::GetParsedYamlLine()
 	tt::trim_right((char*) pszLine);		// remove any trailing white space
 
 	return (char*) pszLine;
+}
+
+void ttFile::MakeCopy()
+{
+	ttASSERT_MSG(m_pbuf, "You must read a file before calling MakeCopy()!");
+	ttASSERT_MSG(!m_pCopy, "You have already created a copy and not called Delete() or RestoreCopy()");
+	if (!m_pCopy && m_pbuf)
+		m_pCopy = tt::strdup(m_pbuf);
+}
+
+void ttFile::RestoreCopy()
+{
+	ttASSERT_MSG(m_pCopy, "No copy available -- either MakeCopy() wasn't called, or RestoreCopy() has been called.");
+
+	if (!m_pCopy)
+		return;
+
+	if (m_pbuf)
+		tt::free(m_pbuf);
+	m_pbuf = m_pCopy;
+	m_pCopy = nullptr;
+
+	m_bReadlineReady = false;
+
+	// We allocated the buffer using strdup(), so we can't be sure tt::size(m_pbuf) will be the exact size, and
+	// m_pCurrent has to point to the null-terminating character. We're stuck with tt::strbyte()
+
+	m_cbAllocated = tt::strbyte(m_pbuf);
+	m_pCurrent = m_pbuf + m_cbAllocated - sizeof(char);
+	m_pszLine = m_pbuf;
 }
