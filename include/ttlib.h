@@ -21,8 +21,6 @@ namespace tt {
 	extern size_t LanguageOffset;		// language offset used to load other languages from .rc file
 #endif
 
-	void		AddTrailingSlash(char* psz);
-	void		BackslashToForwardslash(char* psz);
 	void		ConvertToRelative(const char* pszRoot, const char* pszFile, ttString& cszResult);
 	bool		CreateDir(const char* pszDir);
 	bool		CreateDir(const wchar_t* pszDir);
@@ -30,35 +28,52 @@ namespace tt {
 	bool		DirExists(const wchar_t* pszFolder);
 	bool		FileExists(const char* pszFile);
 	bool		FileExists(const wchar_t* pszFile);
-	char*		FindExtPortion(const char* pszFile);
-	char*		FindFilePortion(const char* pszFile);
-	char*		FindLastSlash(const char* psz);
-	void		ForwardslashToBackslash(char* psz);
-	size_t		GetCPUCount();
-	size_t		HashFromSz(const char* psz);
 	bool		IsValidFileChar(const char* psz, size_t pos);
+
+	void		BackslashToForwardslash(char* pszPath);
+	void		ForwardslashToBackslash(char* pszPath);
+
+	void		AddTrailingSlash(char* pszPath);
+	char* 		FindLastSlash(const char* pszPath);		// handles both forward and back slashes
+
+	// fndExtension() properly handles directories and filenames that start with '.' -- i.e., tt::fndExtension(".gitignore") will return nullptr
+	char*		fndExtension(const char* pszPath);		// returns pointer to the '.' that begins a file name extension, or nullptr
+
+	// fndFilename() properly handles a path with either forward and back slashes (or a mix of both)
+	char*		fndFilename(const char* pszPath);		// returns pointer to the filename portion of a path
+
+	// Temporarily here for backward compatibility
+	inline char* FindExtPortion(const char* pszPath)  { return tt::fndExtension(pszPath); }
+	inline char* FindFilePortion(const char* pszPath) { return tt::fndFilename(pszPath); }
+
+	size_t		HashFromSz(const char* psz);
 	size_t		HashFromSz(const wchar_t* psz);
 	size_t		HashFromURL(const char* pszURL);
 	size_t		HashFromURL(const wchar_t* pszURL);
 
 #ifdef _WINDOWS_
-	ptrdiff_t	CompareFileTime(FILETIME* pftSrc, FILETIME* pftDst);
-	HFONT		CreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold = false, bool fItalics = false);
-	const char* GetResString(size_t idString);
 	void		InitCaller(HINSTANCE hinstRes, HWND hwndParent, const char* pszMsgTitle);
-	inline void	InitCaller(const char* pszTitle) { InitCaller(GetModuleHandle(nullptr), nullptr, pszTitle); }
+	inline void	InitCaller(const char* pszTitle) { InitCaller(GetModuleHandle(nullptr), nullptr, pszTitle); }	// use this for console apps
+
+	const char* GetResString(size_t idString);
 	const char* LoadTxtResource(int idRes, uint32_t* pcbFile = nullptr, HINSTANCE hinst = tt::hinstResources);
+
 	int 		MsgBox(UINT idResource, UINT uType = MB_OK | MB_ICONWARNING);
 	int 		MsgBox(const char* pszMsg, UINT uType = MB_OK | MB_ICONWARNING);
 	int cdecl	MsgBoxFmt(const char* pszFormat, UINT uType, ...);
 	int cdecl	MsgBoxFmt(int idResource, UINT uType, ...);
 
-	void cdecl	KeyTrace(const char* pszFormat, ...);
+	ptrdiff_t	CompareFileTime(FILETIME* pftSrc, FILETIME* pftDst);
+	HFONT		CreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold = false, bool fItalics = false);
 
-	inline int RC_HEIGHT(const RECT* prc) { return prc->bottom - prc->top; };
-	inline int RC_HEIGHT(const RECT rc) { return rc.bottom - rc.top; };
-	inline int RC_WIDTH(const RECT* prc) { return prc->right - prc->left; };
-	inline int RC_WIDTH(const RECT rc) { return rc.right - rc.left; };
+	void cdecl	KeyTrace(const char* pszFormat, ...);	// formats a string and displays it in a KeyView window (if KeyView is running)
+
+	inline int	RC_HEIGHT(const RECT* prc) { return prc->bottom - prc->top; };
+	inline int	RC_HEIGHT(const RECT rc) { return rc.bottom - rc.top; };
+	inline int	RC_WIDTH(const RECT* prc) { return prc->right - prc->left; };
+	inline int	RC_WIDTH(const RECT rc) { return rc.right - rc.left; };
+
+	inline bool PosInRect(const RECT* prc, int xPos, int yPos) { return (xPos >= prc->left && xPos <= prc->right && yPos >= prc->top && yPos <= prc->bottom); }
 
 	inline bool	IsValidWindow(HWND hwnd) { return (bool) (hwnd && IsWindow(hwnd)); };
 #endif	// _WINDOWS_
@@ -81,7 +96,7 @@ namespace ttch {
 	const char CH_TAB =			'\t';
 	const char CH_BACKSLASH =	 '\\';
 	const char CH_FORWARDSLASH = '/';
-} // end of ttpriv namespace
+} // end of ttch namespace
 
 #endif	// __TTLIB_H__
 
