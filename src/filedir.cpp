@@ -264,29 +264,31 @@ void tt::ForwardslashToBackslash(char* psz)
 	}
 }
 
-char* tt::FindFilePortion(const char* pszFile)
+char* tt::fndFilename(const char* pszPath)
 {
-	ttASSERT_MSG(pszFile, "NULL pointer!");
-	if (!pszFile)
+	ttASSERT_MSG(pszPath, "NULL pointer!");
+	if (!pszPath)
 		return nullptr;
 
 	char* psz;
 #ifdef _WINDOWS_
-	psz = tt::findlastchr(pszFile, '\\');	// Paths usually have back slashes under Windows
+	psz = tt::findlastchr(pszPath, '\\');	// Paths usually have back slashes under Windows
 	if (psz)
-		pszFile = psz + 1;
+		pszPath = psz + 1;
 #endif	// _WINDOWS_
-	psz = tt::findlastchr(pszFile, '/');	// forward slashes are valid on all OS, so check that too
+	psz = tt::findlastchr(pszPath, '/');	// forward slashes are valid on all OS, so check that too
 	if (psz)
 		return psz + 1;
-	psz = tt::findlastchr(pszFile, ':');
-	return (psz ? psz + 1 : (char*) pszFile);
+
+	// path contains no forward or back slash, so look for a colon
+	psz = tt::findlastchr(pszPath, ':');
+	return (psz ? psz + 1 : (char*) pszPath);
 }
 
-char* tt::FindExtPortion(const char* pszFile)
+char* tt::fndExtension(const char* pszPath)
 {
-	char* psz = tt::findlastchr(pszFile, '.');
-	if (psz && !(psz == pszFile || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/'))	// ignore .file, ./file, and ../file
+	char* psz = tt::findlastchr(pszPath, '.');
+	if (psz && !(psz == pszPath || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/'))	// ignore .file, ./file, and ../file
 		return psz;
 	else
 		return nullptr;
