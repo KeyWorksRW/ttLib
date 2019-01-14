@@ -105,6 +105,7 @@ public:
 
 	char*	getptr() { return m_psz; }		// for when casting to char* is problematic
 
+	void	Transfer(char** ppsz) { if (ppsz) { *ppsz = m_psz; m_psz = nullptr; } }		// Caller will be responsible for freeing memory
 
 	operator char*() const { return (char*) m_psz; }
 	operator void*() const { return (void*) m_psz; }
