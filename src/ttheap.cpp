@@ -122,3 +122,15 @@ wchar_t* ttHeap::ttStrdup(const wchar_t* pwsz)
 	memcpy(pwszDst, pwsz, cb);
 	return pwszDst;
 }
+
+char* ttHeap::ttStrdup(const char* pszSrc, char** pszDst)
+{
+	ttASSERT_MSG(pszSrc, "NULL pointer!");
+
+	if (!pszSrc || !*pszSrc)
+		pszSrc = "";
+	size_t cb = tt::strbyte(pszSrc);
+	*pszDst = *pszDst ? (char*) HeapReAlloc(m_hHeap, 0, *pszDst, cb) : (char*) HeapAlloc(m_hHeap, 0, cb);
+	memcpy(*pszDst, pszSrc, cb);
+	return *pszDst;
+}

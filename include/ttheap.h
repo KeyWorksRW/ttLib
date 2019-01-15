@@ -64,6 +64,8 @@ public:
 	char*	 ttStrdup(const char* psz);
 	wchar_t* ttStrdup(const wchar_t* pwsz);
 
+	char*	 ttStrdup(const char* psz, char** ppszDst);		// allocates/reallocates *ppszDst
+
 	size_t	ttSize(const void* pv) { return pv ? HeapSize(m_hHeap, 0, pv) : 0; }
 	bool	ttValidate(const void* pv) { return HeapValidate(m_hHeap, 0, pv); }
 
@@ -92,6 +94,7 @@ namespace tt {
 	inline void*	recalloc(void* pv, size_t cbNew) { return tt::MainHeap.ttRecalloc(pv, cbNew); }
 	inline char*	strdup(const char* psz) { return tt::MainHeap.ttStrdup(psz); }
 	inline wchar_t*	strdup(const wchar_t* pwsz) { return tt::MainHeap.ttStrdup(pwsz); }
+	inline char*	strdup(const char* psz, char** ppszDst) { return tt::MainHeap.ttStrdup(psz, ppszDst); }
 	inline size_t	size(const void* pv) { return tt::MainHeap.ttSize(pv); }
 	inline bool		validate(const void* pv) { return tt::MainHeap.ttValidate(pv); }
 }	// end namespace tt
