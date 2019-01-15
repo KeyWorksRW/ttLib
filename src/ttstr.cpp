@@ -8,13 +8,6 @@
 
 #include "pch.h"		// precompiled header
 
-#include <cstring>
-#include <cwchar>
-#include <cerrno>
-#include <cctype>
-#include <cwctype>
-
-#include "../include/ttstr.h"
 #include "../include/ttdebug.h"	// ttASSERTS
 
 // We use our own "safe" string handling instead of strsafe.h. Rather then returning an error, we try to do
