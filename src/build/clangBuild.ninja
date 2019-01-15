@@ -41,6 +41,8 @@ build $outdir/misc.obj: compile misc.cpp | $outdir/pch.obj
 
 build $outdir/multithread.obj: compile multithread.cpp | $outdir/pch.obj
 
+build $outdir/strfuncs.obj: compile strfuncs.cpp | $outdir/pch.obj
+
 build $outdir/ttdebug.obj: compile ttdebug.cpp | $outdir/pch.obj
 
 build $outdir/ttfile.obj: compile ttfile.cpp | $outdir/pch.obj
@@ -50,8 +52,6 @@ build $outdir/ttheap.obj: compile ttheap.cpp | $outdir/pch.obj
 build $outdir/ttlist.obj: compile ttlist.cpp | $outdir/pch.obj
 
 build $outdir/ttprintf.obj: compile ttprintf.cpp | $outdir/pch.obj
-
-build $outdir/ttstr.obj: compile ttstr.cpp | $outdir/pch.obj
 
 build $outdir/ttstring.obj: compile ttstring.cpp | $outdir/pch.obj
 
@@ -72,12 +72,12 @@ build ../lib/ttLib.lib : lib $
   $outdir/hashpair.obj $
   $outdir/misc.obj $
   $outdir/multithread.obj $
+  $outdir/strfuncs.obj $
   $outdir/ttdebug.obj $
   $outdir/ttfile.obj $
   $outdir/ttheap.obj $
   $outdir/ttlist.obj $
   $outdir/ttprintf.obj $
-  $outdir/ttstr.obj $
   $outdir/ttstring.obj $
   $outdir/ttwstring.obj $
   $outdir/ttxml.obj $

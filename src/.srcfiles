@@ -16,12 +16,12 @@ Files:
   hashpair.cpp			# ttHashPair
   misc.cpp				# miscellaneous functions
   multithread.cpp		# ttMultiThrd class
+  strfuncs.cpp			# string handling and ttStr class
   ttdebug.cpp			# debug and assertion handling
   ttfile.cpp			# ttFile class
   ttheap.cpp			# ttHeap class
   ttlist.cpp			# ttList class
   ttprintf.cpp			# printf
-  ttstr.cpp				# string handling and ttStr class
   ttstring.cpp			# ttString class
   ttwstring.cpp			# ttWString class
   ttxml.cpp				# ttXML class
