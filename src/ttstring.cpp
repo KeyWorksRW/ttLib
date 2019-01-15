@@ -13,8 +13,8 @@
 #include <cwchar>		// for wcslen
 
 #include "../include/ttstring.h"	// ttString
-#include "../include/ttstr.h"	// various kstr() functions
-#include "../include/ttmem.h"	// ttMem, ttTMem
+#include "../include/ttstr.h"		// ttStr
+#include "../include/ttmem.h"		// ttMem, ttTMem
 
 using namespace ttch;	// used for the CH_ constants
 
@@ -116,13 +116,21 @@ char* ttString::FindLastSlash()
 		return pszLastFwdSlash > pszLastBackSlash ? pszLastFwdSlash : pszLastBackSlash;		// Impossible for them to be equal
 }
 
-void ttString::GetCWD()
+char* ttString::getCWD()
 {
 	if (m_psz)
 		tt::free(m_psz);
-	char szCWD[1024];
-	_getcwd(szCWD, sizeof(szCWD));
-	m_psz = tt::strdup(szCWD);
+#ifdef _WINDOWS_
+	resize(MAX_PATH);
+	DWORD cb = GetCurrentDirectoryA(MAX_PATH, m_psz);
+	m_psz[cb] = 0;	// in case GetCurrentDirectory() failed
+#else
+	resize(4096);
+	char* psz = getcwd(m_psz, 4096);
+	if (!psz)
+		m_psz[0] = 0;	// in case getcwd() failed
+#endif
+	return m_psz;		// we leave the full buffer allocated in case you want to add a filename to the end
 }
 
 #ifdef _WINDOWS_
@@ -344,21 +352,15 @@ bool ttString::CopyWide(const wchar_t* pwsz)	// convert UNICODE to UTF8 and stor
 	return true;
 }
 
-char* ttString::Enlarge(size_t cbTotalSize)
+void ttString::resize(size_t cbNew)
 {
-	ttASSERT(cbTotalSize <= MAX_STRING);
-	if (cbTotalSize > MAX_STRING)
-		cbTotalSize = MAX_STRING;
+	ttASSERT(cbNew <= MAX_STRING);
+	if (cbNew > MAX_STRING)
+		cbNew = MAX_STRING;
 
 	size_t curSize = m_psz ? tt::size(m_psz) : 0;
-	if (cbTotalSize <= curSize)
-		return m_psz;
-
-	if (m_psz)
-		m_psz = (char*) tt::realloc(m_psz, cbTotalSize);
-	else
-		m_psz = (char*) tt::malloc(cbTotalSize);
-	return m_psz;
+	if (cbNew > curSize)
+		m_psz = m_psz ? (char*) tt::realloc(m_psz, cbNew) : (char*) tt::malloc(cbNew);
 }
 
 bool ttString::ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCaseSensitive)
@@ -512,4 +514,46 @@ char* cdecl ttString::printf(size_t idFmtString, ...)
 	tt::vprintf(&m_psz, cszTmp, argList);
 	va_end(argList);
 	return m_psz;
+}
+
+int ttString::strcat(const char* psz)
+{
+	ttASSERT_MSG(psz, "NULL pointer!");
+
+	if (psz == nullptr)
+		return EINVAL;
+
+	if (!m_psz)
+		m_psz = tt::strdup(psz);
+	else {
+		size_t cbNew = tt::strbyte(psz);
+		size_t cbOld = tt::strbyte(m_psz);
+		ttASSERT_MSG(cbNew + cbOld <= MAX_STRING, "String is over 64k in size!");
+		if (cbNew + cbOld > MAX_STRING)
+			return EOVERFLOW;		// ignore it if it's too large
+		m_psz = (char*) tt::realloc(m_psz, cbNew + cbOld);
+		::strcat_s(m_psz, cbNew + cbOld, psz);
+	}
+	return 0;
+}
+
+int ttString::strcpy(const char* psz)
+{
+	ttASSERT_MSG(psz, "NULL pointer!");
+
+	if (psz == nullptr)
+		return EINVAL;
+
+	if (!m_psz)
+		m_psz = tt::strdup(psz);
+	else {
+		size_t cbNew = tt::strbyte(psz);
+		size_t cbOld = tt::size(m_psz);
+		ttASSERT_MSG(cbNew + cbOld <= MAX_STRING, "String is over 64k in size!");
+		if (cbNew + cbOld > MAX_STRING)
+			return EOVERFLOW;		// ignore it if it's too large
+		m_psz = (char*) tt::realloc(m_psz, cbNew + cbOld);
+		::strcpy_s(m_psz, cbNew + cbOld, psz);
+	}
+	return 0;
 }

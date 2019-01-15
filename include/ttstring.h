@@ -38,13 +38,12 @@
 #define __TTLIB_CSTR_H__
 
 #include "ttheap.h" // ttHeap
-#include "ttstr.h"	// various functions dealing with strings
 
 class ttString
 {
 public:
 	ttString(void)	{ m_psz = nullptr; }
-	// ttString(size_t cb) { m_psz = (char*) tt::malloc(cb); }
+	ttString(size_t cb) { m_psz = (char*) tt::malloc(cb); }
 	ttString(const char* psz) { m_psz = tt::strdup(psz); }
 	ttString(const wchar_t* psz) { CopyWide(psz); }
 	ttString(ttString& csz) { m_psz = tt::strdup(csz); }
@@ -54,6 +53,40 @@ public:
 
 	~ttString() { if (m_psz) tt::free(m_psz); }
 
+	char*	findext(const char* pszExt) { return (char*) tt::findext(m_psz, pszExt); }	// find filename extension
+	char*	findstr(const char* psz) { return tt::findstr(m_psz, psz); }
+	char*	findstri(const char* psz) { return tt::findstri(m_psz, psz); }
+	char*	findchr(char ch) { return tt::findchr(m_psz, ch); }
+	char*	findlastchr(char ch) { return tt::findlastchr(m_psz, ch); }
+
+	size_t	strbyte() { return m_psz ? tt::strbyte(m_psz) : 0; }	// length of string in bytes including 0 terminator
+	int		strcat(const char* psz);
+	int		strcpy(const char* psz);
+	size_t	strlen() { return m_psz ? tt::strlen(m_psz) : 0; }		// number of characters (use strbyte() for buffer size calculations)
+
+	bool	samestr(const char* psz) { return tt::samestr(m_psz, psz); }
+	bool	samestri(const char* psz) { return tt::samestri(m_psz, psz); }
+	bool	samesubstr(const char* psz) { return tt::samesubstr(m_psz, psz); }
+	bool	samesubstri(const char* psz) { return tt::samesubstri(m_psz, psz); }
+
+	char*	nextnonspace() { return (char*) tt::nextnonspace(m_psz); }
+	char*	nextspace() { return (char*) tt::nextspace(m_psz); }
+
+	ptrdiff_t atoi() { return tt::atoi(m_psz); }
+
+	char*	itoa(int32_t val)  { return tt::itoa(val, m_psz, tt::size(m_psz)); };
+	char*	itoa(int64_t val)  { return tt::itoa(val, m_psz, tt::size(m_psz)); };
+	char*	utoa(uint32_t val) { return tt::utoa(val, m_psz, tt::size(m_psz)); };
+	char*	utoa(uint64_t val) { return tt::utoa(val, m_psz, tt::size(m_psz)); };
+
+	void	trim_right() { tt::trim_right(m_psz); }
+
+	bool	isempty() const { return (!m_psz || !*m_psz)  ? true : false; }
+	bool	isnonempty() const { return (m_psz && *m_psz) ? true : false; }
+	bool	isnull() const { return (m_psz == nullptr); }
+
+	char* cdecl printf(size_t idFmtString, ...);	// retrieves the format string from the specified resource
+
 	bool CopyWide(const wchar_t* pwsz);	// convert UNICODE to UTF8 and store it
 
 	// Filename handling methods
@@ -61,7 +94,7 @@ public:
 	void	AppendFileName(const char* pszFile);
 	void	AddTrailingSlash();	// adds a trailing forward slash if string doesn't already end with '/' or '\'
 	void	ChangeExtension(const char* pszExtension);
-	void	GetCWD();			// Caution: this will replace any current string
+	char*	getCWD();			// Caution: this will replace any current string
 	void	RemoveExtension();
 	bool	ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCaseSensitive = false);
 
@@ -75,7 +108,6 @@ public:
 	// UI retrieving methods
 
 #ifdef _WINDOWS_
-	char* cdecl printf(size_t idFmtString, ...);	// retrieves the format string from the specified resource
 	bool GetWindowText(HWND hwnd);
 
 	// The following will always return a pointer, but if an error occurred, it will point to an empty string
@@ -87,21 +119,14 @@ public:
 	void	MakeLower();
 	void	MakeUpper();
 
-	// When compiled with wxWidgets, IsSame() functions work with UTF8 strings, otherwise they only correctly handle the ANSI portion of UTF8 strings
-
-	bool	samesubstri(const char* psz) { return tt::samesubstri(m_psz, psz); }
-	bool	samestri(const char* psz) { return tt::samestri(m_psz, psz); }
-
 	char*	GetQuotedString(const char* pszQuote);	// Handles `', '', "", <> -- copies the string inside and returns a pointer to it
 
 	char* cdecl printf(const char* pszFormat, ...);			// Deletes any current string before printing
 	char* cdecl printfAppend(const char* pszFormat, ...);	// Appends to the end of any current string
 
-	bool	IsEmpty() const { return (m_psz ? (*m_psz ? false : true) : true); }
-	bool	IsNonEmpty() const { return (!IsEmpty()); }
-	bool	IsNull() const { return (m_psz == nullptr); }
+	void	resize(size_t cb);
+	size_t	sizeBuffer() { return tt::size(m_psz); }	// returns 0 if m_psz is null
 	void	Delete() { if (m_psz) { tt::free(m_psz); m_psz = nullptr; } }
-	char*	Enlarge(size_t cbTotalSize);	// increase buffer size if needed
 
 	char*	getptr() { return m_psz; }		// for when casting to char* is problematic
 
@@ -112,7 +137,7 @@ public:
 
 	void operator = (const char* psz);
 	void operator = (const wchar_t* pwsz) { CopyWide(pwsz); };
-	void operator = (ttString & csz) { *this = (char*) csz; }
+	void operator = (ttString& csz) { *this = (char*) csz; }
 
 	void operator += (const char* psz);
 	void operator += (char ch);
@@ -121,8 +146,8 @@ public:
 	char operator [] (int pos);
 	char operator [] (size_t pos);
 
-	bool operator == (const char* psz)	{ return (IsEmpty() || !psz) ? false : tt::samestr(m_psz, psz); }
-	bool operator == (char* psz)		{ return (IsEmpty() || !psz) ? false : tt::samestr(m_psz, psz); }
+	bool operator == (const char* psz)	{ return (isempty() || !psz) ? false : tt::samestr(m_psz, psz); }
+	bool operator == (char* psz)		{ return (isempty() || !psz) ? false : tt::samestr(m_psz, psz); }
 
 protected:
 	// Class members
