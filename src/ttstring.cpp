@@ -8,8 +8,6 @@
 
 #include "pch.h"
 
-#include <direct.h>		// for getcwd
-
 #include "../include/ttstring.h"	// ttString
 #include "../include/ttstr.h"		// ttStr
 #include "../include/ttmem.h"		// ttMem, ttTMem
@@ -116,8 +114,6 @@ char* ttString::FindLastSlash()
 
 char* ttString::getCWD()
 {
-	if (m_psz)
-		tt::free(m_psz);
 #ifdef _WINDOWS_
 	resize(MAX_PATH);
 	DWORD cb = GetCurrentDirectoryA(MAX_PATH, m_psz);
@@ -138,8 +134,7 @@ void ttString::GetFullPathName()
 	ttASSERT(m_psz);
 	char szPath[MAX_PATH];
 	::GetFullPathNameA(m_psz, sizeof(szPath), szPath, NULL);
-	tt::free(m_psz);
-	m_psz = tt::strdup(szPath);
+	tt::strdup(szPath, &m_psz);
 }
 
 char* ttString::GetListBoxText(HWND hwnd, size_t sel)
@@ -182,9 +177,7 @@ char* ttString::GetResString(size_t idString)
 		m_psz = tt::strdup("");
 	}
 	else {
-		if (m_psz)
-			tt::free(m_psz);
-		m_psz = tt::strdup(szStringBuf);
+		tt::strdup(szStringBuf, &m_psz);
 	}
 	return m_psz;
 }
@@ -357,7 +350,7 @@ void ttString::resize(size_t cbNew)
 		cbNew = MAX_STRING;
 
 	size_t curSize = m_psz ? tt::size(m_psz) : 0;
-	if (cbNew > curSize)
+	if (cbNew != curSize)
 		m_psz = m_psz ? (char*) tt::realloc(m_psz, cbNew) : (char*) tt::malloc(cbNew);
 }
 
@@ -418,10 +411,7 @@ void ttString::operator=(const char* psz)
 	if (m_psz && m_psz == psz)	// This can happen when getting a point to ttString and then assigning it to the same ttString
 		return;
 
-	if (m_psz)
-		tt::free(m_psz);
-
-	m_psz = tt::strdup(psz ? psz : "");
+	tt::strdup(psz ? psz : "", &m_psz);
 }
 
 void ttString::operator+=(const char* psz)
@@ -550,8 +540,35 @@ int ttString::strcpy(const char* psz)
 		ttASSERT_MSG(cbNew + cbOld <= MAX_STRING, "String is over 64k in size!");
 		if (cbNew + cbOld > MAX_STRING)
 			return EOVERFLOW;		// ignore it if it's too large
-		m_psz = (char*) tt::realloc(m_psz, cbNew + cbOld);
-		::strcpy_s(m_psz, cbNew + cbOld, psz);
+		tt::strdup(psz, &m_psz);
 	}
 	return 0;
+}
+
+char* ttString::itoa(int32_t val)
+{
+	char szNum[32];
+	tt::itoa(val, szNum, sizeof(szNum));
+	return tt::strdup(szNum, &m_psz);
+}
+
+char* ttString::itoa(int64_t val)
+{
+	char szNum[32];
+	tt::itoa(val, szNum, sizeof(szNum));
+	return tt::strdup(szNum, &m_psz);
+}
+
+char* ttString::utoa(uint32_t val)
+{
+	char szNum[32];
+	tt::utoa(val, szNum, sizeof(szNum));
+	return tt::strdup(szNum, &m_psz);
+}
+
+char* ttString::utoa(uint64_t val)
+{
+	char szNum[32];
+	tt::utoa(val, szNum, sizeof(szNum));
+	return tt::strdup(szNum, &m_psz);
 }
