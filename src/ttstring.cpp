@@ -9,8 +9,6 @@
 #include "pch.h"
 
 #include <direct.h>		// for getcwd
-#include <cctype>		// for tolower
-#include <cwchar>		// for wcslen
 
 #include "../include/ttstring.h"	// ttString
 #include "../include/ttstr.h"		// ttStr
