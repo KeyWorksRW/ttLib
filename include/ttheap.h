@@ -11,6 +11,10 @@
 #ifndef __TTLIB_TTHEAP_H__
 #define __TTLIB_TTHEAP_H__
 
+// CAUTION! If you include this file and your code specifies "using namespace tt;" then ALL of your standard memory
+// functions (malloc, size, free, etc.) will be replaced. If you don't want that to happen, then do NOT specify
+// "using namespace tt;" and instead use the "tt::" namespace prefix for all ttLib functions including the ones here.
+
 #ifndef _WINDOWS_
 	#error This code will only work on Windows
 #endif
@@ -55,12 +59,12 @@ public:
 	void* ttRealloc(void* pv, size_t cb);
 	void* ttRecalloc(void* pv, size_t cb);
 
-	void  ttFree(void* pv);
+	void  ttFree(void* pv) { if (pv) HeapFree(m_hHeap, 0, pv); }
 
 	char*	 ttStrdup(const char* psz);
 	wchar_t* ttStrdup(const wchar_t* pwsz);
 
-	size_t	ttSize(const void* pv);
+	size_t	ttSize(const void* pv) { return pv ? HeapSize(m_hHeap, 0, pv) : 0; }
 	bool	ttValidate(const void* pv) { return HeapValidate(m_hHeap, 0, pv); }
 
 	operator HANDLE() const { return m_hHeap; }
@@ -72,10 +76,16 @@ protected:
 	bool	m_bCreated;
 }; // end ttHeap
 
+// The tt namespace is used in other ttLib header files as well, so this is not a complete list. It is STRONGLY
+// recommended that you reference all functions in ttLib with "tt::". Do NOT declare "using namespace tt" unless you want
+// other function calls in your code to be replaced. See https://github.com/KeyWorksRW/ttLib/issues/12 for discussion of
+// the issue.
+
 namespace tt {
 	extern ttHeap MainHeap;	// this uses the process heap rather then a sub-heap
 
 	inline void*	calloc(size_t cb) { return tt::MainHeap.ttCalloc(cb); }
+	inline void*	calloc(size_t num, size_t cb) { return tt::MainHeap.ttCalloc(num * cb); }	// for compatability with C++ standard library
 	inline void		free(void *pv) { tt::MainHeap.ttFree(pv); }
 	inline void*	malloc(size_t cb) { return tt::MainHeap.ttMalloc(cb); }
 	inline void*	realloc(void* pv, size_t cbNew) { return tt::MainHeap.ttRealloc(pv, cbNew); }

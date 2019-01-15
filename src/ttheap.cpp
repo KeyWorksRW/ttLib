@@ -17,7 +17,7 @@ ttHeap tt::MainHeap;
 /*
 	ttHeap can be constructed in one of three ways:
 		1) no parameter -> uses the process heap, memory is NOT freed in destructor
-		2) bool -> creates a sub-heap, the parameter indicates if the sub-heap should be thread-safe
+		2) bool -> creates a sub-heap, the parameter indicates if the sub-heap should be thread-safe or not
 		3) heap handle -> uses another sub-heap, sub-heap is not freed in destructor
 
 		#3 is typically used when you want a master ttHeap class that will share it's sub-heap with all child ttHeap classes, and
@@ -25,7 +25,6 @@ ttHeap tt::MainHeap;
 
 			ttHeap master(true);
 			ttHeap child(master);	// this invokes master::HANDLE() and from then on use master's sub-heap
-
 */
 
 ttHeap::ttHeap()
@@ -74,7 +73,6 @@ void* ttHeap::ttMalloc(size_t cb)
 void* ttHeap::ttCalloc(size_t cb)
 {
 	void* pv = HeapAlloc(m_hHeap, 0 | HEAP_ZERO_MEMORY, cb);
-	ttASSERT(pv);
 	if (!pv)
 		tt::OOM();
 	return pv;
@@ -100,24 +98,9 @@ void* ttHeap::ttRecalloc(void* pv, size_t cb)
 	return pv;
 }
 
-void ttHeap::ttFree(void* pv)
-{
-	if (pv)
-		HeapFree(m_hHeap, 0, pv);
-}
-
-size_t ttHeap::ttSize(const void* pv)
-{
-	ttASSERT(pv);
-	if (pv)
-		return HeapSize(m_hHeap, 0, pv);
-	else
-		return 0;
-}
-
 char* ttHeap::ttStrdup(const char* psz)
 {
-	ttASSERT_MSG(psz, "null pointer!");
+	ttASSERT_MSG(psz, "NULL pointer!");
 
 	if (!psz || !*psz)
 		psz = "";
@@ -130,7 +113,7 @@ char* ttHeap::ttStrdup(const char* psz)
 
 wchar_t* ttHeap::ttStrdup(const wchar_t* pwsz)
 {
-	ttASSERT_MSG(pwsz, "null pointer!");
+	ttASSERT_MSG(pwsz, "NULL pointer!");
 
 	if (!pwsz || !*pwsz)
 		pwsz = L"";
