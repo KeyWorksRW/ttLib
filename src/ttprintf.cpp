@@ -10,8 +10,9 @@
 
 #include "pch.h"
 
+#include "../include/ttdebug.h" // for ttASSERTS
 #include "../include/ttheap.h"	// ttHeap
-#include "../include/ttstr.h"	// where printf/vprintf are declared
+#include "../include/ttstr.h"	// ttStr
 
 class ttPrintfPtr
 {

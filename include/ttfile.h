@@ -18,6 +18,7 @@
 #ifndef __TTLIB_KEYFILE_H__
 #define __TTLIB_KEYFILE_H__
 
+#include "ttdebug.h"	// for ttASSERTS
 #include "ttstring.h"	// ttString
 
 #ifdef _WINDOWS_

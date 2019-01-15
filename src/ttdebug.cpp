@@ -11,7 +11,8 @@
 #include <stdio.h>
 
 #include "../include/ttdebug.h"
-#include "../include/ttstring.h"
+#include "../include/ttstring.h"	// ttString
+#include "../include/ttstr.h"		// ttStr
 #include "../include/critsection.h"	// CCritSection
 
 #ifndef _INC_STDLIB

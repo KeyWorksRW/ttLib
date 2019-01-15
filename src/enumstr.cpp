@@ -10,7 +10,6 @@
 
 #include "../include/ttdebug.h"	// ASSERTs
 #include "../include/enumstr.h"
-#include "../include/ttstr.h"	// various functions dealing with strings
 
 ttEnumStr::ttEnumStr()
 {

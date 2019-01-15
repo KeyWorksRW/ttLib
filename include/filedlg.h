@@ -17,6 +17,7 @@
 
 #include <commdlg.h>
 
+#include "ttdebug.h" 	// for ttASSERTS
 #include "ttstring.h"	// ttString
 
 #ifndef OFN_DONTADDTORECENT

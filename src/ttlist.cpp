@@ -18,7 +18,6 @@
 #include "pch.h"
 
 #include "../include/ttlist.h"	// ttList
-#include "../include/ttstr.h"	// ttString
 
 ttList::ttList(bool bSerialize) : ttHeap(bSerialize)
 {

@@ -17,7 +17,7 @@
 
 #include "ttheap.h"		// ttHeap
 #include "hashpair.h"	// ttHashPair
-#include "ttstring.h"		// ttString
+#include "ttstring.h"	// ttString
 
 class ttList : public ttHeap
 {

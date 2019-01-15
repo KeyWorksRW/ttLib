@@ -9,7 +9,7 @@
 #include "pch.h"		// precompiled header
 
 #include "../include/ttdebug.h"	// ttASSERTS
-#include "../include/ttheap.h"
+#include "../include/ttheap.h"	// memory allocation routines
 
 // We use our own "safe" string handling instead of strsafe.h. Rather then returning an error, we try to do
 // the "right" thing that will allow the program to continue, but without a buffer overun, or GPF caused by

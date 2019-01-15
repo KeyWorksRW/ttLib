@@ -20,7 +20,7 @@
 #ifndef __TTLIB_CENUMSTR_H__
 #define __TTLIB_CENUMSTR_H__
 
-#include "../include/ttstr.h"							// ttStr
+#include "../include/ttstr.h"	// ttStr
 
 class ttEnumStr
 {

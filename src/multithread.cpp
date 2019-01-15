@@ -8,7 +8,7 @@
 
 #include "pch.h"
 
-#include "../include/ttdebug.h"	// ASSERTs
+#include "../include/ttdebug.h" 	// ASSERTs
 #include "../include/multithread.h"	// ttMultiThrd
 
 #ifndef _WX_WX_H_

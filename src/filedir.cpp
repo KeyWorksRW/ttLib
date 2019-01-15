@@ -8,8 +8,8 @@
 
 #include "pch.h"		// precompiled header
 
+#include "../include/ttdebug.h" 	// for ttASSERTS
 #include "../include/ttstring.h"	// ttString
-#include "../include/ttstr.h"		// various functions dealing with strings
 
 #if !defined(_WINDOWS_) && !defined(_WX_WX_H_)
 	#error wxWidgets is required for non-Windows builds

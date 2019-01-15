@@ -15,6 +15,7 @@
 #endif
 
 #include "../include/ttfile.h"
+#include "../include/ttstr.h"	// ttStr
 
 #ifdef _WINDOWS_
 	#define CHECK_URL_PTR(str)	{ ttASSERT(str); if (!str || !str[0] || tt::strlen(str) >= INTERNET_MAX_URL_LENGTH) { m_ioResult = ERROR_BAD_NAME; return false; } }

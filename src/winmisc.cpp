@@ -16,6 +16,7 @@
 
 #include "../include/critsection.h"	// CCritSection, CCritLock
 #include "../include/ttstring.h"	// ttString
+#include "../include/ttstr.h"		// ttStr
 
 namespace tt {
 	const char* pszMsgTitle;
