@@ -81,10 +81,10 @@ public:
 
 	ptrdiff_t atoi() { return tt::atoi(m_psz); }
 
-	char*	itoa(int32_t val)  { return tt::itoa(val, m_psz, tt::size(m_psz)); };
-	char*	itoa(int64_t val)  { return tt::itoa(val, m_psz, tt::size(m_psz)); };
-	char*	utoa(uint32_t val) { return tt::utoa(val, m_psz, tt::size(m_psz)); };
-	char*	utoa(uint64_t val) { return tt::utoa(val, m_psz, tt::size(m_psz)); };
+	char*	itoa(int32_t val)  { char szNum[32]; tt::itoa(val, szNum, sizeof(szNum)); return tt::strdup(szNum, &m_psz); }
+	char*	itoa(int64_t val)  { char szNum[32]; tt::itoa(val, szNum, sizeof(szNum)); return tt::strdup(szNum, &m_psz); }
+	char*	utoa(uint32_t val) { char szNum[32]; tt::utoa(val, szNum, sizeof(szNum)); return tt::strdup(szNum, &m_psz); }
+	char*	utoa(uint64_t val) { char szNum[32]; tt::utoa(val, szNum, sizeof(szNum)); return tt::strdup(szNum, &m_psz); }
 
 	void	trim_right() { tt::trim_right(m_psz); }
 
