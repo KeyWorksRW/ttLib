@@ -11,7 +11,12 @@
 #ifndef __TTLIB_H__
 #define __TTLIB_H__
 
-class ttString;			// forward definition
+class ttString;	 // forward definition
+
+// The tt namespace is used in other ttLib header files as well, so this is not a complete list. It is STRONGLY
+// recommended that you reference all functions in ttLib with "tt::". Do NOT declare "using namespace tt" unless you want
+// other function calls in your code to be replaced. See https://github.com/KeyWorksRW/ttLib/issues/12 for discussion of
+// the issue.
 
 namespace tt {
 	const size_t MAX_STRING_LEN = 0x00FFFFFF;	// strings limited to 16,777,215 bytes
@@ -221,7 +226,6 @@ namespace ttch {
 
 #ifdef __TTLIB_INCLUDE_MAJOR__	// include major ttLib header files
 	#include "ttdebug.h"		// ttASSERT and friends
-	#include "ttheap.h" 		// memory management
 	#include "ttstr.h"			// light weight string class
 	#include "ttstring.h"		// full-blown string class
 	#include "ttlist.h" 		// class for handling lists of strings
