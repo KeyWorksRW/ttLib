@@ -290,7 +290,7 @@ void ttString::MakeLower()
 	if (m_psz && *m_psz) {
 		char* psz = m_psz;
 		while (*psz) {
-			*psz = (char) std::tolower(*psz);
+			*psz = (char) tolower(*psz);
 			psz = (char*) tt::nextchr(psz);	// handles utf8
 		}
 	}
@@ -301,7 +301,7 @@ void ttString::MakeUpper()
 	if (m_psz && *m_psz) {
 		char* psz = m_psz;
 		while (*psz) {
-			*psz = (char) std::toupper(*psz);
+			*psz = (char) toupper(*psz);
 			psz = (char*) tt::nextchr(psz);	// handles utf8
 		}
 	}
@@ -322,7 +322,7 @@ bool ttString::CopyWide(const wchar_t* pwsz)	// convert UNICODE to UTF8 and stor
 		return false;
 	}
 
-	size_t cb = std::wcslen(pwsz);
+	size_t cb = wcslen(pwsz);
 	ttASSERT_MSG(cb <= MAX_STRING, "String is over 64k in size!");
 
 	// BUGBUG: [randalphwa - 09-09-2018]	WideCharToMultiByte() only works on Windows -- need a portable way to convert

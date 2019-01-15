@@ -277,7 +277,7 @@ bool tt::samestri(const char* psz1, const char* psz2)
 		return false;
 	for (;;) {
 		if (*psz1 != *psz2)	{
-			if (std::tolower(*psz1) != std::tolower(*psz2))
+			if (tolower(*psz1) != tolower(*psz2))
 				return false;	// doesn't match even when case is made the same
 		}
 		if (!*psz1)
@@ -296,7 +296,7 @@ bool tt::samestri(const wchar_t* psz1, const wchar_t* psz2)
 		return false;
 	for (;;) {
 		if (*psz1 != *psz2)	{
-			if (std::towlower(*psz1) != std::towlower(*psz2))
+			if (towlower(*psz1) != towlower(*psz2))
 				return false;	// doesn't match even when case is made the same
 		}
 		if (!*psz1)
@@ -347,7 +347,7 @@ bool tt::samesubstri(const char* pszMain, const char* pszSub)
 
 	while (*pszSub) {
 		if (*pszMain != *pszSub) {
-			if (std::tolower(*pszMain) != std::tolower(*pszSub))
+			if (tolower(*pszMain) != tolower(*pszSub))
 				return false;	// doesn't match even when case is made the same
 		}
 		pszMain = tt::nextchr(pszMain);
@@ -365,7 +365,7 @@ bool tt::samesubstri(const wchar_t* pszMain, const wchar_t* pszSub)
 
 	while (*pszSub) {
 		if (*pszMain != *pszSub) {
-			if (std::towlower(*pszMain) != std::towlower(*pszSub))
+			if (towlower(*pszMain) != towlower(*pszSub))
 				return false;	// doesn't match even when case is made the same
 		}
 		++pszMain;

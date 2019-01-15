@@ -276,7 +276,7 @@ void ttWString::MakeLower()
 	if (m_psz && *m_psz) {
 		wchar_t* psz = m_psz;
 		while (*psz) {
-			*psz = (char) std::towlower(*psz);
+			*psz = (char) towlower(*psz);
 			++psz;
 		}
 	}
@@ -287,7 +287,7 @@ void ttWString::MakeUpper()
 	if (m_psz && *m_psz) {
 		wchar_t* psz = m_psz;
 		while (*psz) {
-			*psz = (char) std::towupper(*psz);
+			*psz = (char) towupper(*psz);
 			++psz;
 		}
 	}
