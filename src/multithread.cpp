@@ -8,6 +8,7 @@
 
 #include "pch.h"
 
+#include "../include/ttdebug.h" 	// ASSERTs
 #include "../include/multithread.h"	// ttMultiThrd
 
 #ifndef _WX_WX_H_
@@ -178,6 +179,20 @@ void ttMultiThrd::WaitForThreadsToComplete()
 	for (size_t iThread = 0; iThread < m_cThreads; iThread++)
 		ReleaseSemaphore(m_ahsemDone[iThread], 1, NULL);
 #endif	// _WX_WX_H_
+}
+
+size_t tt::GetCPUCount()
+{
+#ifdef	_WX_WX_H_
+	auto cpus = wxThread::GetCPUCount();
+	if (cpus == -1)
+		cpus = 1;
+#else	// not _WX_WX_H_
+	SYSTEM_INFO si;
+	GetSystemInfo(&si);
+	auto cpus = si.dwNumberOfProcessors;
+#endif	// _WX_WX_H_
+	return (size_t) cpus;
 }
 
 #ifdef	_WX_WX_H_

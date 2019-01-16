@@ -14,6 +14,8 @@
 #ifndef __TTLIB_HASHPAIR_H__
 #define __TTLIB_HASHPAIR_H__
 
+#include "../include/ttdebug.h"	// ASSERTs
+
 class ttHashPair
 {
 public:

@@ -11,7 +11,8 @@
 #include <stdio.h>
 
 #include "../include/ttdebug.h"
-#include "../include/ttstring.h"
+#include "../include/ttstring.h"	// ttString
+#include "../include/ttstr.h"		// ttStr
 #include "../include/critsection.h"	// CCritSection
 
 #ifndef _INC_STDLIB
@@ -44,14 +45,20 @@ __declspec(noreturn) void tt::OOM(void)
 
 #ifdef _DEBUG
 
-namespace {
+namespace ttdbg {
 	ttCritSection crtAssert;
+	bool bNoAssert = false;
 }
+
+using namespace ttdbg;
 
 // Displays a message box displaying the ASSERT with an option to ignore, break into a debugger, or exit the program
 
-bool AssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFunction, int line)
+bool tt::AssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFunction, int line)
 {
+	if (ttdbg::bNoAssert)
+		return false;
+
 	crtAssert.Lock();
 
 	char szBuf[2048];
@@ -103,16 +110,16 @@ bool AssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFuncti
 //	   CATCH_HANDLER("%s (%d) : Exception in %s()", __FILE__, __LINE__, __func__);
 // }
 
-void _cdecl CATCH_HANDLER(const char* pszFormat, ...)
+void _cdecl tt::CATCH_HANDLER(const char* pszFormat, ...)
 {
 	ttASSERT(pszFormat);
 	if (!pszFormat)
 		return;
 
+	ttStr strMsg;
 	va_list argList;
 	va_start(argList, pszFormat);
-	ttString strMsg;
-	strMsg.vprintf(pszFormat, argList);
+	tt::vprintf(&strMsg.m_psz, pszFormat, argList);
 	va_end(argList);
 
 #ifdef _WINDOWS_
@@ -143,7 +150,7 @@ void _cdecl CATCH_HANDLER(const char* pszFormat, ...)
 
 #ifdef _WINDOWS_
 
-void doReportLastError(const char* pszFile, const char* pszFunc, int line)
+void tt::doReportLastError(const char* pszFile, const char* pszFunc, int line)
 {
 	char* pszMsg;
 

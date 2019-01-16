@@ -29,99 +29,126 @@
 #ifndef __TTLIB_STR_H__
 #define __TTLIB_STR_H__
 
-namespace tt
+#include "ttdebug.h"	// ASSERTs
+#include "ttheap.h" 	// ttHeap
+
+/*
+  ttStr can be used as a lightweight, header-only container for a zero-terminated string. It uses the above string functions
+  for handling null pointers, overflows, etc. Use the ttString class for a full blown string-handling class (see ttstring.h)
+
+  if (some condition) {
+	ttStr szBuf(256);
+	szBuf.strcpy("some text");	// equivalent to strcpy_s(szBuf, sizeof(szBuf), "some text");
+	szBuf.strcat(" and some more text");	// this will truncate if string to add is too long
+	cout << (char*) szBuf;
+  } // szBuf is freed because it went out of scope
+*/
+
+// CAUTION! strcat() and += are provided but they do NOT allocate more memory -- if the current buffer for ttStr is too
+// small, the additional string will be truncated. Use the ttString class if you need dynamic memory allocation when adding
+// to an existing string.
+
+class ttStr
 {
-	const size_t MAX_STRING_LEN = 0x00FFFFFF;	// strings limited to 16,777,215 bytes
+public:
+	ttStr(void) { m_psz = nullptr; }
+	ttStr(size_t size) { m_psz = (char*) tt::malloc(size); }
+	ttStr(const char* psz) { m_psz = (char*) tt::strdup(psz); }
+	~ttStr(void) { if (m_psz) tt::free(m_psz); }
 
-	// UTF8 versions:
+	void	resize(size_t cb) { m_psz = m_psz ? (char*) tt::realloc(m_psz, cb) : (char*) tt::malloc(cb); }
+	size_t	sizeBuffer() { return tt::size(m_psz); }	// returns 0 if m_psz is null
+	void	Delete() { if (m_psz) { tt::free(m_psz); m_psz = nullptr; } }
 
-	int			strcat_s(char* pszDst, size_t cchDest, const char* pszSrc);	// always zero-terminates, returns EOVERFLOW if truncated
-	char*		strchr(const char* psz, char ch);
-	char*		strchrR(const char* psz, char ch);	// returns nullptr if not found, works on UTF8 strings
-	int			strcpy_s(char* pszDst, size_t cchDest, const char* pszSrc);	// will ALWAYS null-terminate destination string (unlike std::strcpy_s())
-	const char* strext(const char* pszPath, const char* pszExt);			// find a case-insensitive extension in a path string
-	char*		stristr(const char* pszMain, const char* pszSub);
-	char*		strstr(const char* pszMain, const char* pszSub);
-	size_t		strlen(const char* psz);
+	char*	findext(const char* pszExt) { return (char*) tt::findext(m_psz, pszExt); }	// find filename extension
+	char*	findstr(const char* psz) { return tt::findstr(m_psz, psz); }
+	char*	findstri(const char* psz) { return tt::findstri(m_psz, psz); }
+	char*	findchr(char ch) { return tt::findchr(m_psz, ch); }
+	char*	findlastchr(char ch) { return tt::findlastchr(m_psz, ch); }
 
-	bool		samestr(const char* psz1, const char* psz2);	// same as strcmp, but returns true/false
-	bool		samestri(const char* psz1, const char* psz2);	// case-insensitive comparison
-	bool 		samesubstr(const char* pszMain, const char* pszSub);	// true if sub string matches first part of main string
-	bool 		samesubstri(const char* pszMain, const char* pszSub);	// case-insensitive comparison
+	size_t	strbyte() { return tt::strbyte(m_psz); }	// length of string in bytes including 0 terminator
+	int		strcat(const char* psz) { return tt::strcat_s(m_psz, tt::size(m_psz), psz); }	// Does NOT reallocate string!
+	int		strcpy(const char* psz) { return tt::strcpy_s(m_psz, tt::size(m_psz), psz); }
+	size_t	strlen() { return tt::strlen(m_psz); }		// number of characters (use strbyte() for buffer size calculations)
 
-	const char*	nextchr(const char * psz);		// handles UTF8 strings
-	const char* nextnonspace(const char* psz);	// returns pointer to the next non-space character
-	const char* nextspace(const char* psz);		// returns pointer to the next space character
+	bool	samestr(const char* psz) { return tt::samestr(m_psz, psz); }
+	bool	samestri(const char* psz) { return tt::samestri(m_psz, psz); }
+	bool	samesubstr(const char* psz) { return tt::samesubstr(m_psz, psz); }
+	bool	samesubstri(const char* psz) { return tt::samesubstri(m_psz, psz); }
 
-	const wchar_t* nextnonspace(const wchar_t* psz);	// returns pointer to the next non-space character
-	const wchar_t* nextspace(const wchar_t* psz);		// returns pointer to the next space character
+	char*	nextnonspace() { return (char*) tt::nextnonspace(m_psz); }
+	char*	nextspace() { return (char*) tt::nextspace(m_psz); }
 
-	inline	bool isalpha(char ch) { return ( (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')); }
-	inline	bool isdigit(char ch) { return ((ch >= '0' && ch <= '9') || ch == '-'); }
-	inline	bool isempty(const char* psz) { return (bool) ((psz == nullptr) || (!psz[0])); }
-	inline	bool isnonempty(const char* psz) { return (psz != nullptr && psz[0]); }
-	inline	bool ispunct(char ch) { return (ch == '.' || ch == ',' || ch == ';' || ch == ':' || ch == '?' || ch == '!'); }
-	inline	bool isutf8(char ch) { return ((ch & 0xC0) != 0x80); }	// is ch the start of a utf8 sequence?
-	inline	bool iswhitespace(char ch) { return tt::strchr(" \t\r\n\f", ch) ? true : false; };
+	ptrdiff_t atoi() { return tt::atoi(m_psz); }
 
-	inline	bool isalpha(wchar_t ch) { return ( (ch >= L'a' && ch <= L'z') || (ch >= L'A' && ch <= L'Z')); }
-	inline	bool isdigit(wchar_t ch) { return ((ch >= L'0' && ch <= L'9') || ch == L'-'); }
-	inline	bool isempty(const wchar_t* psz) { return (bool) ((psz == nullptr) || (!psz[0])); }
-	inline	bool isnonempty(const wchar_t* psz) { return (psz != nullptr && psz[0]); }
-	inline	bool ispunct(wchar_t ch) { return (ch == L'.' || ch == L',' || ch == L';' || ch == L':' || ch == L'?' || ch == L'!'); }
-	inline	bool iswhitespace(wchar_t ch) { return (ch == L' ' || ch == L'\t' || ch == L'\r' || ch == L'\n' || ch == L'\f') ? true : false; }
+	char*	itoa(int32_t val)  { char szNum[32]; tt::itoa(val, szNum, sizeof(szNum)); return tt::strdup(szNum, &m_psz); }
+	char*	itoa(int64_t val)  { char szNum[32]; tt::itoa(val, szNum, sizeof(szNum)); return tt::strdup(szNum, &m_psz); }
+	char*	utoa(uint32_t val) { char szNum[32]; tt::utoa(val, szNum, sizeof(szNum)); return tt::strdup(szNum, &m_psz); }
+	char*	utoa(uint64_t val) { char szNum[32]; tt::utoa(val, szNum, sizeof(szNum)); return tt::strdup(szNum, &m_psz); }
 
-	// force "normal" calls to secure version
+	void	trim_right() { tt::trim_right(m_psz); }
 
-	inline char* strcat(char* pszDst, const char* pszSrc) { strcat_s(pszDst, MAX_STRING_LEN, pszSrc); return pszDst; }
-	inline char* strcpy(char* pszDst, const char* pszSrc) { strcpy_s(pszDst, MAX_STRING_LEN, pszSrc); return pszDst; }
+	bool	isempty() { return (!m_psz || !*m_psz)  ? true : false; }
+	bool	isnonempty() const { return (m_psz && *m_psz) ? true : false; }
+	bool	isnull() const { return (m_psz == nullptr); }
 
-	// wide character versions:
+#ifdef _WINDOWS_
+	char* GetResString(size_t idString) {
+		resize(1024);
+		int cb = LoadStringA(tt::hinstResources, (UINT) idString, m_psz, 1024);
+		m_psz[cb] = 0;	// in case LoadStringA() failed
+		resize(cb + sizeof(char));
+		return m_psz;
+	}
 
-	int			strcat_s(wchar_t* pszDst, size_t cchDest, const wchar_t* pszSrc);
-	wchar_t*	strchr(const wchar_t* psz, wchar_t ch);
-	wchar_t*	strchrR(const wchar_t* psz, wchar_t ch);
-	int			strcpy_s(wchar_t* pwszDst, size_t cchDest, const wchar_t* pwszSrc);
-	wchar_t*	stristr(const wchar_t* pszMain, const wchar_t* pszSub);
-	wchar_t*	strstr(const wchar_t* pszMain, const wchar_t* pszSub);
-	size_t		strlen(const wchar_t* pwsz);
+	char* getCWD() {
+		resize(MAX_PATH);
+		DWORD cb = GetCurrentDirectoryA(MAX_PATH, m_psz);	// we don't use _getcwd() because it would require loading <direct.h> for everyone using ttLib
+		m_psz[cb] = 0;	// in case GetCurrentDirectory() failed
+		return m_psz;	// we leave the full buffer allocated in case you want to add a filename to the end
+	}
 
-	bool		samestr(const wchar_t* psz1, const wchar_t* psz2);	// same as strcmp, but returns true/false
-	bool 		samestri(const wchar_t* psz1, const wchar_t* psz2);	// case-insensitive comparison
-	bool 		samesubstr(const wchar_t* pszMain, const wchar_t* pszSub);	// true if sub string matches first part of main string
-	bool		samesubstri(const wchar_t* pszMain, const wchar_t* pszSub);	// case-insensitive comparison
+	void AppendFileName(const char* pszName) {
+#ifdef _DEBUG
+		ttASSERT_MSG(m_psz, "NULL pointer!");
+		ttASSERT(sizeBuffer() >= MAX_PATH);
+#endif
+		if (m_psz) {
+			tt::AddTrailingSlash(m_psz);
+			strcat(pszName);
+		}
+	}
 
-	// Use strlen() to get the number of characters without trailing zero, use strbyte() to get the number of
-	// bytes including the terminating zero
+#else	// not _WINDOWS_
+	char* getCWD() {
+		resize(4096);
+		char* psz = getcwd(m_psz, 4096);
+		if (!psz)
+			m_psz[0] = 0;	// in case getcwd() failed
+		return m_psz;		// we leave the full buffer allocated in case you want to add a filename to the end
+	}
+#endif	// _WINDOWS_
 
-	inline size_t	strbyte(const char* psz) { return tt::strlen(psz) * sizeof(char) + sizeof(char); }	// char is 1 in SBCS builds, 2 in UNICODE builds
-	inline size_t	strbyte(const wchar_t* psz) { return tt::strlen(psz) * sizeof(wchar_t) + sizeof(wchar_t); }
+	char* cdecl printf(const char* pszFormat, ...) {	// This will free m_psz if needed, and automatically malloc the needed size
+						va_list argList;
+						va_start(argList, pszFormat);
+ 						tt::vprintf(&m_psz, pszFormat, argList);
+						va_end(argList);
+						return m_psz;
+					}
 
-	// The following functions allow you to call them without specifying the length of the destination buffer.
-	// This is primarily for ease of converting non-secure strcpy() and strcat() functions -- simply add 'tt::' in
-	// front of the function name and you are good to go.
+	operator char*()  { return (char*) m_psz; };
+	operator void*()  { return (void*) m_psz; }
 
-	inline void  strcat(wchar_t* pwszDst, const wchar_t* pszSrc) { tt::strcat_s(pwszDst, tt::MAX_STRING_LEN, pszSrc); }
-	inline void  strcpy(wchar_t* pwszDst, const wchar_t* pszSrc) { tt::strcpy_s(pwszDst, tt::MAX_STRING_LEN, pszSrc); }
+	char operator [] (size_t pos) { return (m_psz ? m_psz[pos] : 0); }	// Beware! no check for pos beyond end of string!
+	char operator [] (int pos)    { return (m_psz ? m_psz[pos] : 0); }	// Beware! no check for pos beyond end of string!
 
-	void trim_right(char* psz);
+	void operator = (const char* psz) { if (m_psz) tt::free(m_psz); m_psz = tt::strdup(psz); }
 
-	ptrdiff_t atoi(const char* psz);
-	char*	  hextoa(size_t val, char* pszDst, bool bUpperCase);
-	char*	  itoa(int32_t val, char* pszDst, size_t cbDst);
-	char*	  itoa(int64_t val, char* pszDst, size_t cbDst);
-	char*	  utoa(uint32_t val, char* pszDst, size_t cbDst);
-	char*	  utoa(uint64_t val, char* pszDst, size_t cbDst);
+	bool operator == (const char* psz) { return (isempty() || !psz) ? false : tt::samestr(m_psz, psz); } // samestr will check for m_psz == null
+	bool operator == (char* psz) { return (isempty() || !psz) ? false : tt::samestr(m_psz, psz); }		 // samestr will check for m_psz == null
 
-	// wide-char versions
-
-	ptrdiff_t	atoi(const wchar_t* psz);
-	wchar_t*	hextoa(size_t val, wchar_t* pszDst, bool bUpperCase);
-	wchar_t*	itoa(int32_t val, wchar_t* pszDst, size_t cbDst);
-	wchar_t*	itoa(int64_t val, wchar_t* pszDst, size_t cbDst);
-	wchar_t*	utoa(uint32_t val, wchar_t* pszDst, size_t cbDst);
-	wchar_t*	utoa(uint64_t val, wchar_t* pszDst, size_t cbDst);
-
-} // end of tt namespace
+	char* m_psz;
+};
 
 #endif	//__TTLIB_STR_H__

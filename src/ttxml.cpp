@@ -523,7 +523,7 @@ HRESULT ttXML::WriteHtmlBranch(ttXMLBranch* pBranch, ttFile& kf)
 		ttASSERT(pBranch->type == ENTITY_ROOT);
 		HRESULT hr = S_OK;
 
-		if (m_cszDocType.IsNonEmpty()) {
+		if (m_cszDocType.isnonempty()) {
 			kf.WriteStr(m_cszDocType);
 		}
 

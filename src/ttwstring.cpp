@@ -9,11 +9,10 @@
 #include "pch.h"
 
 #include <direct.h>		// for _getcwd
-#include <cwctype>		// for towlower
 
+#include "../include/ttdebug.h" 	// for ttASSERTS
 #include "../include/ttwstring.h"
 #include "../include/ttstring.h"	// ttString
-#include "../include/ttstr.h"		// various functions dealing with strings
 
 #ifndef _MAX_U64TOSTR_BASE10_COUNT
 	#define _MAX_U64TOSTR_BASE10_COUNT (20 + 1)
@@ -276,7 +275,7 @@ void ttWString::MakeLower()
 	if (m_psz && *m_psz) {
 		wchar_t* psz = m_psz;
 		while (*psz) {
-			*psz = (char) std::towlower(*psz);
+			*psz = (char) towlower(*psz);
 			++psz;
 		}
 	}
@@ -287,7 +286,7 @@ void ttWString::MakeUpper()
 	if (m_psz && *m_psz) {
 		wchar_t* psz = m_psz;
 		while (*psz) {
-			*psz = (char) std::towupper(*psz);
+			*psz = (char) towupper(*psz);
 			++psz;
 		}
 	}

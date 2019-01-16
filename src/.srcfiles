@@ -11,19 +11,20 @@ Options:
 Files:
   pch.cpp
 
-  enumstr.cpp
-  filedir.cpp
-  hashpair.cpp
-  misc.cpp
-  multithread.cpp
-  ttdebug.cpp
-  ttfile.cpp
-  ttheap.cpp
-  ttlist.cpp
-  ttstr.cpp
-  ttstring.cpp
-  ttwstring.cpp
-  ttxml.cpp
+  enumstr.cpp			# ttEnumStr class
+  filedir.cpp			# file and directory handling
+  hashpair.cpp			# ttHashPair
+  misc.cpp				# miscellaneous functions
+  multithread.cpp		# ttMultiThrd class
+  strfuncs.cpp			# string handling and ttStr class
+  ttdebug.cpp			# debug and assertion handling
+  ttfile.cpp			# ttFile class
+  ttheap.cpp			# ttHeap class
+  ttlist.cpp			# ttList class
+  ttprintf.cpp			# printf
+  ttstring.cpp			# ttString class
+  ttwstring.cpp			# ttWString class
+  ttxml.cpp				# ttXML class
 
 # _WINDOWS_ only files
 

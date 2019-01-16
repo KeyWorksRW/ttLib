@@ -24,6 +24,8 @@
 // Classes are also provided for some dialog controls: ttComboBox, ttListBox, ttListView
 
 #include <CommCtrl.h>
+
+#include "ttdebug.h"	// for ttASSERTS
 #include "ttstring.h"	// ttString
 #include "ttwstring.h"	// ttWString
 

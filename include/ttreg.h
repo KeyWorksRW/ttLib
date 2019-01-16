@@ -2,8 +2,8 @@
 // Name:		CReg class
 // Purpose:		Header-only class for working with the Windows registry
 // Author:		Ralph Walden (randalphwa)
-// Copyright:   Copyright (c) 1998-2018 KeyWorks Software (Ralph Walden)
-// License:     Apache License (see ../LICENSE)
+// Copyright:	Copyright (c) 1998-2019 KeyWorks Software (Ralph Walden)
+// License:		Apache License (see LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -17,15 +17,15 @@
 
 // Header-only class
 
-class CReg
+class ttRegistry
 {
 public:
-	CReg() { m_hkey = NULL; }
-	CReg(PCSTR pszKey, bool fWrite = true) {
+	ttRegistry() { m_hkey = NULL; }
+	ttRegistry(PCSTR pszKey, bool fWrite = true) {
 		if (RegOpenKeyEx(HKEY_CURRENT_USER, pszKey, 0, fWrite ? KEY_ALL_ACCESS : KEY_READ, &m_hkey) != ERROR_SUCCESS)
 			m_hkey = NULL;
 	}
-	~CReg() { if (m_hkey) RegCloseKey(m_hkey); }
+	~ttRegistry() { if (m_hkey) RegCloseKey(m_hkey); }
 
 	bool Open(HKEY hkeyBase, PCSTR pszKey, bool fWrite = true) { if (m_hkey) RegCloseKey(m_hkey); return (RegOpenKeyEx(hkeyBase, pszKey, 0, fWrite ? KEY_ALL_ACCESS : KEY_READ, &m_hkey) == ERROR_SUCCESS); }
 	bool Create(HKEY hkeyBase, PCSTR pszKey) { if (m_hkey) RegCloseKey(m_hkey); return (RegCreateKeyEx(hkeyBase, pszKey, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS,	NULL, &m_hkey, NULL) == ERROR_SUCCESS); }

@@ -18,6 +18,7 @@
 #ifndef __TTLIB_KEYFILE_H__
 #define __TTLIB_KEYFILE_H__
 
+#include "ttdebug.h"	// for ttASSERTS
 #include "ttstring.h"	// ttString
 
 #ifdef _WINDOWS_
@@ -83,7 +84,7 @@ public:
 	bool	isThisPreviousString(const char* pszPrev);
 	void	ReCalcSize();	// reset the current position based on string length of entire buffer
 
-	void __cdecl printf(const char* pszFormat, ...);
+	void cdecl printf(const char* pszFormat, ...);
 
 	void	InsertStr(const char* pszText, char* pszPosition);		// pszPosition derived from previous call to GetCurPosition()
 	bool	ReplaceStr(const char* pszOldText, const char* pszNewText, bool fCaseSensitive = false);
@@ -103,6 +104,13 @@ public:
 		if (psz >= m_pbuf && psz <= m_pEnd)
 			m_pCurrent = psz;
 	}
+
+	// Calling readline() will modify the contents -- which means you can't compare two ttFile objects if you parsed one
+	// with readline(). To allow for this, call MakeCopy() after you have read the file into memory, and RestoreCopy() if
+	// you need to reset the file contents to they way they were before readline() was called.
+
+	void MakeCopy();
+	void RestoreCopy();
 
 	void AllocateMoreMemory(size_t cbMore = 16 * 1024);
 
@@ -139,6 +147,7 @@ protected:
 	char* m_pEnd;
 	bool  m_bReadlineReady;
 	bool  m_fUnixLF;
+	char* m_pCopy;
 };
 
 #endif	// __TTLIB_KEYFILE_H__

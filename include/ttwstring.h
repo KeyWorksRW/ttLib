@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttWString.h
-// Purpose:		Wide-character string class. See ttString.h for SBCS version
+// Name:		ttwstring.h
+// Purpose:		Wide-character string class. See ttstring.h for SBCS version
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 1998-2018 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
@@ -84,8 +84,8 @@ public:
 
 	wchar_t* GetQuotedString(wchar_t* pszQuote);	// returns pointer to first character after closing quote (or nullptr if not a quoted string)
 
-	void __cdecl printf(const wchar_t* pszFormat, ...);
-	void		 vprintf(const wchar_t* pszFormat, va_list argList);
+	void cdecl	printf(const wchar_t* pszFormat, ...);
+	void		vprintf(const wchar_t* pszFormat, va_list argList);
 
 	bool	 IsEmpty() const { return (m_psz ? (*m_psz ? false : true) : true); }
 	bool	 IsNonEmpty() const { return (!IsEmpty()); }

@@ -34,6 +34,10 @@
 	class CMultiChildThread;	// forward definition
 #endif
 
+namespace tt {
+	size_t		GetCPUCount();
+} // end of tt namespace
+
 class ttMultiThrd
 {
 public:

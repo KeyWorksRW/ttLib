@@ -8,8 +8,8 @@
 
 #include "pch.h"		// precompiled header
 
+#include "../include/ttdebug.h" 	// for ttASSERTS
 #include "../include/ttstring.h"	// ttString
-#include "../include/ttstr.h"		// various functions dealing with strings
 
 #if !defined(_WINDOWS_) && !defined(_WX_WX_H_)
 	#error wxWidgets is required for non-Windows builds
@@ -92,7 +92,7 @@ bool tt::CreateDir(const char* pszDir)
 	ttString cszDir(pszDir);
 	tt::BackslashToForwardslash(cszDir);
 
-	char* psz = tt::strchrR(cszDir, '/');
+	char* psz = tt::findlastchr(cszDir, '/');
 	if (!psz)
 		return false;
 	*psz = '\0';
@@ -125,7 +125,7 @@ bool tt::CreateDir(const wchar_t* pszDir)
 	ttString cszDir(pszDir);
 	tt::BackslashToForwardslash(cszDir);
 
-	char* psz = tt::strchrR(cszDir, '/');
+	char* psz = tt::findlastchr(cszDir, '/');
 	if (!psz)
 		return false;
 	*psz = '\0';
@@ -226,7 +226,7 @@ void tt::ConvertToRelative(const char* pszRoot, const char* pszFile, ttString& c
 	cszResult.Delete();
 	++pszLastSlash;
 	size_t posDiff = pszLastSlash - cszRoot.getptr();
-	ttASSERT(tt::strchr(pszLastSlash, '/'));	// we should never be pointing to the last slash
+	ttASSERT(tt::findchr(pszLastSlash, '/'));	// we should never be pointing to the last slash
 
 	do {
 		while (*pszLastSlash != '/')
@@ -244,10 +244,10 @@ void tt::BackslashToForwardslash(char* psz)
 	if (!psz)
 		return;
 
-	char* pszSlash = tt::strchr(psz, '\\');
+	char* pszSlash = tt::findchr(psz, '\\');
 	while (pszSlash) {
 		*pszSlash = '/';
-		pszSlash = tt::strchr(tt::nextchr(pszSlash), '\\');
+		pszSlash = tt::findchr(tt::nextchr(pszSlash), '\\');
 	}
 }
 
@@ -257,62 +257,38 @@ void tt::ForwardslashToBackslash(char* psz)
 	if (!psz)
 		return;
 
-	char* pszSlash = tt::strchr(psz, '/');
+	char* pszSlash = tt::findchr(psz, '/');
 	while (pszSlash) {
 		*pszSlash = '\\';
-		pszSlash = tt::strchr(tt::nextchr(pszSlash), '/');
+		pszSlash = tt::findchr(tt::nextchr(pszSlash), '/');
 	}
 }
 
-void tt::AddTrailingSlash(char* psz)
+char* tt::fndFilename(const char* pszPath)
 {
-	ttASSERT_MSG(psz, "NULL pointer!");
-	if (!psz)
-		return;
-
-#ifdef _WINDOWS_
-	size_t cb = tt::strlen(psz);
-	char ch = *(CharPrevExA(CP_UTF8, psz, psz + cb, 0));
-	if (ch != '/' && ch != '\\' && ch != ':') {
-		tt::strcat(psz, "/");
-	}
-
-#else	// not _WINDOWS_
-
-	char* pszLast = kstrchrR(psz, '/');
-	if (pszLast && !pszLast[1])
-		return;	// already has a trailing slash
-	char* pszColon = kstrchrR(psz, ':');
-	if (pszColon && !pszColon[1])
-		return;	// e.g., if the string is something like "c:" then do NOT add a trailing slash
-	tt::strcat(psz, "/");
-
-#endif	// _WINDOWS_
-}
-
-const char* tt::FindFilePortion(const char* pszFile)
-{
-	ttASSERT_MSG(pszFile, "NULL pointer!");
-	if (!pszFile)
+	ttASSERT_MSG(pszPath, "NULL pointer!");
+	if (!pszPath)
 		return nullptr;
 
-	const char* psz;
+	char* psz;
 #ifdef _WINDOWS_
-	psz = tt::strchrR(pszFile, '\\');	// Paths usually have back slashes under Windows
+	psz = tt::findlastchr(pszPath, '\\');	// Paths usually have back slashes under Windows
 	if (psz)
-		pszFile = psz + 1;
+		pszPath = psz + 1;
 #endif	// _WINDOWS_
-	psz = tt::strchrR(pszFile, '/');	// forward slashes are valid on all OS, so check that too
+	psz = tt::findlastchr(pszPath, '/');	// forward slashes are valid on all OS, so check that too
 	if (psz)
 		return psz + 1;
-	psz = tt::strchrR(pszFile, ':');
-	return (psz ? psz + 1 :  pszFile);
+
+	// path contains no forward or back slash, so look for a colon
+	psz = tt::findlastchr(pszPath, ':');
+	return (psz ? psz + 1 : (char*) pszPath);
 }
 
-const char* tt::FindExtPortion(const char* pszFile)
+char* tt::fndExtension(const char* pszPath)
 {
-	const char* psz = tt::strchrR(pszFile, '.');
-	if (psz && !(psz == pszFile || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/'))	// ignore .file, ./file, and ../file
+	char* psz = tt::findlastchr(pszPath, '.');
+	if (psz && !(psz == pszPath || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/'))	// ignore .file, ./file, and ../file
 		return psz;
 	else
 		return nullptr;

@@ -17,16 +17,11 @@
 
 #define WMP_CENTER_WINDOW WM_USER + 0x7000
 
-namespace ttpriv {
-	BOOL (WINAPI* pfnAnimateWindow)(HWND, DWORD, DWORD);
-	HMONITOR MonitorFromWindow(HWND hwnd, DWORD dwFlags);
-	HMONITOR MonitorFromPoint(POINT pt, DWORD dwFlags);
-	BOOL	 GetMonitorInfo(HMONITOR hMonitor, LPMONITORINFO lpmi);
+static HMONITOR ttKeyMonitorFromWindow(HWND hwnd, DWORD dwFlags);
+static BOOL 	 ttKeyMonitorFromPoint(HMONITOR hMonitor, LPMONITORINFO lpmi);
 
-	HMONITOR (WINAPI* pfnMonitorFromWindow)(HWND hwnd, DWORD dwFlags);
-	HMONITOR (WINAPI* pfnMonitorFromPoint)(POINT pt, DWORD dwFlags);
-	BOOL	 (WINAPI* pfnGetMonitorInfo)(HMONITOR hMonitor, LPMONITORINFO lpmi);
-}
+// Currently unused
+// static HMONITOR ttKeyMonitorFromPoint(POINT pt, DWORD dwFlags);
 
 ttDlg::ttDlg(UINT idTemplate, HWND hwnd)
 {
@@ -114,11 +109,11 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 				// Make certain the dialog doesn't spawn between two monitors
 
 				RECT rcDesktop;
-				HMONITOR hmon = ttpriv::pfnMonitorFromWindow(hdlg, MONITOR_DEFAULTTOPRIMARY);
+				HMONITOR hmon = ttKeyMonitorFromWindow(hdlg, MONITOR_DEFAULTTOPRIMARY);
 				if (hmon) {
 					MONITORINFO mi;
 					mi.cbSize = sizeof(mi);
-					if (ttpriv::pfnGetMonitorInfo(hmon, &mi)) {
+					if (ttKeyMonitorFromPoint(hmon, &mi)) {
 						CopyRect(&rcDesktop, &mi.rcWork);
 					}
 					else {
@@ -194,6 +189,8 @@ void ttDlg::SetControlInteger(ptrdiff_t id, ptrdiff_t val) const
 	SetControlText(id, szBuf);
 }
 
+static BOOL (WINAPI* tt_pfnAnimateWindow)(HWND, DWORD, DWORD);
+
 void ttDlg::FadeWindow()
 {
 
@@ -213,14 +210,14 @@ void ttDlg::FadeWindow()
 #endif
 
 	if (IsWindowsXPOrGreater()) {
-		if (!ttpriv::pfnAnimateWindow) {
+		if (!tt_pfnAnimateWindow) {
 			HMODULE hUser32 = GetModuleHandle(TEXT("USER32"));
 			if (hUser32 &&
-					(*(FARPROC*)&ttpriv::pfnAnimateWindow = GetProcAddress(hUser32, "AnimateWindow")) != NULL)
-				ttpriv::pfnAnimateWindow(m_hWnd, 200, AW_HIDE | AW_BLEND);
+					(*(FARPROC*)&tt_pfnAnimateWindow = GetProcAddress(hUser32, "AnimateWindow")) != NULL)
+				tt_pfnAnimateWindow(m_hWnd, 200, AW_HIDE | AW_BLEND);
 		}
 		else
-			ttpriv::pfnAnimateWindow(m_hWnd, 200, AW_HIDE | AW_BLEND);
+			tt_pfnAnimateWindow(m_hWnd, 200, AW_HIDE | AW_BLEND);
 
 		// Theoretically, we may not have called AnimateWindow -- but only if an
 		// Operating System later then version 5 doesn't support it (or for some
@@ -333,6 +330,10 @@ DWORD ttDlg::CheckItemID(int id, const char* pszID, int line, const char* file) 
 
 ///////////////////// Monitor Code /////////////////////////////////////////
 
+static HMONITOR (WINAPI* s_pfnMonitorFromWindow)(HWND, DWORD);
+static HMONITOR	(WINAPI* s_pfnMonitorFromPoint)(POINT, DWORD);
+static BOOL		(WINAPI* s_pfnGetMonitorInfo)(HMONITOR, LPMONITORINFO);
+
 #ifndef	xPRIMARY_MONITOR
 #define xPRIMARY_MONITOR ((HMONITOR)0x12340042)
 #endif
@@ -341,48 +342,46 @@ DWORD ttDlg::CheckItemID(int id, const char* pszID, int line, const char* file) 
 #define MONITORINFOF_PRIMARY		0x00000001
 #endif
 
-namespace ttpriv {
-	bool InitMonitorStubs();
-}
-
-bool ttpriv::InitMonitorStubs()
+static bool InitMonitorStubs()
 {
 	static bool fTried = false;
 	if (fTried)
-		return (ttpriv::pfnGetMonitorInfo != NULL);
+		return (s_pfnGetMonitorInfo != NULL);
 
 	fTried = true;
 	HMODULE hUser32 = GetModuleHandle(TEXT("USER32"));
 
 	if (hUser32 &&
-			(*(FARPROC*)&ttpriv::pfnMonitorFromWindow	  = GetProcAddress(hUser32,"MonitorFromWindow")) != NULL &&
-			(*(FARPROC*)&ttpriv::pfnMonitorFromPoint	  = GetProcAddress(hUser32,"MonitorFromPoint")) != NULL &&
-			(*(FARPROC*)&ttpriv::pfnGetMonitorInfo	  = GetProcAddress(hUser32,"GetMonitorInfoA")) != NULL)
+			(*(FARPROC*)&s_pfnMonitorFromWindow	  = GetProcAddress(hUser32,"MonitorFromWindow")) != NULL &&
+			(*(FARPROC*)&s_pfnMonitorFromPoint	  = GetProcAddress(hUser32,"MonitorFromPoint")) != NULL &&
+			(*(FARPROC*)&s_pfnGetMonitorInfo	  = GetProcAddress(hUser32,"GetMonitorInfoA")) != NULL)
 		return true;
 
 	return false;
 }
 
-HMONITOR ttpriv::MonitorFromWindow(HWND hwnd, DWORD dwFlags)
+static HMONITOR ttKeyMonitorFromWindow(HWND hwnd, DWORD dwFlags)
 {
-	if (ttpriv::InitMonitorStubs())
-		return ttpriv::pfnMonitorFromWindow(hwnd, dwFlags);
+	if (InitMonitorStubs())
+		return s_pfnMonitorFromWindow(hwnd, dwFlags);
 	else
 		return xPRIMARY_MONITOR;
 }
 
-HMONITOR ttpriv::MonitorFromPoint(POINT pt, DWORD dwFlags)
+#if 0
+static HMONITOR ttKeyMonitorFromPoint(POINT pt, DWORD dwFlags)
 {
-	if (ttpriv::InitMonitorStubs())
-		return ttpriv::pfnMonitorFromPoint(pt, dwFlags);
+	if (InitMonitorStubs())
+		return s_pfnMonitorFromPoint(pt, dwFlags);
 	else
 		return xPRIMARY_MONITOR;
 }
+#endif
 
-BOOL ttpriv::GetMonitorInfo(HMONITOR hMonitor, LPMONITORINFO lpmi)
+static BOOL ttKeyMonitorFromPoint(HMONITOR hMonitor, LPMONITORINFO lpmi)
 {
-	if (ttpriv::InitMonitorStubs())
-		return ttpriv::pfnGetMonitorInfo(hMonitor, lpmi);
+	if (InitMonitorStubs())
+		return s_pfnGetMonitorInfo(hMonitor, lpmi);
 	else {
 		SystemParametersInfo(SPI_GETWORKAREA, 0, &lpmi->rcWork, 0);
 		lpmi->rcMonitor.left = 0;

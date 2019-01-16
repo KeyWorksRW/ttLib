@@ -20,7 +20,7 @@
 #ifndef __TTLIB_CENUMSTR_H__
 #define __TTLIB_CENUMSTR_H__
 
-#include "../include/ttstring.h"						// ttString
+#include "../include/ttstr.h"	// ttStr
 
 class ttEnumStr
 {
@@ -34,16 +34,19 @@ public:
 	void ResetEnum(char chSeparator = ';');			// Call this to reset the enumeration to the beginning of the master string
 	void SetNewStr(const char* psz, char chSeparator = ';');
 
-	const char* GetCurrent() const { return (const char*) m_pszCur; }	// value is undefined if Enum() returned false
-	operator const char*() const { return (const char*) m_pszCur; }
+	char* GetCurrent() const { return m_pszCur; }	// value is undefined if Enum() returned false
+	operator char*() const { return m_pszCur; }
+
+	bool operator == (const char* psz)	{ return tt::samestr(m_pszCur, psz); }
+	bool operator == (char* psz)		{ return tt::samestr(m_pszCur, psz); }
 
 protected:
 	// Class members
 
-	ttString	m_csz;
-	const char* m_pszCur;
-	char*		m_pszEnd;
-	char		m_chSeparator;
+	ttStr	m_csz;
+	char* 	m_pszCur;
+	char*	m_pszEnd;
+	char	m_chSeparator;
 };
 
 #endif	// __TTLIB_CENUMSTR_H__

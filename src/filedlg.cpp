@@ -27,7 +27,7 @@ ttFileDlg::ttFileDlg(HWND hwndParent)
 #endif
 	m_pofn = (OPENFILENAMEA*) tt::calloc(cbStruct);
 
-	m_cszFileName.Enlarge(MAX_PATH);
+	m_cszFileName.resize(MAX_PATH);
 
 	m_pofn->lStructSize = cbStruct;
 	m_pofn->hwndOwner = hwndParent ? hwndParent : GetActiveWindow();

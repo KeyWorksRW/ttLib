@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:		misc.cpp
-// Purpose:
+// Purpose:		miscellaneous functions
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2018-2019 KeyWorks Software (Ralph Walden)
 // Licence:		Apache License (see ../LICENSE)
@@ -8,6 +8,7 @@
 
 #include "pch.h"
 
+#include "../include/ttdebug.h" 	// for ttASSERTS
 #include "../include/ttstring.h"	// ttString
 
 size_t tt::HashFromSz(const char* psz)
