@@ -130,8 +130,6 @@ public:
 
 	char*	getptr() { return m_psz; }		// for when casting to char* is problematic
 
-	void	Transfer(char** ppsz) { if (ppsz) { *ppsz = m_psz; m_psz = nullptr; } }		// Caller will be responsible for freeing memory
-
 	operator char*() const { return (char*) m_psz; }
 	operator void*() const { return (void*) m_psz; }
 
@@ -148,6 +146,12 @@ public:
 
 	bool operator == (const char* psz)	{ return (isempty() || !psz) ? false : tt::samestr(m_psz, psz); }
 	bool operator == (char* psz)		{ return (isempty() || !psz) ? false : tt::samestr(m_psz, psz); }
+
+	// Use extreme caution about calling the Transfer functions!
+
+	void	TransferTo(char** ppsz) { if (ppsz) { *ppsz = m_psz; m_psz = nullptr; } }		// Caller will be responsible for freeing memory
+	void	TransferFrom(char** ppsz) { if (ppsz) { Delete(); m_psz = *ppsz; *ppsz = nullptr; } }
+	void	TransferFrom(ttString cszTo) { Delete(); cszTo.TransferTo(&m_psz); }
 
 protected:
 	// Class members
