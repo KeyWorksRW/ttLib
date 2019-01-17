@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:		cdlgatl.h
 // Purpose:		Adds CTTDlg-like functionality to ATL
-// Author:		Ralph Walden (randalphwa)
-// Copyright:   Copyright (c) 2002-2018 KeyWorks Software (Ralph Walden)
-// License:     Apache License (see ../LICENSE)
+// Author:		Ralph Walden
+// Copyright:	Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
+// License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 // Include this inside of an ATL CWindow or CDialogImpl header file to get some of the same functionality

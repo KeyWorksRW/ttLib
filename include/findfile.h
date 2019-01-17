@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:		ttFindFile
 // Purpose:		Header-only class for locating a file
-// Author:		Ralph Walden (randalphwa)
-// Copyright:   Copyright (c) 1999-2018 KeyWorks Software (Ralph Walden)
-// License:     Apache License (see ../LICENSE)
+// Author:		Ralph Walden
+// Copyright:	Copyright (c) 1999-2019 KeyWorks Software (Ralph Walden)
+// License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once

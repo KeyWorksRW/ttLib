@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		CReg class
+// Name:		ttRegistry class
 // Purpose:		Header-only class for working with the Windows registry
-// Author:		Ralph Walden (randalphwa)
+// Author:		Ralph Walden
 // Copyright:	Copyright (c) 1998-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see LICENSE)
 /////////////////////////////////////////////////////////////////////////////

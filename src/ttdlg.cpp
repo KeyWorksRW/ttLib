@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:		ttDlg
 // Purpose:		Class for creating a Modal dialog box
-// Author:		Ralph Walden (randalphwa)
+// Author:		Ralph Walden
 // Copyright:	Copyright (c) 1998-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////

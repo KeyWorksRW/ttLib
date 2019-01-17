@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:		ttCritSection, ttCritLock
 // Purpose:		Class for creating, locking, and unlocking a critical section
-// Author:		Ralph Walden (randalphwa)
+// Author:		Ralph Walden
 // Copyright:	Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////

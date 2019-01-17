@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:		ttArray
 // Purpose:		Simple templated array
-// Author:		Ralph Walden (randalphwa)
+// Author:		Ralph Walden
 // Copyright:	Copyright (c) 2010-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////

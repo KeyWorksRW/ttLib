@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:		ttFileDlg
 // Purpose:		Class for displaying Windows File Open dialog
-// Author:		Ralph Walden (randalphwa)
+// Author:		Ralph Walden
 // Copyright:	Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////

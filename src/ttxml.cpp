@@ -7,7 +7,7 @@
 
 //////////////// Derivative work ////////////////////////////////////////////
 // Name:		CKeyXML, ttXMLBranch
-// Author:		Ralph Walden (randalphwa)
+// Author:		Ralph Walden
 // Copyright:	Copyright (c) 2003-2019 KeyWorks Software (Ralph Walden)
 // Licence:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////

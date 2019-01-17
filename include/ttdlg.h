@@ -1,8 +1,8 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:		ttDlg
 // Purpose:		Class for displaying a modal dialog
-// Author:		Ralph Walden (randalphwa)
-// Copyright:	Copyright (c) 2002-2018 KeyWorks Software (Ralph Walden)
+// Author:		Ralph Walden
+// Copyright:	Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
