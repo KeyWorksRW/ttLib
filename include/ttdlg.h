@@ -59,9 +59,9 @@ public:
 	INT_PTR DoModal();
 
 	virtual BOOL OnMsgMap(UINT /* uMsg */, WPARAM /* wParam */, LPARAM /* lParam */) { return FALSE; }	  // Use of BEGIN_TTMSG_MAP will override this
-	virtual void OnBegin() { }
-	virtual void OnEnd() { }
-	virtual void OnCancel() { }
+	virtual void OnBegin() { }	// called when dialog is initialized
+	virtual void OnEnd() { }	// called when dialog is to be closed
+	virtual void OnCancel() { }	// called when dialog is cancelled (call CancelEnd() to return without closing the dialog)
 
 	void DontCenterWindow(void) { m_fCenterWindow = false; }
 	void FadeOnExit() { m_fFade = true; }
@@ -154,7 +154,7 @@ protected:
 	HWND m_hwndParent;
 
 	LRESULT lResult;	// used by BEGIN_TTMSG_MAP
-};
+}; // end of ttDlg
 
 class ttComboBox
 {
