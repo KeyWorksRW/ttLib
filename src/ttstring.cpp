@@ -242,10 +242,10 @@ char* ttString::GetQuotedString(const char* pszQuote)
 		*m_psz = 0;
 	}
 
-	if (*pszQuote == '"') {
+	if (*pszQuote == CH_QUOTE) {
 		pszQuote++;
 		const char* pszStart = pszQuote;
-		while (*pszQuote != '"' && *pszQuote) {
+		while (*pszQuote != CH_QUOTE && *pszQuote) {
 			pszQuote = tt::nextchr(pszQuote);
 		}
 		strncpy_s(m_psz, DEST_SIZE, pszStart, pszQuote - pszStart);
@@ -270,7 +270,7 @@ char* ttString::GetQuotedString(const char* pszQuote)
 		m_psz[pszQuote - pszStart] = 0;
 	}
 	else {
-		tt::strcpy_s(m_psz, DEST_SIZE, pszQuote);
+		tt::strcpy_s(m_psz, tt::size(m_psz), pszQuote);
 		pszQuote += cb;
 	}
 
