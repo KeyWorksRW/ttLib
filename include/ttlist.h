@@ -49,7 +49,7 @@ public:
 	bool	IsEmpty() const { return m_cItems == 0; }
 	void	Delete();	// deletes all strings
 
-	char*   Get(size_t pos) const;	// zero-based index, will return nullptr if pos >= GetCount()
+	char*	Get(size_t pos) const;	// zero-based index, will return nullptr if pos >= GetCount()
 
 	// CSimpleArray/CAtlArray equivalents
 
@@ -129,16 +129,19 @@ public:
 
 	void Add(const char* pszKey, const char* pszVal);
 
-	bool  FindKey(const char* pszKey, size_t* ppos = nullptr) const;
-	bool  FindVal(const char* pszVal, size_t* ppos = nullptr) const;
-	char* GetKeyAt(size_t pos) const;
-	char* GetValAt(size_t pos) const;
-	char* GetMatchingVal(const char* pszKey) const;
+	bool	FindKey(const char* pszKey, size_t* ppos = nullptr) const;
+	bool	FindVal(const char* pszVal, size_t* ppos = nullptr) const;
+	char*	GetKeyAt(size_t pos) const;
+	char*	GetValAt(size_t pos) const;
+	char*	GetMatchingVal(const char* pszKey) const;
 
-	char* GetValueAt(size_t pos) const { return GetValAt(pos); }	// to match CSimpleArray::GetValueAt
+	char*	GetValueAt(size_t pos) const { return GetValAt(pos); }	// to match CSimpleArray::GetValueAt
 
-	void Replace(size_t pos, const char* pszKey, const char* pszVal);
-	size_t inline GetCount() const { return m_cItems; }
+	void	Replace(size_t pos, const char* pszKey, const char* pszVal);
+
+	size_t	GetCount() const { return m_cItems; }
+	bool	IsEmpty() const { return m_cItems == 0; }
+	void	Delete();	// deletes all strings
 
 	void SortKeys();
 	void SortVals();
