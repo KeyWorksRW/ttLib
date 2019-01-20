@@ -10,6 +10,7 @@
 
 #include "../include/ttdebug.h"	// ttASSERTS
 #include "../include/ttheap.h"	// memory allocation routines
+#include "../../ttLib/include/ttstr.h"	// ttStr
 
 // We use our own "safe" string handling instead of strsafe.h. Rather then returning an error, we try to do
 // the "right" thing that will allow the program to continue, but without a buffer overun, or GPF caused by
@@ -55,7 +56,13 @@ int tt::strcpy_s(char* pszDst, size_t cbDest, const char* pszSrc)
 		return EINVAL;
 	}
 
-	ttASSERT_MSG(tt::strbyte(pszSrc) <= cbDest, "buffer overflow");
+#ifdef _DEBUG
+	if (tt::strbyte(pszSrc) > cbDest) {
+		ttStr cszMsg;
+		cszMsg.printf("Buffer overflow in strcpy_s:\n\tcbDest = %ku, pszSrc = %ku", cbDest, tt::strbyte(pszSrc));
+		ttFAIL(cszMsg);
+	}
+#endif
 
 	int result = 0;
 
