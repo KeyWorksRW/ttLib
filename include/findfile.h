@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:		ttFindFile
-// Purpose:		Header-only class for locating a file
+// Purpose:		Header-only class for locating one or more files
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 1999-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
@@ -46,17 +46,43 @@ public:
 		return isValid();
 	}
 
-	bool isDir() { return (dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? true : false; }
-	bool isReadOnly() { return (dwFileAttributes & FILE_ATTRIBUTE_READONLY) ? true : false; }
-	bool isValid() { return (m_hfind != INVALID_HANDLE_VALUE) ? true : false; }
+	bool isArchive() const { return (dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE) ? true : false; }
+	bool isCompressed() const { return (dwFileAttributes & FILE_ATTRIBUTE_COMPRESSED) ? true : false; }
+	bool isDir() const { return (dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? true : false; }
+	bool isHidden() const { return (dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) ? true : false; }
+	bool isOffline() const { return (dwFileAttributes & FILE_ATTRIBUTE_OFFLINE) ? true : false; }
+	bool isReadOnly() const { return (dwFileAttributes & FILE_ATTRIBUTE_READONLY) ? true : false; }
+	bool isSystem() const { return (dwFileAttributes & FILE_ATTRIBUTE_SYSTEM) ? true : false; }
+	bool isTemporary() const { return (dwFileAttributes & FILE_ATTRIBUTE_TEMPORARY) ? true : false; }
+	bool isValid() const { return (m_hfind != INVALID_HANDLE_VALUE) ? true : false; }
 
 	DWORD GetAttributes() { return dwFileAttributes; }
 	int64_t GetFullFileSize() { return (((int64_t) nFileSizeHigh) << 32) + (int64_t) nFileSizeLow; }
 
 	const char* GetFileName() { return cFileName; }
 
-	operator const char*() const { return cFileName; }
+	char*	fndExtension() { return (char*) tt::fndExtension(cFileName); }	// find filename extension
+	char*	findchr(char ch) { return tt::findchr(cFileName, ch); }
+	char*	findlastchr(char ch) { return tt::findlastchr(cFileName, ch); }
+
+	size_t	strbyte() { return tt::strbyte(cFileName); }	// length of string in bytes including 0 terminator
+	size_t	strlen() { return tt::strlen(cFileName); }		// number of characters (use strbyte() for buffer size calculations)
+
+	bool	samestr(const char* psz) { return tt::samestr(cFileName, psz); }
+	bool	samestri(const char* psz) { return tt::samestri(cFileName, psz); }
+	bool	samesubstr(const char* psz) { return tt::samesubstr(cFileName, psz); }
+	bool	samesubstri(const char* psz) { return tt::samesubstri(cFileName, psz); }
+
+	bool	isempty() const { return (!isValid() || !*cFileName)  ? true : false; }
+	bool	isnonempty() const { return (isValid() && *cFileName) ? true : false; }
+
+	operator char*() const { return (char*) cFileName; }
 	operator DWORD() const { return dwFileAttributes; }
+
+	// Note that the two == operators are case insensitive since filenames on Windows are case insensitive
+
+	bool operator == (const char* psz) { return (isempty()) ? false : tt::samestri(cFileName, psz); } // samestr will check for psz == null
+	bool operator == (char* psz) { return (isempty()) ? false : tt::samestri(cFileName, psz); }		 // samestr will check for psz == null
 
 protected:
 	HANDLE m_hfind;
