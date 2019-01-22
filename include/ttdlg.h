@@ -237,18 +237,11 @@ public:
 	void	SetEditSel(int iStart, int iEnd) const { (void) SendMessage(CB_SETEDITSEL, 0, MAKELPARAM(iStart, iEnd)); }
 	void	SelectEditContol(void) const { SendMessage(CB_SETEDITSEL, 0, MAKELPARAM(0, -1)); }
 
-	LRESULT FindString(const char* pszString, int iStart = -1) const {
-		ttASSERT(pszString);
-		if (!pszString)
-			return CB_ERR;
-		return SendMessage(CB_FINDSTRING, (WPARAM) iStart, (LPARAM) pszString);
-	}
-	LRESULT FindString(const wchar_t* pwszString, int iStart = -1) const {
-		ttASSERT(pwszString);
-		if (!pwszString)
-			return CB_ERR;
-		return SendMessageW(CB_FINDSTRING, (WPARAM) iStart, (LPARAM) pwszString);
-	}
+	LRESULT FindString(const char* pszString, int iStart = -1) const { ttASSERT(pszString); return SendMessage(CB_FINDSTRINGEXACT, (WPARAM) iStart, (LPARAM) pszString); }
+	LRESULT FindString(const wchar_t* pwszString, int iStart = -1) const { ttASSERT(pwszString); return SendMessageW(CB_FINDSTRINGEXACT, (WPARAM) iStart, (LPARAM) pwszString); }
+	LRESULT FindPrefix(const char* pszPrefix, int iStart = -1) const { ttASSERT(pszPrefix); return SendMessage(CB_FINDSTRING, (WPARAM) iStart, (LPARAM) pszPrefix); }
+	LRESULT FindPrefix(const wchar_t* pwszPrefix, int iStart = -1) const { ttASSERT(pwszPrefix); return SendMessageW(CB_FINDSTRING, (WPARAM) iStart, (LPARAM) pwszPrefix); }
+
 	LRESULT SelectString(const char* pszString, int iStart = -1) const {
 		ttASSERT(pszString);
 		if (!pszString)
@@ -374,8 +367,10 @@ public:
 		ttASSERT_MSG((GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)), "SetSel() only works on multiple-select list box");
 		(void) SendMessage(LB_SETSEL, fSelect, MAKELPARAM(index, 0)); }
 
-	LRESULT	 FindString(const char* pszString, int iStart = -1) const { return SendMessage(LB_FINDSTRING, iStart, (LPARAM) pszString); }
-	LRESULT	 FindString(const wchar_t* pwszString, int iStart = -1) const { return SendMessageW(LB_FINDSTRING, iStart, (LPARAM) pwszString); }
+	LRESULT	FindString(const char* pszString, int iStart = -1) const { return SendMessage(LB_FINDSTRINGEXACT, iStart, (LPARAM) pszString); }
+	LRESULT	FindString(const wchar_t* pwszString, int iStart = -1) const { return SendMessageW(LB_FINDSTRINGEXACT, iStart, (LPARAM) pwszString); }
+	LRESULT	FindPrefix(const char* pszPrefix, int iStart = -1) const { return SendMessage(LB_FINDSTRING, iStart, (LPARAM) pszPrefix); }
+	LRESULT	FindPrefix(const wchar_t* pwszPrefix, int iStart = -1) const { return SendMessageW(LB_FINDSTRING, iStart, (LPARAM) pwszPrefix); }
 	LRESULT	 SelectString(const char* pszString, int iStart = -1) const { // works on single selection listbox only }
 		ttASSERT_MSG(!(GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)), "SelectString only works on single-selection listbox");
 		return SendMessage(LB_SELECTSTRING, iStart, (LPARAM) pszString); }
