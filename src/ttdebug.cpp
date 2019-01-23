@@ -47,7 +47,7 @@ __declspec(noreturn) void tt::OOM(void)
 
 namespace ttdbg {
 	ttCritSection crtAssert;
-	bool bNoAssert = false;
+	bool bNoAssert = false;		// Setting this to true will cause AssertionMsg to return without doing anything
 }
 
 using namespace ttdbg;
@@ -61,8 +61,15 @@ bool tt::AssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFu
 
 	crtAssert.Lock();
 
+	// We special case a null or empty pszMsg -- ttASSERT_NONEMPTY(ptr) takes advantage of this
+
+	if (!pszMsg)
+		pszMsg = "NULL pointer!";
+	else if (!*pszMsg)
+		pszMsg = "Empty string!";
+
 	char szBuf[2048];
-	sprintf_s(szBuf, "%s\r\n\r\n%s (%s): line %u", pszMsg, pszFile, pszFunction, line);
+	sprintf_s(szBuf, sizeof(szBuf), "%s\r\n\r\n%s (%s): line %u", pszMsg, pszFile, pszFunction, line);
 
 #ifdef _WINDOWS_
 

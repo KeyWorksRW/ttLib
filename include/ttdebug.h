@@ -26,6 +26,9 @@ namespace tt {
 	#define ttASSERT_MSG(exp, pszMsg) { if (!(exp)) tt::AssertionMsg(pszMsg, __FILE__, __func__, __LINE__); }
 	#define ttFAIL(pszMsg) tt::AssertionMsg(pszMsg, __FILE__, __func__, __LINE__)
 
+	// checks for both ptr == NULL and *ptr == NULL
+	#define ttASSERT_NONEMPTY(ptr) tt::AssertionMsg(ptr, __FILE__, __func__, __LINE__)
+
 #ifdef _WINDOWS_
 	#define ttASSERT_HRESULT(hr, pszMsg) { if (FAILED(hr)) tt::AssertionMsg(pszMsg, __FILE__, __func__, __LINE__); }
 	#define ttReportLastError() { tt::doReportLastError(__FILE__, __func__, __LINE__); }
@@ -36,6 +39,7 @@ namespace tt {
 	#define ttASSERT(exp)
 	#define ttASSERT_MSG(exp, pszMsg)
 	#define ttFAIL(pszMsg)
+	#define ttASSERT_NONEMPTY(ptr)
 
 #ifdef _WINDOWS_
 	#define ttASSERT_HRESULT(hr, pszMsg)
