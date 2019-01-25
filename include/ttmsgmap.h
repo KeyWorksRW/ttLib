@@ -41,6 +41,7 @@
 #define __TTLIB_TTMSG_MAP_H__
 
 #define BEGIN_TTMSG_MAP() bool OnMsgMap(UINT uMsg, WPARAM wParam, LPARAM lParam) { uMsg; wParam; lParam; m_result = 0;
+#define END_TTMSG_MAP() return false; }
 
 #ifndef GET_X_LPARAM
 	#define GET_X_LPARAM(lp) ((int) (short) LOWORD(lp))	 // note that this returns a signed value
@@ -198,12 +199,6 @@
 		return true; \
 	}
 
-#define MSG_WM_MOUSEHOVER(func) \
-	if (uMsg == WM_MOUSEHOVER) { \
-		func(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)); \
-		return true; \
-	}
-
 #define MSG_WM_LBUTTONUP(func) \
 	if (uMsg == WM_LBUTTONUP) { \
 		func((UINT)wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)); \
@@ -316,8 +311,7 @@
 	}
 
 #define MSG_WM_DESTROY(func) \
-	if (uMsg == WM_DESTROY)
-	{ \
+	if (uMsg == WM_DESTROY) { \
 		func(); \
 		return true; \
 	}
@@ -1398,6 +1392,5 @@
 		return true; \
 	}
 
-#define END_TTMSG_MAP() return false; }
 
 #endif	// __TTLIB_TTMSG_MAP_H__
