@@ -146,6 +146,8 @@ public:
 
 	bool operator == (const char* psz)	{ return (isempty() || !psz) ? false : tt::samestr(m_psz, psz); }
 	bool operator == (char* psz)		{ return (isempty() || !psz) ? false : tt::samestr(m_psz, psz); }
+	bool operator != (const char* psz)	{ return (isempty() || !psz) ? true  : !tt::samestr(m_psz, psz); }
+	bool operator != (char* psz)		{ return (isempty() || !psz) ? true  : !tt::samestr(m_psz, psz); }
 
 	// Use extreme caution about calling the Transfer functions!
 
