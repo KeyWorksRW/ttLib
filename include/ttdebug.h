@@ -27,7 +27,7 @@ namespace tt {
 	#define ttFAIL(pszMsg) tt::AssertionMsg(pszMsg, __FILE__, __func__, __LINE__)
 
 	// checks for both ptr == NULL and *ptr == NULL
-	#define ttASSERT_NONEMPTY(ptr) tt::AssertionMsg(ptr, __FILE__, __func__, __LINE__)
+	#define ttASSERT_NONEMPTY(ptr) { if (!ptr || !*ptr) tt::AssertionMsg(ptr, __FILE__, __func__, __LINE__); }
 
 #ifdef _WINDOWS_
 	#define ttASSERT_HRESULT(hr, pszMsg) { if (FAILED(hr)) tt::AssertionMsg(pszMsg, __FILE__, __func__, __LINE__); }
