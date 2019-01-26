@@ -28,6 +28,9 @@ Files:
 
 # _WINDOWS_ only files
 
-  filedlg.cpp			# ttFileDlg class
-  ttdlg.cpp				# ttDlg class
-  winmisc.cpp			# miscellaneous functions for use on Windows
+  filedlg.cpp
+  multibtn.cpp
+  shadebtn.cpp
+  ttdib.cpp
+  ttdlg.cpp
+  winmisc.cpp
