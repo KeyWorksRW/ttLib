@@ -33,4 +33,5 @@ Files:
   shadebtn.cpp
   ttdib.cpp
   ttdlg.cpp
+  ttwin.cpp
   winmisc.cpp
