@@ -15,10 +15,10 @@
 	#error This code will only work on Windows
 #endif
 
-// This is a modal-only dialog class that only requires Windows. It can be used whether your app is using ATL, WTL,
-// wxWidgets, or is just a console app that needs a Modal() dialog box.
+// This is a modal-only dialog class with no base requirements other than compiling for Windows. It can be used whether
+// your app is using ATL, WTL, wxWidgets, or is just a console app that needs a Modal() dialog box.
 
-// If you use BEGIN_TTMSG_MAP/END_TTMSG_MAP then you can use all the regular handlers from ttmsgs.h just as if it was an
+// If you use BEGIN_TTMSG_MAP/END_TTMSG_MAP then you can use all the regular handlers from ttmsgmap.h just as if it was an
 // ATL CDialogImpl derived class
 
 // Classes are also provided for some dialog controls: ttComboBox, ttListBox, ttListView
@@ -29,13 +29,7 @@
 #include "ttstring.h"	// ttString
 #include "ttwstring.h"	// ttWString
 
-#ifdef BEGIN_MSG_MAP_EX
-	#error You cannot use ttDlg if you have #included <atlcrack.h> -- it conflicts with ttmsgs.h
-#endif
-
-#define BEGIN_TTMSG_MAP() BOOL OnMsgMap(UINT uMsg, WPARAM wParam, LPARAM lParam) { uMsg; wParam; lParam;
-	#include "ttmsgs.h"
-#define END_TTMSG_MAP() return FALSE; }
+#include "ttmsgmap.h"	// #define macros for BEGIN_TTMSG_MAP()/END_TTMSG_MAP() block
 
 #ifndef __DLG_ID__
 	#ifdef _DEBUG
@@ -63,12 +57,12 @@ public:
 	virtual void OnEnd() { }	// called when dialog is to be closed
 	virtual void OnCancel() { }	// called when dialog is cancelled (call CancelEnd() to return without closing the dialog)
 
-	void DontCenterWindow(void) { m_fCenterWindow = false; }
+	void DontCenterWindow(void) { m_bCenterWindow = false; }
 	void FadeOnExit() { m_fFade = true; }
 	void DontShadeBtns() { m_bShadeBtns = false; }
-	void CancelEnd() { m_fCancelEnd = true; } // call within OnEnd() to cancel ending the dialog
+	void CancelEnd() { m_bCancelEnd = true; } // call within OnEnd() to cancel ending the dialog
 
-	HWND GetDlgItem(ptrdiff_t id) const { return ::GetDlgItem(m_hWnd, (int) id); }
+	HWND GetDlgItem(ptrdiff_t id) const { return ::GetDlgItem(m_hwnd, (int) id); }
 	int	 GetControlTextLength(ptrdiff_t id) const { return ::GetWindowTextLength(GetDlgItem(id)); }
 	BOOL GetControlRect(ptrdiff_t id, RECT* prc) const { return ::GetWindowRect(GetDlgItem(id), prc); }
 
@@ -94,7 +88,7 @@ public:
 	void SetCheck(int id, BOOL bCheck = TRUE) const { (void) SendMessage(id, BM_SETCHECK, bCheck); }
 	void UnCheck(int id) const { (void) SendMessage(id, BM_SETCHECK, FALSE); }
 
-	HICON SetIcon(HICON hIcon, BOOL bBigIcon = TRUE) { ttASSERT(::IsWindow(m_hWnd)); return (HICON)::SendMessage(m_hWnd, WM_SETICON, bBigIcon, (LPARAM)hIcon); }
+	HICON SetIcon(HICON hIcon, BOOL bBigIcon = TRUE) { ttASSERT(::IsWindow(m_hwnd)); return (HICON)::SendMessage(m_hwnd, WM_SETICON, bBigIcon, (LPARAM)hIcon); }
 
 	LRESULT SendMessage(int id, UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::SendMessage(GetDlgItem(id), msg, wParam, lParam); }
 	LRESULT SendMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::SendMessage(*this, msg, wParam, lParam); }
@@ -103,7 +97,7 @@ public:
 
 	void SetFocus(int idControl) const { ::SetFocus(GetDlgItem(idControl)); }
 
-	void EndDialog(int nResult = IDCANCEL) const { ::EndDialog(m_hWnd, nResult); }
+	void EndDialog(int nResult = IDCANCEL) const { ::EndDialog(m_hwnd, nResult); }
 	void FadeWindow();
 
 	void KDDX_Text(int id, ttString& csz) {  (m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz)); }
@@ -111,7 +105,7 @@ public:
 	void KDDX_Check(int id, bool& bFlag) {   (m_bInitializing ? SetCheck(id, bFlag) : (void) (bFlag = GetCheck(id))); }
 	void KDDX_Int(int id, ptrdiff_t* pVal) { (m_bInitializing ? SetControlInteger(id, *pVal) : (void) (*pVal = GetControlInteger(id))); }
 
-	operator HWND() const { return m_hWnd; }
+	operator HWND() const { return m_hwnd; }
 
 #ifdef _DEBUG
 	DWORD CheckItemID(int id, const char* pszID, int line, const char* file) const;
@@ -124,16 +118,16 @@ protected:
 
 	bool m_bInitializing;
 	bool m_bShadeBtns;
-	bool m_fCenterWindow;
-	bool m_fCancelEnd;
+	bool m_bCenterWindow;
+	bool m_bCancelEnd;
 	bool m_fFade;
 
 	int m_idTemplate;
 
-	HWND m_hWnd;
+	HWND m_hwnd;			// m_hwnd vs m_hWnd -- SDK/include, ATL and WTL use both variants. We're sticking with all lowercase.
 	HWND m_hwndParent;
 
-	LRESULT lResult;	// used by BEGIN_TTMSG_MAP
+	LRESULT m_result;
 }; // end of ttDlg
 
 class ttComboBox

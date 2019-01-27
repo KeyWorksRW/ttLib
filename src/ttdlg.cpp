@@ -25,10 +25,10 @@ static BOOL 	 ttKeyMonitorFromPoint(HMONITOR hMonitor, LPMONITORINFO lpmi);
 
 ttDlg::ttDlg(UINT idTemplate, HWND hwnd)
 {
-	m_hWnd = NULL;
+	m_hwnd = NULL;
 	m_hwndParent = hwnd;
-	m_fCenterWindow = true;
-	m_fCancelEnd = false;
+	m_bCenterWindow = true;
+	m_bCancelEnd = false;
 	m_fFade = false;
 	m_idTemplate = idTemplate;
 	m_bShadeBtns = true;
@@ -59,17 +59,17 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 		SetWindowLongPtr(hdlg, GWL_USERDATA, lParam);
 #endif
 		ttDlg* pThis = (ttDlg*) lParam;
-		pThis->m_hWnd = hdlg;
+		pThis->m_hwnd = hdlg;
 		if (!tt::IsValidWindow(pThis->m_hwndParent))
 			pThis->m_hwndParent = GetActiveWindow();
 
-		if (pThis->m_fCenterWindow) {
+		if (pThis->m_bCenterWindow) {
 			PostMessage(hdlg, WMP_CENTER_WINDOW, 0, 0);
 			ShowWindow(hdlg, SW_HIDE);	// Don't show window until we are centered
 		}
 
 		if (pThis->OnMsgMap(msg, wParam, lParam))
-			return pThis->lResult;
+			return pThis->m_result;
 
 		pThis->OnBegin();
 		pThis->m_bInitializing = false;
@@ -85,7 +85,7 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 		return FALSE;
 
 	if (pThis->OnMsgMap(msg, wParam, lParam))
-		return pThis->lResult;
+		return pThis->m_result;
 
 	switch (msg) {
 		case WMP_CENTER_WINDOW:
@@ -145,8 +145,8 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 					case IDOK:
 						pThis->m_bInitializing = false;
 						pThis->OnEnd();
-						if (pThis->m_fCancelEnd)
-							pThis->m_fCancelEnd = false;
+						if (pThis->m_bCancelEnd)
+							pThis->m_bCancelEnd = false;
 						else {
 							if (pThis->m_fFade) {
 								pThis->FadeWindow();
@@ -157,8 +157,8 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 
 					case IDCANCEL:
 						pThis->OnCancel();
-						if (pThis->m_fCancelEnd)
-							pThis->m_fCancelEnd = false;
+						if (pThis->m_bCancelEnd)
+							pThis->m_bCancelEnd = false;
 						else {
 							// Note that if the dialog is cancelled, we don't fade, we just exit immediately
 							EndDialog(hdlg, IDCANCEL);
@@ -214,10 +214,10 @@ void ttDlg::FadeWindow()
 			HMODULE hUser32 = GetModuleHandle(TEXT("USER32"));
 			if (hUser32 &&
 					(*(FARPROC*)&tt_pfnAnimateWindow = GetProcAddress(hUser32, "AnimateWindow")) != NULL)
-				tt_pfnAnimateWindow(m_hWnd, 200, AW_HIDE | AW_BLEND);
+				tt_pfnAnimateWindow(m_hwnd, 200, AW_HIDE | AW_BLEND);
 		}
 		else
-			tt_pfnAnimateWindow(m_hWnd, 200, AW_HIDE | AW_BLEND);
+			tt_pfnAnimateWindow(m_hwnd, 200, AW_HIDE | AW_BLEND);
 
 		// Theoretically, we may not have called AnimateWindow -- but only if an
 		// Operating System later then version 5 doesn't support it (or for some
