@@ -7,8 +7,8 @@
 /////////////////////////////////////////////////////////////////////////////
 
 //////////////// Derivative work ////////////////////////////////////////////
-// Changes:		Derived from CxShadeButton, changed to use WTL instead of MFC
-// Author:		Ralph Walden (randalphwa)
+// Changes:		Derived from CxShadeButton, changed to remove MFC requirement
+// Author:		Ralph Walden
 // Copyright:	Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
 // Notes:		The above Code Project License also applies to the derivative work
 /////////////////////////////////////////////////////////////////////////////
@@ -23,10 +23,21 @@
 
 #include "../include/ttstring.h"	// ttString
 #include "../include/shadebtn.h"	// ttShadeBtn
+#include "../include/ttdebug.h"		// ttASSERT macros
+
+/*
+
+	This class only works on non-image buttons. I.e., this class will not work on a button that is drawn with a bitmap. Changing
+	from MFC/WTL to ttWin also removed the check for a bitmap button. We should probably do some kind of check for that condition
+	and fail for bitmap buttons. While the review comment is here, the more important check will need to be in ttMultiBtn -- since
+	that's where all the button subclassing is done.
+
+*/
+
 
 ttShadeBtn::ttShadeBtn()
 {
-	m_Border = 1;	// draw 3D border
+	m_Border = 1;			// draw 3D border
 	m_FocusRectMargin = 4;	// focus dotted rect margin
 	m_TextColor = GetSysColor(COLOR_BTNTEXT);	// default button text color
 	m_flat = m_Checked = false;
@@ -73,10 +84,9 @@ ttShadeBtn::~ttShadeBtn()
 		DestroyIcon(m_IconHighLight);
 	if (m_Icon)
 		DestroyIcon(m_Icon);
-	if (IsWindow()) {
-		DestroyWindow();
-	}
-	m_hWnd = NULL;
+	if (IsWindow(*this))
+		DestroyWindow(*this);
+	m_hwnd = NULL;
 }
 
 bool ttShadeBtn::SetFont(LOGFONT* pNewStyle)
@@ -135,7 +145,7 @@ void ttShadeBtn::SetButtonStyle(UINT nStyle, BOOL bRedraw)
 		m_Border = false;
 
 	if (bRedraw)
-		Invalidate();
+		InvalidateRect(*this, NULL, TRUE);	// REVIEW: [randalphwa - 1/26/2019] Can we get away with setting FALSE for bErase?
 }
 
 void ttShadeBtn::SetTextAlign(UINT nTextAlign)
@@ -176,7 +186,7 @@ void ttShadeBtn::SetIcon(UINT nIcon, UINT nIconAlign, UINT nIconDown, UINT nIcon
 
 		long x,y;
 		RECT rect;
-		GetWindowRect(&rect);
+		GetWindowRect(*this, &rect);
 		y = abs(rect.bottom - rect.top);
 		x = abs(rect.right - rect.left);
 		switch (nIconAlign){				// set the icon location
@@ -225,7 +235,7 @@ void ttShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, B
 	BYTE	*iDst, *posDst;
 
 	RECT rect;
-	GetWindowRect(&rect);
+	GetWindowRect(*this, &rect);
 	sYSize = abs(rect.bottom - rect.top);
 	sXSize = abs(rect.right - rect.left);
 
@@ -448,20 +458,12 @@ COLORREF ttShadeBtn::SetTextColor(COLORREF new_color)
 
 void ttShadeBtn::OnPaint()
 {
-	CPaintDC dc(m_hWnd);
-	DoPaint(dc.m_hDC);
-}
-
-void ttShadeBtn::DoPaint(HDC RealDC)
-{
-	if (m_ImageList.m_hImageList != NULL) {
-		CBitmapButton::DoPaint(RealDC);
-		return;
-	}
+	PAINTSTRUCT ps;
+	HDC hdcPaint = BeginPaint(*this, &ps);
 
 	ttString cszCaption;
 	RECT rcClient;
-	GetClientRect(&rcClient);
+	GetClientRect(*this, &rcClient);
 
 	int cx = abs(rcClient.right - rcClient.left);
 	int cy = abs(rcClient.bottom - rcClient.top);
@@ -469,9 +471,8 @@ void ttShadeBtn::DoPaint(HDC RealDC)
 	RECT tr = { rcClient.left + m_FocusRectMargin + 2, rcClient.top, rcClient.right - m_FocusRectMargin - 2, rcClient.bottom };
 
 	HDC hdcMem;	//create a memory DC to avoid flicker
-	hdcMem = CreateCompatibleDC(RealDC);
-    CBitmap hBitmap; //create a destination for raster operations
-	hBitmap.CreateCompatibleBitmap(RealDC, cx, cy);
+	hdcMem = CreateCompatibleDC(hdcPaint);
+    HANDLE hBitmap = CreateCompatibleBitmap(hdcPaint, cx, cy);
 	HBITMAP hOldBitmap = (HBITMAP) SelectObject(hdcMem, hBitmap); //select the destination for MemDC
 
 	cszCaption.GetWindowText(*this);							// get button text
@@ -506,7 +507,7 @@ void ttShadeBtn::DoPaint(HDC RealDC)
 		}
 	}
 	// Select the correct skin
-	if (!IsWindowEnabled()) {	// DISABLED BUTTON
+	if (!IsWindowEnabled(*this)) {	// DISABLED BUTTON
 	// if (GetStyle() & WS_DISABLED) {
 		if (m_dDisabled.IsValid())	// paint the skin
 			m_dDisabled.Draw(hdcMem, 0, 0);
@@ -528,7 +529,7 @@ void ttShadeBtn::DoPaint(HDC RealDC)
 		::DrawText(hdcMem, (const char*) cszCaption, -1, &tr, m_TextAlign);
 	}
 	else {
-		if (GetState() & BST_PUSHED){ // SELECTED (DOWN) BUTTON
+		if (SendMessage(BM_GETSTATE) & BST_PUSHED){ // SELECTED (DOWN) BUTTON
 			if (m_dDown.IsValid())	  // paint the skin
 				m_dDown.Draw(hdcMem, m_Border, m_Border);
 			else	// no skin selected for selected state -> standard button
@@ -555,26 +556,17 @@ void ttShadeBtn::DoPaint(HDC RealDC)
 		}
 		else {
 			if (m_dNormal.IsValid()) { // paint the skin	// DEFAULT BUTTON
-				if (IsHoverMode() && m_dOver.IsValid()) {
-					m_dOver.Draw(hdcMem, 0, 0);
-				}
-				else {
-					m_dNormal.Draw(hdcMem, 0, 0);
-				}
+				m_dNormal.Draw(hdcMem, 0, 0);
 			}
 			else	// no skin selected for normal state -> standard button
 				::FillRect(hdcMem, &rcClient, (HBRUSH) (ULONG_PTR) GetSysColor(COLOR_BTNFACE));
 
-			if (m_IconHighLight && IsHoverMode()) { // draw the highlighted icon
-				::DrawState(hdcMem, NULL, NULL, MAKELPARAM(m_IconHighLight, 0), NULL, m_rcIconBox.left, m_rcIconBox.top, abs(m_rcIconBox.right - m_rcIconBox.left),
-					abs(m_rcIconBox.bottom - m_rcIconBox.top), DST_ICON | DSS_NORMAL);
-			}
-			else if (m_Icon) //draw the icon
+			if (m_Icon) //draw the icon
 				::DrawState(hdcMem, NULL, NULL, MAKELPARAM(m_Icon, 0), NULL, m_rcIconBox.left, m_rcIconBox.top, abs(m_rcIconBox.right - m_rcIconBox.left),
 					abs(m_rcIconBox.bottom - m_rcIconBox.top), DST_ICON | DSS_NORMAL);
 
 			// if needed, draw the standard 3D rectangular border
-			if (m_Border && (IsHoverMode() || m_flat == FALSE)) {
+			if (m_Border && (m_flat == FALSE)) {
 				if (m_Style & BS_DEFPUSHBUTTON) {
 					DrawEdge(hdcMem, &rcClient, EDGE_SUNKEN, BF_RECT);
 					InflateRect(&rcClient, -1, -1);
@@ -589,7 +581,7 @@ void ttShadeBtn::DoPaint(HDC RealDC)
 			}
 		}
 		// paint the focus rect
-		if ((GetState() & BST_FOCUS)  && m_FocusRectMargin > 0) {
+		if ((SendMessage(BM_GETSTATE) & BST_FOCUS)  && m_FocusRectMargin > 0) {
 			InflateRect(&rcClient, -m_FocusRectMargin, -m_FocusRectMargin);
 			m_dh.Draw(hdcMem, 1 + rcClient.left, rcClient.top);
 			m_dh.Draw(hdcMem, 1 + rcClient.left, rcClient.bottom);
@@ -604,13 +596,14 @@ void ttShadeBtn::DoPaint(HDC RealDC)
 	if (hOldFont)
 		SelectObject(hdcMem, hOldFont);	// restore the old font object
 
-	BitBlt(RealDC, 0, 0, cx, cy, hdcMem, 0, 0, SRCCOPY); // copy in the real world
+	BitBlt(hdcPaint, 0, 0, cx, cy, hdcMem, 0, 0, SRCCOPY); // copy in the real world
 	// restore the old objects to avoid memory leakage <David Scambler>
 	if (hOldBitmap)
 		SelectObject(hdcMem, hOldBitmap);
 
 	DeleteDC(hdcMem);
 	DeleteObject(hBitmap);
+	EndPaint(*this, &ps);
 }
 
 void ttShadeBtn::Draw3dRect(HDC hdc, RECT* prc, COLORREF clrTopLeft, COLORREF clrBottomRight)

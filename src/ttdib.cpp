@@ -5,6 +5,8 @@
 // Copyright:   Copyright (c) [2001] Davide Pizzolato
 // Licence:     The Code Project Open License (see ../CPOL.md)
 /////////////////////////////////////////////////////////////////////////////
+//
+// Modifications: Copyright (c) 2001-2019, Ralph Walden
 
 #include "pch.h"
 
@@ -12,6 +14,7 @@
 	#error This code will only work on Windows
 #endif
 
+#include "../include/ttheap.h"
 #include "../include/ttdib.h"
 
 #ifndef	WIDTHBYTES
@@ -120,7 +123,7 @@ HDIB  ttDib::Create(DWORD dwWidth, DWORD dwHeight, WORD wBitCount)
 
 	// use our bitmap info structure to fill in first part of
 	// our DIB with the BITMAPINFOHEADER
-	lpbi = (LPBITMAPINFOHEADER)(hDib);
+	lpbi = (LPBITMAPINFOHEADER) (hDib);
 	*lpbi = m_bi;
 
 	return hDib; //return handle to the DIB
@@ -128,12 +131,12 @@ HDIB  ttDib::Create(DWORD dwWidth, DWORD dwHeight, WORD wBitCount)
 
 long ttDib::Draw(HDC pDC, long xoffset, long yoffset)
 {
-	if ((hDib) && (pDC))  {
-		//palette must be correctly filled
-		char* lpDIB = (char*)hDib;	//set image to hdc...
-		SetStretchBltMode(pDC,COLORONCOLOR);
+	if (hDib && pDC)  {
+		// palette must be correctly filled
+		char* lpDIB = (char*) hDib;  //set image to hdc...
+		SetStretchBltMode(pDC, COLORONCOLOR);
 		SetDIBitsToDevice(pDC, xoffset, yoffset, m_bi.biWidth, m_bi.biHeight, 0, 0, 0,
-			m_bi.biHeight, GetBits(), (BITMAPINFO*)lpDIB, DIB_RGB_COLORS);
+			m_bi.biHeight, GetBits(), (BITMAPINFO*) lpDIB, DIB_RGB_COLORS);
 		return 1;
 	}
 	return 0;
@@ -141,9 +144,9 @@ long ttDib::Draw(HDC pDC, long xoffset, long yoffset)
 
 long ttDib::Stretch(HDC pDC, long xoffset, long yoffset, long xsize, long ysize)
 {
-	if ((hDib) && (pDC)) {
-		//palette must be correctly filled
-		char* lpDIB = (char*)hDib;	//set image to hdc...
+	if (hDib && pDC) {
+		// palette must be correctly filled
+		char* lpDIB = (char*) hDib;  //set image to hdc...
 		SetStretchBltMode(pDC,COLORONCOLOR);
 		StretchDIBits(pDC, xoffset, yoffset, xsize, ysize, 0, 0, m_bi.biWidth, m_bi.biHeight,
 			GetBits(),(BITMAPINFO*) lpDIB, DIB_RGB_COLORS, SRCCOPY);
@@ -154,8 +157,8 @@ long ttDib::Stretch(HDC pDC, long xoffset, long yoffset, long xsize, long ysize)
 
 void ttDib::SetPaletteIndex(BYTE idx, BYTE r, BYTE g, BYTE b)
 {
-	if ((hDib) && (m_nColors)){
-		BYTE* iDst = (BYTE*)(hDib) + sizeof(BITMAPINFOHEADER);
+	if (hDib && m_nColors) {
+		BYTE* iDst = (BYTE*) hDib + sizeof(BITMAPINFOHEADER);
 		if (idx < m_nColors) {
 			long ldx = idx * sizeof(RGBQUAD);
 			iDst[ldx++] = (BYTE) b;
@@ -168,8 +171,8 @@ void ttDib::SetPaletteIndex(BYTE idx, BYTE r, BYTE g, BYTE b)
 
 void ttDib::SetPaletteIndex(BYTE idx, RGBQUAD c)
 {
-	if ((hDib) && (m_nColors)){
-		BYTE* iDst = (BYTE*)(hDib) + sizeof(BITMAPINFOHEADER);
+	if (hDib && m_nColors){
+		BYTE* iDst = (BYTE*) hDib + sizeof(BITMAPINFOHEADER);
 		if (idx < m_nColors) {
 			long ldx=idx*sizeof(RGBQUAD);
 			iDst[ldx++] = (BYTE) c.rgbBlue;
@@ -182,8 +185,8 @@ void ttDib::SetPaletteIndex(BYTE idx, RGBQUAD c)
 
 void ttDib::SetPaletteIndex(BYTE idx, COLORREF cr)
 {
-	if ((hDib) && (m_nColors)){
-		BYTE* iDst = (BYTE*)(hDib) + sizeof(BITMAPINFOHEADER);
+	if (hDib && m_nColors){
+		BYTE* iDst = (BYTE*) hDib + sizeof(BITMAPINFOHEADER);
 		if (idx < m_nColors) {
 			long ldx = idx * sizeof(RGBQUAD);
 			iDst[ldx++] = (BYTE) GetBValue(cr & 0xFFFFFF);
@@ -197,8 +200,8 @@ void ttDib::SetPaletteIndex(BYTE idx, COLORREF cr)
 RGBQUAD ttDib::GetPaletteIndex(BYTE idx)
 {
 	RGBQUAD rgb = {0,0,0,0};
-	if ((hDib) && (m_nColors)){
-		BYTE* iDst = (BYTE*)(hDib) + sizeof(BITMAPINFOHEADER);
+	if (hDib && m_nColors){
+		BYTE* iDst = (BYTE*) hDib + sizeof(BITMAPINFOHEADER);
 		if (idx < m_nColors) {
 			long ldx = idx * sizeof(RGBQUAD);
 			rgb.rgbBlue = iDst[ldx++];
@@ -224,7 +227,7 @@ RGBQUAD ttDib::GetPixelColor(long x, long y)
 	if ((hDib == NULL)	|| (x < 0)	|| (y < 0)	|| (x >= m_bi.biWidth) || (y >= m_bi.biHeight))
 		return rgb;
 	if (m_nColors)
-		return GetPaletteIndex(GetPixelIndex(x,y));
+		return GetPaletteIndex(GetPixelIndex(x, y));
 	else {
 		BYTE* iDst = GetBits()+(m_bi.biHeight - y - 1) * m_LineWidth + x * sizeof(RGBQUAD);
 		rgb.rgbBlue = *iDst++;
@@ -249,33 +252,33 @@ void ttDib::SetPixelColor(long x, long y, COLORREF cr)
 
 void ttDib::SetPixelColor(long x,long y,RGBQUAD c)
 {
-	if ((hDib==NULL)||(x<0)||(y<0)|| (x>=m_bi.biWidth)||(y>=m_bi.biHeight))
+	if ((hDib == NULL) || (x < 0) || (y < 0) || (x >= m_bi.biWidth) || (y >= m_bi.biHeight))
 		return;
 	if (m_nColors)
 		SetPixelIndex(x,y,GetNearestIndex(c));
 	else {
 		BYTE* iDst = GetBits() +(m_bi.biHeight - y - 1) * m_LineWidth + x * sizeof(RGBQUAD);
-		*(RGBQUAD*)iDst = c;
+		*(RGBQUAD*) iDst = c;
 	}
 }
 
 BYTE ttDib::GetNearestIndex(RGBQUAD c)
 {
-	if ((hDib == NULL)	|| (m_nColors == 0))
+	if ((hDib == NULL) || (m_nColors == 0))
 		return 0;
-	BYTE* iDst = (BYTE*)(hDib) + sizeof(BITMAPINFOHEADER);
+	BYTE* iDst = (BYTE*) hDib + sizeof(BITMAPINFOHEADER);
 	long distance = 200000;
 	BYTE i,j = 0;
 	long k, l;
-	for(i = 0, l = 0;i<m_nColors;i++, l += sizeof(RGBQUAD)) {
+	for (i = 0, l = 0; i < m_nColors; i++, l += sizeof(RGBQUAD)) {
 		k = (iDst[l]-c.rgbBlue) *(iDst[l]-c.rgbBlue) +
-			(iDst[l+1]-c.rgbGreen) *(iDst[l+1]-c.rgbGreen) +
-			(iDst[l+2]-c.rgbRed) *(iDst[l+2]-c.rgbRed);
+			(iDst[l + 1] - c.rgbGreen) *(iDst[l + 1] - c.rgbGreen) +
+			(iDst[l + 2] - c.rgbRed) *(iDst[l + 2] - c.rgbRed);
 		if (k == 0) {
 			j = i;
 			break;
 		}
-		if (k<distance) {
+		if (k < distance) {
 			distance = k;
 			j = i;
 		}
@@ -310,7 +313,8 @@ RGBQUAD ttDib::RGBtoHSL(RGBQUAD lRGBColor)
 	if (cMax == cMin) { 		   // r=g=b --> achromatic case
 		S = 0;					   // saturation
 		H = UNDEFINED;			   // hue
-	} else {					   // chromatic case
+	}
+	else {						   // chromatic case
 		if (L <= (HSLMAX / 2))	   // saturation
 			S = (((cMax - cMin) * HSLMAX) + ((cMax + cMin) / 2)) / (cMax + cMin);
 		else
@@ -338,11 +342,13 @@ RGBQUAD ttDib::RGBtoHSL(RGBQUAD lRGBColor)
 
 WORD ttDib::HueToRGB(WORD n1, WORD n2, WORD hue)
 {
-// range check: note values passed add/subtract thirds of range
-	if (hue < 0) hue += HSLMAX;
-	if (hue > HSLMAX) hue -= HSLMAX;
+	// range check: note values passed add/subtract thirds of range
+	if (hue < 0)
+		hue += HSLMAX;
+	if (hue > HSLMAX)
+		hue -= HSLMAX;
 
-// return r,g, or b value from this tridrant
+	// return r,g, or b value from this tridrant
 	if (hue < (HSLMAX/6))
 		return (n1 + (((n2 - n1) * hue + (HSLMAX / 12)) / (HSLMAX / 6)));
 	if (hue < (HSLMAX / 2))
@@ -390,7 +396,7 @@ RGBQUAD ttDib::HSLtoRGB(RGBQUAD lHSLColor)
 RGBQUAD ttDib::RGB2RGBQUAD(COLORREF cr)
 {
 	RGBQUAD c;
-	c.rgbRed = GetRValue(cr & 0xFF);	/* get R, G, and B out of DWORD */
+	c.rgbRed = GetRValue(cr & 0xFF);	// get R, G, and B out of DWORD
 	c.rgbGreen = GetGValue(cr & 0xFFFF);
 	c.rgbBlue = GetBValue(cr & 0xFFFFFF);
 	c.rgbReserved = 0;
@@ -411,7 +417,7 @@ void ttDib::SetGrayPalette()
 	BYTE* iDst;
 	int ni;
 	ppal = (RGBQUAD*) &pal[0];
-	iDst = (BYTE*)(hDib) + sizeof(BITMAPINFOHEADER);
+	iDst = (BYTE*) hDib + sizeof(BITMAPINFOHEADER);
 	for (ni = 0; ni < m_nColors; ni++) {
 		pal[ni] = RGB2RGBQUAD(RGB(ni, ni, ni));
 	}
@@ -424,7 +430,7 @@ void ttDib::BlendPalette(COLORREF cr, long perc)
 {
 	if ((hDib == NULL) || (m_nColors == 0))
 		return;
-	BYTE* iDst = (BYTE*)(hDib) + sizeof(BITMAPINFOHEADER);
+	BYTE* iDst = (BYTE*) hDib + sizeof(BITMAPINFOHEADER);
 	long i, r, g, b;
 	RGBQUAD* pPal = (RGBQUAD*) iDst;
 	r = GetRValue(cr & 0xFF);
@@ -433,20 +439,15 @@ void ttDib::BlendPalette(COLORREF cr, long perc)
 	if (perc > 100)
 		perc = 100;
 	for (i = 0; i < m_nColors; i++) {
-		pPal[i].rgbBlue = (BYTE)((pPal[i].rgbBlue*(100 - perc) + b * perc) / 100);
-		pPal[i].rgbGreen = (BYTE)((pPal[i].rgbGreen*(100 - perc) + g * perc) / 100);
-		pPal[i].rgbRed = (BYTE)((pPal[i].rgbRed*(100 - perc) + r * perc) / 100);
+		pPal[i].rgbBlue = (BYTE) ((pPal[i].rgbBlue*(100 - perc) + b * perc) / 100);
+		pPal[i].rgbGreen = (BYTE) ((pPal[i].rgbGreen*(100 - perc) + g * perc) / 100);
+		pPal[i].rgbRed = (BYTE) ((pPal[i].rgbRed*(100 - perc) + r * perc) / 100);
 	}
 }
 
 long ttDib::GetSize()
 {
 	return m_bi.biSize + m_bi.biSizeImage + GetPaletteSize();
-}
-
-BOOL ttDib::IsValid()
-{
-	return (hDib!=NULL);
 }
 
 void ttDib::Clone(ttDib *src)
