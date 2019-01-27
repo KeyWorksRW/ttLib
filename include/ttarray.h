@@ -11,7 +11,8 @@
 #ifndef __TTLIB_TTARRAY_H__
 #define __TTLIB_TTARRAY_H__
 
-#include "ttheap.h" // ttHeap
+#include "ttheap.h"		// ttHeap
+#include "ttdebug.h"	// for ttASSERT
 
 // A simple array of any type
 
