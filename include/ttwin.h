@@ -14,7 +14,7 @@
 	#error This code will only work on Windows
 #endif
 
-#include "../ttLib/include/ttmsgmap.h"	// #define macros for BEGIN_TTMSG_MAP()/END_TTMSG_MAP() block
+#include "ttmsgmap.h"	// #define macros for BEGIN_TTMSG_MAP()/END_TTMSG_MAP() block
 
 namespace ttpriv {
 	LRESULT WINAPI ttWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -26,8 +26,7 @@ public:
 	ttWin();
 	~ttWin();
 
-	virtual bool OnMsgMap(UINT /* uMsg */, WPARAM /* wParam */, LPARAM /* lParam */) { return false; }	  // Use of BEGIN_TTMSG_MAP will override this
-
+public:
 	// Call these methods before calling CreateWnd
 
 	void SetClassBkgrnd(HBRUSH hbkgrnd) { if (m_pwc) m_pwc->hbrBackground = hbkgrnd; }	// constructor will have set this to COLOR_WINDOW + 1
@@ -58,11 +57,14 @@ public:
 	operator WNDCLASSEX*() { return m_pwc; }
 
 protected:
+	virtual bool OnMsgMap(UINT /* uMsg */, WPARAM /* wParam */, LPARAM /* lParam */) { return false; }	  // Use of BEGIN_TTMSG_MAP will override this
+
+protected:
 	friend LRESULT WINAPI ttpriv::ttWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 	// Class members
 
-	HWND		m_hwnd;
+	HWND		m_hwnd;				// m_hwnd vs m_hWnd -- SDK/include, ATL and WTL use both variants. We're sticking with all lowercase.
 	HWND		m_hwndParent;
 	HINSTANCE	m_hinst;			// instance used to create the class, can be used to load resources from the app
 	const char*	m_pszClassName;		// class name of the window we created or attached to

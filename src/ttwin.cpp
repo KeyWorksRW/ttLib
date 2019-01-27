@@ -8,7 +8,7 @@
 
 #include "pch.h"
 
-#include "ttwin.h"	// ttWin
+#include "../include/ttwin.h"	// ttWin
 
 // This is the Window procedure used by all windows that ttWin created or subclassed.
 
