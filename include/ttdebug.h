@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:		ttdebug.h
-// Purpose:		Various debugging functionality
+// Purpose:		ttASSERT macros
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2000-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
