@@ -27,7 +27,7 @@ public:
 
 	void SetIcon(int idBtn, int idIcon, UINT nIconAlign = BS_LEFT) {
 		for (size_t i = 0; i < m_aBtns.GetCount(); i++) {
-			if (m_aBtns[i]->IsWindow() && m_aBtns[i]->GetDlgCtrlID() == idBtn) {
+			if (IsWindow(*m_aBtns[i]) && GetDlgCtrlID(*m_aBtns[i]) == idBtn) {
 				m_aBtns[i]->SetIcon(idIcon, nIconAlign);
 				return;
 			}
@@ -35,7 +35,7 @@ public:
 	}
 	ttShadeBtn* FindShadeBtn(int id) {
 		for (size_t i = 0; i < m_aBtns.GetCount(); i++) {
-			if (m_aBtns[i]->GetDlgCtrlID() == id) {
+			if (GetDlgCtrlID(*m_aBtns[i]) == id) {
 				return m_aBtns[i];
 			}
 		}

@@ -12,7 +12,7 @@
 	#error This code will only work on Windows
 #endif
 
-#include "../include/multibtn.h"	// CMultiBtn
+#include "../include/multibtn.h"	// ttMultiBtn
 
 BOOL WINAPI ttpriv::EnumBtnProc(HWND hwnd, LPARAM lval)
 {
@@ -22,7 +22,7 @@ BOOL WINAPI ttpriv::EnumBtnProc(HWND hwnd, LPARAM lval)
 		if (tt::samestri(szClass, "BUTTON")) {
 			ttMultiBtn* pThis = (ttMultiBtn*) lval;
 			ttShadeBtn* pBtn = new ttShadeBtn;
-			pBtn->SubclassWindow(hwnd);
+			pBtn->SubClass(hwnd);
 			pBtn->SetShade(pThis->m_btnShade);
 			pThis->m_aBtns.Add(pBtn);
 		}
