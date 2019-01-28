@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:		ttstr.h
-// Purpose:		various functions dealing with strings
+// Purpose:		Header-only class for containing a SBCS (utf8) string
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 1998-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
@@ -149,6 +149,14 @@ public:
 	bool operator == (char* psz) { return (isempty() || !psz) ? false : tt::samestr(m_psz, psz); }		 // samestr will check for m_psz == null
 
 	char* m_psz;
+};
+
+// The only difference between this class and ttStr is that it calls getCWD in the constructor
+
+class ttCWD : public ttStr
+{
+public:
+	ttCWD() { getCWD(); }
 };
 
 #endif	//__TTLIB_STR_H__
