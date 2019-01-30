@@ -3,7 +3,7 @@
 // Purpose:		Class for applying ttShadeBtn to every button in a dialog
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
-// License:		Apache License (see ../LICENSE)
+// License:		Apache License (see LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 #include "pch.h"
