@@ -52,7 +52,7 @@ public:
 
 	INT_PTR DoModal();
 
-	virtual BOOL OnMsgMap(UINT /* uMsg */, WPARAM /* wParam */, LPARAM /* lParam */) { return FALSE; }	  // Use of BEGIN_TTMSG_MAP will override this
+	virtual bool OnMsgMap(UINT /* uMsg */, WPARAM /* wParam */, LPARAM /* lParam */) { return false; }	  // Use of BEGIN_TTMSG_MAP will override this
 	virtual void OnBegin() { }	// called when dialog is initialized
 	virtual void OnEnd() { }	// called when dialog is to be closed
 	virtual void OnCancel() { }	// called when dialog is cancelled (call CancelEnd() to return without closing the dialog)
