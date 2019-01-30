@@ -8,7 +8,9 @@
 
 #include "pch.h"
 
-#include "../include/ttwin.h"	// ttWin
+#include "../include/ttdebug.h" 		// ttASSERT macros
+#include "../../ttLib/include/ttstr.h"	// ttStr
+#include "../include/ttwin.h"			// ttWin
 
 // This is the Window procedure used by all windows that ttWin created or subclassed.
 
@@ -141,7 +143,7 @@ bool ttWin::AttachWnd(HWND hwnd)
 	// of the same type that we attached to.
 
 	ttStr cszClassName(256);
-	if (::GetClassNameA(hwnd, cszClassName, cszClassName.sizeBuffer()) != 0) {
+	if (::GetClassNameA(hwnd, cszClassName, (int) cszClassName.sizeBuffer()) != 0) {
 		if (m_pwc) {
 			delete m_pwc;
 			m_pwc = nullptr;
