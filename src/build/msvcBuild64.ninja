@@ -71,6 +71,8 @@ build $outdir/ttdib.obj: compile ttdib.cpp | $outdir/pch.obj
 
 build $outdir/ttdlg.obj: compile ttdlg.cpp | $outdir/pch.obj
 
+build $outdir/ttwin.obj: compile ttwin.cpp | $outdir/pch.obj
+
 build $outdir/winmisc.obj: compile winmisc.cpp | $outdir/pch.obj
 
 build ../lib/ttLib64.lib : lib $
@@ -94,5 +96,6 @@ build ../lib/ttLib64.lib : lib $
   $outdir/shadebtn.obj $
   $outdir/ttdib.obj $
   $outdir/ttdlg.obj $
+  $outdir/ttwin.obj $
   $outdir/winmisc.obj
 
