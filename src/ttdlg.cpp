@@ -11,6 +11,7 @@
 #ifndef _WINDOWS_
 	#error This code will only work on Windows
 #endif
+
 #include <VersionHelpers.h>
 
 #include "../include/ttdlg.h"
@@ -18,7 +19,7 @@
 #define WMP_CENTER_WINDOW WM_USER + 0x7000
 
 static HMONITOR ttKeyMonitorFromWindow(HWND hwnd, DWORD dwFlags);
-static BOOL 	 ttKeyMonitorFromPoint(HMONITOR hMonitor, LPMONITORINFO lpmi);
+static BOOL 	ttKeyMonitorFromPoint(HMONITOR hMonitor, LPMONITORINFO lpmi);
 
 // Currently unused
 // static HMONITOR ttKeyMonitorFromPoint(POINT pt, DWORD dwFlags);
@@ -31,7 +32,7 @@ ttDlg::ttDlg(UINT idTemplate, HWND hwnd)
 	m_bCancelEnd = false;
 	m_fFade = false;
 	m_idTemplate = idTemplate;
-	m_bShadeBtns = true;
+	m_bShadeBtns = false;	// default to non-shaded buttons
 	m_bInitializing = true;
 };
 
@@ -67,6 +68,9 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 			PostMessage(hdlg, WMP_CENTER_WINDOW, 0, 0);
 			ShowWindow(hdlg, SW_HIDE);	// Don't show window until we are centered
 		}
+
+		if (pThis->m_bShadeBtns)
+			pThis->m_ShadedBtns.Initialize(hdlg);
 
 		if (pThis->OnMsgMap(msg, wParam, lParam))
 			return pThis->m_result;

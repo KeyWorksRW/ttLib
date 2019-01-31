@@ -50,6 +50,7 @@ ttWin::ttWin()
 	m_hwnd = NULL;
 	m_hwndParent = NULL;
 	m_SubClassProc = nullptr;
+	m_pszClassName = nullptr;
 
 	// We create this here so the caller can modify it before calling CreateWnd
 

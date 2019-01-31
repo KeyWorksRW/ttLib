@@ -42,9 +42,9 @@ ttShadeBtn::ttShadeBtn()
 	m_TextColor = GetSysColor(COLOR_BTNTEXT);	// default button text color
 	m_flat = m_Checked = false;
 
-	m_Icon = m_IconDown = m_IconHighLight = NULL;	// icon handle
+	m_hIcon = m_hIconDown = m_hIconHighLight = NULL;	// icon handle
 	SetRectEmpty(&m_rcIconBox);	// icon location
-	m_IconAlign = BS_CENTER;	// icon alignment
+	m_hIconAlign = BS_CENTER;	// icon alignment
 	m_TextAlign = DT_SINGLELINE | DT_CENTER | DT_VCENTER;	// text alignment
 	m_pLF = nullptr;	// font structure pointer
 
@@ -78,12 +78,12 @@ ttShadeBtn::~ttShadeBtn()
 		DeleteObject(m_hFont);
 	if (m_pLF)
 		tt::free(m_pLF);
-	if (m_IconDown != m_Icon && m_IconDown)
-		DestroyIcon(m_IconDown);
-	if (m_IconHighLight != m_Icon && m_IconHighLight)
-		DestroyIcon(m_IconHighLight);
-	if (m_Icon)
-		DestroyIcon(m_Icon);
+	if (m_hIconDown != m_hIcon && m_hIconDown)
+		DestroyIcon(m_hIconDown);
+	if (m_hIconHighLight != m_hIcon && m_hIconHighLight)
+		DestroyIcon(m_hIconHighLight);
+	if (m_hIcon)
+		DestroyIcon(m_hIcon);
 	if (IsWindow(*this))
 		DestroyWindow(*this);
 	m_hwnd = NULL;
@@ -168,18 +168,18 @@ void ttShadeBtn::SetTextAlign(UINT nTextAlign)
 
 void ttShadeBtn::SetIcon(UINT nIcon, UINT nIconAlign, UINT nIconDown, UINT nIconHighLight)
 {
-	if (m_IconDown != m_Icon && m_IconDown)
-		DestroyIcon(m_IconDown);
-	if (m_IconHighLight != m_Icon && m_IconHighLight)
-		DestroyIcon(m_IconHighLight);
-	if (m_Icon)
-		DestroyIcon(m_Icon);
+	if (m_hIconDown != m_hIcon && m_hIconDown)
+		DestroyIcon(m_hIconDown);
+	if (m_hIconHighLight != m_hIcon && m_hIconHighLight)
+		DestroyIcon(m_hIconHighLight);
+	if (m_hIcon)
+		DestroyIcon(m_hIcon);
 
-	m_Icon = (HICON) ::LoadImage(tt::hinstResources, MAKEINTRESOURCE(nIcon), IMAGE_ICON, 0, 0, 0);
-	ttASSERT_MSG(m_Icon, "Unable to load icon");
-	if (m_Icon) {							// if success...
+	m_hIcon = (HICON) ::LoadImage(tt::hinstResources, MAKEINTRESOURCE(nIcon), IMAGE_ICON, 0, 0, 0);
+	ttASSERT_MSG(m_hIcon, "Unable to load icon");
+	if (m_hIcon) {							// if success...
 		ICONINFO iinfo;						// get icon info
-		GetIconInfo(m_Icon, &iinfo);
+		GetIconInfo(m_hIcon, &iinfo);
 		m_rcIconBox.left = m_rcIconBox.top = 0;
 		m_rcIconBox.right = iinfo.xHotspot * 2;
 		m_rcIconBox.bottom = iinfo.yHotspot * 2;
@@ -191,15 +191,15 @@ void ttShadeBtn::SetIcon(UINT nIcon, UINT nIconAlign, UINT nIconDown, UINT nIcon
 		x = abs(rect.right - rect.left);
 		switch (nIconAlign){				// set the icon location
 			case BS_RIGHT:
-				m_IconAlign = BS_RIGHT;
+				m_hIconAlign = BS_RIGHT;
 				OffsetRect(&m_rcIconBox, x - iinfo.xHotspot * 2 - m_FocusRectMargin, max(0, (long) (y / 2 - iinfo.yHotspot)));
 				break;
 			case BS_LEFT:
-				m_IconAlign = BS_LEFT;
+				m_hIconAlign = BS_LEFT;
 				OffsetRect(&m_rcIconBox, m_FocusRectMargin + 8, max(0, (long) (y / 2 - iinfo.yHotspot)));
 				break;
 			default:
-				m_IconAlign = BS_CENTER;
+				m_hIconAlign = BS_CENTER;
 				OffsetRect(&m_rcIconBox, max(0, (long)(x / 2 - iinfo.xHotspot)), max(0, (long)(y / 2 - 2 * iinfo.yHotspot)));
 		}
 
@@ -210,21 +210,21 @@ void ttShadeBtn::SetIcon(UINT nIcon, UINT nIconAlign, UINT nIconDown, UINT nIcon
 			DeleteObject(iinfo.hbmMask);
 
 		if (nIconDown > 0) {	// load down icon
-			m_IconDown = (HICON)::LoadImage(tt::hinstResources, MAKEINTRESOURCE(nIconDown), IMAGE_ICON, 0, 0, 0);
-			if (m_IconDown == NULL)
-				m_IconDown = m_Icon;
+			m_hIconDown = (HICON)::LoadImage(tt::hinstResources, MAKEINTRESOURCE(nIconDown), IMAGE_ICON, 0, 0, 0);
+			if (m_hIconDown == NULL)
+				m_hIconDown = m_hIcon;
 		}
 		else {
-			m_IconDown = m_Icon;	// reuse resource handle
+			m_hIconDown = m_hIcon;	// reuse resource handle
 		}
 
 		if (nIconHighLight > 0){	// load highlighted icon
-			m_IconHighLight = (HICON) ::LoadImage(tt::hinstResources, MAKEINTRESOURCE(nIconHighLight), IMAGE_ICON, 0, 0, 0);
-			if (m_IconHighLight == NULL)
-				m_IconHighLight = m_Icon;
+			m_hIconHighLight = (HICON) ::LoadImage(tt::hinstResources, MAKEINTRESOURCE(nIconHighLight), IMAGE_ICON, 0, 0, 0);
+			if (m_hIconHighLight == NULL)
+				m_hIconHighLight = m_hIcon;
 		}
 		else {
-			m_IconHighLight = m_Icon;	// reuse resource handle
+			m_hIconHighLight = m_hIcon;	// reuse resource handle
 		}
 	}
 }
@@ -298,12 +298,12 @@ void ttShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, B
 		case SHS_METAL:	//SHS_METAL
 			m_dNormal.Clear();
 			// create the strokes
-			k = 40; //stroke granularity
+			k = 40; // stroke granularity
 			for(a = 0;a<200;a++) {
-				x = rand() /(RAND_MAX/sXSize);	//stroke postion
-				y = rand() /(RAND_MAX/sYSize);	//stroke position
+				x = rand() /(RAND_MAX/sXSize);	// stroke postion
+				y = rand() /(RAND_MAX/sYSize);	// stroke position
 				xs = rand() /(RAND_MAX/min(sXSize, sYSize)) /2; //stroke lenght
-				d = rand() /(RAND_MAX/k);	//stroke color
+				d = rand() /(RAND_MAX/k);	// stroke color
 				for(i = 0;i<xs;i++) {
 					if (((x-i) >0)	&& ((y+i) <sYSize))
 						m_dNormal.SetPixelIndex(x-i, y+i,(BYTE) d);
@@ -311,7 +311,7 @@ void ttShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, B
 						m_dNormal.SetPixelIndex(sXSize-x+i, y-i,(BYTE) d);
 				}
 			}
-			//blend strokes with SHS_DIAGONAL
+			// blend strokes with SHS_DIAGONAL
 			posDst =iDst;
 			a = (idxmax-idxmin-k) /2;
 			for(i = 0; i < sYSize; i++) {
@@ -326,7 +326,7 @@ void ttShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, B
 			break;
 	//----------------------------------------------------
 		case SHS_HARDBUMP:	// SHS_HARDBUMP
-			//set horizontal bump
+			// set horizontal bump
 			for(i = 0; i < sYSize; i++) {
 				k = (255*i/sYSize)-127;
 				k = (k*(k*k) /128) /128;
@@ -337,7 +337,7 @@ void ttShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, B
 				}
 				posDst += bytes;
 			}
-			//set vertical bump
+			// set vertical bump
 			d = min(16, sXSize/6);	//max edge=16
 			a = sYSize*sYSize/4;
 			posDst = iDst;
@@ -356,7 +356,7 @@ void ttShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, B
 			}
 			break;
 	//----------------------------------------------------
-		case SHS_SOFTBUMP: //SHS_SOFTBUMP
+		case SHS_SOFTBUMP: // SHS_SOFTBUMP
 			for(i = 0; i < sYSize; i++) {
 				h = (255*i/sYSize)-127;
 				for(j = 0; j < sXSize; j++) {
@@ -386,7 +386,7 @@ void ttShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, B
 			}
 			break;
 	//----------------------------------------------------
-		case SHS_HBUMP: //SHS_HBUMP
+		case SHS_HBUMP: // SHS_HBUMP
 			for(i = 0; i < sYSize; i++) {
 				k = (255*i/sYSize)-127;
 				k = (k*(k*k) /128) /128;
@@ -399,7 +399,7 @@ void ttShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, B
 			}
 			break;
 	//----------------------------------------------------
-		case SHS_DIAGSHADE:	//SHS_DIAGSHADE
+		case SHS_DIAGSHADE:	// SHS_DIAGSHADE
 			a = (idxmax-idxmin) /2;
 			for(i = 0; i < sYSize; i++) {
 				for(j = 0; j < sXSize; j++) {
@@ -410,7 +410,7 @@ void ttShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, B
 			}
 			break;
 	//----------------------------------------------------
-		case SHS_HSHADE:	//SHS_HSHADE
+		case SHS_HSHADE:	// SHS_HSHADE
 			a = idxmax-idxmin;
 			for(i = 0; i < sYSize; i++) {
 				k = a*i/sYSize+idxmin;
@@ -422,7 +422,7 @@ void ttShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, B
 			}
 			break;
 	//----------------------------------------------------
-		case SHS_VSHADE:	//SHS_VSHADE:
+		case SHS_VSHADE:	// SHS_VSHADE:
 			a = idxmax-idxmin;
 			for(j = 0; j < sXSize; j++) {
 				k = a*(sXSize-j) /sXSize+idxmin;
@@ -443,7 +443,7 @@ void ttShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, B
 			break;
 	}
 
-	m_dDisabled.Clone(&m_dNormal);	//build the other bitmaps
+	m_dDisabled.Clone(&m_dNormal);	// build the other bitmaps
 	m_dOver.Clone(&m_dNormal);
 	m_dOver.BlendPalette(hicr, highlight);
 	m_dDown.Clone(&m_dOver);
@@ -453,7 +453,7 @@ COLORREF ttShadeBtn::SetTextColor(COLORREF new_color)
 {
 	COLORREF tmp_color = m_TextColor;
 	m_TextColor = new_color;
-	return tmp_color;	//returns the previous color
+	return tmp_color;	// returns the previous color
 }
 
 void ttShadeBtn::OnPaint()
@@ -470,10 +470,10 @@ void ttShadeBtn::OnPaint()
 	// get text box position
 	RECT tr = { rcClient.left + m_FocusRectMargin + 2, rcClient.top, rcClient.right - m_FocusRectMargin - 2, rcClient.bottom };
 
-	HDC hdcMem;	//create a memory DC to avoid flicker
+	HDC hdcMem;	// create a memory DC to avoid flicker
 	hdcMem = CreateCompatibleDC(hdcPaint);
     HANDLE hBitmap = CreateCompatibleBitmap(hdcPaint, cx, cy);
-	HBITMAP hOldBitmap = (HBITMAP) SelectObject(hdcMem, hBitmap); //select the destination for MemDC
+	HBITMAP hOldBitmap = (HBITMAP) SelectObject(hdcMem, hBitmap); // select the destination for MemDC
 
 	cszCaption.GetWindowText(*this);							// get button text
 	SetBkMode(hdcMem, TRANSPARENT);
@@ -493,8 +493,8 @@ void ttShadeBtn::OnPaint()
 	}
 
 	// accommodate text location
-	if (m_Icon){
-		switch (m_IconAlign){
+	if (m_hIcon){
+		switch (m_hIconAlign){
 			case BS_LEFT:
 				tr.left += abs(m_rcIconBox.right - m_rcIconBox.left);	// shift left
 				break;
@@ -514,10 +514,10 @@ void ttShadeBtn::OnPaint()
 		else	// no skin selected for disabled state -> standard button
 			::FillRect(hdcMem, &rcClient, (HBRUSH) (ULONG_PTR) GetSysColor(COLOR_BTNFACE));
 
-		if (m_Icon) // draw the icon
-			::DrawState(hdcMem, NULL, NULL, MAKELPARAM(m_Icon, 0), NULL, m_rcIconBox.left, m_rcIconBox.top, abs(m_rcIconBox.right - m_rcIconBox.left),
+		if (m_hIcon) { // draw the icon
+			::DrawState(hdcMem, NULL, NULL, (LPARAM) m_hIcon, NULL, m_rcIconBox.left, m_rcIconBox.top, abs(m_rcIconBox.right - m_rcIconBox.left),
 				abs(m_rcIconBox.bottom - m_rcIconBox.top), DST_ICON | DSS_DISABLED);
-
+		}
 		// if needed, draw the standard 3D rectangular border
 		if ((m_Border)	&& (m_flat == FALSE))
 			DrawEdge(hdcMem, &rcClient, EDGE_RAISED, BF_RECT);
@@ -535,10 +535,10 @@ void ttShadeBtn::OnPaint()
 			else	// no skin selected for selected state -> standard button
 				::FillRect(hdcMem, &rcClient, (HBRUSH) (ULONG_PTR) GetSysColor(COLOR_BTNFACE));
 
-			if (m_IconDown){ // draw the pushed icon
+			if (m_hIconDown){ // draw the pushed icon
 				if (m_IsPushLike)
 					OffsetRect(&m_rcIconBox, 1, 1);
-				::DrawState(hdcMem, NULL, NULL, MAKELPARAM(m_Icon, 0), NULL, m_rcIconBox.left, m_rcIconBox.top, abs(m_rcIconBox.right - m_rcIconBox.left),
+				::DrawState(hdcMem, NULL, NULL, (LPARAM) m_hIcon, NULL, m_rcIconBox.left, m_rcIconBox.top, abs(m_rcIconBox.right - m_rcIconBox.left),
 					abs(m_rcIconBox.bottom - m_rcIconBox.top), DST_ICON | DSS_NORMAL);
 				if (m_IsPushLike)
 					OffsetRect(&m_rcIconBox, -1, -1);
@@ -561,10 +561,10 @@ void ttShadeBtn::OnPaint()
 			else	// no skin selected for normal state -> standard button
 				::FillRect(hdcMem, &rcClient, (HBRUSH) (ULONG_PTR) GetSysColor(COLOR_BTNFACE));
 
-			if (m_Icon) //draw the icon
-				::DrawState(hdcMem, NULL, NULL, MAKELPARAM(m_Icon, 0), NULL, m_rcIconBox.left, m_rcIconBox.top, abs(m_rcIconBox.right - m_rcIconBox.left),
+			if (m_hIcon) { //draw the icon
+				::DrawState(hdcMem, NULL, NULL, (LPARAM) m_hIcon, NULL, m_rcIconBox.left, m_rcIconBox.top, abs(m_rcIconBox.right - m_rcIconBox.left),
 					abs(m_rcIconBox.bottom - m_rcIconBox.top), DST_ICON | DSS_NORMAL);
-
+			}
 			// if needed, draw the standard 3D rectangular border
 			if (m_Border && (m_flat == FALSE)) {
 				if (m_Style & BS_DEFPUSHBUTTON) {

@@ -87,6 +87,7 @@ public:
 	COLORREF SetTextColor(COLORREF new_color);
 
 	bool operator == (ttShadeBtn* pShade) { return m_hwnd == pShade->m_hwnd; }
+	operator HWND() const { return m_hwnd; }
 
 protected:
 	// Class members
@@ -95,10 +96,10 @@ protected:
 	COLORREF m_TextColor;		// button text color
 	DWORD	 m_Style;
 	HFONT	 m_hFont;			// font object
-	HICON	 m_Icon, m_IconDown, m_IconHighLight;
+	HICON	 m_hIcon, m_hIconDown, m_hIconHighLight;
 	LOGFONT* m_pLF; 			// font structure
 	RECT	 m_rcIconBox;
-	UINT	 m_IconAlign;
+	UINT	 m_hIconAlign;
 	UINT	 m_TextAlign;
 	bool	 m_Checked; 		// radio & check buttons
 	bool	 m_IsPushLike;		// radio & check buttons

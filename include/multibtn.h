@@ -25,22 +25,8 @@ public:
 	ttMultiBtn() { }
 	~ttMultiBtn();
 
-	void SetIcon(int idBtn, int idIcon, UINT nIconAlign = BS_LEFT) {
-		for (size_t i = 0; i < m_aBtns.GetCount(); i++) {
-			if (IsWindow(*m_aBtns[i]) && GetDlgCtrlID(*m_aBtns[i]) == idBtn) {
-				m_aBtns[i]->SetIcon(idIcon, nIconAlign);
-				return;
-			}
-		}
-	}
-	ttShadeBtn* FindShadeBtn(int id) {
-		for (size_t i = 0; i < m_aBtns.GetCount(); i++) {
-			if (GetDlgCtrlID(*m_aBtns[i]) == id) {
-				return m_aBtns[i];
-			}
-		}
-		return NULL;
-	}
+	void SetIcon(int idBtn, int idIcon, UINT nIconAlign = BS_LEFT);
+	ttShadeBtn* FindShadeBtn(int id);
 
 	// Class functions
 

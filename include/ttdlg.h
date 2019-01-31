@@ -28,6 +28,7 @@
 #include "ttdebug.h"	// for ttASSERTS
 #include "ttstring.h"	// ttString
 #include "ttwstring.h"	// ttWString
+#include "multibtn.h"	// ttMultiBtn
 
 #include "ttmsgmap.h"	// #define macros for BEGIN_TTMSG_MAP()/END_TTMSG_MAP() block
 
@@ -53,13 +54,17 @@ public:
 	INT_PTR DoModal();
 
 	virtual bool OnMsgMap(UINT /* uMsg */, WPARAM /* wParam */, LPARAM /* lParam */) { return false; }	  // Use of BEGIN_TTMSG_MAP will override this
+
 	virtual void OnBegin() { }	// called when dialog is initialized
 	virtual void OnEnd() { }	// called when dialog is to be closed
-	virtual void OnCancel() { }	// called when dialog is cancelled (call CancelEnd() to return without closing the dialog)
+	virtual void OnCancel() { }	// called when dialog is cancelled (call CancelEnd to return without closing the dialog)
+
+	[[deprecated]] void DontShadeBtns() { m_bShadeBtns = false; }	// deprecated since m_bShadeBtns is not false by default. Use EnableShadeBtns to enable.
 
 	void DontCenterWindow(void) { m_bCenterWindow = false; }
+	void EnableShadeBtns(bool bEnable = true) { m_bShadeBtns = bEnable; }
 	void FadeOnExit() { m_fFade = true; }
-	void DontShadeBtns() { m_bShadeBtns = false; }
+
 	void CancelEnd() { m_bCancelEnd = true; } // call within OnEnd() to cancel ending the dialog
 
 	HWND GetDlgItem(ptrdiff_t id) const { return ::GetDlgItem(m_hwnd, (int) id); }
@@ -126,6 +131,8 @@ protected:
 
 	HWND m_hwnd;			// m_hwnd vs m_hWnd -- SDK/include, ATL and WTL use both variants. We're sticking with all lowercase.
 	HWND m_hwndParent;
+
+	ttMultiBtn m_ShadedBtns;
 
 	LRESULT m_result;
 }; // end of ttDlg
