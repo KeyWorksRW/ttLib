@@ -101,9 +101,9 @@ protected:
 	RECT	 m_rcIconBox;
 	UINT	 m_hIconAlign;
 	UINT	 m_TextAlign;
+	ttDib	 m_dNormal, m_dDown, m_dDisabled, m_dOver, m_dh, m_dv;
 	bool	 m_Checked; 		// radio & check buttons
 	bool	 m_IsPushLike;		// radio & check buttons
 	bool	 m_flat;
 	short	 m_FocusRectMargin; // dotted margin offset
-	ttDib	 m_dNormal, m_dDown, m_dDisabled, m_dOver, m_dh, m_dv;
 };

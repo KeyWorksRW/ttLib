@@ -133,21 +133,26 @@ protected:
 	void AllocateBuffer(size_t cbInitial = 16 * 1024);
 
 	// Class members
+	char* m_pCurrent;
+#ifdef _DEBUG
+	char* m_pszFile;
+#endif
 
 	size_t	  m_cbAllocated;
 	size_t	  m_cbUrlFile;		// actual file size after ReadURL()
+
+	char* m_pbuf;
+	char* m_pEnd;
 
 	FILEIO_RESULT m_ioResult;
 #ifdef _WINDOWS_
 	HINTERNET m_hInternetSession;
 #endif
 
-	char* m_pbuf;
-	char* m_pCurrent;
-	char* m_pEnd;
+	char* m_pCopy;
+
 	bool  m_bReadlineReady;
 	bool  m_fUnixLF;
-	char* m_pCopy;
 };
 
 #endif	// __TTLIB_KEYFILE_H__

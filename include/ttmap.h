@@ -98,10 +98,11 @@ public:
 	// Class members
 
 protected:
+	ptrdiff_t m_cItems;
+	ptrdiff_t m_cAllocated;
+
 	ttHeap*  m_pHeap;
 	MAP_PAIR* m_aMapPairs;
-	ptrdiff_t m_cAllocated;
-	ptrdiff_t m_cItems;
 };
 
 #endif	// __TTLIB_TTMAP_H__

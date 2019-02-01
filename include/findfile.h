@@ -32,7 +32,11 @@
 class ttFindFile : public WIN32_FIND_DATA
 {
 public:
-	ttFindFile(const char* pszFilePattern) { m_hfind = FindFirstFile(pszFilePattern, this); }
+	ttFindFile(const char* pszFilePattern) { m_hfind = FindFirstFile(pszFilePattern, this);
+#ifdef _DEBUG
+		m_pszFilename = cFileName;
+#endif
+		}
 	~ttFindFile() {
 		if (m_hfind != INVALID_HANDLE_VALUE)
 			FindClose(m_hfind);
@@ -85,6 +89,10 @@ public:
 	bool operator == (char* psz) { return (isempty()) ? false : tt::samestri(cFileName, psz); }		 // samestr will check for psz == null
 
 protected:
+#ifdef _DEBUG
+	char* m_pszFilename;
+#endif
+
 	HANDLE m_hfind;
 };
 

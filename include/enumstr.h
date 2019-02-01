@@ -43,8 +43,8 @@ public:
 protected:
 	// Class members
 
-	ttStr	m_csz;
 	char* 	m_pszCur;
+	ttStr	m_csz;
 	char*	m_pszEnd;
 	char	m_chSeparator;
 };

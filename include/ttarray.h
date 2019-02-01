@@ -59,9 +59,9 @@ public:
 	}
 
 protected:
-	T*      m_aData;
-	size_t  m_cAllocated;
 	size_t  m_cItems;
+	size_t  m_cAllocated;
+	T*      m_aData;
 };
 
 #endif	// __TTLIB_TTARRAY_H__

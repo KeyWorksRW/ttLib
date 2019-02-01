@@ -102,17 +102,18 @@ protected:
 
 	// Class members
 
-	size_t m_SortColumn;
-	bool   m_bSerialize;
-
-	char** m_aptrs;
-	size_t m_cAllocated;
 	size_t m_cItems;
 	size_t m_enum;
 
-	ttHashPair m_HashPair;
+	size_t m_cAllocated;
+	char** m_aptrs;
+
 	ttString m_cszKey;
 	size_t m_flags;
+	size_t m_SortColumn;
+
+	ttHashPair m_HashPair;
+	bool   m_bSerialize;
 };
 
 // Holds a pair of strings, referenced as Key and Val. Note that unlike ttList, the default behaviour is to allow
@@ -165,9 +166,9 @@ protected:
 
 	// Class members
 
-	DBLPTRS* m_aptrs;
-	size_t	 m_cAllocated;
 	size_t	 m_cItems;
+	size_t	 m_cAllocated;
+	DBLPTRS* m_aptrs;
 
 	bool m_bSortKeys;
 	bool m_bSerialize;
@@ -232,9 +233,9 @@ public:
 protected:
 	// Class members
 
-	DBLPTRS* m_aptrs;
-	size_t	 m_cAllocated;
 	size_t	 m_cItems;
+	size_t	 m_cAllocated;
+	DBLPTRS* m_aptrs;
 
 	size_t	  m_posEnumKey;
 	ptrdiff_t m_posEnumVal;

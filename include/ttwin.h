@@ -63,11 +63,11 @@ protected:
 	friend LRESULT WINAPI ttpriv::ttWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 	// Class members
+	const char*	m_pszClassName;		// class name of the window we created or attached to
 
 	HWND		m_hwnd;				// m_hwnd vs m_hWnd -- SDK/include, ATL and WTL use both variants. We're sticking with all lowercase.
 	HWND		m_hwndParent;
 	HINSTANCE	m_hinst;			// instance used to create the class, can be used to load resources from the app
-	const char*	m_pszClassName;		// class name of the window we created or attached to
 
 	WNDCLASSEXA* m_pwc; 			// created in constructor, deleted by CreateWnd and AttachWnd
 	WNDPROC		 m_SubClassProc;	// previous window procedure before it was subclassed

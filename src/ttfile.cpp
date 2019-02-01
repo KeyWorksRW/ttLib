@@ -102,6 +102,9 @@ void ttFile::AllocateMoreMemory(size_t cbMore)
 bool ttFile::WriteFile(const char* pszFile)
 {
 	CHECK_FILE_PTR(pszFile);	// returns false on failure
+#ifdef _DEBUG
+	m_pszFile = tt::fndFilename(pszFile);	// set this so Debugger will see it
+#endif
 	ttASSERT_MSG(m_pCurrent > m_pbuf, "Trying to write an empty file!");
 	if (m_pCurrent == m_pbuf) {
 		m_ioResult = ERROR_EMPTY_BUFFER;
@@ -138,6 +141,9 @@ bool ttFile::ReadFile(const char* pszFile)
 {
 	Delete();
 	CHECK_FILE_PTR(pszFile);	// returns on failure
+#ifdef _DEBUG
+	m_pszFile = tt::fndFilename(pszFile);	// set this so Debugger will see it
+#endif
 
 #ifdef _WX_WX_H_
 	wxFile file(pszFile, wxFile::read);

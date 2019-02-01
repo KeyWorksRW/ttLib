@@ -121,10 +121,11 @@ protected:
 
 	// Class members
 
+	bool m_bCancelEnd;
+
 	bool m_bInitializing;
 	bool m_bShadeBtns;
 	bool m_bCenterWindow;
-	bool m_bCancelEnd;
 	bool m_fFade;
 
 	int m_idTemplate;

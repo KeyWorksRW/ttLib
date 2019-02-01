@@ -67,10 +67,9 @@ protected:
 
 	// Class members
 
-	HASH_PAIR* m_pahash;
 	size_t m_cMembers;
 	size_t m_cMalloced;
-
+	HASH_PAIR* m_pahash;
 };
 
 #endif // __TTLIB_HASHPAIR_H__
