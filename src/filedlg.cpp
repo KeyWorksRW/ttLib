@@ -16,8 +16,8 @@
 
 ttFileDlg::ttFileDlg(HWND hwndParent)
 {
-	m_idOpenIcon = -1;
-	m_idCancelIcon = -1;
+	m_idOpenIcon = (UINT) -1;
+	m_idCancelIcon = (UINT) -1;
 	m_bShadeBtns = false;
 
 	int cbStruct = sizeof(OPENFILENAME);
