@@ -37,7 +37,7 @@
 
 ttShadeBtn::ttShadeBtn()
 {
-	m_Border = 1;			// draw 3D border
+	m_Border = TRUE;		// draw 3D border
 	m_FocusRectMargin = 4;	// focus dotted rect margin
 	m_TextColor = GetSysColor(COLOR_BTNTEXT);	// default button text color
 	m_flat = m_Checked = false;
