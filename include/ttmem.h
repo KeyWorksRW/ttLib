@@ -27,51 +27,51 @@
 class ttMem	// Header-only class
 {
 public:
-	ttMem(void) { pb = nullptr; }
-	ttMem(size_t size) { pb = (uint8_t*) tt::malloc(size); }
+	ttMem(void) { m_pb = nullptr; }
+	ttMem(size_t size) { m_pb = (uint8_t*) tt::malloc(size); }
 	~ttMem(void) {
-		if (pb)
-			tt::free(pb);
-		pb = nullptr;
+		if (m_pb)
+			tt::free(m_pb);
+		m_pb = nullptr;
 	}
 	void resize(size_t cb) {
-		if (!pb)
-			pb = (uint8_t*) tt::malloc(cb);
+		if (!m_pb)
+			m_pb = (uint8_t*) tt::malloc(cb);
 		else {
-			pb = (uint8_t*) tt::realloc(pb, cb);
+			m_pb = (uint8_t*) tt::realloc(m_pb, cb);
 		}
 	}
 
-	operator void*() { return (void*) pb; };
-	operator const char*() { return (const char*) pb; };
-	operator char*()  { return (char*) pb; };
-	operator uint8_t*() { return pb; };
+	operator void*() { return (void*) m_pb; };
+	operator const char*() { return (const char*) m_pb; };
+	operator char*()  { return (char*) m_pb; };
+	operator uint8_t*() { return m_pb; };
 
-	uint8_t* pb;
+	uint8_t* m_pb;
 };
 
 template <typename T> class ttTMem	// Header-only class
 {
 public:
-	ttTMem() { p = NULL; }
-	ttTMem(size_t size) { p = (T) tt::malloc(size); }
+	ttTMem() { m_p = NULL; }
+	ttTMem(size_t size) { m_p = (T) tt::malloc(size); }
 	~ttTMem() {
-		if (p)
-			tt::free(p);
+		if (m_p)
+			tt::free(m_p);
 	}
 
 	void resize(size_t cb) {
-		if (!p)
-			p = (T) tt::malloc(cb);
+		if (!m_p)
+			m_p = (T) tt::malloc(cb);
 		else
-			p = (T) tt::realloc(p, cb);
+			m_p = (T) tt::realloc(m_p, cb);
 	}
-	size_t size() { return tt::size(p); }
+	size_t size() { return tt::size(m_p); }
 
-	operator T()	{ ttASSERT(p); return p; };
-	T operator->() { ttASSERT(p); return p; };
+	operator T()	{ ttASSERT(m_p); return m_p; };
+	T operator->() { ttASSERT(m_p); return m_p; };
 
-	T p;
+	T m_p;
 };
 
 #endif	// __TTLIB_TTMEM_H__
