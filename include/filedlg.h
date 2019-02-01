@@ -17,8 +17,9 @@
 
 #include <commdlg.h>
 
-#include "ttdebug.h" 	// for ttASSERTS
+#include "ttdebug.h"	// for ttASSERTS
 #include "ttstring.h"	// ttString
+#include "multibtn.h"	// ttMultiBtn
 
 #ifndef OFN_DONTADDTORECENT
 	#define OFN_DONTADDTORECENT			 0x02000000
@@ -36,8 +37,8 @@ public:
 
 	// Class functions
 
-	bool GetOpenFileName();	// call this or the following to launch the actual dialog box
-	bool GetSaveFileName();
+	bool	GetOpenFileName();	// call this or the following to launch the actual dialog box
+	bool	GetSaveFileName();
 
 	char*	GetFileName() { return m_cszFileName; }	// call this after one of the above two functions has been called
 
@@ -50,12 +51,16 @@ public:
 	void	ShowReadOnlyBox() { m_pofn->Flags &= ~OFN_HIDEREADONLY; }
 	void	UseCurrentDirectory() { m_cszCurDir.getCWD(); m_pofn->lpstrInitialDir = m_cszCurDir; }
 
-	void  SetWindowRect(const RECT* prc) { ttASSERT(!IsRectEmpty(prc)); CopyRect(&m_rcPosition, prc); }
-	RECT* GetWindowRect() { return &m_rcPosition; }
+	void	SetWindowRect(const RECT* prc) { ttASSERT(!IsRectEmpty(prc)); CopyRect(&m_rcPosition, prc); }
+	RECT*	GetWindowRect() { return &m_rcPosition; }
+
+	void	EnableShadeBtns(bool bEnable = true) { m_bShadeBtns = bEnable; }
+	void	SetOpenIcon(UINT idIcon) { m_idOpenIcon = idIcon; }
+	void	SetCancelIcon(UINT idIcon) { m_idCancelIcon = idIcon; }
 
 	// By default, the file must exist
 
-	void  SetFileMustExist(bool bMustExist = true) { if (bMustExist) m_pofn->Flags |= OFN_FILEMUSTEXIST; else m_pofn->Flags &= ~OFN_FILEMUSTEXIST; }
+	void	SetFileMustExist(bool bMustExist = true) { if (bMustExist) m_pofn->Flags |= OFN_FILEMUSTEXIST; else m_pofn->Flags &= ~OFN_FILEMUSTEXIST; }
 
 	OPENFILENAMEA* GetOF() { return m_pofn; }
 	operator OPENFILENAMEA*() const { return m_pofn; }
@@ -68,18 +73,21 @@ private:
 	// Class members
 
 protected:
-	bool  m_bRepositionWindow;
 	ttString  m_cszFileName;
 	ttString  m_cszCurDir;
 	ttString  m_cszFilter;
-	int	  m_idOpenIcon;
-	int	  m_idCancelIcon;
-	RECT  m_rcPosition;
+
+	RECT	  m_rcPosition;
 
 	// This is malloc'd because it is a different size when running on XP then on Win 9x.
 	OPENFILENAMEA* m_pofn;
 
-	// CMultiBtn m_ShadedBtns;
+	ttMultiBtn	m_ShadedBtns;
+	UINT		m_idOpenIcon;
+	UINT		m_idCancelIcon;
+
+	bool m_bRepositionWindow;
+	bool m_bShadeBtns;
 };
 
 #endif	// __TTLIB_FILEDLG_H__

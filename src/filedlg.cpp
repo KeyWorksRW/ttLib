@@ -16,6 +16,10 @@
 
 ttFileDlg::ttFileDlg(HWND hwndParent)
 {
+	m_idOpenIcon = -1;
+	m_idCancelIcon = -1;
+	m_bShadeBtns = false;
+
 	int cbStruct = sizeof(OPENFILENAME);
 
 	// If we are running on Windows XP or higher, then make room for pvReserved, dwReserved, and FlagsEx.
@@ -128,13 +132,13 @@ UINT_PTR CALLBACK ttpriv::OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */,
 		SetWindowLongPtr(hdlg, GWLP_USERDATA, ((OPENFILENAME*) lParam)->lCustData);
 		ttFileDlg* pThis = (ttFileDlg*) ((OPENFILENAME*) lParam)->lCustData;
 
-#if 0
-		pThis->m_ShadedBtns.Initialize(GetParent(hdlg));
-		if (pThis->m_idOpenIcon != -1)
-			pThis->m_ShadedBtns.SetIcon(IDOK, pThis->m_idOpenIcon);
-		if (pThis->m_idCancelIcon != -1)
-			pThis->m_ShadedBtns.SetIcon(IDCANCEL, pThis->m_idCancelIcon);
-#endif
+		if (pThis->m_bShadeBtns) {
+			pThis->m_ShadedBtns.Initialize(GetParent(hdlg));
+			if (pThis->m_idOpenIcon != -1)
+				pThis->m_ShadedBtns.SetIcon(IDOK, pThis->m_idOpenIcon);
+			if (pThis->m_idCancelIcon != -1)
+				pThis->m_ShadedBtns.SetIcon(IDCANCEL, pThis->m_idCancelIcon);
+		}
 
 		if (!IsRectEmpty(&pThis->m_rcPosition))
 			pThis->m_bRepositionWindow = true;
