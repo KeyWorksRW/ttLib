@@ -148,7 +148,7 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 				switch (LOWORD(wParam)) {
 					case IDOK:
 						pThis->m_bInitializing = false;
-						pThis->OnEnd();
+						pThis->OnOK();
 						if (pThis->m_bCancelEnd)
 							pThis->m_bCancelEnd = false;
 						else {

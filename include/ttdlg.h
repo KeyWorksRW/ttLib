@@ -53,13 +53,12 @@ public:
 
 	INT_PTR DoModal();
 
-	virtual bool OnMsgMap(UINT /* uMsg */, WPARAM /* wParam */, LPARAM /* lParam */) { return false; }	  // Use of BEGIN_TTMSG_MAP will override this
+	// BEGIN_TTMSG_MAP in ttmsgmap.h will override this
+	virtual bool OnMsgMap(UINT /* uMsg */, WPARAM /* wParam */, LPARAM /* lParam */) { return false; }
 
-	virtual void OnBegin() { }	// called when dialog is initialized
-	virtual void OnEnd() { }	// called when dialog is to be closed
-	virtual void OnCancel() { }	// called when dialog is cancelled (call CancelEnd to return without closing the dialog)
-
-	[[deprecated]] void DontShadeBtns() { m_bShadeBtns = false; }	// deprecated since m_bShadeBtns is not false by default. Use EnableShadeBtns to enable.
+	virtual void OnBegin() { }	// called when dialog is initialized, override if you need to do something during dialog initialization
+	virtual void OnOK() { } 	// called when IDOK button is pressed--call CancelEnd() before return to prevent closing the dialog
+	virtual void OnCancel() { }	// called when IDCANCEL button is pressed--call CancelEnd() before return to prevent closing the dialog
 
 	void DontCenterWindow(void) { m_bCenterWindow = false; }
 	void EnableShadeBtns(bool bEnable = true) { m_bShadeBtns = bEnable; }
