@@ -134,9 +134,9 @@ UINT_PTR CALLBACK ttpriv::OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */,
 
 		if (pThis->m_bShadeBtns) {
 			pThis->m_ShadedBtns.Initialize(GetParent(hdlg));
-			if (pThis->m_idOpenIcon != -1)
+			if (pThis->m_idOpenIcon != (UINT) -1)
 				pThis->m_ShadedBtns.SetIcon(IDOK, pThis->m_idOpenIcon);
-			if (pThis->m_idCancelIcon != -1)
+			if (pThis->m_idCancelIcon != (UINT) -1)
 				pThis->m_ShadedBtns.SetIcon(IDCANCEL, pThis->m_idCancelIcon);
 		}
 
