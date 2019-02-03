@@ -60,6 +60,8 @@ public:
 	virtual void OnOK() { } 	// called when IDOK button is pressed--call CancelEnd() before return to prevent closing the dialog
 	virtual void OnCancel() { }	// called when IDCANCEL button is pressed--call CancelEnd() before return to prevent closing the dialog
 
+	[[deprecated]] virtual void OnEnd() { }	// apps need to call OnOK instead
+
 	void DontCenterWindow(void) { m_bCenterWindow = false; }
 	void EnableShadeBtns(bool bEnable = true) { m_bShadeBtns = bEnable; }
 	void FadeOnExit() { m_fFade = true; }
