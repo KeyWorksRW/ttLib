@@ -24,7 +24,7 @@ class ttWin		// Non-MDI window class
 {
 public:
 	ttWin();
-	~ttWin();
+	virtual ~ttWin();
 
 public:
 	// Call these methods before calling CreateWnd
