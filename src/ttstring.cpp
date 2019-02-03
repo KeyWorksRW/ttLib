@@ -40,7 +40,8 @@ void ttString::AppendFileName(const char* pszFile)
 		return;
 	}
 
-	AddTrailingSlash();
+	if (*m_psz)
+		AddTrailingSlash();
 	*this += pszFile;
 }
 
