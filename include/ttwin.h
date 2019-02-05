@@ -14,8 +14,6 @@
 	#error This code will only work on Windows
 #endif
 
-#include "ttmsgmap.h"	// #define macros for BEGIN_TTMSG_MAP()/END_TTMSG_MAP() block
-
 namespace ttpriv {
 	LRESULT WINAPI ttWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 }
@@ -57,7 +55,8 @@ public:
 	operator WNDCLASSEX*() { return m_pwc; }
 
 protected:
-	virtual bool OnMsgMap(UINT /* uMsg */, WPARAM /* wParam */, LPARAM /* lParam */) { return false; }	  // Use of BEGIN_TTMSG_MAP will override this
+	// BEGIN_TTMSG_MAP in ttmsgs.h will override this
+	virtual bool OnMsgMap(UINT /* uMsg */, WPARAM /* wParam */, LPARAM /* lParam */) { return false; }
 
 protected:
 	friend LRESULT WINAPI ttpriv::ttWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);

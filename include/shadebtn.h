@@ -21,16 +21,8 @@
 	#error This code will only work on Windows
 #endif
 
-#include "ttdib.h"	// ttDib
-#include "ttwin.h"	// ttWin
-
-namespace ShadeBtn {
-	#define MSG_BM_SETSTATE(func) \
-		if (uMsg == BM_SETSTATE) { \
-			func(); \
-			return false; \
-		}
-}
+#include "ttdib.h"	  // ttDib
+#include "ttwin.h"	  // ttWin
 
 class ttShadeBtn : public ttWin
 {
@@ -50,33 +42,12 @@ public:
 		SHS_METAL = 8,
 	} BTN_SHADE;
 
-	BEGIN_TTMSG_MAP()
-		MSG_WM_PAINT(OnPaint)
-		MSG_WM_ENABLE(OnEnable)
-		MSG_BM_SETSTATE(OnSetState)
-	END_TTMSG_MAP()
-
-	void OnEnable(WPARAM /* bEnabled */) {
-		InvalidateRect(*this, NULL, TRUE);	// REVIEW: [randalphwa - 1/26/2019] Can we get away with setting FALSE for bErase?
-		// UpdateWindow();	// [ralphw - 02-16-2010] I can't think of any reason why button needs to be redrawn immediately
-	}
-
-	// We have to process BM_SETSTATE ourselves because if the application consists only of a Modal dialog box, the
-	// button control never gets it's window invalidated. In a dialog from a main window, this does result in one extra
-	// WM_PAINT being sent when the button is first clicked.
-
-	void OnSetState() {
-		InvalidateRect(*this, NULL, TRUE);	// REVIEW: [randalphwa - 1/26/2019] Can we get away with setting FALSE for bErase?
-		// UpdateWindow();
-	}
-
 	// Class functions
 
 	void	 Draw3dRect(HDC hdc, RECT* pRect, COLORREF clrTopLeft, COLORREF clrBottomRight);
 	void	 Draw3dRect(HDC hdc, int x, int y, int cx, int cy, COLORREF clrTopLeft, COLORREF clrBottomRight);
 	void	 FillSolidRect(HDC hdc, int x, int y, int cx, int cy, COLORREF clr);
 	LOGFONT* GetFont() { return m_pLF; }
-	void	 OnPaint();
 	void	 SetButtonStyle(UINT nStyle, BOOL bRedraw = TRUE);
 	void	 SetFlat(bool bFlag) { m_flat=bFlag; }
 	bool	 SetFont(LOGFONT* pNewStyle);
@@ -90,6 +61,27 @@ public:
 	operator HWND() const { return m_hwnd; }
 
 protected:
+	// Message handlers
+
+#include "ttmsgmap.h" // Macros for mapping Windows messages to functions
+
+	BEGIN_TTMSG_MAP()
+		TTMSG_PAINT(OnPaint)
+
+		TTMSG(WM_ENABLE, OnEnable)
+
+		if (uMsg == BM_SETSTATE) {
+			InvalidateRect(*this, NULL, TRUE);
+			return false;	// let default process this
+		}
+	END_TTMSG_MAP()
+
+	void OnPaint();
+	void OnEnable(WPARAM /* wParam */, LPARAM /* lParam */) {
+		InvalidateRect(*this, NULL, TRUE);	// REVIEW: [randalphwa - 1/26/2019] Can we get away with setting FALSE for bErase?
+		// UpdateWindow();	// [ralphw - 02-16-2010] I can't think of any reason why button needs to be redrawn immediately
+	}
+
 	// Class members
 
 	BOOL	 m_Border;			// 0=flat; 1=3D;

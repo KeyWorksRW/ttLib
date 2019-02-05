@@ -30,8 +30,6 @@
 #include "ttwstring.h"	// ttWString
 #include "multibtn.h"	// ttMultiBtn
 
-#include "ttmsgmap.h"	// #define macros for BEGIN_TTMSG_MAP()/END_TTMSG_MAP() block
-
 #ifndef __DLG_ID__
 	#ifdef _DEBUG
 		#define DLG_ID(id) CheckItemID(id, #id, __LINE__, __FILE__)
