@@ -16,6 +16,7 @@
 
 namespace tt {
 	bool AssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFunction, int line);
+	bool AssertionMsg(const wchar_t* pszMsg, const char* pszFile, const char* pszFunction, int line);
 	void doReportLastError(const char* pszFile, const char* pszFunc, int line);
 	void _cdecl CATCH_HANDLER(const char* pszFormat, ...);
 	__declspec(noreturn) void OOM(void);
@@ -27,7 +28,7 @@ namespace tt {
 	#define ttFAIL(pszMsg) tt::AssertionMsg(pszMsg, __FILE__, __func__, __LINE__)
 
 	// checks for both ptr == NULL and *ptr == NULL
-	#define ttASSERT_NONEMPTY(ptr) { if (!ptr || !*ptr) tt::AssertionMsg(ptr, __FILE__, __func__, __LINE__); }
+	#define ttASSERT_NONEMPTY(ptr) { if (!ptr || !*ptr) tt::AssertionMsg(ptr, __FILE__, __func__, __LINE__); }	// AssertionMsg figures out if it's nullptr or just empty
 
 #ifdef _WINDOWS_
 	#define ttASSERT_HRESULT(hr, pszMsg) { if (FAILED(hr)) tt::AssertionMsg(pszMsg, __FILE__, __func__, __LINE__); }

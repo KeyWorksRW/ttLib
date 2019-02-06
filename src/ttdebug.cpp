@@ -108,6 +108,31 @@ bool tt::AssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFu
 
 }
 
+bool tt::AssertionMsg(const wchar_t* pwszMsg, const char* pszFile, const char* pszFunction, int line)
+{
+	if (ttdbg::bNoAssert)
+		return false;
+
+	crtAssert.Lock();
+	bool bResult;
+	{	// use a brace so that cszMsg gets deleted before we release the critical section
+		ttString cszMsg;
+
+		// We special case a null or empty pszMsg -- ttASSERT_NONEMPTY(ptr) takes advantage of this
+
+		if (!pwszMsg)
+			cszMsg = "NULL pointer!";
+		else if (!*pwszMsg)
+			cszMsg = "Empty string!";
+		else
+			cszMsg = pwszMsg;
+
+		bResult = tt::AssertionMsg((char*) cszMsg, pszFile, pszFunction, line);
+	}
+	crtAssert.Unlock();
+	return bResult;
+}
+
 // Displays a message box displaying the catch message with an option to ignore, break into a debugger, or exit the program. Example:
 //
 // try {
