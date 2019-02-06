@@ -560,10 +560,9 @@ wchar_t* tt::findstri(const wchar_t* pszMain, const wchar_t* pszSub)
 
 char* tt::nextchr(const char*psz)
 {
-	ttASSERT_MSG(psz, "NULL pointer!");
+	ttASSERT_NONEMPTY(psz);
 	if (!psz)
 		return nullptr;
-	ttASSERT_MSG(*psz, "Empty string!");
 	if (!*psz)
 		return (char*) psz;
 	size_t i = 0;

@@ -374,8 +374,7 @@ void ttFile::WriteEol(const char* psz)
 void ttFile::WriteStr(const char* psz)
 {
 	ttASSERT(!m_bReadlineReady);
-	ttASSERT_MSG(psz, "NULL pointer!");
-	ttASSERT_MSG(*psz, "empty string!");
+	ttASSERT_NONEMPTY(psz);
 	if (!psz || !*psz)
 		return;
 	if (!m_pbuf)
@@ -391,8 +390,7 @@ void ttFile::WriteStr(const char* psz)
 void cdecl ttFile::printf(const char* pszFormat, ...)
 {
 	ttASSERT(!m_bReadlineReady);
-	ttASSERT_MSG(pszFormat, "NULL pointer!");
-	ttASSERT_MSG(*pszFormat, "empty string!");
+	ttASSERT_NONEMPTY(pszFormat);
 	if (!pszFormat || !*pszFormat)
 		return;
 
@@ -554,8 +552,7 @@ size_t ttFile::GetCurLineLength()
 
 bool ttFile::isThisPreviousString(const char* pszPrev)
 {
-	ttASSERT_MSG(pszPrev, "NULL pointer!");
-	ttASSERT_MSG(*pszPrev, "empty string!");
+	ttASSERT_NONEMPTY(pszPrev);
 	ttASSERT(m_pCurrent);
 
 	if (!pszPrev || !*pszPrev || !m_pCurrent)

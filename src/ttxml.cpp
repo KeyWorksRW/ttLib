@@ -692,8 +692,7 @@ bool ttXMLBranch::ReplaceAttributeValue(ttXML* pxml, const char* pszAttribute, c
 
 HRESULT ttXML::ParseXmlFile(const char* pszFile)
 {
-	ttASSERT_MSG(pszFile, "NULL pointer!");
-	ttASSERT_MSG(*pszFile, "Empty string!");
+	ttASSERT_NONEMPTY(pszFile);
 
 	if (!pszFile || !*pszFile)
 		return STG_E_FILENOTFOUND;
@@ -711,8 +710,7 @@ HRESULT ttXML::ParseXmlFile(const char* pszFile)
 
 HRESULT ttXML::ParseHtmlFile(const char* pszFile)
 {
-	ttASSERT_MSG(pszFile, "NULL pointer!");
-	ttASSERT_MSG(*pszFile, "Empty string!");
+	ttASSERT_NONEMPTY(pszFile);
 
 	if (!pszFile || !*pszFile)
 		return STG_E_FILENOTFOUND;
@@ -806,8 +804,8 @@ ttXMLBranch* ttXMLBranch::FindNextElement(HTML_ELEMENT Element)
 
 ttXMLBranch* ttXMLBranch::FindFirstAttribute(const char* pszAttribute, const char* pszValue)
 {
-	ttASSERT_MSG(pszAttribute, "NULL pointer!");
-	ttASSERT_MSG(*pszAttribute, "Empty string!");
+	ttASSERT_NONEMPTY(pszAttribute);
+
 	if (!pszAttribute || !*pszAttribute)
 		return nullptr;
 

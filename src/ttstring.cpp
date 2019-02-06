@@ -29,8 +29,7 @@ namespace ttpriv {
 
 void ttString::AppendFileName(const char* pszFile)
 {
-	ttASSERT_MSG(pszFile, "NULL pointer!");
-	ttASSERT_MSG(*pszFile, "Empty string!");
+	ttASSERT_NONEMPTY(pszFile);
 
 	if (!pszFile || !*pszFile)
 		return;
@@ -47,8 +46,7 @@ void ttString::AppendFileName(const char* pszFile)
 
 void ttString::ChangeExtension(const char* pszExtension)
 {
-	ttASSERT_MSG(pszExtension, "NULL pointer!");
-	ttASSERT_MSG(*pszExtension, "Empty string!");
+	ttASSERT_NONEMPTY(pszExtension);
 
 	if (!pszExtension || !*pszExtension)
 		return;
@@ -220,8 +218,7 @@ bool ttString::GetWindowText(HWND hwnd)
 
 char* ttString::GetQuotedString(const char* pszQuote)
 {
-	ttASSERT_MSG(pszQuote, "NULL pointer!");
-	ttASSERT_MSG(*pszQuote, "Empty string!");
+	ttASSERT_NONEMPTY(pszQuote);
 
 	if (!pszQuote || !*pszQuote) {
 		Delete();	// current string, if any, should be deleted no matter what
@@ -314,8 +311,7 @@ bool ttString::CopyWide(const wchar_t* pwsz)	// convert UNICODE to UTF8 and stor
 		m_psz = nullptr;
 	}
 
-	ttASSERT_MSG(pwsz, "NULL pointer!");
-	ttASSERT_MSG(*pwsz, "empty string!");
+	ttASSERT_NONEMPTY(pwsz);
 
 	if (!pwsz || !*pwsz) {
 		m_psz = tt::strdup("");

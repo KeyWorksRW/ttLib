@@ -13,8 +13,7 @@
 
 size_t tt::HashFromSz(const char* psz)
 {
-	ttASSERT_MSG(psz, "NULL pointer!");
-	ttASSERT_MSG(*psz, "empty string!");
+	ttASSERT_NONEMPTY(psz);
 
 	if (!psz || !*psz)
 		return 0;
@@ -38,8 +37,7 @@ size_t tt::HashFromSz(const char* psz)
 
 size_t tt::HashFromSz(const wchar_t* psz)
 {
-	ttASSERT_MSG(psz, "NULL pointer!");
-	ttASSERT_MSG(*psz, "empty string!");
+	ttASSERT_NONEMPTY(psz);
 
 	if (!psz || !*psz)
 		return 5381;

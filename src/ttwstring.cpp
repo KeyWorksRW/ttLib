@@ -29,8 +29,7 @@ namespace ttpriv {
 
 void ttWString::AppendFileName(const wchar_t* pszFile)
 {
-	ttASSERT_MSG(pszFile, "NULL pointer!");
-	ttASSERT_MSG(*pszFile, "Empty string!");
+	ttASSERT_NONEMPTY(pszFile);
 
 	if (!pszFile || !*pszFile)
 		return;
@@ -46,8 +45,7 @@ void ttWString::AppendFileName(const wchar_t* pszFile)
 
 void ttWString::ChangeExtension(const wchar_t* pszExtension)
 {
-	ttASSERT_MSG(pszExtension, "NULL pointer!");
-	ttASSERT_MSG(*pszExtension, "Empty string!");
+	ttASSERT_NONEMPTY(pszExtension);
 
 	if (!pszExtension || !*pszExtension)
 		return;
@@ -89,8 +87,7 @@ void ttWString::AddTrailingSlash()
 
 const wchar_t* ttWString::FindLastSlash()
 {
-	ttASSERT_MSG(m_psz, "NULL pointer!");
-	ttASSERT_MSG(*m_psz, "Empty string!");
+	ttASSERT_NONEMPTY(m_psz);
 
 	if (!m_psz || !*m_psz)
 		return nullptr;
@@ -207,8 +204,7 @@ bool ttWString::GetWindowText(HWND hwnd)
 
 wchar_t* ttWString::GetQuotedString(wchar_t* pszQuote)
 {
-	ttASSERT_MSG(pszQuote, "NULL pointer!");
-	ttASSERT_MSG(*pszQuote, "Empty string!");
+	ttASSERT_NONEMPTY(pszQuote);
 
 	if (!pszQuote || !*pszQuote) {
 		Delete();	// current string, if any, should be deleted no matter what
@@ -297,8 +293,7 @@ bool ttWString::CopyNarrow(const char* psz)	// convert UTF8 to UNICODE and store
 	if (m_psz)
 		 tt::free(m_psz);
 
-	ttASSERT_MSG(psz, "NULL pointer!");
-	ttASSERT_MSG(*psz, "empty string!");
+	ttASSERT_NONEMPTY(psz);
 
 	if (!psz || !*psz) {
 		m_psz = tt::strdup(L"");
@@ -354,9 +349,8 @@ void ttWString::operator=(const char* psz)
 
 void ttWString::operator=(const wchar_t* psz)
 {
-	ttASSERT_MSG(psz, "null pointer!");
-	ttASSERT_MSG(*psz, "empty string!");
-	ttASSERT_MSG(m_psz != psz, "Attempt to assign CStr to itself");
+	ttASSERT_NONEMPTY(psz);
+	ttASSERT_MSG(m_psz != psz, "Attempt to assign ttWString to itself");
 
 	if (m_psz && m_psz == psz)
 		return;

@@ -109,8 +109,7 @@ size_t ttList::Add(const char* pszKey)
 
 bool ttList::Find(const char* pszKey) const
 {
-	ttASSERT_MSG(pszKey, "NULL pointer!");
-	ttASSERT_MSG(*pszKey, "empty string!");
+	ttASSERT_NONEMPTY(pszKey);
 	if (!pszKey || !*pszKey)
 		return false;
 
@@ -129,8 +128,7 @@ bool ttList::Find(const char* pszKey) const
 
 size_t ttList::GetPos(const char* pszKey) const
 {
-	ttASSERT_MSG(pszKey, "NULL pointer!");
-	ttASSERT_MSG(*pszKey, "empty string!");
+	ttASSERT_NONEMPTY(pszKey);
 	if (!pszKey || !*pszKey)
 		return (size_t) -1;
 
@@ -178,8 +176,7 @@ void ttList::Remove(size_t pos)
 
 void ttList::Remove(const char* psz)
 {
-	ttASSERT_MSG(psz, "NULL pointer!");
-	ttASSERT_MSG(*psz, "empty string!");
+	ttASSERT_NONEMPTY(psz);
 	if (!psz || !*psz)
 		return;
 
@@ -212,8 +209,7 @@ void ttList::Delete()
 
 void ttList::Replace(size_t pos, const char* pszKey)
 {
-	ttASSERT_MSG(pszKey, "NULL pointer!");
-	ttASSERT_MSG(*pszKey, "empty string!");
+	ttASSERT_NONEMPTY(pszKey);
 	ttASSERT(pos < m_cItems);
 	if (pos >= m_cItems || !pszKey || !*pszKey)
 		return;
@@ -431,8 +427,7 @@ void ttDblList::PreventDuplicateKeys()
 
 void ttDblList::Add(const char* pszKey, const char* pszVal)
 {
-	ttASSERT_MSG(pszKey, "NULL pointer!");
-	ttASSERT_MSG(*pszKey, "empty string!");
+	ttASSERT_NONEMPTY(pszKey);
 	ttASSERT_MSG(pszVal, "NULL pointer!");	// it's okay to add an empty val string as long as it isn't a null pointer
 
 	if (!pszKey || !*pszKey || !pszVal )
@@ -458,8 +453,7 @@ void ttDblList::Add(const char* pszKey, const char* pszVal)
 
 bool ttDblList::FindKey(const char* pszKey, size_t* ppos) const
 {
-	ttASSERT_MSG(pszKey, "NULL pointer!");
-	ttASSERT_MSG(*pszKey, "empty string!");
+	ttASSERT_NONEMPTY(pszKey);
 	if (!pszKey || !*pszKey)
 		return false;
 	if (m_bIgnoreCase) {
@@ -549,8 +543,7 @@ char* ttDblList::GetMatchingVal(const char* pszKey) const
 
 void ttDblList::Replace(size_t pos, const char* pszKey, const char* pszVal)
 {
-	ttASSERT_MSG(pszKey, "NULL pointer!");
-	ttASSERT_MSG(*pszKey, "empty string!");
+	ttASSERT_NONEMPTY(pszKey);
 	ttASSERT_MSG(pszVal, "NULL pointer!");	// okay if pszVal is an empty string, just not a null pointer
 	ttASSERT(pos < m_cItems);
 	if (pos >= m_cItems || !pszKey || !*pszKey || *pszVal)
@@ -639,8 +632,7 @@ ttStrIntList::ttStrIntList(bool bSerialize) : ttHeap(bSerialize)
 
 void ttStrIntList::Add(const char* pszKey, ptrdiff_t newVal)
 {
-	ttASSERT_MSG(pszKey, "NULL pointer!");
-	ttASSERT_MSG(*pszKey, "empty string!");
+	ttASSERT_NONEMPTY(pszKey);
 	if (!pszKey || !*pszKey )
 		return;
 
@@ -694,8 +686,7 @@ bool ttStrIntList::Add(size_t posKey, ptrdiff_t newVal)
 
 bool ttStrIntList::FindKey(const char* pszKey, size_t* ppos) const
 {
-	ttASSERT_MSG(pszKey, "NULL pointer!");
-	ttASSERT_MSG(*pszKey, "empty string!");
+	ttASSERT_NONEMPTY(pszKey);
 	if (!pszKey || !*pszKey)
 		return false;
 	for (size_t pos = 0; pos < m_cItems; ++pos)	{
@@ -710,8 +701,7 @@ bool ttStrIntList::FindKey(const char* pszKey, size_t* ppos) const
 
 bool ttStrIntList::GetValCount(const char* pszKey, ptrdiff_t* pVal) const
 {
-	ttASSERT_MSG(pszKey, "NULL pointer!");
-	ttASSERT_MSG(*pszKey, "empty string!");
+	ttASSERT_NONEMPTY(pszKey);
 	ttASSERT_MSG(pVal, "NULL pointer!");
 
 	if (!pszKey || !*pszKey || !pVal)
@@ -735,8 +725,7 @@ ptrdiff_t ttStrIntList::GetValCount(size_t posKey) const
 
 bool ttStrIntList::GetVal(const char* pszKey, ptrdiff_t* pVal, size_t posVal) const
 {
-	ttASSERT_MSG(pszKey, "NULL pointer!");
-	ttASSERT_MSG(*pszKey, "empty string!");
+	ttASSERT_NONEMPTY(pszKey);
 	ttASSERT_MSG(pVal, "NULL pointer!");
 
 	if (!pszKey || !*pszKey || !pVal)

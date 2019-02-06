@@ -144,8 +144,8 @@ bool tt::CreateDir(const wchar_t* pszDir)
 
 void tt::ConvertToRelative(const char* pszRoot, const char* pszFile, ttString& cszResult)
 {
-	ttASSERT_MSG(pszRoot && pszFile, "NULL pointer!");
-	ttASSERT_MSG(*pszRoot && *pszFile, "empty string!");
+	ttASSERT_NONEMPTY(pszRoot);
+	ttASSERT_NONEMPTY(pszFile);
 
 	if (!pszRoot) {
 		cszResult = pszFile ? pszFile : "";
