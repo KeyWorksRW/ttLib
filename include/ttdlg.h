@@ -104,10 +104,15 @@ public:
 	void EndDialog(int nResult = IDCANCEL) const { ::EndDialog(m_hwnd, nResult); }
 	void FadeWindow();
 
-	void KDDX_Text(int id, ttString& csz) {  (m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz)); }
-	void KDDX_Text(int id, ttWString& csz) { (m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz)); }
-	void KDDX_Check(int id, bool& bFlag) {   (m_bInitializing ? SetCheck(id, bFlag) : (void) (bFlag = GetCheck(id))); }
-	void KDDX_Int(int id, ptrdiff_t* pVal) { (m_bInitializing ? SetControlInteger(id, *pVal) : (void) (*pVal = GetControlInteger(id))); }
+	[[deprecated]] void KDDX_Text(int id, ttString& csz) {  (m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz)); }
+	[[deprecated]] void KDDX_Text(int id, ttWString& csz) { (m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz)); }
+	[[deprecated]] void KDDX_Check(int id, bool& bFlag) {   (m_bInitializing ? SetCheck(id, bFlag) : (void) (bFlag = GetCheck(id))); }
+	[[deprecated]] void KDDX_Int(int id, ptrdiff_t* pVal) { (m_bInitializing ? SetControlInteger(id, *pVal) : (void) (*pVal = GetControlInteger(id))); }
+
+	void ttDDX_Text(int id, ttString& csz) {  (m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz)); }
+	void ttDDX_Text(int id, ttWString& csz) { (m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz)); }
+	void ttDDX_Check(int id, bool& bFlag) {   (m_bInitializing ? SetCheck(id, bFlag) : (void) (bFlag = GetCheck(id))); }
+	void ttDDX_Int(int id, ptrdiff_t* pVal) { (m_bInitializing ? SetControlInteger(id, *pVal) : (void) (*pVal = GetControlInteger(id))); }
 
 	operator HWND() const { return m_hwnd; }
 
