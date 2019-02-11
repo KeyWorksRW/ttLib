@@ -75,6 +75,7 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 		if (pThis->OnMsgMap(msg, wParam, lParam))
 			return pThis->m_result;
 
+		pThis->m_bInitializing = true;	// needed to make sure ttDDX_ macros work correctly
 		pThis->OnBegin();
 		pThis->m_bInitializing = false;
 		return TRUE;
