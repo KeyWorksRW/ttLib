@@ -16,12 +16,6 @@
 	If the message handler needs to return a non-zero result to Windows, set the m_result value before your function ends. All
 	macros return true to indicate that you handled the message and that the default window/dialog procedure should not be called.
 
-	TTMSG(msg, func) can be used to process any message. However, any macros placed below TTMSG() will not be called if they are
-	checking for the same msg as TTMSG().
-
-	TTMSG_COMMAND(id, func) can be used to process any WM_COMMAND message. However, any of the other macros that handle WM_COMMAND
-	will not be called unless placed BEFORE you call this macro.
-
 	For each macro you process you will need to declare a matching function. For example:
 
 	BEGIN_TTMSG_MAP()
@@ -31,6 +25,29 @@
 
 	void OnMyBtn();
 	void OnInitMenu(WPARAM wParam, LPARAM lParam);
+
+	Additional Notes:
+
+		TTMSG(msg, func) can be used to process any message. However, any macros placed below TTMSG() will not be called if they are
+		checking for the same msg as TTMSG().
+
+		TTMSG_COMMAND(id, func) can be used to process any WM_COMMAND message. However, any of the other macros that handle
+		WM_COMMAND will not be called unless placed BEFORE you call this macro.
+
+
+	If you have a large number of menu commands to handle, you can use the following to convert them into a switch statement instead of multiple if statements which may result in
+	better compiler optimization.
+
+	BEGIN_TTMSG_MAP()
+		BEGIN_TTCMD_SWITCH()
+			TTCMD(IDM_MYMENU, OnMyMenu)
+			TTCMD(IDM_ABOUT, OnAbout)
+		END_TTCMD_SWITCH()
+	END_TTMSG_MAP()
+
+	void OnMyMenu();
+	void OnAbout();
+
 */
 
 #pragma once
@@ -65,7 +82,7 @@
 		return true; \
 	}
 
-// Use this for any WM_COMMAND messages not handled above
+// Use this for any WM_COMMAND messages not handled above. See TTCMD below for placing these in a switch statement
 #define TTMSG_COMMAND(id, func) \
 	if (uMsg == WM_COMMAND && LOWORD(wParam) == id) { \
 		func(); \
@@ -109,22 +126,7 @@
 		return true; \
 	}
 
-/*
-
-	If you have a large number of menu commands to handle, you can use the following to convert them into a switch statement instead of multiple if statements which may result in
-	better compiler optimization.
-
-	BEGIN_TTMSG_MAP()
-		BEGIN_TTCMD_SWITCH()
-			TTCMD(IDM_MYMENU, OnMyMenu)
-			TTCMD(IDM_ABOUT, OnAbout)
-		END_TTCMD_SWITCH()
-	END_TTMSG_MAP()
-
-	void OnMyMenu();
-	void OnAbout();
-
-*/
+// Use the following if you have a large number of commands to process.
 
 #define BEGIN_TTCMD_SWITCH() if (uMsg == WM_COMMAND) { switch (LOWORD(wParam)) {
 #define END_TTCMD_SWITCH() default: return false; } }
