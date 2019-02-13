@@ -203,6 +203,8 @@ public:
 	bool	FindKey(const char* pszKey, size_t* ppos = nullptr) const;
 	size_t	GetCount() const { return m_cItems; }	// returns the number of keys actually added (duplicates are not added)
 
+	void	Delete();	// deletes all strings
+
 	// To get all the numbers, either use Enum() or call these GetVal routines. Be aware that any pointer to
 	// the values is only valid for as long as no additional values are added to the key
 
