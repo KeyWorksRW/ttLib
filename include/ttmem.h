@@ -12,6 +12,7 @@
 #define __TTLIB_TTMEM_H__
 
 #include "ttdebug.h"	// Various debugging functionality
+#include "ttheap.h" 	// ttHeap
 
 /*
   ttMem and ttTMem allow you to allocate memory that will automatically be freed when the class gets destroyed.
@@ -41,6 +42,7 @@ public:
 			m_pb = (uint8_t*) tt::realloc(m_pb, cb);
 		}
 	}
+	size_t size() { return tt::size(m_pb); }
 
 	operator void*() { return (void*) m_pb; };
 	operator const char*() { return (const char*) m_pb; };
