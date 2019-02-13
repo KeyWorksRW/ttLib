@@ -216,6 +216,8 @@ bool ttString::GetWindowText(HWND hwnd)
 
 #endif	// _WINDOWS_
 
+// Retrieves the string inside single or double quotes, or angle brackets. If no quote or angle bracket, retrieves the entire string
+
 char* ttString::GetQuotedString(const char* pszQuote)
 {
 	ttASSERT_NONEMPTY(pszQuote);
@@ -267,7 +269,7 @@ char* ttString::GetQuotedString(const char* pszQuote)
 		strncpy_s(m_psz, DEST_SIZE, pszStart, pszQuote - pszStart);
 		m_psz[pszQuote - pszStart] = 0;
 	}
-	else {
+	else {	// there was no quote character, so just copy the string
 		tt::strcpy_s(m_psz, tt::size(m_psz), pszQuote);
 		pszQuote += cb;
 	}
