@@ -60,6 +60,7 @@ ttWin::ttWin()
 	m_pwc->lpfnWndProc = ttpriv::ttWinProc;
 	m_pwc->style = CS_HREDRAW | CS_VREDRAW;
 	m_pwc->hbrBackground = (HBRUSH) (LONG_PTR) (COLOR_WINDOW + 1);
+	m_pwc->hCursor = LoadCursor(NULL, IDC_ARROW);
 }
 
 ttWin::~ttWin()
