@@ -78,6 +78,8 @@ public:
 	void GetControlText(ptrdiff_t id, ttWString* pcsz) const { pcsz->GetWindowText(GetDlgItem(id)); }
 	void SetControlText(ptrdiff_t id, const wchar_t* pwszText) const { ttASSERT(pwszText); (void) ::SetWindowTextW(GetDlgItem(id), pwszText); }
 
+	void SetTitle(const char* pszTitle) { ::SetWindowTextA(*this, pszTitle); }
+
 	ptrdiff_t GetControlInteger(ptrdiff_t id) const;
 	void SetControlInteger(ptrdiff_t id, ptrdiff_t val) const;
 

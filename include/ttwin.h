@@ -47,6 +47,8 @@ public:
 
 	void ShowWindow(int nCmdShow = SW_SHOW) { ::ShowWindow(*this, nCmdShow); }
 
+	void SetTitle(const char* pszTitle) { ::SetWindowTextA(*this, pszTitle); }
+
 	// For other Windows functions requiring an HWND parameter, simply pass in *this as the HWND
 
 	////////// Operators //////////
