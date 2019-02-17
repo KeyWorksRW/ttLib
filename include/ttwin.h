@@ -29,11 +29,16 @@ public:
 
 	void SetClassBkgrnd(HBRUSH hbkgrnd) { if (m_pwc) m_pwc->hbrBackground = hbkgrnd; }	// constructor will have set this to COLOR_WINDOW + 1
 	void SetClassCursor(HCURSOR hcur) { if (m_pwc) m_pwc->hCursor = hcur; }
-	void SetClassIcon(size_t idIcon) { if (m_pwc) m_pwc->hIcon = LoadIcon(m_pwc->hInstance, (LPCTSTR) idIcon); }
 	void SetClassMenu(size_t idMenuResource) { if (m_pwc) m_pwc->lpszMenuName = (LPCTSTR) idMenuResource; }
 	bool SetClassName(const char* pszClassName);	// returns false if strlen(pszClassName) > 255
-	void SetClassSmallIcon(size_t idIcon) { if (m_pwc) m_pwc->hIconSm = LoadIcon(m_pwc->hInstance, (LPCTSTR) idIcon); }
 	void SetClassStyle(DWORD style) { if (m_pwc) m_pwc->style = style; }	// constructor will have set this to CS_HREDRAW | CS_VREDRAW
+	void SetWndExtra(int cbExtra) { if (m_pwc) m_pwc->cbWndExtra = cbExtra; }
+	void SetClsExtra(int cbExtra) { if (m_pwc) m_pwc->cbClsExtra = cbExtra; }
+
+	void SetClassIcon(size_t idIcon) { if (m_pwc) m_pwc->hIcon = LoadIcon(m_pwc->hInstance, (LPCTSTR) idIcon); }
+	void SetClassIcon(HICON hIcon) { if (m_pwc) m_pwc->hIcon = hIcon; }
+	void SetClassSmallIcon(size_t idIcon) { if (m_pwc) m_pwc->hIconSm = LoadIcon(m_pwc->hInstance, (LPCTSTR) idIcon); }
+	void SetClassSmallIcon(HICON hIcon) { if (m_pwc) m_pwc->hIconSm = hIcon; }
 
 	bool CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWND hwndParent = NULL, RECT* prc = NULL, HMENU hmenu = NULL);
 
