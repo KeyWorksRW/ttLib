@@ -64,6 +64,7 @@ public:
 
 	OPENFILENAMEA* GetOF() { return m_pofn; }
 	operator OPENFILENAMEA*() const { return m_pofn; }
+	operator char*() const { return (char*) m_cszFileName; }
 
 private:
 	void FixExtension();
@@ -79,7 +80,7 @@ protected:
 
 	RECT	  m_rcPosition;
 
-	// This is malloc'd because it is a different size when running on XP then on Win 9x.
+	// This is malloc'd because the size changes depending on the version of Windows
 	OPENFILENAMEA* m_pofn;
 
 	ttMultiBtn	m_ShadedBtns;
