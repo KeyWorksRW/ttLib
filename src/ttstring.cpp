@@ -216,74 +216,6 @@ bool ttString::GetWindowText(HWND hwnd)
 
 #endif	// _WINDOWS_
 
-// Retrieves the string inside single or double quotes, or angle brackets. If no quote or angle bracket, retrieves the entire string
-
-char* ttString::GetQuotedString(const char* pszQuote)
-{
-	ttASSERT_NONEMPTY(pszQuote);
-
-	if (!pszQuote || !*pszQuote) {
-		Delete();	// current string, if any, should be deleted no matter what
-		return nullptr;
-	}
-
-	size_t cb = tt::strbyte(pszQuote);
-	ttASSERT_MSG(cb <= MAX_STRING, "String is over 64k in size!");
-
-	if (m_psz)
-		tt::free(m_psz);
-
-	if (cb == 0 || cb > MAX_STRING) {
-		m_psz = nullptr;	// it was already freed above
-		return nullptr;
-	}
-	else {
-		m_psz = (char*) tt::malloc(cb);		// this won't return if it fails, so you will never get a nullptr on return
-		*m_psz = 0;
-	}
-
-	if (*pszQuote == CH_QUOTE) {
-		pszQuote++;
-		const char* pszStart = pszQuote;
-		while (*pszQuote != CH_QUOTE && *pszQuote) {
-			pszQuote = tt::nextchr(pszQuote);
-		}
-		strncpy_s(m_psz, DEST_SIZE, pszStart, pszQuote - pszStart);
-		m_psz[pszQuote - pszStart] = 0;
-	}
-	else if (*pszQuote == CH_START_QUOTE || *pszQuote == CH_END_QUOTE) {
-		pszQuote++;
-		const char* pszStart = pszQuote;
-		while (*pszQuote != CH_END_QUOTE && *pszQuote) {
-			pszQuote = tt::nextchr(pszQuote);
-		}
-		strncpy_s(m_psz, DEST_SIZE, pszStart, pszQuote - pszStart);
-		m_psz[pszQuote - pszStart] = 0;
-	}
-	else if (*pszQuote == '<') {
-		pszQuote++;
-		const char* pszStart = pszQuote;
-		while (*pszQuote != '>' && *pszQuote) {
-			pszQuote = tt::nextchr(pszQuote);
-		}
-		strncpy_s(m_psz, DEST_SIZE, pszStart, pszQuote - pszStart);
-		m_psz[pszQuote - pszStart] = 0;
-	}
-	else {	// there was no quote character, so just copy the string
-		tt::strcpy_s(m_psz, tt::size(m_psz), pszQuote);
-		pszQuote += cb;
-	}
-
-	// If there is a significant size difference, then reallocate the memory
-
-	if (cb > 32) {	// don't bother if total allocation is 32 bytes or less
-		size_t cbNew = tt::strbyte(m_psz);
-		if (cbNew < cb - 32)
-			m_psz = (char*) tt::realloc(m_psz, cbNew);
-	}
-	return m_psz;
-}
-
 void ttString::MakeLower()
 {
 	if (m_psz && *m_psz) {
@@ -570,4 +502,81 @@ char* ttString::utoa(uint64_t val)
 	char szNum[32];
 	tt::utoa(val, szNum, sizeof(szNum));
 	return tt::strdup(szNum, &m_psz);
+}
+
+char* ttString::GetString(const char* pszString, char chBegin, char chEnd)
+{
+	ttASSERT_NONEMPTY(pszString);
+
+	Delete();	// current string, if any, should be deleted no matter what
+
+	if (!pszString || !*pszString)
+		return nullptr;
+
+	size_t cb = tt::strbyte(pszString);
+	ttASSERT_MSG(cb <= MAX_STRING, "String is over 64k in size!");
+
+	if (cb == 0 || cb > MAX_STRING)
+		return nullptr;
+	else {
+		m_psz = (char*) tt::malloc(cb);		// this won't return if it fails, so you will never get a nullptr on return
+		*m_psz = 0;
+	}
+
+	// step over any leading whitespace
+	while (tt::iswhitespace(*pszString))
+		++pszString;
+
+	if (*pszString == chBegin) {
+		pszString++;
+		const char* pszStart = pszString;
+		while (*pszString != chEnd && *pszString)
+			pszString = tt::nextchr(pszString);
+		strncpy_s(m_psz, DEST_SIZE, pszStart, pszString - pszStart);
+		m_psz[pszString - pszStart] = 0;	// make certain it is null terminated
+	}
+	else {	// if the string didn't start with chBegin, so just copy the string
+		tt::strcpy_s(m_psz, tt::size(m_psz), pszString);
+		pszString += cb;
+	}
+
+	// If there is a significant size difference, then reallocate the memory
+
+	if (cb > 32)	// don't bother reallocating if total allocation is 32 bytes or less
+		m_psz = (char*) tt::realloc(m_psz, tt::strbyte(m_psz));
+	return m_psz;
+}
+
+char* ttString::GetQuotedString(const char* pszQuote)
+{
+	ttASSERT_NONEMPTY(pszQuote);
+
+	if (!pszQuote || !*pszQuote) {
+		Delete();	// any current string should be deleted no matter what
+		return nullptr;
+	}
+
+	while (tt::iswhitespace(*pszQuote)) // step over any leading whitespace
+		++pszQuote;
+
+	switch (*pszQuote) {
+		default:
+		case '"':	// CH_QUOTE
+			return GetString(pszQuote, CH_QUOTE, CH_QUOTE);
+
+		case '\'':	// CH_SQUOTE
+			return GetString(pszQuote, CH_SQUOTE, CH_SQUOTE);
+
+		case '`':	// CH_START_QUOTE
+			return GetString(pszQuote, CH_START_QUOTE, CH_END_QUOTE);
+
+		case '<':
+			return GetString(pszQuote, '<', '>');
+
+		case '[':	// CH_LEFT_BRACKET
+			return GetString(pszQuote, '[', ']');
+
+		case '(':	// CH_OPEN_PAREN
+			return GetString(pszQuote, '[', ']');
+	}
 }

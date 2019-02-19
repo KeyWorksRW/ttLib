@@ -119,7 +119,15 @@ public:
 	void	MakeLower();
 	void	MakeUpper();
 
-	char*	GetQuotedString(const char* pszQuote);	// Handles `', '', "", <> -- copies the string inside and returns a pointer to it
+	// if the first non whitespace character in pszString == chBegin, get everthing between chBegin and chEnd, otherwise get everything after the whitespace
+
+	char*	GetString(const char* pszString, char chBegin, char chEnd);
+
+	char*	GetAngleString(const char* pszString) { return GetString(pszString,    '<', '>'); }
+	char*	GetBracketsString(const char* pszString) { return GetString(pszString, '[', ']'); }
+	char*	GetParenthString(const char* pszString) { return GetString(pszString,  '(', ')'); }
+
+	char*	GetQuotedString(const char* pszQuote);	// Handles single and double quote strings
 
 	char* cdecl printf(const char* pszFormat, ...);			// Deletes any current string before printing
 	char* cdecl printfAppend(const char* pszFormat, ...);	// Appends to the end of any current string
