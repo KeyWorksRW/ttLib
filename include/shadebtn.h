@@ -77,8 +77,9 @@ protected:
 	END_TTMSG_MAP()
 
 	void OnPaint();
-	void OnEnable(WPARAM /* wParam */, LPARAM /* lParam */) {
+	LRESULT OnEnable(WPARAM /* wParam */, LPARAM /* lParam */) {
 		InvalidateRect(*this, NULL, TRUE);	// REVIEW: [randalphwa - 1/26/2019] Can we get away with setting FALSE for bErase?
+		return 0;
 		// UpdateWindow();	// [ralphw - 02-16-2010] I can't think of any reason why button needs to be redrawn immediately
 	}
 

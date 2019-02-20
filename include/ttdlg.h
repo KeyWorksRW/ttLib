@@ -52,7 +52,7 @@ public:
 	INT_PTR DoModal();
 
 	// BEGIN_TTMSG_MAP in ttmsgmap.h will override this
-	virtual bool OnMsgMap(UINT /* uMsg */, WPARAM /* wParam */, LPARAM /* lParam */) { return false; }
+	virtual bool OnMsgMap(UINT /* uMsg */, WPARAM /* wParam */, LPARAM /* lParam */, LRESULT& lResult) { lResult = 0; return false; }
 
 	virtual void OnBegin() { }	// called when dialog is initialized, override if you need to do something during dialog initialization
 	virtual void OnOK() { } 	// called when IDOK button is pressed--call CancelEnd() before return to prevent closing the dialog

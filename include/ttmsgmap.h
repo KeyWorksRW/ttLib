@@ -55,7 +55,8 @@
 #ifndef __TTLIB_TTMSG_MAP_H__
 #define __TTLIB_TTMSG_MAP_H__
 
-#define BEGIN_TTMSG_MAP() bool OnMsgMap(UINT uMsg, WPARAM wParam, LPARAM lParam) { uMsg; wParam; lParam; m_result = 0;
+// lResult is set to zero before OnMsgMap is called, so only change if non-zero result is needed
+#define BEGIN_TTMSG_MAP() bool OnMsgMap(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lResult) { uMsg; wParam; lParam; lResult;
 #define END_TTMSG_MAP() return false; }
 
 #define TTMSG_BUTTON_CLICK(id, func) \
@@ -107,9 +108,10 @@
 		return true; \
 	}
 
+ // LRESULT func(CREATESTRUCT* pcs)
 #define TTMSG_CREATE(func) \
 	if (uMsg == WM_CREATE) { \
-		func((CREATESTRUCT*) lParam); \
+		lResult = func((CREATESTRUCT*) lParam); \
 		return true; \
 	}
 
@@ -120,17 +122,31 @@
 	}
 
 // Use this for any WM_ messages not handled above
+// LRESULT func(WPARAM wParam, LPARAM lParam)
 #define TTMSG(msg, func) \
 	if (uMsg == msg) { \
-		func(wParam, lParam); \
+		lResult = func(wParam, lParam); \
 		return true; \
 	}
 
-// Use the following if you have a large number of commands to process.
+// Use the following if you have a large number of commands to process. The switch statement will typically result in
+// better performance with a large number of items then the if statements used above.
 
 #define BEGIN_TTCMD_SWITCH() if (uMsg == WM_COMMAND) { switch (LOWORD(wParam)) {
 #define END_TTCMD_SWITCH() default: return false; } }
 
-#define TTCMD(id, func) case id: func(); return true;
+#define ttCASE_CMD(id, func)	\
+	case id: \
+		func(); \
+		return true;
+
+#define BEGIN_TTMSG_SWITCH() { switch (uMsg) {
+#define END_TTMSG_SWITCH() default: return false; } }
+
+// LRESULT func(WPARAM wParam, LPARAM lParam)
+#define ttCASE_MSG(msg, func) \
+	case msg: \
+		lResult = func(wParam, lParam); \
+		return true;
 
 #endif	// __TTLIB_TTMSG_MAP_H__

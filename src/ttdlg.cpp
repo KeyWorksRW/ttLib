@@ -72,8 +72,9 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 		if (pThis->m_bShadeBtns)
 			pThis->m_ShadedBtns.Initialize(hdlg);
 
-		if (pThis->OnMsgMap(msg, wParam, lParam))
-			return pThis->m_result;
+		LRESULT lResult = 0;
+		if (pThis->OnMsgMap(msg, wParam, lParam, lResult))
+			return lResult;
 
 		pThis->m_bInitializing = true;	// needed to make sure ttDDX_ macros work correctly
 		pThis->OnBegin();
@@ -89,8 +90,9 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 	if (!pThis)
 		return FALSE;
 
-	if (pThis->OnMsgMap(msg, wParam, lParam))
-		return pThis->m_result;
+	LRESULT lResult = 0;
+	if (pThis->OnMsgMap(msg, wParam, lParam, lResult))
+		return lResult;
 
 	switch (msg) {
 		case WMP_CENTER_WINDOW:

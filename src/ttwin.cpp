@@ -27,8 +27,9 @@ LRESULT WINAPI ttpriv::ttWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 	if (!pThis)
 		return DefWindowProc(hwnd, msg, wParam, lParam);
 
-	if (pThis->OnMsgMap(msg, wParam, lParam))
-		return pThis->m_result;
+	LRESULT lResult = 0;
+	if (pThis->OnMsgMap(msg, wParam, lParam, lResult))
+		return lResult;
 
 	if (pThis->m_SubClassProc)
 		return CallWindowProc(pThis->m_SubClassProc, hwnd, msg, wParam, lParam);
