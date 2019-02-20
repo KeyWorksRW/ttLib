@@ -32,7 +32,7 @@
 
 #ifndef __DLG_ID__
 	#ifdef _DEBUG
-		#define DLG_ID(id) CheckItemID(id, #id, __LINE__, __FILE__)
+		#define DLG_ID(id) tt::CheckItemID(*this, id, #id, __FILE__, __func__, __LINE__)
 	#else
 		#define DLG_ID(id) id
 	#endif
@@ -117,10 +117,6 @@ public:
 	void ttDDX_Int(int id, ptrdiff_t* pVal) { (m_bInitializing ? SetControlInteger(id, *pVal) : (void) (*pVal = GetControlInteger(id))); }
 
 	operator HWND() const { return m_hwnd; }
-
-#ifdef _DEBUG
-	DWORD CheckItemID(int id, const char* pszID, int line, const char* file) const;
-#endif
 
 protected:
 	friend INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam);

@@ -20,6 +20,10 @@ namespace tt {
 	void doReportLastError(const char* pszFile, const char* pszFunc, int line);
 	void _cdecl CATCH_HANDLER(const char* pszFormat, ...);
 	__declspec(noreturn) void OOM(void);
+
+#ifdef _WINDOWS_
+	DWORD CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc, int line);
+#endif
 }
 
 #ifdef _DEBUG

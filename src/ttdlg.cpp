@@ -320,19 +320,6 @@ void ttListView::InsertColumn(int iColumn, const wchar_t* pszText, int width)
 	::SendMessage(m_hwnd, LVM_INSERTCOLUMNW, (WPARAM) iColumn, (LPARAM) &lvc);
 }
 
-#ifdef _DEBUG
-
-DWORD ttDlg::CheckItemID(int id, const char* pszID, int line, const char* file) const {
-	if (::GetDlgItem(*this, id) == NULL) {
-		ttString cszMsg;
-		cszMsg.printf("Invalid dialog control id: %s (%u)", pszID, id);
-		tt::AssertionMsg(cszMsg, file, __func__, line);
-	}
-	return id;
-}
-
-#endif	// _DEBUG
-
 ///////////////////// Monitor Code /////////////////////////////////////////
 
 static HMONITOR (WINAPI* s_pfnMonitorFromWindow)(HWND, DWORD);

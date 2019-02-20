@@ -179,7 +179,6 @@ void _cdecl tt::CATCH_HANDLER(const char* pszFormat, ...)
 #endif	// _WINDOWS_
 }
 
-
 #ifdef _WINDOWS_
 
 void tt::doReportLastError(const char* pszFile, const char* pszFunc, int line)
@@ -193,6 +192,16 @@ void tt::doReportLastError(const char* pszFile, const char* pszFunc, int line)
 	AssertionMsg(pszMsg, pszFile, pszFunc, line);
 
 	LocalFree((HLOCAL) pszMsg);
+}
+
+DWORD tt::CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc, int line)
+{
+	if (::GetDlgItem(hwnd, id) == NULL) {
+		ttString cszMsg;
+		cszMsg.printf("Invalid dialog control id: %s (%u)", pszID, id);
+		tt::AssertionMsg(cszMsg, pszFile, pszFunc, line);
+	}
+	return id;
 }
 
 #endif	// _WINDOWS_
