@@ -31,6 +31,8 @@ rule lib
 
 build $outdir/pch.obj: compilePCH pch.cpp
 
+build $outdir/basethread.obj: compile basethread.cpp | $outdir/pch.obj
+
 build $outdir/enumstr.obj: compile enumstr.cpp | $outdir/pch.obj
 
 build $outdir/filedir.obj: compile filedir.cpp | $outdir/pch.obj
@@ -75,6 +77,7 @@ build $outdir/winmisc.obj: compile winmisc.cpp | $outdir/pch.obj
 
 build ../lib/ttLib.lib : lib $
   $outdir/pch.obj $
+  $outdir/basethread.obj $
   $outdir/enumstr.obj $
   $outdir/filedir.obj $
   $outdir/hashpair.obj $
