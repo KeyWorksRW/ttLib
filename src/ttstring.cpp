@@ -264,7 +264,7 @@ bool ttString::CopyWide(const wchar_t* pwsz)	// convert UNICODE to UTF8 and stor
 		if (cb == 0)
 			tt::free(m_psz);
 		else
-			m_psz[(cb * sizeof(char)) + sizeof(char)] = 0;	// sizeof(char) is 2 if compiled with UNICODE
+			m_psz[cb] = 0;
 	}
 	if (cbNew == 0 || cb == 0) {
 		m_psz = tt::strdup("");
