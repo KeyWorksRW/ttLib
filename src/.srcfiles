@@ -19,6 +19,7 @@ Files:
   multithread.cpp		# ttMultiThrd class
   strfuncs.cpp			# string handling and ttStr class
   ttdebug.cpp			# debug and assertion handling
+  ttdirdlg.cpp			# dialog for selecting a directory
   ttfile.cpp			# ttFile class
   ttheap.cpp			# ttHeap class
   ttlist.cpp			# ttList class

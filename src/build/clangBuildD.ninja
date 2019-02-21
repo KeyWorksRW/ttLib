@@ -46,6 +46,8 @@ build $outdir/strfuncs.obj: compile strfuncs.cpp | $outdir/pch.obj
 
 build $outdir/ttdebug.obj: compile ttdebug.cpp | $outdir/pch.obj
 
+build $outdir/ttdirdlg.obj: compile ttdirdlg.cpp | $outdir/pch.obj
+
 build $outdir/ttfile.obj: compile ttfile.cpp | $outdir/pch.obj
 
 build $outdir/ttheap.obj: compile ttheap.cpp | $outdir/pch.obj
@@ -84,6 +86,7 @@ build ../lib/ttLibD.lib : lib $
   $outdir/multithread.obj $
   $outdir/strfuncs.obj $
   $outdir/ttdebug.obj $
+  $outdir/ttdirdlg.obj $
   $outdir/ttfile.obj $
   $outdir/ttheap.obj $
   $outdir/ttlist.obj $
