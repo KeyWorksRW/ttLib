@@ -353,7 +353,7 @@ void ttString::operator+=(const char* psz)
 	if (!m_psz)
 		m_psz = tt::strdup(psz && *psz ? psz : "");
 	else if (!psz || !*psz)
-		m_psz = tt::strdup("");
+		return;		// nothing to add
 	else {
 		size_t cbNew = tt::strbyte(psz);
 		size_t cbOld = tt::strbyte(m_psz);
