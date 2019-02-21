@@ -1,12 +1,12 @@
 Options:
-  Project: ttLib
-  TargetDirs:  ../lib	# both 32-bit and 64-bit libaries will be built here
-  PCH: pch.h			# "none" or name of header file to use for precompilation
-  exe_type:	  lib		# [window | console | lib | dll]
-  64Bit:	  true		# create 64-bit project as well as 32-bit project
-  bit_suffix: true		# add "64" to the end of the project name (e.g., ttLib64.lib) for 64-bit builds
-  WarnLevel:  4			# compiler warning level (1-4) (default if not specified is 4)
-  optimize:	  space		# speed or space (default)
+  Project:     ttLib        # project target name
+  PCH:         pch.h        # "none" or name of header file to use for precompilation
+  optimize:    space        # speed or space (default)
+  exe_type:    lib          # [window | console | lib | dll]
+  64Bit:       true         # create 64-bit project as well as 32-bit project
+  bit_suffix:  true         # add "64" to the end of the project name (e.g., ttLib64.lib) for 64-bit builds
+  WarnLevel:   4            # compiler warning level (1-4) (default if not specified is 4)
+  TargetDirs:  ../lib       # both 32-bit and 64-bit libaries will be built here
 
 Files:
   pch.cpp
