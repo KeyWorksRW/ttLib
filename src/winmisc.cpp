@@ -14,9 +14,9 @@
 	#error This code will only work on Windows
 #endif
 
-#include "../include/critsection.h"	// CCritSection, CCritLock
-#include "../include/ttstring.h"	// ttString
-#include "../include/ttstr.h"		// ttStr
+#include "../include/ttcritsection.h"	// CCritSection, CCritLock
+#include "../include/ttstring.h"		// ttString
+#include "../include/ttstr.h"			// ttStr
 
 namespace tt {
 	const char* pszMsgTitle;

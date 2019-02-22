@@ -8,7 +8,7 @@
 
 #include "pch.h"
 
-#include "../include/hashpair.h"	// ttHashPair
+#include "../include/tthashpair.h"	// ttHashPair
 #include "../include/ttheap.h"		// memory allocation routines
 
 #define GROWTH_MALLOC  16

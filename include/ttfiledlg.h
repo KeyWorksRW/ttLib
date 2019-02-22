@@ -19,7 +19,7 @@
 
 #include "ttdebug.h"	// for ttASSERTS
 #include "ttstring.h"	// ttString
-#include "multibtn.h"	// ttMultiBtn
+#include "ttmultibtn.h"	// ttMultiBtn
 
 #ifndef OFN_DONTADDTORECENT
 	#define OFN_DONTADDTORECENT			 0x02000000

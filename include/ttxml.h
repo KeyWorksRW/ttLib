@@ -18,7 +18,7 @@
 #define __TTLIB_KEYXML_H__
 
 #include "ttheap.h" 		// ttHeap
-#include "hashpair.h"		// ttHashPair
+#include "tthashpair.h"		// ttHashPair
 #include "ttarray.h"		// ttArray
 #include "ttstring.h"		// ttString
 #include "ttfile.h" 		// ttFile

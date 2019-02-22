@@ -8,8 +8,8 @@
 
 #include "pch.h"
 
-#include "../include/ttdebug.h"	// ASSERTs
-#include "../include/enumstr.h"
+#include "../include/ttdebug.h" 	// ttASSERT macros
+#include "../include/ttenumstr.h"	// ttEnumStr
 
 ttEnumStr::ttEnumStr()
 {

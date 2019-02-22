@@ -12,7 +12,7 @@
 	#error This code will only work on Windows
 #endif
 
-#include "../include/filedlg.h"
+#include "../include/ttfiledlg.h"
 
 ttFileDlg::ttFileDlg(HWND hwndParent)
 {

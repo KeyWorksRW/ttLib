@@ -10,10 +10,10 @@
 
 #include <stdio.h>
 
-#include "../include/ttdebug.h"
-#include "../include/ttstring.h"	// ttString
-#include "../include/ttstr.h"		// ttStr
-#include "../include/critsection.h"	// CCritSection
+#include "../include/ttdebug.h" 		// ttASSERT macros
+#include "../include/ttstring.h"		// ttString
+#include "../include/ttstr.h"			// ttStr
+#include "../include/ttcritsection.h"	// CCritSection
 
 #ifndef _INC_STDLIB
 	__declspec(noreturn) void __cdecl exit(int _Code);

@@ -8,8 +8,8 @@
 
 #include "pch.h"
 
-#include "../include/ttdebug.h" 	// ASSERTs
-#include "../include/multithread.h"	// ttMultiThrd
+#include "../include/ttdebug.h" 		// ttASSERT macros
+#include "../include/ttmultithread.h"	// ttMultiThrd
 
 #ifndef _WX_WX_H_
 	DWORD __stdcall _MultiThread(void* pv);

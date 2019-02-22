@@ -13,7 +13,7 @@
 #endif
 
 #include "../include/ttarray.h" 	// CTTArray
-#include "../include/shadebtn.h"	// CShadeBtn
+#include "../include/ttshadebtn.h"	// CShadeBtn
 
 namespace ttpriv {
 	BOOL WINAPI EnumBtnProc(HWND hwnd, LPARAM lval);

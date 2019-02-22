@@ -28,7 +28,7 @@
 #include "ttdebug.h"	// for ttASSERTS
 #include "ttstring.h"	// ttString
 #include "ttwstring.h"	// ttWString
-#include "multibtn.h"	// ttMultiBtn
+#include "ttmultibtn.h"	// ttMultiBtn
 
 #ifndef __DLG_ID__
 	#ifdef _DEBUG

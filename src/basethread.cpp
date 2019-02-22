@@ -10,8 +10,8 @@
 
 #include <process.h>
 
-#include "../include/basethread.h"	// ttBaseThread
-#include "../include/ttdebug.h" 	// ttASSERT macros
+#include "../include/ttbasethread.h"	// ttBaseThread
+#include "../include/ttdebug.h" 		// ttASSERT macros
 
 ttBaseThread::ttBaseThread ()
 {

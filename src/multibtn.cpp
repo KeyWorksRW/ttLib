@@ -12,7 +12,7 @@
 	#error This code will only work on Windows
 #endif
 
-#include "../include/multibtn.h"	// ttMultiBtn
+#include "../include/ttmultibtn.h"	// ttMultiBtn
 
 BOOL WINAPI ttpriv::EnumBtnProc(HWND hwnd, LPARAM lval)
 {

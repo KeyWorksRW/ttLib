@@ -22,7 +22,7 @@
 #include "pch.h"
 
 #include "../include/ttstring.h"	// ttString
-#include "../include/shadebtn.h"	// ttShadeBtn
+#include "../include/ttshadebtn.h"	// ttShadeBtn
 #include "../include/ttdebug.h"		// ttASSERT macros
 
 /*
