@@ -7,10 +7,10 @@
   - Use the Preview tab to review your issue before submitting it.
 -->
 
-### Description of the issue
+### Description:
 <!-- Provide a description of your issue here -->
 
-### Purpose of the issue
+### Issue Type:
 - [ ] Bug report
 - [ ] Feature request
 - [ ] Question
