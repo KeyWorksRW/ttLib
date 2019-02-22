@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        wtlmsgs.h
+// Name:		wtlmsgs.h
 // Purpose:		Substitute for <atlcrack.h> without requiring atlapp.h
-// Author:      Ralph Walden
-// Copyright:   Copyright (c) 2013-2019 KeyWorks Software (Ralph Walden)
-// License:     Apache License (see LICENSE)
+// Author:		Ralph Walden
+// Copyright:	Copyright (c) 2013-2019 KeyWorks Software (Ralph Walden)
+// License:		Apache License (see LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 // This header file can be used as a replacement for <atlcrack.h> and in addition to <atlwin.h>. It will work with
@@ -32,9 +32,9 @@
 	#define BEGIN_TTCMD_SWITCH() if (uMsg == WM_COMMAND) { lResult = 0; switch (LOWORD(wParam)) {
 	#define END_TTCMD_SWITCH() default: return FALSE; } }
 
-	#define ttCASE_CMD(id, func)	\
+	#define ttCASE_CMD(id, func) \
 		case id: \
-			func();	\
+			func(); \
 			return TRUE;
 
 	#define BEGIN_TTMSG_SWITCH() { switch (uMsg) {
@@ -42,7 +42,7 @@
 
 	#define ttCASE_MSG(msg, func) \
 		case msg: \
-			lResult = func(wParam, lParam); \	// LRESULT func(WPARAM wParam, LPARAM lParam)
+			lResult = func(wParam, lParam); \
 			return TRUE;
 #endif
 
@@ -1091,8 +1091,8 @@
 // New NT4 & NT5 messages
 
 #ifndef WM_MOUSEHOVER
-#define WM_MOUSEHOVER                   0x02A1
-#define WM_MOUSELEAVE                   0x02A3
+	#define WM_MOUSEHOVER					0x02A1
+	#define WM_MOUSELEAVE					0x02A3
 #endif
 
 #define MSG_WM_MOUSEHOVER(func) \
@@ -1110,8 +1110,6 @@
 		lResult = 0; \
 		return TRUE; \
 	}
-
-#if(WINVER >= 0x0500)
 
 #define MSG_WM_MENURBUTTONUP(func) \
 	if (uMsg == WM_MENURBUTTONUP) \
@@ -1150,10 +1148,6 @@
 		lResult = 0; \
 		return TRUE; \
 	}
-
-#endif /* WINVER >= 0x0500 */
-
-#if(_WIN32_WINNT >= 0x0500)
 
 #define MSG_WM_APPCOMMAND(func) \
 	if (uMsg == WM_APPCOMMAND) \
@@ -1234,10 +1228,6 @@
 		if (bHandled) \
 		}
 
-#endif //(_WIN32_WINNT >= 0x0500)
-
-#if(_WIN32_WINNT >= 0x0501)
-
 #define MSG_WM_INPUT(func) \
 	if (uMsg == WM_INPUT) \
 	{ \
@@ -1269,8 +1259,6 @@
 		lResult = 0; \
 		return TRUE; \
 	}
-
-#endif /* _WIN32_WINNT >= 0x0501 */
 
 ///////////////////////////////////////////////////////////////////////////////
 // ATL defined messages
@@ -1519,7 +1507,7 @@
 	}
 
 #define COMMAND_RANGE_HANDLER_EX(idFirst, idLast, func) \
-	if(uMsg == WM_COMMAND && LOWORD(wParam) >= idFirst  && LOWORD(wParam) <= idLast) \
+	if(uMsg == WM_COMMAND && LOWORD(wParam) >= idFirst	&& LOWORD(wParam) <= idLast) \
 	{ \
 		func((UINT)HIWORD(wParam), (int)LOWORD(wParam), (HWND)lParam); \
 		lResult = 0; \
@@ -1586,7 +1574,7 @@
 	}
 
 #define REFLECTED_COMMAND_RANGE_HANDLER_EX(idFirst, idLast, func) \
-	if(uMsg == OCM_COMMAND && LOWORD(wParam) >= idFirst  && LOWORD(wParam) <= idLast) \
+	if(uMsg == OCM_COMMAND && LOWORD(wParam) >= idFirst	 && LOWORD(wParam) <= idLast) \
 	{ \
 		func((UINT)HIWORD(wParam), (int)LOWORD(wParam), (HWND)lParam); \
 		lResult = 0; \
