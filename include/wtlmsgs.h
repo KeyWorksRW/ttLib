@@ -28,7 +28,9 @@
 // Use the following if you have a large number of commands to process. This will put them in a switch statement which
 // may result in better performance then the multiple if statements normally used.
 
-#ifndef __TTLIB_TTMSG_MAP_H__
+#ifndef __TTLIB_TTMSG_SWITCH__
+#define __TTLIB_TTMSG_SWITCH__
+
 	#define BEGIN_TTCMD_SWITCH() if (uMsg == WM_COMMAND) { lResult = 0; switch (LOWORD(wParam)) {
 	#define END_TTCMD_SWITCH() default: return FALSE; } }
 
@@ -44,7 +46,8 @@
 		case msg: \
 			lResult = func(wParam, lParam); \
 			return TRUE;
-#endif
+
+#endif	// __TTLIB_TTMSG_SWITCH__
 
 // --------------- Start KeyWorks Additions --------------------
 

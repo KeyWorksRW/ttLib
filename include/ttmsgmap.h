@@ -132,21 +132,25 @@
 // Use the following if you have a large number of commands to process. The switch statement will typically result in
 // better performance with a large number of items then the if statements used above.
 
-#define BEGIN_TTCMD_SWITCH() if (uMsg == WM_COMMAND) { switch (LOWORD(wParam)) {
-#define END_TTCMD_SWITCH() default: return false; } }
+#ifndef __TTLIB_TTMSG_SWITCH__
+#define __TTLIB_TTMSG_SWITCH__
 
-#define ttCASE_CMD(id, func)	\
-	case id: \
-		func(); \
-		return true;
+	#define BEGIN_TTCMD_SWITCH() if (uMsg == WM_COMMAND) { switch (LOWORD(wParam)) {
+	#define END_TTCMD_SWITCH() default: return false; } }
 
-#define BEGIN_TTMSG_SWITCH() { switch (uMsg) {
-#define END_TTMSG_SWITCH() default: return false; } }
+	#define ttCASE_CMD(id, func)	\
+		case id: \
+			func(); \
+			return true;
 
-// LRESULT func(WPARAM wParam, LPARAM lParam)
-#define ttCASE_MSG(msg, func) \
-	case msg: \
-		lResult = func(wParam, lParam); \
-		return true;
+	#define BEGIN_TTMSG_SWITCH() { switch (uMsg) {
+	#define END_TTMSG_SWITCH() default: return false; } }
 
+	// LRESULT func(WPARAM wParam, LPARAM lParam)
+	#define ttCASE_MSG(msg, func) \
+		case msg: \
+			lResult = func(wParam, lParam); \
+			return true;
+
+#endif	// __TTLIB_TTMSG_SWITCH__
 #endif	// __TTLIB_TTMSG_MAP_H__
