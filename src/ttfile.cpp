@@ -483,10 +483,12 @@ bool ttFile::ReplaceStr(const char* pszOldText, const char* pszNewText, bool fCa
 {
 	ttASSERT_MSG(pszOldText, "NULL pointer!");
 	ttASSERT(*pszOldText);
-	ttASSERT(pszNewText);
 	ttASSERT_MSG(!*m_pCurrent, "m_pCurrent does not appear to be pointing to the end of the buffer. Did you call readline?");
 
-	if (!pszOldText || !*pszOldText || !pszNewText)
+	if (!pszNewText)
+		pszNewText = "";
+
+	if (!pszOldText || !*pszOldText)
 		return false;
 
 	char* pszPos = fCaseSensitive ? tt::strstr(m_pbuf, pszOldText) : tt::stristr(m_pbuf, pszOldText);
