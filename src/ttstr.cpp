@@ -9,7 +9,7 @@
 #include "pch.h"
 
 #include "../include/ttdebug.h" 	// ttASSERT macros
-#include "../include/ttstring.h"	// ttCStr
+#include "../include/ttstr.h"	// ttCStr
 
 using namespace ttch;	// used for the CH_ constants
 
@@ -24,7 +24,7 @@ namespace ttpriv {
 // Note that the limit here of 64k is smaller then the kstr functions that use 16m (_KSTRMAX)
 
 #define MAX_STRING (64 * 1024)	// Use this to limit the length of a single string as a security precaution
-#define	DEST_SIZE (tt::size(m_psz) - sizeof(char))
+#define	DEST_SIZE (tt::SizeAlloc(m_psz) - sizeof(char))
 
 void ttCStr::AppendFileName(const char* pszFile)
 {
@@ -34,7 +34,7 @@ void ttCStr::AppendFileName(const char* pszFile)
 		return;
 
 	if (!m_psz)	{	// no folder or drive to append to, so leave as is without adding slash
-		m_psz = tt::strdup(pszFile);		// REVIEW: [ralphw - 06-03-2018] We could prefix this with ".\"
+		m_psz = tt::StrDup(pszFile);		// REVIEW: [ralphw - 06-03-2018] We could prefix this with ".\"
 		return;
 	}
 
@@ -51,9 +51,9 @@ void ttCStr::ChangeExtension(const char* pszExtension)
 		return;
 
 	if (!m_psz)
-		m_psz = tt::strdup("");
+		m_psz = tt::StrDup("");
 
-	char* psz = tt::strchrR(m_psz, '.');
+	char* psz = tt::findLastChar(m_psz, '.');
 	if (psz && !(psz == m_psz || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/'))	// ignore .file, ./file, and ../file
 		*psz = 0;	// remove the extension if none of the above is true
 
@@ -64,7 +64,7 @@ void ttCStr::ChangeExtension(const char* pszExtension)
 
 char* ttCStr::FindExt() const
 {
-	char* psz = tt::strchrR(m_psz, '.');
+	char* psz = tt::findLastChar(m_psz, '.');
 	if (psz == m_psz || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/')	// ignore .file, ./file, and ../file
 		return nullptr;
 	return psz;
@@ -73,7 +73,7 @@ char* ttCStr::FindExt() const
 void ttCStr::RemoveExtension()
 {
 	 if (m_psz) {
-		char* psz = tt::strchrR(m_psz, '.');
+		char* psz = tt::findLastChar(m_psz, '.');
 		if (psz) {
 			if (psz == m_psz || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/')	// ignore .file, ./file, and ../file
 				return;
@@ -85,23 +85,23 @@ void ttCStr::RemoveExtension()
 void ttCStr::AddTrailingSlash()
 {
 	if (!m_psz) {
-		m_psz = tt::strdup("/");
+		m_psz = tt::StrDup("/");
 		return;
 	}
-	const char* pszLastSlash = FindLastSlash();
+	const char* pszLastSlash = findLastSlash();
 	if (!pszLastSlash || pszLastSlash[1])	// only add if there was no slash or there was something after the slash
 		*this += "/";
 }
 
-char* ttCStr::FindLastSlash()
+char* ttCStr::findLastSlash()
 {
 	ttASSERT_MSG(m_psz, "NULL pointer!");
 
 	if (!m_psz || !*m_psz)
 		return nullptr;
 
-	char* pszLastBackSlash = tt::strchrR(m_psz, '\\');
-	char* pszLastFwdSlash	 = tt::strchrR(m_psz, '/');
+	char* pszLastBackSlash = tt::findLastChar(m_psz, '\\');
+	char* pszLastFwdSlash  = tt::findLastChar(m_psz, '/');
 	if (!pszLastBackSlash)
 		return pszLastFwdSlash ? pszLastFwdSlash : nullptr;
 	else if (!pszLastFwdSlash)
@@ -132,24 +132,24 @@ void ttCStr::GetFullPathName()
 	ttASSERT(m_psz);
 	char szPath[MAX_PATH];
 	::GetFullPathNameA(m_psz, sizeof(szPath), szPath, NULL);
-	tt::strdup(szPath, &m_psz);
+	tt::StrDup(szPath, &m_psz);
 }
 
 char* ttCStr::GetListBoxText(HWND hwnd, size_t sel)
 {
 	if (m_psz)
-		tt::free(m_psz);
+		tt::FreeAlloc(m_psz);
 	if (sel == (size_t) LB_ERR)
-		m_psz = tt::strdup("");
+		m_psz = tt::StrDup("");
 	else {
 		size_t cb = ::SendMessage(hwnd, LB_GETTEXTLEN, sel, 0);
 		ttASSERT(cb != (size_t) LB_ERR);
 		if (cb != (size_t) LB_ERR) {
-			m_psz = (char*) tt::malloc(cb + 1);
+			m_psz = (char*) tt::Malloc(cb + 1);
 			::SendMessageA(hwnd, LB_GETTEXT, sel, (LPARAM) m_psz);
 		}
 		else {
-			m_psz = tt::strdup("");
+			m_psz = tt::StrDup("");
 		}
 	}
 	return m_psz;
@@ -162,7 +162,7 @@ char* ttCStr::GetListBoxText(HWND hwnd, size_t sel)
 		tt::hinstResources = LoadLibrary("dll name");
 */
 
-char* ttCStr::GetResString(size_t idString)
+char* ttCStr::getResString(size_t idString)
 {
 	char szStringBuf[1024];
 
@@ -171,11 +171,11 @@ char* ttCStr::GetResString(size_t idString)
 		strMsg.printf("Invalid string id: %zu", idString);
 		ttFAIL(strMsg);
 		if (m_psz)
-			tt::free(m_psz);
-		m_psz = tt::strdup("");
+			tt::FreeAlloc(m_psz);
+		m_psz = tt::StrDup("");
 	}
 	else {
-		tt::strdup(szStringBuf, &m_psz);
+		tt::StrDup(szStringBuf, &m_psz);
 	}
 	return m_psz;
 }
@@ -183,13 +183,13 @@ char* ttCStr::GetResString(size_t idString)
 bool ttCStr::GetWindowText(HWND hwnd)
 {
 	if (m_psz) {
-		 tt::free(m_psz);
+		 tt::FreeAlloc(m_psz);
 		 m_psz = nullptr;
 	}
 
 	ttASSERT_MSG(hwnd && IsWindow(hwnd), "Invalid window handle");
 	if (!hwnd || !IsWindow(hwnd)) {
-		m_psz = tt::strdup("");
+		m_psz = tt::StrDup("");
 		return false;
 	}
 
@@ -197,15 +197,15 @@ bool ttCStr::GetWindowText(HWND hwnd)
 	ttASSERT_MSG(cb <= MAX_STRING, "String is over 64k in size!");
 
 	if (cb == 0 || cb > MAX_STRING) {
-		m_psz = tt::strdup("");
+		m_psz = tt::StrDup("");
 		return false;
 	}
 
-	char* psz = (char*) tt::malloc(cb + sizeof(char));
+	char* psz = (char*) tt::Malloc(cb + sizeof(char));
 	cb = ::GetWindowTextA(hwnd, psz, cb + sizeof(char));
 	if (cb == 0) {
-		m_psz = tt::strdup("");
-		tt::free(psz);
+		m_psz = tt::StrDup("");
+		tt::FreeAlloc(psz);
 		return false;
 	}
 	else
@@ -221,7 +221,7 @@ void ttCStr::MakeLower()
 		char* psz = m_psz;
 		while (*psz) {
 			*psz = (char) tolower(*psz);
-			psz = (char*) tt::nextchr(psz);	// handles utf8
+			psz = (char*) tt::nextChar(psz);	// handles utf8
 		}
 	}
 }
@@ -232,7 +232,7 @@ void ttCStr::MakeUpper()
 		char* psz = m_psz;
 		while (*psz) {
 			*psz = (char) toupper(*psz);
-			psz = (char*) tt::nextchr(psz);	// handles utf8
+			psz = (char*) tt::nextChar(psz);	// handles utf8
 		}
 	}
 }
@@ -240,14 +240,14 @@ void ttCStr::MakeUpper()
 bool ttCStr::CopyWide(const wchar_t* pwsz)	// convert UNICODE to UTF8 and store it
 {
 	if (m_psz) {
-		tt::free(m_psz);
+		tt::FreeAlloc(m_psz);
 		m_psz = nullptr;
 	}
 
 	ttASSERT_NONEMPTY(pwsz);
 
 	if (!pwsz || !*pwsz) {
-		m_psz = tt::strdup("");
+		m_psz = tt::StrDup("");
 		return false;
 	}
 
@@ -258,15 +258,15 @@ bool ttCStr::CopyWide(const wchar_t* pwsz)	// convert UNICODE to UTF8 and store 
 
 	int cbNew = WideCharToMultiByte(CP_UTF8, 0, pwsz, (int) cb, nullptr, 0, NULL, NULL);
 	if (cbNew) {
-		m_psz = (char*) tt::malloc(cbNew + sizeof(char));
+		m_psz = (char*) tt::Malloc(cbNew + sizeof(char));
 		cb = WideCharToMultiByte(CP_UTF8, 0, pwsz, (int) cb, m_psz, cbNew, NULL, NULL);
 		if (cb == 0)
-			tt::free(m_psz);
+			tt::FreeAlloc(m_psz);
 		else
 			m_psz[cb] = 0;
 	}
 	if (cbNew == 0 || cb == 0) {
-		m_psz = tt::strdup("");
+		m_psz = tt::StrDup("");
 		return false;
 	}
 
@@ -279,9 +279,9 @@ void ttCStr::resize(size_t cbNew)
 	if (cbNew > MAX_STRING)
 		cbNew = MAX_STRING;
 
-	size_t curSize = m_psz ? tt::size(m_psz) : 0;
+	size_t curSize = m_psz ? tt::SizeAlloc(m_psz) : 0;
 	if (cbNew != curSize)
-		m_psz = m_psz ? (char*) tt::realloc(m_psz, cbNew) : (char*) tt::malloc(cbNew);
+		m_psz = m_psz ? (char*) tt::ReAlloc(m_psz, cbNew) : (char*) tt::Malloc(cbNew);
 }
 
 bool ttCStr::ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCaseSensitive)
@@ -293,18 +293,18 @@ bool ttCStr::ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCa
 	if (!pszOldText || !*pszOldText || !pszNewText || !m_psz || !*m_psz)
 		return false;
 
-	char* pszPos = bCaseSensitive ? tt::strstr(m_psz, pszOldText) : tt::stristr(m_psz, pszOldText);
+	char* pszPos = bCaseSensitive ? tt::findStr(m_psz, pszOldText) : tt::findStri(m_psz, pszOldText);
 	if (!pszPos)
 		return false;
 
-	size_t cbOld = tt::strlen(pszOldText);
-	size_t cbNew = tt::strlen(pszNewText);
+	size_t cbOld = tt::strLen(pszOldText);
+	size_t cbNew = tt::strLen(pszNewText);
 
 	if (cbNew == 0) {	// delete the old text since new text is empty
-		char* pszEnd = m_psz + tt::strbyte(m_psz);
+		char* pszEnd = m_psz + tt::strByteLen(m_psz);
 		ptrdiff_t cb = pszEnd - pszPos;
 		memmove(pszPos, pszPos + cbOld, cb);
-		m_psz = (char*) tt::realloc(m_psz, tt::strbyte(m_psz));
+		m_psz = (char*) tt::ReAlloc(m_psz, tt::strByteLen(m_psz));
 	}
 	else if (cbNew == cbOld) {
 		while (*pszNewText) {	// copy and return
@@ -317,7 +317,7 @@ bool ttCStr::ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCa
 		}
 		ttCStr cszTrail(pszPos);
 		*pszPos = 0;
-		m_psz = (char*) tt::realloc(m_psz, tt::strbyte(m_psz));
+		m_psz = (char*) tt::ReAlloc(m_psz, tt::strByteLen(m_psz));
 		*this += pszNewText;
 		*this += (char*) cszTrail;
 	}
@@ -326,10 +326,10 @@ bool ttCStr::ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCa
 		while (cbNew--) {
 			*pszPos++ = *pszNewText++;
 		}
-		char* pszEnd = m_psz + tt::strbyte(m_psz);
+		char* pszEnd = m_psz + tt::strByteLen(m_psz);
 		ptrdiff_t cb = pszEnd - pszPos;
 		memmove(pszPos, pszPos + cbOld, cb);
-		m_psz = (char*) tt::realloc(m_psz, tt::strbyte(m_psz));
+		m_psz = (char*) tt::ReAlloc(m_psz, tt::strByteLen(m_psz));
 	}
 	return true;
 }
@@ -341,7 +341,7 @@ void ttCStr::operator=(const char* psz)
 	if (m_psz && m_psz == psz)	// This can happen when getting a point to ttCStr and then assigning it to the same ttCStr
 		return;
 
-	tt::strdup(psz ? psz : "", &m_psz);
+	tt::StrDup(psz ? psz : "", &m_psz);
 }
 
 void ttCStr::operator+=(const char* psz)
@@ -350,17 +350,17 @@ void ttCStr::operator+=(const char* psz)
 	if (m_psz && m_psz == psz)
 		return;
 	if (!m_psz)
-		m_psz = tt::strdup(psz && *psz ? psz : "");
+		m_psz = tt::StrDup(psz && *psz ? psz : "");
 	else if (!psz || !*psz)
 		return;		// nothing to add
 	else {
-		size_t cbNew = tt::strbyte(psz);
-		size_t cbOld = tt::strbyte(m_psz);
+		size_t cbNew = tt::strByteLen(psz);
+		size_t cbOld = tt::strByteLen(m_psz);
 		ttASSERT_MSG(cbNew + cbOld <= MAX_STRING, "String is over 64k in size!");
 		if (cbNew + cbOld > MAX_STRING)
 			return;		// ignore it if it's too large
-		m_psz = (char*) tt::realloc(m_psz, cbNew + cbOld);
-		tt::strcat(m_psz, psz);
+		m_psz = (char*) tt::ReAlloc(m_psz, cbNew + cbOld);
+		tt::strCat(m_psz, psz);
 	}
 }
 
@@ -370,23 +370,23 @@ void ttCStr::operator+=(char ch)
 	szTmp[0] = ch;
 	szTmp[1] = 0;
 	if (!m_psz)
-		m_psz = tt::strdup(szTmp);
+		m_psz = tt::StrDup(szTmp);
 	else {
-		m_psz = (char*) tt::realloc(m_psz, tt::strbyte(m_psz) + sizeof(char));	// include room for ch
-		tt::strcat_s(m_psz, DEST_SIZE, szTmp);
+		m_psz = (char*) tt::ReAlloc(m_psz, tt::strByteLen(m_psz) + sizeof(char));	// include room for ch
+		tt::strCat_s(m_psz, DEST_SIZE, szTmp);
 	}
 }
 
 void ttCStr::operator+=(ptrdiff_t val)
 {
 	char szNumBuf[_MAX_U64TOSTR_BASE10_COUNT];
-	tt::itoa(val, szNumBuf, sizeof(szNumBuf));
+	tt::Itoa(val, szNumBuf, sizeof(szNumBuf));
 	*this += szNumBuf;
 }
 
 char ttCStr::operator[](int pos)
 {
-	if (!m_psz || pos > (int) tt::strlen(m_psz))
+	if (!m_psz || pos > (int) tt::strLen(m_psz))
 		return 0;
 	else
 		return m_psz[pos];
@@ -394,7 +394,7 @@ char ttCStr::operator[](int pos)
 
 char ttCStr::operator[](size_t pos)
 {
-	if (!m_psz || pos > tt::strlen(m_psz))
+	if (!m_psz || pos > tt::strLen(m_psz))
 		return 0;
 	else
 		return m_psz[pos];
@@ -425,7 +425,7 @@ char* cdecl ttCStr::printf(const char* pszFormat, ...)
 char* cdecl ttCStr::printf(size_t idFmtString, ...)
 {
 	ttCStr cszTmp;
-	cszTmp.GetResString(idFmtString);
+	cszTmp.getResString(idFmtString);
 
 	va_list argList;
 	va_start(argList, idFmtString);
@@ -434,7 +434,7 @@ char* cdecl ttCStr::printf(size_t idFmtString, ...)
 	return m_psz;
 }
 
-int ttCStr::strcat(const char* psz)
+int ttCStr::strCat(const char* psz)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 
@@ -442,20 +442,20 @@ int ttCStr::strcat(const char* psz)
 		return EINVAL;
 
 	if (!m_psz)
-		m_psz = tt::strdup(psz);
+		m_psz = tt::StrDup(psz);
 	else {
-		size_t cbNew = tt::strbyte(psz);
-		size_t cbOld = tt::strbyte(m_psz);
+		size_t cbNew = tt::strByteLen(psz);
+		size_t cbOld = tt::strByteLen(m_psz);
 		ttASSERT_MSG(cbNew + cbOld <= MAX_STRING, "String is over 64k in size!");
 		if (cbNew + cbOld > MAX_STRING)
 			return EOVERFLOW;		// ignore it if it's too large
-		m_psz = (char*) tt::realloc(m_psz, cbNew + cbOld);
+		m_psz = (char*) tt::ReAlloc(m_psz, cbNew + cbOld);
 		::strcat_s(m_psz, cbNew + cbOld, psz);
 	}
 	return 0;
 }
 
-int ttCStr::strcpy(const char* psz)
+int ttCStr::strCopy(const char* psz)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 
@@ -463,44 +463,44 @@ int ttCStr::strcpy(const char* psz)
 		return EINVAL;
 
 	if (!m_psz)
-		m_psz = tt::strdup(psz);
+		m_psz = tt::StrDup(psz);
 	else {
-		size_t cbNew = tt::strbyte(psz);
-		size_t cbOld = tt::size(m_psz);
+		size_t cbNew = tt::strByteLen(psz);
+		size_t cbOld = tt::SizeAlloc(m_psz);
 		ttASSERT_MSG(cbNew + cbOld <= MAX_STRING, "String is over 64k in size!");
 		if (cbNew + cbOld > MAX_STRING)
 			return EOVERFLOW;		// ignore it if it's too large
-		tt::strdup(psz, &m_psz);
+		tt::StrDup(psz, &m_psz);
 	}
 	return 0;
 }
 
-char* ttCStr::itoa(int32_t val)
+char* ttCStr::Itoa(int32_t val)
 {
 	char szNum[32];
-	tt::itoa(val, szNum, sizeof(szNum));
-	return tt::strdup(szNum, &m_psz);
+	tt::Itoa(val, szNum, sizeof(szNum));
+	return tt::StrDup(szNum, &m_psz);
 }
 
-char* ttCStr::itoa(int64_t val)
+char* ttCStr::Itoa(int64_t val)
 {
 	char szNum[32];
-	tt::itoa(val, szNum, sizeof(szNum));
-	return tt::strdup(szNum, &m_psz);
+	tt::Itoa(val, szNum, sizeof(szNum));
+	return tt::StrDup(szNum, &m_psz);
 }
 
-char* ttCStr::utoa(uint32_t val)
+char* ttCStr::Utoa(uint32_t val)
 {
 	char szNum[32];
-	tt::utoa(val, szNum, sizeof(szNum));
-	return tt::strdup(szNum, &m_psz);
+	tt::Utoa(val, szNum, sizeof(szNum));
+	return tt::StrDup(szNum, &m_psz);
 }
 
-char* ttCStr::utoa(uint64_t val)
+char* ttCStr::Utoa(uint64_t val)
 {
 	char szNum[32];
-	tt::utoa(val, szNum, sizeof(szNum));
-	return tt::strdup(szNum, &m_psz);
+	tt::Utoa(val, szNum, sizeof(szNum));
+	return tt::StrDup(szNum, &m_psz);
 }
 
 char* ttCStr::GetString(const char* pszString, char chBegin, char chEnd)
@@ -512,37 +512,37 @@ char* ttCStr::GetString(const char* pszString, char chBegin, char chEnd)
 	if (!pszString || !*pszString)
 		return nullptr;
 
-	size_t cb = tt::strbyte(pszString);
+	size_t cb = tt::strByteLen(pszString);
 	ttASSERT_MSG(cb <= MAX_STRING, "String is over 64k in size!");
 
 	if (cb == 0 || cb > MAX_STRING)
 		return nullptr;
 	else {
-		m_psz = (char*) tt::malloc(cb);		// this won't return if it fails, so you will never get a nullptr on return
+		m_psz = (char*) tt::Malloc(cb);		// this won't return if it fails, so you will never get a nullptr on return
 		*m_psz = 0;
 	}
 
 	// step over any leading whitespace
-	while (tt::iswhitespace(*pszString))
+	while (tt::isWhitespace(*pszString))
 		++pszString;
 
 	if (*pszString == chBegin) {
 		pszString++;
 		const char* pszStart = pszString;
 		while (*pszString != chEnd && *pszString)
-			pszString = tt::nextchr(pszString);
+			pszString = tt::nextChar(pszString);
 		strncpy_s(m_psz, DEST_SIZE, pszStart, pszString - pszStart);
 		m_psz[pszString - pszStart] = 0;	// make certain it is null terminated
 	}
 	else {	// if the string didn't start with chBegin, so just copy the string
-		tt::strcpy_s(m_psz, tt::size(m_psz), pszString);
+		tt::strCopy_s(m_psz, tt::SizeAlloc(m_psz), pszString);
 		pszString += cb;
 	}
 
-	// If there is a significant size difference, then reallocate the memory
+	// If there is a significant size difference, then ReAllocate the memory
 
-	if (cb > 32)	// don't bother reallocating if total allocation is 32 bytes or less
-		m_psz = (char*) tt::realloc(m_psz, tt::strbyte(m_psz));
+	if (cb > 32)	// don't bother ReAllocating if total allocation is 32 bytes or less
+		m_psz = (char*) tt::ReAlloc(m_psz, tt::strByteLen(m_psz));
 	return m_psz;
 }
 
@@ -555,7 +555,7 @@ char* ttCStr::GetQuotedString(const char* pszQuote)
 		return nullptr;
 	}
 
-	while (tt::iswhitespace(*pszQuote)) // step over any leading whitespace
+	while (tt::isWhitespace(*pszQuote)) // step over any leading whitespace
 		++pszQuote;
 
 	switch (*pszQuote) {

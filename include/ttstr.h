@@ -1,162 +1,173 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:		ttstr.h
-// Purpose:		Header-only class for containing a SBCS (utf8) string
+// Purpose:		SBCS string class. See ttwstr.h for wide-string equivalent
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 1998-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
-// These functions offer a bit more functionality then either the C++ standard or C++ secure variants. In particular,
-// they handle UTF8 strings and they will ASSERT when passed a null pointer when a valid pointer is required. If an
-// argument is invalid, the function will attempt to continue without throwing an exception (on the assumption that you
-// caught the bug in a _DEBUG build where the ASSERT macro would have fired). For example, calling kstrcat(pszMain,
-// cchDest, nullptr) is perfectly valid (but will ASSERT), but strcat_s(pszMain, cchDest, nullptr) will throw an
-// exception.
+// This could arguably be named CYetAnotherStringClass. This one provides the basic functionality you find in most
+// string classes, but has the addition of some filename handling methods, the ability to printf() directly to the
+// string, and some UI retrieving functions.
 
-// Both secure and non-secure strcat and strcpy functions will limit total destination string length to 16 megabytes,
-// truncating the destination (still zero-terminated) if the string exceeds that size.
+// The string is stored in a zero-terminated char buffer.
 
-// Note that when compiled with _DEBUG under Windows, ASSERTS will display a MessageBox that will display what the
-// problem is (null pointer, empty string, oversized string, etc.) and allow you to break directly into a debugger to
-// look at the problem, ignore it if you want to continue running and fix the problem later, or simply exit the program.
+// The printf()/vprintf() methods are similar to the CRT versions only these don't support precision, width, or padding
+// These methods support c, C, d, u, x, X, s, S
 
-// When compiled using wxWidgets, kstristr() and IsSameSubString() will do case-insensitive comparisons on UTF8 strings.
-// Without wxWidgets, the ASCII portion of a UTF8 string will be case-insensitive, but any non-ASCII characters must have
-// an exact case match to be considered equal.
+// The following non-standard options are supported:
+//
+//		%kd - formats an integer with commas. I.e., 54321 would be formatted as 54,321
+//		%kq - outputs quotation marks around the string
+//		%ks - adds a 's' to the current buffer if the integer is zero or greater then 1, e.g., printf("item%ks", cItems);
+//		%kS - adds a 's' to the current buffer if the __int64 is zero or greater then 1
+//		%kt - formats a size_t value with commas
+//		%ku - formats an unsigned integer with commas
+
+//		%kI64d -- handles int64_t, adding commas if needed
+//		%kI64u -- handles uint64_t, adding commas if needed
+
+// The following are only valid when compiling for _WINDOWS_
+
+//		%ke - formats a system message assuming the argument is an error number
+//		%kr - argument is a resource identifier to a string
 
 #pragma once
 
-#ifndef __TTLIB_STR_H__
-#define __TTLIB_STR_H__
+#ifndef __TTLIB_CSTR_H__
+#define __TTLIB_CSTR_H__
 
-#include "ttdebug.h"	// ASSERTs
-#include "ttheap.h" 	// ttHeap
+#include "ttheap.h" // ttHeap
 
-/*
-  ttStr can be used as a lightweight, header-only container for a zero-terminated string. It uses the above string functions
-  for handling null pointers, overflows, etc. Use the ttString class for a full blown string-handling class (see ttstring.h)
-
-  if (some condition) {
-	ttStr szBuf(256);
-	szBuf.strcpy("some text");	// equivalent to strcpy_s(szBuf, sizeof(szBuf), "some text");
-	szBuf.strcat(" and some more text");	// this will truncate if string to add is too long
-	cout << (char*) szBuf;
-  } // szBuf is freed because it went out of scope
-*/
-
-// CAUTION! strcat() and += are provided but they do NOT allocate more memory -- if the current buffer for ttStr is too
-// small, the additional string will be truncated. Use the ttString class if you need dynamic memory allocation when adding
-// to an existing string.
-
-class ttStr
+class ttCStr
 {
 public:
-	ttStr(void) { m_psz = nullptr; }
-	ttStr(size_t size) { m_psz = (char*) tt::malloc(size); }
-	ttStr(const char* psz) { m_psz = (char*) tt::strdup(psz); }
-	~ttStr(void) { if (m_psz) tt::free(m_psz); }
+	ttCStr(void)	{ m_psz = nullptr; }
+	ttCStr(size_t cb) { m_psz = (char*) tt::Malloc(cb); }
+	ttCStr(const char* psz) { m_psz = tt::StrDup(psz); }
+	ttCStr(const wchar_t* psz) { CopyWide(psz); }
+	ttCStr(ttCStr& csz) { m_psz = tt::StrDup(csz); }
+#ifdef _WINDOWS_
+	ttCStr(HWND hwnd) { m_psz = nullptr; GetWindowText(hwnd); }
+#endif // _WINDOWS_
 
-	void	resize(size_t cb) { m_psz = m_psz ? (char*) tt::realloc(m_psz, cb) : (char*) tt::malloc(cb); }
-	size_t	sizeBuffer() { return tt::size(m_psz); }	// returns 0 if m_psz is null
-	void	Delete() { if (m_psz) { tt::free(m_psz); m_psz = nullptr; } }
+	~ttCStr() { if (m_psz) tt::FreeAlloc(m_psz); }
 
-	char*	findext(const char* pszExt) { return (char*) tt::findext(m_psz, pszExt); }	// find filename extension
-	char*	findstr(const char* psz) { return tt::findstr(m_psz, psz); }
-	char*	findstri(const char* psz) { return tt::findstri(m_psz, psz); }
-	char*	findchr(char ch) { return tt::findchr(m_psz, ch); }
-	char*	findlastchr(char ch) { return tt::findlastchr(m_psz, ch); }
+	char*	findExt(const char* pszExt) { return (char*) tt::findExt(m_psz, pszExt); }	// find filename extension
+	char*	findStr(const char* psz) { return tt::findStr(m_psz, psz); }
+	char*	findStri(const char* psz) { return tt::findStri(m_psz, psz); }
+	char*	findChar(char ch) { return tt::findChar(m_psz, ch); }
+	char*	findLastChar(char ch) { return tt::findLastChar(m_psz, ch); }
 
-	size_t	strbyte() { return tt::strbyte(m_psz); }	// length of string in bytes including 0 terminator
-	int		strcat(const char* psz) { return tt::strcat_s(m_psz, tt::size(m_psz), psz); }	// Does NOT reallocate string!
-	int		strcpy(const char* psz) { return tt::strcpy_s(m_psz, tt::size(m_psz), psz); }
-	size_t	strlen() { return tt::strlen(m_psz); }		// number of characters (use strbyte() for buffer size calculations)
+	size_t	strByteLen() { return m_psz ? tt::strByteLen(m_psz) : 0; }	// length of string in bytes including 0 terminator
+	int		strCat(const char* psz);
+	int		strCopy(const char* psz);
+	size_t	strLen() { return m_psz ? tt::strLen(m_psz) : 0; }		// number of characters (use strByteLen() for buffer size calculations)
 
-	bool	samestr(const char* psz) { return tt::samestr(m_psz, psz); }
-	bool	samestri(const char* psz) { return tt::samestri(m_psz, psz); }
-	bool	samesubstr(const char* psz) { return tt::samesubstr(m_psz, psz); }
-	bool	samesubstri(const char* psz) { return tt::samesubstri(m_psz, psz); }
+	bool	isSameStr(const char* psz) { return tt::isSameStr(m_psz, psz); }
+	bool	isSameStri(const char* psz) { return tt::isSameStri(m_psz, psz); }
+	bool	isSameSubStr(const char* psz) { return tt::isSameSubStr(m_psz, psz); }
+	bool	isSameSubStri(const char* psz) { return tt::isSameSubStri(m_psz, psz); }
 
-	char*	nextnonspace() { return (char*) tt::nextnonspace(m_psz); }
-	char*	nextspace() { return (char*) tt::nextspace(m_psz); }
+	char*	findExt() { return (char*) tt::findNonSpace(m_psz); }
+	char*	findSpace() { return (char*) tt::findSpace(m_psz); }
 
-	ptrdiff_t atoi() { return tt::atoi(m_psz); }
+	ptrdiff_t Atoi() { return tt::Atoi(m_psz); }
 
-	char*	itoa(int32_t val)  { char szNum[32]; tt::itoa(val, szNum, sizeof(szNum)); return tt::strdup(szNum, &m_psz); }
-	char*	itoa(int64_t val)  { char szNum[32]; tt::itoa(val, szNum, sizeof(szNum)); return tt::strdup(szNum, &m_psz); }
-	char*	utoa(uint32_t val) { char szNum[32]; tt::utoa(val, szNum, sizeof(szNum)); return tt::strdup(szNum, &m_psz); }
-	char*	utoa(uint64_t val) { char szNum[32]; tt::utoa(val, szNum, sizeof(szNum)); return tt::strdup(szNum, &m_psz); }
+	char*	Itoa(int32_t val);
+	char*	Itoa(int64_t val);
+	char*	Utoa(uint32_t val);
+	char*	Utoa(uint64_t val);
 
-	void	trim_right() { tt::trim_right(m_psz); }
+	void	trimRight() { tt::trimRight(m_psz); }
 
-	bool	isempty() { return (!m_psz || !*m_psz)  ? true : false; }
-	bool	isnonempty() const { return (m_psz && *m_psz) ? true : false; }
+	bool	isEmpty() const { return (!m_psz || !*m_psz)  ? true : false; }
+	bool	isNonEmpty() const { return (m_psz && *m_psz) ? true : false; }
 	bool	isnull() const { return (m_psz == nullptr); }
 
+	char* cdecl printf(size_t idFmtString, ...);	// retrieves the format string from the specified resource
+
+	bool CopyWide(const wchar_t* pwsz);	// convert UNICODE to UTF8 and store it
+
+	// Filename handling methods
+
+	void	AppendFileName(const char* pszFile);
+	void	AddTrailingSlash();	// adds a trailing forward slash if string doesn't already end with '/' or '\'
+	void	ChangeExtension(const char* pszExtension);
+	char*	getCWD();			// Caution: this will replace any current string
+	void	RemoveExtension();
+	bool	ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCaseSensitive = false);
+
+	char* findLastSlash();	// Handles any mix of '\' and '/' in the filename
+	char* FindExt() const;	// will return nullptr if no extension
+
 #ifdef _WINDOWS_
-	char* GetResString(size_t idString) {
-		resize(1024);
-		int cb = LoadStringA(tt::hinstResources, (UINT) idString, m_psz, 1024);
-		m_psz[cb] = 0;	// in case LoadStringA() failed
-		resize(cb + sizeof(char));
-		return m_psz;
-	}
-
-	char* getCWD() {
-		resize(MAX_PATH);
-		DWORD cb = GetCurrentDirectoryA(MAX_PATH, m_psz);	// we don't use _getcwd() because it would require loading <direct.h> for everyone using ttLib
-		m_psz[cb] = 0;	// in case GetCurrentDirectory() failed
-		return m_psz;	// we leave the full buffer allocated in case you want to add a filename to the end
-	}
-
-	void AppendFileName(const char* pszName) {
-#ifdef _DEBUG
-		ttASSERT_MSG(m_psz, "NULL pointer!");
-		ttASSERT(sizeBuffer() >= MAX_PATH);
+	void GetFullPathName();
 #endif
-		if (m_psz) {
-			tt::AddTrailingSlash(m_psz);
-			strcat(pszName);
-		}
-	}
 
-#else	// not _WINDOWS_
-	char* getCWD() {
-		resize(4096);
-		char* psz = getcwd(m_psz, 4096);
-		if (!psz)
-			m_psz[0] = 0;	// in case getcwd() failed
-		return m_psz;		// we leave the full buffer allocated in case you want to add a filename to the end
-	}
+	// UI retrieving methods
+
+#ifdef _WINDOWS_
+	bool GetWindowText(HWND hwnd);
+
+	// The following will always return a pointer, but if an error occurred, it will point to an empty string
+	char* GetListBoxText(HWND hwnd) { return GetListBoxText(hwnd, ::SendMessage(hwnd, LB_GETCURSEL, 0, 0)); }
+	char* GetListBoxText(HWND hwnd, size_t sel);
+	char* getResString(size_t idString);
 #endif	// _WINDOWS_
 
-	char* cdecl printf(const char* pszFormat, ...) {	// This will free m_psz if needed, and automatically malloc the needed size
-						va_list argList;
-						va_start(argList, pszFormat);
- 						tt::vprintf(&m_psz, pszFormat, argList);
-						va_end(argList);
-						return m_psz;
-					}
+	void	MakeLower();
+	void	MakeUpper();
 
-	operator char*()  { return (char*) m_psz; };
-	operator void*()  { return (void*) m_psz; }
+	// if the first non whitespace character in pszString == chBegin, get everthing between chBegin and chEnd, otherwise get everything after the whitespace
 
-	char operator [] (size_t pos) { return (m_psz ? m_psz[pos] : 0); }	// Beware! no check for pos beyond end of string!
-	char operator [] (int pos)    { return (m_psz ? m_psz[pos] : 0); }	// Beware! no check for pos beyond end of string!
+	char*	GetString(const char* pszString, char chBegin, char chEnd);
 
-	void operator = (const char* psz) { if (m_psz) tt::free(m_psz); m_psz = tt::strdup(psz); }
+	char*	GetAngleString(const char* pszString) { return GetString(pszString,    '<', '>'); }
+	char*	GetBracketsString(const char* pszString) { return GetString(pszString, '[', ']'); }
+	char*	GetParenthString(const char* pszString) { return GetString(pszString,  '(', ')'); }
 
-	bool operator == (const char* psz) { return (isempty() || !psz) ? false : tt::samestr(m_psz, psz); } // samestr will check for m_psz == null
-	bool operator == (char* psz) { return (isempty() || !psz) ? false : tt::samestr(m_psz, psz); }		 // samestr will check for m_psz == null
+	char*	GetQuotedString(const char* pszQuote);	// Handles single and double quote strings
 
-	char* m_psz;
+	char* cdecl printf(const char* pszFormat, ...);			// Deletes any current string before printing
+	char* cdecl printfAppend(const char* pszFormat, ...);	// Appends to the end of any current string
+
+	void	resize(size_t cb);
+	size_t	sizeBuffer() { return tt::SizeAlloc(m_psz); }	// returns 0 if m_psz is null
+	void	Delete() { if (m_psz) { tt::FreeAlloc(m_psz); m_psz = nullptr; } }
+
+	char*	getptr() { return m_psz; }		// for when casting to char* is problematic
+	char**	getpPtr() { return &m_psz; }	// use with extreme caution!
+
+	operator char*() const { return (char*) m_psz; }
+	operator void*() const { return (void*) m_psz; }
+
+	void operator = (const char* psz);
+	void operator = (const wchar_t* pwsz) { CopyWide(pwsz); };
+	void operator = (ttCStr& csz) { *this = (char*) csz; }
+
+	void operator += (const char* psz);
+	void operator += (char ch);
+	void operator += (ptrdiff_t val);
+
+	char operator [] (int pos);
+	char operator [] (size_t pos);
+
+	bool operator == (const char* psz)	{ return (isEmpty() || !psz) ? false : tt::isSameStr(m_psz, psz); }
+	bool operator == (char* psz)		{ return (isEmpty() || !psz) ? false : tt::isSameStr(m_psz, psz); }
+	bool operator != (const char* psz)	{ return (isEmpty() || !psz) ? true  : !tt::isSameStr(m_psz, psz); }
+	bool operator != (char* psz)		{ return (isEmpty() || !psz) ? true  : !tt::isSameStr(m_psz, psz); }
+
+	// Use extreme caution about calling the Transfer functions!
+
+	void	TransferTo(char** ppsz) { if (ppsz) { *ppsz = m_psz; m_psz = nullptr; } }		// Caller will be responsible for FreeAllocing memory
+	void	TransferFrom(char** ppsz) { if (ppsz) { Delete(); m_psz = *ppsz; *ppsz = nullptr; } }
+	void	TransferFrom(ttCStr cszTo) { Delete(); cszTo.TransferTo(&m_psz); }
+
+protected:
+	// Class members
+
+	char*	 m_psz;
 };
 
-// The only difference between this class and ttStr is that it calls getCWD in the constructor
-
-class ttCWD : public ttStr
-{
-public:
-	ttCWD() { getCWD(); }
-};
-
-#endif	//__TTLIB_STR_H__
+#endif // __TTLIB_CSTR_H__

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttwstring.h
-// Purpose:		Wide-character string class. See ttstring.h for SBCS version
+// Name:		ttwstr.h
+// Purpose:		Wide-character string class. See ttstr.h for SBCS version
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 1998-2018 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
@@ -34,20 +34,20 @@
 
 #pragma once
 
-#include "ttstring.h"	// ttString
+#include "ttstr.h"	// ttString
 
 class ttCWStr
 {
 public:
 	ttCWStr(void)	{ m_psz = nullptr; }
-	ttCWStr(size_t cb) { m_psz = (wchar_t*) tt::malloc(cb); }
-	ttCWStr(const wchar_t* psz) { m_psz = tt::strdup(psz ? psz : L""); }
+	ttCWStr(size_t cb) { m_psz = (wchar_t*) tt::Malloc(cb); }
+	ttCWStr(const wchar_t* psz) { m_psz = tt::StrDup(psz ? psz : L""); }
 	ttCWStr(const char* psz) { m_psz = nullptr; CopyNarrow(psz); }
 #ifdef _WINDOWS_
 	ttCWStr(HWND hwnd) { m_psz = nullptr; GetWindowText(hwnd); }
 #endif // _WINDOWS_
 
-	~ttCWStr() { if (m_psz)  tt::free(m_psz); }
+	~ttCWStr() { if (m_psz)  tt::FreeAlloc(m_psz); }
 
 	// Filename handling methods
 
@@ -57,7 +57,7 @@ public:
 	void	GetCWD();	// Caution: this will replace any current string
 	void	RemoveExtension();
 
-	const wchar_t* FindLastSlash();		// Handles any mix of '\' and '/' in the filename
+	const wchar_t* findLastSlash();		// Handles any mix of '\' and '/' in the filename
 
 #ifdef _WINDOWS_
 	void GetFullPathName();
@@ -71,7 +71,7 @@ public:
 	// The following will always return a pointer, but if an error occurred, it will point to an empty string
 	const wchar_t* GetListBoxText(HWND hwnd) { return GetListBoxText(hwnd, ::SendMessage(hwnd, LB_GETCURSEL, 0, 0)); }
 	const wchar_t* GetListBoxText(HWND hwnd, size_t sel);
-	const wchar_t* GetResString(size_t idString);
+	const wchar_t* getResString(size_t idString);
 #endif	// _WINDOWS_
 
 	void	MakeLower();
@@ -90,7 +90,7 @@ public:
 	bool	 IsEmpty() const { return (m_psz ? (*m_psz ? false : true) : true); }
 	bool	 IsNonEmpty() const { return (!IsEmpty()); }
 	bool	 IsNull() const { return (m_psz == nullptr); }
-	void	 Delete() { if (m_psz) { tt::free(m_psz); m_psz = nullptr; } }
+	void	 Delete() { if (m_psz) { tt::FreeAlloc(m_psz); m_psz = nullptr; } }
 	wchar_t* Enlarge(size_t cbTotalSize);	// increase buffer size if needed
 
 	wchar_t* getptr() { return m_psz; }	// for when casting to char* is problematic
@@ -109,8 +109,8 @@ public:
 
 	wchar_t operator[](int pos);
 
-	bool operator==(const wchar_t* pwsz) { return (IsEmpty() || !pwsz) ? false : tt::samestr(m_psz, pwsz); }
-	bool operator==(const ttCWStr* pwstr) { return (IsEmpty() || !pwstr || pwstr->IsEmpty()) ? false : tt::samestr(m_psz, *pwstr); }
+	bool operator==(const wchar_t* pwsz) { return (IsEmpty() || !pwsz) ? false : tt::isSameStr(m_psz, pwsz); }
+	bool operator==(const ttCWStr* pwstr) { return (IsEmpty() || !pwstr || pwstr->IsEmpty()) ? false : tt::isSameStr(m_psz, *pwstr); }
 
 	bool CopyNarrow(const char* psz);	// convert UTF8 to UNICODE and store it
 
