@@ -234,7 +234,7 @@ void ttCDlg::FadeWindow()
 	}
 }
 
-LRESULT ttListView::AddString(const char* psz, LPARAM lParam)
+LRESULT ttCListView::AddString(const char* psz, LPARAM lParam)
 {
 	ttASSERT(psz);
 	if (!psz)
@@ -250,7 +250,7 @@ LRESULT ttListView::AddString(const char* psz, LPARAM lParam)
 	return (LRESULT) ::SendMessage(m_hwnd, LVM_INSERTITEMA, 0, (LPARAM) &lvi);
 }
 
-LRESULT ttListView::AddString(const wchar_t* pwsz, LPARAM lParam)
+LRESULT ttCListView::AddString(const wchar_t* pwsz, LPARAM lParam)
 {
 	ttASSERT(pwsz);
 	if (!pwsz)
@@ -266,7 +266,7 @@ LRESULT ttListView::AddString(const wchar_t* pwsz, LPARAM lParam)
 	return (LRESULT) ::SendMessage(m_hwnd, LVM_INSERTITEMW, 0, (LPARAM) &lvi);
 }
 
-BOOL ttListView::AddSubString(int iItem, int iSubItem, const char* psz)
+BOOL ttCListView::AddSubString(int iItem, int iSubItem, const char* psz)
 {
 	ttASSERT(psz);
 	if (!psz)
@@ -280,7 +280,7 @@ BOOL ttListView::AddSubString(int iItem, int iSubItem, const char* psz)
 	return (BOOL) ::SendMessage(m_hwnd, LVM_SETITEMA, 0, (LPARAM) &lvi);
 }
 
-BOOL ttListView::AddSubString(int iItem, int iSubItem, const wchar_t* pwsz)
+BOOL ttCListView::AddSubString(int iItem, int iSubItem, const wchar_t* pwsz)
 {
 	ttASSERT(pwsz);
 	if (!pwsz)
@@ -294,7 +294,7 @@ BOOL ttListView::AddSubString(int iItem, int iSubItem, const wchar_t* pwsz)
 	return (BOOL) ::SendMessage(m_hwnd, LVM_SETITEMW, 0, (LPARAM) &lvi);
 }
 
-void ttListView::InsertColumn(int iColumn, const char* pszText, int width)
+void ttCListView::InsertColumn(int iColumn, const char* pszText, int width)
 {
 	ttASSERT(pszText);
 	if (!pszText)
@@ -308,7 +308,7 @@ void ttListView::InsertColumn(int iColumn, const char* pszText, int width)
 	::SendMessage(m_hwnd, LVM_INSERTCOLUMNA, (WPARAM) iColumn, (LPARAM) &lvc);
 }
 
-void ttListView::InsertColumn(int iColumn, const wchar_t* pszText, int width)
+void ttCListView::InsertColumn(int iColumn, const wchar_t* pszText, int width)
 {
 	ttASSERT(pszText);
 	if (!pszText)

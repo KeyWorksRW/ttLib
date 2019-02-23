@@ -204,7 +204,7 @@ const char* tt::GetResString(size_t idString)
 namespace {
 	HANDLE hKeyViewMapping;
 	HWND   hwndKeyView;
-	ttCritSection g_csKeyView;
+	ttCCritSection g_csKeyView;
 	char*  g_pszKeyViewMap;		 // points to data in shared memory
 }
 
@@ -231,7 +231,7 @@ void __cdecl tt::KeyTrace(const char* pszFormat, ...)
 
 	// We don't want two threads trying to send text at the same time, so we wrap the rest of this in a critical section
 
-	ttCritLock lock(&g_csKeyView);
+	ttCCritLock lock(&g_csKeyView);
 
 	if (!hKeyViewMapping) {
 		hKeyViewMapping = CreateFileMappingA((HANDLE) -1, NULL, PAGE_READWRITE, 0, 4096, "hhw_share");

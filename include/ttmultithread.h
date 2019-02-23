@@ -75,7 +75,7 @@ protected:
 		bool   bDone;
 	} MULTI_THRD_INFO;
 
-	ttMap<DWORD /* threadID */, MULTI_THRD_INFO*> m_threadMap;
+	ttCMap<DWORD /* threadID */, MULTI_THRD_INFO*> m_threadMap;
 
 	friend DWORD __stdcall _MultiThread(void* pv);
 	MULTI_THRD_INFO* m_aThrdInfo;

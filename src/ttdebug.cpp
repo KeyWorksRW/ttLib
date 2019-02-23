@@ -46,7 +46,7 @@ __declspec(noreturn) void tt::OOM(void)
 #ifdef _DEBUG
 
 namespace ttdbg {
-	ttCritSection crtAssert;
+	ttCCritSection crtAssert;
 	bool bNoAssert = false;		// Setting this to true will cause AssertionMsg to return without doing anything
 }
 
