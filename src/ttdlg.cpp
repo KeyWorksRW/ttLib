@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttDlg
+// Name:		ttCDlg
 // Purpose:		Class for creating a Modal dialog box
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 1998-2019 KeyWorks Software (Ralph Walden)
@@ -24,7 +24,7 @@ static BOOL 	ttKeyMonitorFromPoint(HMONITOR hMonitor, LPMONITORINFO lpmi);
 // Currently unused
 // static HMONITOR ttKeyMonitorFromPoint(POINT pt, DWORD dwFlags);
 
-ttDlg::ttDlg(UINT idTemplate, HWND hwnd)
+ttCDlg::ttCDlg(UINT idTemplate, HWND hwnd)
 {
 	m_hwnd = NULL;
 	m_hwndParent = hwnd;
@@ -36,7 +36,7 @@ ttDlg::ttDlg(UINT idTemplate, HWND hwnd)
 	m_bInitializing = true;
 };
 
-INT_PTR ttDlg::DoModal()
+INT_PTR ttCDlg::DoModal()
 {
 	INT_PTR result = ::DialogBoxParam(tt::hinstResources, MAKEINTRESOURCE(m_idTemplate), m_hwndParent, (DLGPROC) ttpriv::DlgProc, (LPARAM) this);
 #ifdef _DEBUG
@@ -59,7 +59,7 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 #else
 		SetWindowLongPtr(hdlg, GWL_USERDATA, lParam);
 #endif
-		ttDlg* pThis = (ttDlg*) lParam;
+		ttCDlg* pThis = (ttCDlg*) lParam;
 		pThis->m_hwnd = hdlg;
 		if (!tt::IsValidWindow(pThis->m_hwndParent))
 			pThis->m_hwndParent = GetActiveWindow();
@@ -83,9 +83,9 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 	}
 
 #ifdef _WIN64
-	ttDlg* pThis = (ttDlg*) GetWindowLongPtr(hdlg, GWLP_USERDATA);
+	ttCDlg* pThis = (ttCDlg*) GetWindowLongPtr(hdlg, GWLP_USERDATA);
 #else
-	ttDlg* pThis = (ttDlg*) GetWindowLongPtr(hdlg, GWL_USERDATA);
+	ttCDlg* pThis = (ttCDlg*) GetWindowLongPtr(hdlg, GWL_USERDATA);
 #endif
 	if (!pThis)
 		return FALSE;
@@ -182,14 +182,14 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 	return FALSE;
 }
 
-ptrdiff_t ttDlg::GetControlInteger(ptrdiff_t id) const
+ptrdiff_t ttCDlg::GetControlInteger(ptrdiff_t id) const
 {
 	char szBuf[20];
 	GetControlText(id, szBuf, sizeof(szBuf) - 1);
 	return tt::atoi(szBuf);
 }
 
-void ttDlg::SetControlInteger(ptrdiff_t id, ptrdiff_t val) const
+void ttCDlg::SetControlInteger(ptrdiff_t id, ptrdiff_t val) const
 {
 	char szBuf[20];
 	tt::itoa(val, szBuf, sizeof(szBuf));
@@ -198,7 +198,7 @@ void ttDlg::SetControlInteger(ptrdiff_t id, ptrdiff_t val) const
 
 static BOOL (WINAPI* tt_pfnAnimateWindow)(HWND, DWORD, DWORD);
 
-void ttDlg::FadeWindow()
+void ttCDlg::FadeWindow()
 {
 
 #if (WINVER < 0x0500)

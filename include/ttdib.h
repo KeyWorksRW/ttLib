@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttDib
+// Name:		ttCDib
 // Purpose:		Class for handling Device Independent Bitmap
 // Author:		Davide Pizzolato
 // Copyright:	Copyright (c) [2001] Davide Pizzolato
@@ -26,17 +26,17 @@
 
 #define HDIB HANDLE
 
-class ttDib
+class ttCDib
 {
 public:
-	ttDib();
-	~ttDib();
+	ttCDib();
+	~ttCDib();
 
 	// Class functions
 
 	void	 BlendPalette(COLORREF cr,long perc);
 	void	 Clear(BYTE bval=0);
-	void	 Clone(ttDib *src);
+	void	 Clone(ttCDib *src);
 	HDIB	 Create(DWORD dwWidth, DWORD dwHeight, WORD wBitCount);
 	long	 Draw(HDC pDC, long xoffset, long yoffset);
 	WORD	 GetBitCount() {return m_bi.biBitCount;};

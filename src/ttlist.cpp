@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttList, ttDblList, ttStrIntList
+// Name:		ttCList, ttCDblList, ttCStrIntList
 // Purpose:		String arrays based off a private heap
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2005-2019 KeyWorks Software (Ralph Walden)
@@ -17,9 +17,9 @@
 
 #include "pch.h"
 
-#include "../include/ttlist.h"	// ttList
+#include "../include/ttlist.h"	// ttCList, ttCDblList, ttCStrIntList
 
-ttList::ttList(bool bSerialize) : ttHeap(bSerialize)
+ttCList::ttCList(bool bSerialize) : ttCHeap(bSerialize)
 {
 	m_cAllocated = 0;
 	m_cItems = 0;
@@ -29,7 +29,7 @@ ttList::ttList(bool bSerialize) : ttHeap(bSerialize)
 	m_flags = 0;
 }
 
-ttList::ttList(HANDLE hHeap) : ttHeap(hHeap)
+ttCList::ttCList(HANDLE hHeap) : ttCHeap(hHeap)
 {
 	m_cAllocated = 0;
 	m_cItems = 0;
@@ -39,7 +39,7 @@ ttList::ttList(HANDLE hHeap) : ttHeap(hHeap)
 	m_flags = 0;
 }
 
-bool ttList::Enum(const char** ppszResult)
+bool ttCList::Enum(const char** ppszResult)
 {
 	ttASSERT_MSG(ppszResult, "NULL pointer!");
 	if (!ppszResult)
@@ -51,7 +51,7 @@ bool ttList::Enum(const char** ppszResult)
 	return true;
 }
 
-bool ttList::Enum()
+bool ttCList::Enum()
 {
 	if (m_cItems == 0 || m_enum == m_cItems)
 		return false;
@@ -59,7 +59,7 @@ bool ttList::Enum()
 	return true;
 }
 
-char* ttList::EnumValue()
+char* ttCList::EnumValue()
 {
 	auto enumPos = m_enum - 1;
 	if (m_cItems == 0 || enumPos == m_cItems)
@@ -67,20 +67,20 @@ char* ttList::EnumValue()
 	return m_aptrs[enumPos];
 }
 
-void ttList::SetFlags(size_t flags)
+void ttCList::SetFlags(size_t flags)
 {
 	m_flags = flags;
 	if (m_flags & FLG_ADD_DUPLICATES)
 		m_HashPair.Delete();	// Can't use a hash list if duplicates are allowed
 }
 
-size_t ttList::Add(const char* pszKey)
+size_t ttCList::Add(const char* pszKey)
 {
 	ttASSERT_MSG(pszKey, "NULL pointer!");
 	if (!pszKey)
 		return (size_t) -1;
 
-	ttString cszKey;
+	ttCStr cszKey;
 	char* pszNormalized = NormalizeString(pszKey, cszKey);
 
 	if (isNoDuplicates()) {
@@ -107,13 +107,13 @@ size_t ttList::Add(const char* pszKey)
 	return m_cItems++;
 }
 
-bool ttList::Find(const char* pszKey) const
+bool ttCList::Find(const char* pszKey) const
 {
 	ttASSERT_NONEMPTY(pszKey);
 	if (!pszKey || !*pszKey)
 		return false;
 
-	ttString cszKey;
+	ttCStr cszKey;
 	char* pszNormalized = NormalizeString(pszKey, cszKey);
 
 	if (isNoDuplicates())
@@ -126,13 +126,13 @@ bool ttList::Find(const char* pszKey) const
 	return false;
 }
 
-size_t ttList::GetPos(const char* pszKey) const
+size_t ttCList::GetPos(const char* pszKey) const
 {
 	ttASSERT_NONEMPTY(pszKey);
 	if (!pszKey || !*pszKey)
 		return (size_t) -1;
 
-	ttString cszKey;
+	ttCStr cszKey;
 	char* pszNormalized = NormalizeString(pszKey, cszKey);
 
 	if (isNoDuplicates())
@@ -145,7 +145,7 @@ size_t ttList::GetPos(const char* pszKey) const
 	return (size_t) -1;
 }
 
-char* ttList::Get(size_t pos) const
+char* ttCList::Get(size_t pos) const
 {
 	ttASSERT(pos < m_cItems);
 	if (pos >= m_cItems)
@@ -153,7 +153,7 @@ char* ttList::Get(size_t pos) const
 	return m_aptrs[pos];
 }
 
-void ttList::Remove(size_t pos)
+void ttCList::Remove(size_t pos)
 {
 	ttASSERT(pos < m_cItems);
 	if (pos >= m_cItems)
@@ -161,7 +161,7 @@ void ttList::Remove(size_t pos)
 
 	if (isNoDuplicates()) {
 		// The hash pair stores the position of our string which we need to update
-		ttHashPair::HASH_PAIR* phshPair = m_HashPair.GetArray();
+		ttCHashPair::HASH_PAIR* phshPair = m_HashPair.GetArray();
 		for (size_t posHsh = 0; posHsh < m_cItems; ++posHsh) {
 			if (phshPair[posHsh].val > pos)
 				--phshPair[posHsh].val;
@@ -174,7 +174,7 @@ void ttList::Remove(size_t pos)
 	--m_cItems;
 }
 
-void ttList::Remove(const char* psz)
+void ttCList::Remove(const char* psz)
 {
 	ttASSERT_NONEMPTY(psz);
 	if (!psz || !*psz)
@@ -185,7 +185,7 @@ void ttList::Remove(const char* psz)
 		Remove(pos);
 }
 
-void ttList::Delete()
+void ttCList::Delete()
 {
 	if (m_cItems == 0)
 		return;	// we haven't added anything yet, so nothing to do!
@@ -207,7 +207,7 @@ void ttList::Delete()
 	m_HashPair.Delete();
 }
 
-void ttList::Replace(size_t pos, const char* pszKey)
+void ttCList::Replace(size_t pos, const char* pszKey)
 {
 	ttASSERT_NONEMPTY(pszKey);
 	ttASSERT(pos < m_cItems);
@@ -219,7 +219,7 @@ void ttList::Replace(size_t pos, const char* pszKey)
 
 	ttFree((void*) m_aptrs[pos]);
 
-	ttString cszKey;
+	ttCStr cszKey;
 	char* pszNormalized = NormalizeString(pszKey, cszKey);
 
 	m_aptrs[pos] = ttStrdup(pszNormalized);
@@ -228,7 +228,7 @@ void ttList::Replace(size_t pos, const char* pszKey)
 		m_HashPair.Add(pszNormalized, pos);
 }
 
-void ttList::Swap(size_t posA, size_t posB)
+void ttCList::Swap(size_t posA, size_t posB)
 {
 	if (posA > m_cItems || posB > m_cItems || posA == posB)
 		return;
@@ -240,7 +240,7 @@ void ttList::Swap(size_t posA, size_t posB)
 	m_HashPair.SetVal(m_aptrs[posB], posB);
 }
 
-void ttList::InsertAt(size_t pos, const char* pszKey)
+void ttCList::InsertAt(size_t pos, const char* pszKey)
 {
 	if (pos >= m_cItems) {
 		Add(pszKey);
@@ -254,14 +254,14 @@ void ttList::InsertAt(size_t pos, const char* pszKey)
 	memmove((void*) (m_aptrs + pos + 1), (void*) (m_aptrs + pos), (m_cItems - pos + 1) * sizeof(char*));
 
 	if (isNoDuplicates()) {
-		ttHashPair::HASH_PAIR* pHashPair = m_HashPair.GetArray();
+		ttCHashPair::HASH_PAIR* pHashPair = m_HashPair.GetArray();
 		for (size_t posHash = 0; posHash < m_HashPair.GetCount(); ++posHash) {
 			if (pHashPair[posHash].val >= pos)
 				pHashPair[posHash].val++;
 		}
 	}
 
-	ttString cszKey;
+	ttCStr cszKey;
 	char* pszNormalized = NormalizeString(pszKey, cszKey);
 
 	m_aptrs[pos] = ttStrdup(pszNormalized);
@@ -271,7 +271,7 @@ void ttList::InsertAt(size_t pos, const char* pszKey)
 		m_HashPair.Add(pszNormalized);
 }
 
-void ttList::Sort()
+void ttCList::Sort()
 {
 	qsorti(0, m_cItems - 1);
 	if (isNoDuplicates()) {
@@ -282,7 +282,7 @@ void ttList::Sort()
 
 // It is the caller's responsibility to ensure that all strings have at least iColumn characters
 
-void ttList::Sort(size_t iColumn)
+void ttCList::Sort(size_t iColumn)
 {
 	m_SortColumn = iColumn;
 	qsortCol(0, m_cItems - 1);
@@ -292,9 +292,9 @@ void ttList::Sort(size_t iColumn)
 	}
 }
 
-char* ttList::NormalizeString(const char* pszString, ttString& cszKey) const
+char* ttCList::NormalizeString(const char* pszString, ttCStr& cszKey) const
 {
-	// BUGBUG: [randalphwa - 9/20/2018] This is not thread safe, which means ttList is not thread safe
+	// BUGBUG: [randalphwa - 9/20/2018] This is not thread safe, which means ttCList is not thread safe
 
 	if (m_flags & FLG_IGNORE_CASE || m_flags & FLG_URL_STRINGS)	{
 		cszKey = pszString;
@@ -307,7 +307,7 @@ char* ttList::NormalizeString(const char* pszString, ttString& cszKey) const
 	return (char*) pszString;
 }
 
-void ttList::qsorti(ptrdiff_t low, ptrdiff_t high)
+void ttCList::qsorti(ptrdiff_t low, ptrdiff_t high)
 {
 	if (low >= high)
 		return;
@@ -342,7 +342,7 @@ void ttList::qsorti(ptrdiff_t low, ptrdiff_t high)
 
 // This is a bit dangerous as we do NOT check to see if each string actually has at least m_SortColumn characters
 
-void ttList::qsortCol(ptrdiff_t low, ptrdiff_t high)
+void ttCList::qsortCol(ptrdiff_t low, ptrdiff_t high)
 {
 	if (low >= high)
 		return;
@@ -375,9 +375,9 @@ void ttList::qsortCol(ptrdiff_t low, ptrdiff_t high)
 		qsortCol(end + 1, high);
 }
 
-/////////////////////	ttDblList		//////////////////////////
+/////////////////////	ttCDblList		//////////////////////////
 
-ttDblList::ttDblList(bool bSerialize) : ttHeap(bSerialize)
+ttCDblList::ttCDblList(bool bSerialize) : ttCHeap(bSerialize)
 {
 	m_cAllocated = 0;
 	m_cItems = 0;
@@ -387,12 +387,12 @@ ttDblList::ttDblList(bool bSerialize) : ttHeap(bSerialize)
 	m_bIgnoreCase = false;
 }
 
-ttDblList::~ttDblList()
+ttCDblList::~ttCDblList()
 {
 	delete m_pHashLookup;
 }
 
-void ttDblList::Delete()
+void ttCDblList::Delete()
 {
 	if (m_cItems == 0)
 		return;	// we haven't added anything yet, so nothing to do!
@@ -419,13 +419,13 @@ void ttDblList::Delete()
 	}
 }
 
-void ttDblList::PreventDuplicateKeys()
+void ttCDblList::PreventDuplicateKeys()
 {
 	if (!m_pHashLookup)
-		m_pHashLookup = new ttHashPair;
+		m_pHashLookup = new ttCHashPair;
 }
 
-void ttDblList::Add(const char* pszKey, const char* pszVal)
+void ttCDblList::Add(const char* pszKey, const char* pszVal)
 {
 	ttASSERT_NONEMPTY(pszKey);
 	ttASSERT_MSG(pszVal, "NULL pointer!");	// it's okay to add an empty val string as long as it isn't a null pointer
@@ -451,7 +451,7 @@ void ttDblList::Add(const char* pszKey, const char* pszVal)
 	m_aptrs[m_cItems++].pszVal = ttStrdup(pszVal);
 }
 
-bool ttDblList::FindKey(const char* pszKey, size_t* ppos) const
+bool ttCDblList::FindKey(const char* pszKey, size_t* ppos) const
 {
 	ttASSERT_NONEMPTY(pszKey);
 	if (!pszKey || !*pszKey)
@@ -477,7 +477,7 @@ bool ttDblList::FindKey(const char* pszKey, size_t* ppos) const
 	return false;
 }
 
-bool ttDblList::FindVal(const char* pszVal, size_t* ppos) const
+bool ttCDblList::FindVal(const char* pszVal, size_t* ppos) const
 {
 	ttASSERT_MSG(pszVal, "NULL pointer!");
 	if (!pszVal)
@@ -503,7 +503,7 @@ bool ttDblList::FindVal(const char* pszVal, size_t* ppos) const
 	return false;
 }
 
-char* ttDblList::GetKeyAt(size_t pos) const
+char* ttCDblList::GetKeyAt(size_t pos) const
 {
 	ttASSERT(pos < m_cItems);
 	if (pos >= m_cItems)
@@ -511,7 +511,7 @@ char* ttDblList::GetKeyAt(size_t pos) const
 	return m_aptrs[pos].pszKey;
 }
 
-char* ttDblList::GetValAt(size_t pos) const
+char* ttCDblList::GetValAt(size_t pos) const
 {
 	ttASSERT(pos < m_cItems);
 	if (pos >= m_cItems)
@@ -519,7 +519,7 @@ char* ttDblList::GetValAt(size_t pos) const
 	return m_aptrs[pos].pszVal;
 }
 
-char* ttDblList::GetMatchingVal(const char* pszKey) const
+char* ttCDblList::GetMatchingVal(const char* pszKey) const
 {
 	ttASSERT_MSG(pszKey, "NULL pointer!");
 	if (!pszKey)
@@ -541,7 +541,7 @@ char* ttDblList::GetMatchingVal(const char* pszKey) const
 	return nullptr;
 }
 
-void ttDblList::Replace(size_t pos, const char* pszKey, const char* pszVal)
+void ttCDblList::Replace(size_t pos, const char* pszKey, const char* pszVal)
 {
 	ttASSERT_NONEMPTY(pszKey);
 	ttASSERT_MSG(pszVal, "NULL pointer!");	// okay if pszVal is an empty string, just not a null pointer
@@ -555,7 +555,7 @@ void ttDblList::Replace(size_t pos, const char* pszKey, const char* pszVal)
 	m_aptrs[pos].pszVal = ttStrdup(pszVal);
 }
 
-void ttDblList::SortKeys()
+void ttCDblList::SortKeys()
 {
 	ttASSERT(m_cItems > 0);
 	if (m_cItems < 2)
@@ -564,7 +564,7 @@ void ttDblList::SortKeys()
 	qsorti(0, m_cItems - 1);
 }
 
-void ttDblList::SortVals()
+void ttCDblList::SortVals()
 {
 	ttASSERT(m_cItems > 0);
 	if (m_cItems < 2)
@@ -573,7 +573,7 @@ void ttDblList::SortVals()
 	qsorti(0, m_cItems - 1);
 }
 
-void ttDblList::qsorti(ptrdiff_t low, ptrdiff_t high)
+void ttCDblList::qsorti(ptrdiff_t low, ptrdiff_t high)
 {
 	if (low >= high)
 		return;
@@ -619,9 +619,9 @@ void ttDblList::qsorti(ptrdiff_t low, ptrdiff_t high)
 		qsorti(end + 1, high);
 }
 
-//////////////////////////////// ttStrIntList	/////////////////////////////////
+//////////////////////////////// ttCStrIntList	/////////////////////////////////
 
-ttStrIntList::ttStrIntList(bool bSerialize) : ttHeap(bSerialize)
+ttCStrIntList::ttCStrIntList(bool bSerialize) : ttCHeap(bSerialize)
 {
 	m_cAllocated = 0;
 	m_cItems = 0;
@@ -630,7 +630,7 @@ ttStrIntList::ttStrIntList(bool bSerialize) : ttHeap(bSerialize)
 	m_posEnumKey = (size_t) -1;
 }
 
-void ttStrIntList::Add(const char* pszKey, ptrdiff_t newVal)
+void ttCStrIntList::Add(const char* pszKey, ptrdiff_t newVal)
 {
 	ttASSERT_NONEMPTY(pszKey);
 	if (!pszKey || !*pszKey )
@@ -665,7 +665,7 @@ void ttStrIntList::Add(const char* pszKey, ptrdiff_t newVal)
 	++m_cItems;
 }
 
-void ttStrIntList::Delete()
+void ttCStrIntList::Delete()
 {
 	if (m_cItems == 0)
 		return;	// we haven't added anything yet, so nothing to do!
@@ -688,7 +688,7 @@ void ttStrIntList::Delete()
 	m_posEnumKey = (size_t) -1;
 }
 
-bool ttStrIntList::Add(size_t posKey, ptrdiff_t newVal)
+bool ttCStrIntList::Add(size_t posKey, ptrdiff_t newVal)
 {
 	ttASSERT(posKey < m_cItems);
 	if (posKey >= m_cItems)
@@ -707,7 +707,7 @@ bool ttStrIntList::Add(size_t posKey, ptrdiff_t newVal)
 	return true;
 }
 
-bool ttStrIntList::FindKey(const char* pszKey, size_t* ppos) const
+bool ttCStrIntList::FindKey(const char* pszKey, size_t* ppos) const
 {
 	ttASSERT_NONEMPTY(pszKey);
 	if (!pszKey || !*pszKey)
@@ -722,7 +722,7 @@ bool ttStrIntList::FindKey(const char* pszKey, size_t* ppos) const
 	return false;
 }
 
-bool ttStrIntList::GetValCount(const char* pszKey, ptrdiff_t* pVal) const
+bool ttCStrIntList::GetValCount(const char* pszKey, ptrdiff_t* pVal) const
 {
 	ttASSERT_NONEMPTY(pszKey);
 	ttASSERT_MSG(pVal, "NULL pointer!");
@@ -738,7 +738,7 @@ bool ttStrIntList::GetValCount(const char* pszKey, ptrdiff_t* pVal) const
 	return false;
 }
 
-ptrdiff_t ttStrIntList::GetValCount(size_t posKey) const
+ptrdiff_t ttCStrIntList::GetValCount(size_t posKey) const
 {
 	ttASSERT(posKey < m_cItems);
 	if (posKey >= m_cItems)
@@ -746,7 +746,7 @@ ptrdiff_t ttStrIntList::GetValCount(size_t posKey) const
 	return m_aptrs[posKey].pVal[0];
 }
 
-bool ttStrIntList::GetVal(const char* pszKey, ptrdiff_t* pVal, size_t posVal) const
+bool ttCStrIntList::GetVal(const char* pszKey, ptrdiff_t* pVal, size_t posVal) const
 {
 	ttASSERT_NONEMPTY(pszKey);
 	ttASSERT_MSG(pVal, "NULL pointer!");
@@ -764,7 +764,7 @@ bool ttStrIntList::GetVal(const char* pszKey, ptrdiff_t* pVal, size_t posVal) co
 	return false;
 }
 
-bool ttStrIntList::GetVal(size_t posKey, ptrdiff_t* pVal, size_t posVal) const
+bool ttCStrIntList::GetVal(size_t posKey, ptrdiff_t* pVal, size_t posVal) const
 {
 	ttASSERT(posKey < m_cItems);
 	if (posKey >= m_cItems)
@@ -776,7 +776,7 @@ bool ttStrIntList::GetVal(size_t posKey, ptrdiff_t* pVal, size_t posVal) const
 	return true;
 }
 
-bool ttStrIntList::BeginEnum(const char* pszKey)
+bool ttCStrIntList::BeginEnum(const char* pszKey)
 {
 	if (!FindKey(pszKey, &m_posEnumKey)) {
 		m_posEnumKey = (size_t) -1;	// flag it as invalid
@@ -786,7 +786,7 @@ bool ttStrIntList::BeginEnum(const char* pszKey)
 	return true;
 }
 
-bool ttStrIntList::Enum(ptrdiff_t* pVal)
+bool ttCStrIntList::Enum(ptrdiff_t* pVal)
 {
 	if (m_posEnumKey >= m_cItems)	// this will also catch -1 as the value (since m_posEnumKey is unsigned)
 		return false;
@@ -796,7 +796,7 @@ bool ttStrIntList::Enum(ptrdiff_t* pVal)
 	return true;
 }
 
-char* ttStrIntList::GetKey(size_t posKey) const
+char* ttCStrIntList::GetKey(size_t posKey) const
 {
 	ttASSERT(posKey < m_cItems);
 	if (posKey >= m_cItems)

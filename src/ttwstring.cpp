@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttWString
+// Name:		ttCWStr
 // Purpose:		SBCS string class
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2004-2018 KeyWorks Software (Ralph Walden)
@@ -12,7 +12,7 @@
 
 #include "../include/ttdebug.h" 	// for ttASSERTS
 #include "../include/ttwstring.h"
-#include "../include/ttstring.h"	// ttString
+#include "../include/ttstring.h"	// ttCStr
 
 #ifndef _MAX_U64TOSTR_BASE10_COUNT
 	#define _MAX_U64TOSTR_BASE10_COUNT (20 + 1)
@@ -27,7 +27,7 @@ namespace ttpriv {
 #define MAX_STRING (64 * 1024)	// Use this to limit the length of a single string as a security precaution
 #define	DEST_SIZE (tt::size(m_psz) - sizeof(wchar_t))
 
-void ttWString::AppendFileName(const wchar_t* pszFile)
+void ttCWStr::AppendFileName(const wchar_t* pszFile)
 {
 	ttASSERT_NONEMPTY(pszFile);
 
@@ -43,7 +43,7 @@ void ttWString::AppendFileName(const wchar_t* pszFile)
 	*this += pszFile;
 }
 
-void ttWString::ChangeExtension(const wchar_t* pszExtension)
+void ttCWStr::ChangeExtension(const wchar_t* pszExtension)
 {
 	ttASSERT_NONEMPTY(pszExtension);
 
@@ -62,7 +62,7 @@ void ttWString::ChangeExtension(const wchar_t* pszExtension)
 	*this += pszExtension;
 }
 
-void ttWString::RemoveExtension()
+void ttCWStr::RemoveExtension()
 {
 	 if (m_psz) {
 		wchar_t* psz = tt::strchrR(m_psz, '.');
@@ -74,7 +74,7 @@ void ttWString::RemoveExtension()
 	}
 }
 
-void ttWString::AddTrailingSlash()
+void ttCWStr::AddTrailingSlash()
 {
 	if (!m_psz) {
 		m_psz = tt::strdup(L"/");
@@ -85,7 +85,7 @@ void ttWString::AddTrailingSlash()
 		*this += L"/";
 }
 
-const wchar_t* ttWString::FindLastSlash()
+const wchar_t* ttCWStr::FindLastSlash()
 {
 	ttASSERT_NONEMPTY(m_psz);
 
@@ -102,7 +102,7 @@ const wchar_t* ttWString::FindLastSlash()
 		return pszLastFwdSlash > pszLastBackSlash ? pszLastFwdSlash : pszLastBackSlash;		// Impossible for them to be equal
 }
 
-void ttWString::GetCWD()
+void ttCWStr::GetCWD()
 {
 	char szCWD[1024];
 	_getcwd(szCWD, sizeof(szCWD));
@@ -111,7 +111,7 @@ void ttWString::GetCWD()
 
 #ifdef _WINDOWS_
 
-void ttWString::GetFullPathName()
+void ttCWStr::GetFullPathName()
 {
 	ttASSERT(m_psz);
 	wchar_t szPath[MAX_PATH];
@@ -120,7 +120,7 @@ void ttWString::GetFullPathName()
 	m_psz = tt::strdup(szPath);
 }
 
-const wchar_t* ttWString::GetListBoxText(HWND hwnd, size_t sel)
+const wchar_t* ttCWStr::GetListBoxText(HWND hwnd, size_t sel)
 {
 	if (m_psz)
 		tt::free(m_psz);
@@ -147,12 +147,12 @@ const wchar_t* ttWString::GetListBoxText(HWND hwnd, size_t sel)
 		tt::hinstResources = LoadLibrary("dll name");
 */
 
-const wchar_t* ttWString::GetResString(size_t idString)
+const wchar_t* ttCWStr::GetResString(size_t idString)
 {
 	static wchar_t szStringBuf[1024];
 
 	if (LoadStringW(tt::hinstResources, (UINT) idString, szStringBuf, (int) sizeof(szStringBuf)) == 0) {
-		ttString cszMsg;
+		ttCStr cszMsg;
 		cszMsg.printf("Invalid string id: %zu", idString);
 		ttFAIL(cszMsg);
 		if (m_psz)
@@ -167,7 +167,7 @@ const wchar_t* ttWString::GetResString(size_t idString)
 	return m_psz;
 }
 
-bool ttWString::GetWindowText(HWND hwnd)
+bool ttCWStr::GetWindowText(HWND hwnd)
 {
 	if (m_psz) {
 		 tt::free(m_psz);
@@ -202,7 +202,7 @@ bool ttWString::GetWindowText(HWND hwnd)
 
 #endif	// _WINDOWS_
 
-wchar_t* ttWString::GetQuotedString(wchar_t* pszQuote)
+wchar_t* ttCWStr::GetQuotedString(wchar_t* pszQuote)
 {
 	ttASSERT_NONEMPTY(pszQuote);
 
@@ -259,14 +259,14 @@ wchar_t* ttWString::GetQuotedString(wchar_t* pszQuote)
 	return (*pszQuote ? pszQuote + 1 : pszQuote);
 }
 
-bool ttWString::IsSameSubString(const wchar_t* pszSub)
+bool ttCWStr::IsSameSubString(const wchar_t* pszSub)
 {
 	if (!m_psz || !pszSub)
 		return false;
 	return tt::samesubstri(m_psz, pszSub);
 }
 
-void ttWString::MakeLower()
+void ttCWStr::MakeLower()
 {
 	if (m_psz && *m_psz) {
 		wchar_t* psz = m_psz;
@@ -277,7 +277,7 @@ void ttWString::MakeLower()
 	}
 }
 
-void ttWString::MakeUpper()
+void ttCWStr::MakeUpper()
 {
 	if (m_psz && *m_psz) {
 		wchar_t* psz = m_psz;
@@ -288,7 +288,7 @@ void ttWString::MakeUpper()
 	}
 }
 
-bool ttWString::CopyNarrow(const char* psz)	// convert UTF8 to UNICODE and store it
+bool ttCWStr::CopyNarrow(const char* psz)	// convert UTF8 to UNICODE and store it
 {
 	if (m_psz)
 		 tt::free(m_psz);
@@ -322,7 +322,7 @@ bool ttWString::CopyNarrow(const char* psz)	// convert UTF8 to UNICODE and store
 	return true;
 }
 
-wchar_t* ttWString::Enlarge(size_t cbTotalSize)
+wchar_t* ttCWStr::Enlarge(size_t cbTotalSize)
 {
 	ttASSERT(cbTotalSize <= MAX_STRING);
 	if (cbTotalSize > MAX_STRING)
@@ -339,7 +339,7 @@ wchar_t* ttWString::Enlarge(size_t cbTotalSize)
 	return m_psz;
 }
 
-void ttWString::operator=(const char* psz)
+void ttCWStr::operator=(const char* psz)
 {
 	ttASSERT_MSG(psz, "null pointer!");
 	ttASSERT_MSG(*psz, "empty string!");
@@ -347,10 +347,10 @@ void ttWString::operator=(const char* psz)
 	CopyNarrow(psz);
 }
 
-void ttWString::operator=(const wchar_t* psz)
+void ttCWStr::operator=(const wchar_t* psz)
 {
 	ttASSERT_NONEMPTY(psz);
-	ttASSERT_MSG(m_psz != psz, "Attempt to assign ttWString to itself");
+	ttASSERT_MSG(m_psz != psz, "Attempt to assign ttCWStr to itself");
 
 	if (m_psz && m_psz == psz)
 		return;
@@ -361,7 +361,7 @@ void ttWString::operator=(const wchar_t* psz)
 	m_psz = tt::strdup(psz ? psz : L"");
 }
 
-void ttWString::operator+=(const wchar_t* psz)
+void ttCWStr::operator+=(const wchar_t* psz)
 {
 	ttASSERT_MSG(m_psz != psz, "Attempt to append string to itself!");
 	if (m_psz && m_psz == psz)
@@ -381,7 +381,7 @@ void ttWString::operator+=(const wchar_t* psz)
 	}
 }
 
-void ttWString::operator+=(wchar_t ch)
+void ttCWStr::operator+=(wchar_t ch)
 {
 	wchar_t szTmp[2];
 	szTmp[0] = ch;
@@ -394,20 +394,20 @@ void ttWString::operator+=(wchar_t ch)
 	}
 }
 
-void ttWString::operator+=(ptrdiff_t val)
+void ttCWStr::operator+=(ptrdiff_t val)
 {
 	wchar_t szNumBuf[_MAX_U64TOSTR_BASE10_COUNT];
 	tt::itoa(val, szNumBuf, sizeof(szNumBuf));
 	*this += szNumBuf;
 }
 
-void ttWString::operator+=(ttWString csz)
+void ttCWStr::operator+=(ttCWStr csz)
 {
 	if (csz.IsNonEmpty())
 		*this += csz;
 }
 
-wchar_t ttWString::operator[](int pos)
+wchar_t ttCWStr::operator[](int pos)
 {
 	if (!m_psz || pos > (int) tt::strlen(m_psz))
 		return 0;
@@ -415,7 +415,7 @@ wchar_t ttWString::operator[](int pos)
 		return m_psz[pos];
 }
 
-void __cdecl ttWString::printf(const wchar_t* pszFormat, ...)
+void __cdecl ttCWStr::printf(const wchar_t* pszFormat, ...)
 {
 	va_list argList;
 	va_start(argList, pszFormat);
@@ -427,7 +427,7 @@ void __cdecl ttWString::printf(const wchar_t* pszFormat, ...)
 
 #define CB_MAX_FMT_WIDTH 20		// Largest formatted width we allow
 
-void ttWString::vprintf(const wchar_t* pszFormat, va_list argList)
+void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 {
 	ttASSERT_MSG(pszFormat, "NULL pointer!");
 	ttASSERT_MSG(*pszFormat, "Empty format string!");
@@ -533,7 +533,7 @@ void ttWString::vprintf(const wchar_t* pszFormat, va_list argList)
 				cAvail = cb - 1;
 				ttASSERT(cAvail < 4096);
 			}
-			ttWString cwsz(szBuf);
+			ttCWStr cwsz(szBuf);
 			tt::strcat_s(m_psz, DEST_SIZE, cwsz);
 			pszEnd++;
 			continue;
@@ -598,11 +598,11 @@ void ttWString::vprintf(const wchar_t* pszFormat, va_list argList)
 						cAvail = cb - 1;
 						ttASSERT(cAvail < 4096);
 					}
-					ttWString cwsz(szTmp);
+					ttCWStr cwsz(szTmp);
 					tt::strcat_s(m_psz, DEST_SIZE, cwsz);
 				}
 			}
-			ttWString cwszNum(szNumBuf);
+			ttCWStr cwszNum(szNumBuf);
 			tt::strcat_s(m_psz, DEST_SIZE, cwszNum);
 			pszEnd++;
 			continue;
@@ -634,11 +634,11 @@ void ttWString::vprintf(const wchar_t* pszFormat, va_list argList)
 						cAvail = cb - sizeof(wchar_t);
 						ttASSERT(cAvail < 4096);
 					}
-					ttWString cwsz(szTmp);
+					ttCWStr cwsz(szTmp);
 					tt::strcat_s(m_psz, DEST_SIZE, cwsz);
 				}
 			}
-			ttWString cwszNum(szNumBuf);
+			ttCWStr cwszNum(szNumBuf);
 			tt::strcat_s(m_psz, DEST_SIZE, cwszNum);
 			pszEnd++;
 			continue;
@@ -670,11 +670,11 @@ void ttWString::vprintf(const wchar_t* pszFormat, va_list argList)
 						cAvail = cb - 1;
 						ttASSERT(cAvail < 4096);
 					}
-					ttWString cwsz(szTmp);
+					ttCWStr cwsz(szTmp);
 					tt::strcat_s(m_psz, DEST_SIZE, cwsz);
 				}
 			}
-			ttWString cwszNum(szNumBuf);
+			ttCWStr cwszNum(szNumBuf);
 			tt::strcat_s(m_psz, DEST_SIZE, cwszNum);
 			pszEnd++;
 			continue;
@@ -707,11 +707,11 @@ void ttWString::vprintf(const wchar_t* pszFormat, va_list argList)
 						cAvail = cb - 1;
 						ttASSERT(cAvail < 4096);
 					}
-					ttWString cwsz(szTmp);
+					ttCWStr cwsz(szTmp);
 					tt::strcat_s(m_psz, DEST_SIZE, cwsz);
 				}
 			}
-			ttWString cwszNum(szNumBuf);
+			ttCWStr cwszNum(szNumBuf);
 			tt::strcat_s(m_psz, DEST_SIZE, cwszNum);
 			pszEnd++;
 			continue;
@@ -737,7 +737,7 @@ void ttWString::vprintf(const wchar_t* pszFormat, va_list argList)
 				cAvail = cb - 1;
 				ttASSERT(cAvail < 4096);
 			}
-			ttWString cwsz(psz);
+			ttCWStr cwsz(psz);
 			tt::strcat_s(m_psz, DEST_SIZE, cwsz);
 			pszEnd++;
 			continue;
@@ -818,7 +818,7 @@ WideChar:
 	m_psz = (wchar_t*) tt::realloc(m_psz, tt::strbyte(m_psz));
 }
 
-const wchar_t* ttWString::ProcessKFmt(const wchar_t* pszEnd, va_list* pargList)
+const wchar_t* ttCWStr::ProcessKFmt(const wchar_t* pszEnd, va_list* pargList)
 {
 	wchar_t szwBuf[256];
 	szwBuf[0] = L'\0';
@@ -865,7 +865,7 @@ const wchar_t* ttWString::ProcessKFmt(const wchar_t* pszEnd, va_list* pargList)
 #ifdef _WINDOWS_
 		case 'r':
 			{
-				ttWString cszRes;
+				ttCWStr cszRes;
 				cszRes.GetResString(va_arg(*pargList, int));
 				tt::strcpy_s(szwBuf, sizeof(szwBuf), cszRes);
 			}

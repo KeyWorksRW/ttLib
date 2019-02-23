@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttMultiBtn
+// Name:		ttCMultiBtn
 // Purpose:		Class for applying CShadeBtn to every button in a dialog
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
@@ -19,24 +19,24 @@ namespace ttpriv {
 	BOOL WINAPI EnumBtnProc(HWND hwnd, LPARAM lval);
 }
 
-class ttMultiBtn
+class ttCMultiBtn
 {
 public:
-	ttMultiBtn() { }
-	~ttMultiBtn();
+	ttCMultiBtn() { }
+	~ttCMultiBtn();
 
 	void SetIcon(int idBtn, int idIcon, UINT nIconAlign = BS_LEFT);
-	ttShadeBtn* FindShadeBtn(int id);
+	ttCShadeBtn* FindShadeBtn(int id);
 
 	// Class functions
 
-	void Initialize(HWND hwndParent, ttShadeBtn::BTN_SHADE shade = ttShadeBtn::SHS_HARDBUMP);
+	void Initialize(HWND hwndParent, ttCShadeBtn::BTN_SHADE shade = ttCShadeBtn::SHS_HARDBUMP);
 
 private:
 	friend BOOL WINAPI ttpriv::EnumBtnProc(HWND hwnd, LPARAM lval);
 
 	// Class members
 
-	ttArray<ttShadeBtn*> m_aBtns;
-	ttShadeBtn::BTN_SHADE m_btnShade;
+	ttCArray<ttCShadeBtn*> m_aBtns;
+	ttCShadeBtn::BTN_SHADE m_btnShade;
 };

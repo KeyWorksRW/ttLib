@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttWin
+// Name:		ttCWin
 // Purpose:		Class for working with windows
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2018-2019 KeyWorks Software (Ralph Walden)
@@ -15,14 +15,14 @@
 #endif
 
 namespace ttpriv {
-	LRESULT WINAPI ttWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	LRESULT WINAPI ttCWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 }
 
-class ttWin		// Non-MDI window class
+class ttCWin		// Non-MDI window class
 {
 public:
-	ttWin();
-	virtual ~ttWin();
+	ttCWin();
+	virtual ~ttCWin();
 
 public:
 	// Call these methods before calling CreateWnd
@@ -42,7 +42,7 @@ public:
 
 	bool CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWND hwndParent = NULL, RECT* prc = NULL, HMENU hmenu = NULL);
 
-	bool AttachWnd(HWND hwnd);			// attaches to a window not created by ttWin, updates m_pszClassName, m_hwnd and m_hwndParent
+	bool AttachWnd(HWND hwnd);			// attaches to a window not created by ttCWin, updates m_pszClassName, m_hwnd and m_hwndParent
 	bool SubClass(HWND hwnd = NULL);	// if NULL, subclass our own window
 
 	// Class functions
@@ -66,7 +66,7 @@ protected:
 	virtual bool OnMsgMap(UINT /* uMsg */, WPARAM /* wParam */, LPARAM /* lParam */, LRESULT& lResult) { lResult = 0; return false; }
 
 protected:
-	friend LRESULT WINAPI ttpriv::ttWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	friend LRESULT WINAPI ttpriv::ttCWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 	// Class members
 	const char*	m_pszClassName;		// class name of the window we created or attached to

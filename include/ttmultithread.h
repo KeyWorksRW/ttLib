@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttMultiThrd, CMultiChildThread
+// Name:		ttCMultiThrd, CMultiChildThread
 // Purpose:		Class for handling multiple thread
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2010-2018 KeyWorks Software (Ralph Walden)
@@ -38,11 +38,11 @@ namespace tt {
 	size_t		GetCPUCount();
 } // end of tt namespace
 
-class ttMultiThrd
+class ttCMultiThrd
 {
 public:
-	ttMultiThrd();
-	~ttMultiThrd();
+	ttCMultiThrd();
+	~ttCMultiThrd();
 
 	virtual void doThreadWork(void* pvData1, void* pvData2) = NULL;	 // Derived class MUST supply this! While running, call isCancelled() to return
 
@@ -91,11 +91,11 @@ public:
 
 	wxSemaphore m_semStart;
 
-	// The following two are created and set by ttMultiThrd
+	// The following two are created and set by ttCMultiThrd
 
 	wxSemaphore* m_psemTerminate;
 	wxSemaphore* m_psemAvailThrd;
-	ttMultiThrd* m_pMultiThrd;
+	ttCMultiThrd* m_pMultiThrd;
 
 	void* m_pvData1;	// additional data passed to the worker thread
 	void* m_pvData2;	// additional data passed to the worker thread

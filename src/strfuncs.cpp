@@ -10,7 +10,7 @@
 
 #include "../include/ttdebug.h"	// ttASSERTS
 #include "../include/ttheap.h"	// memory allocation routines
-#include "../../ttLib/include/ttstr.h"	// ttStr
+#include "../include/ttstr.h"	// ttStr
 
 // We use our own "safe" string handling instead of strsafe.h. Rather then returning an error, we try to do
 // the "right" thing that will allow the program to continue, but without a buffer overun, or GPF caused by

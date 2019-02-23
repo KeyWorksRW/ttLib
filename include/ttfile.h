@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttFile
+// Name:		ttCFile
 // Purpose:		class for reading and writing files, strings, data, etc.
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
@@ -26,12 +26,12 @@
 	#include <objidl.h>	// for IStream interface
 #endif
 
-class ttFile
+class ttCFile
 {
 public:
-	ttFile();
-	ttFile(ptrdiff_t cb);
-	~ttFile();
+	ttCFile();
+	ttCFile(ptrdiff_t cb);
+	~ttCFile();
 
 	typedef enum {
 		ERROR_NONE,
@@ -105,7 +105,7 @@ public:
 			m_pCurrent = psz;
 	}
 
-	// Calling readline() will modify the contents -- which means you can't compare two ttFile objects if you parsed one
+	// Calling readline() will modify the contents -- which means you can't compare two ttCFile objects if you parsed one
 	// with readline(). To allow for this, call MakeCopy() after you have read the file into memory, and RestoreCopy() if
 	// you need to reset the file contents to they way they were before readline() was called.
 

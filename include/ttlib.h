@@ -11,7 +11,7 @@
 #ifndef __TTLIB_H__
 #define __TTLIB_H__
 
-class ttString;	 // forward definition
+class ttCStr;	 // forward definition
 
 // The tt namespace is used in other ttLib header files as well, so this is not a complete list. It is STRONGLY
 // recommended that you reference all functions in ttLib with "tt::". Do NOT declare "using namespace tt" unless you want
@@ -145,7 +145,7 @@ namespace tt {
 	extern size_t LanguageOffset;		// language offset used to load other languages from .rc file
 #endif
 
-	void		ConvertToRelative(const char* pszRoot, const char* pszFile, ttString& cszResult);
+	void		ConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszResult);
 	bool		CreateDir(const char* pszDir);
 	bool		CreateDir(const wchar_t* pszDir);
 	bool		DirExists(const char* pszFolder);

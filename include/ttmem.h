@@ -15,22 +15,22 @@
 #include "ttheap.h" 	// ttHeap
 
 /*
-  ttMem and ttTMem allow you to allocate memory that will automatically be freed when the class gets destroyed.
+  ttCMem and ttCTMem allow you to allocate memory that will automatically be freed when the class gets destroyed.
 
   if (some condition) {
-	ttMem szBuf(256);
+	ttCMem szBuf(256);
 	strcpy(szBuf, "text");
 	strcat(szBuf, "more text");
 	cout << (char*) szBuf;
   } // szBuf is freed because it went out of scope
 */
 
-class ttMem	// Header-only class
+class ttCMem	// Header-only class
 {
 public:
-	ttMem(void) { m_pb = nullptr; }
-	ttMem(size_t size) { m_pb = (uint8_t*) tt::malloc(size); }
-	~ttMem(void) {
+	ttCMem(void) { m_pb = nullptr; }
+	ttCMem(size_t size) { m_pb = (uint8_t*) tt::malloc(size); }
+	~ttCMem(void) {
 		if (m_pb)
 			tt::free(m_pb);
 		m_pb = nullptr;
@@ -52,12 +52,12 @@ public:
 	uint8_t* m_pb;
 };
 
-template <typename T> class ttTMem	// Header-only class
+template <typename T> class ttCTMem	// Header-only class
 {
 public:
-	ttTMem() { m_p = NULL; }
-	ttTMem(size_t size) { m_p = (T) tt::malloc(size); }
-	~ttTMem() {
+	ttCTMem() { m_p = NULL; }
+	ttCTMem(size_t size) { m_p = (T) tt::malloc(size); }
+	~ttCTMem() {
 		if (m_p)
 			tt::free(m_p);
 	}

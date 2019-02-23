@@ -11,7 +11,7 @@
 #include <stdio.h>
 
 #include "../include/ttdebug.h" 		// ttASSERT macros
-#include "../include/ttstring.h"		// ttString
+#include "../include/ttstring.h"		// ttCStr
 #include "../include/ttstr.h"			// ttStr
 #include "../include/ttcritsection.h"	// CCritSection
 
@@ -116,7 +116,7 @@ bool tt::AssertionMsg(const wchar_t* pwszMsg, const char* pszFile, const char* p
 	crtAssert.Lock();
 	bool bResult;
 	{	// use a brace so that cszMsg gets deleted before we release the critical section
-		ttString cszMsg;
+		ttCStr cszMsg;
 
 		// We special case a null or empty pszMsg -- ttASSERT_NONEMPTY(ptr) takes advantage of this
 
@@ -197,7 +197,7 @@ void tt::doReportLastError(const char* pszFile, const char* pszFunc, int line)
 DWORD tt::CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc, int line)
 {
 	if (::GetDlgItem(hwnd, id) == NULL) {
-		ttString cszMsg;
+		ttCStr cszMsg;
 		cszMsg.printf("Invalid dialog control id: %s (%u)", pszID, id);
 		tt::AssertionMsg(cszMsg, pszFile, pszFunc, line);
 	}

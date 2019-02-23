@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttEnumStr
+// Name:		ttCEnumStr
 // Purpose:		Enumerate through substrings in a string
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2018-2019 KeyWorks Software (Ralph Walden)
@@ -10,7 +10,7 @@
 	This class is used to enumerate through substrings that are separated by a single character (typically a semicolon).
 	The following example uses this to parse through each of the directories in an INCLUDE environment variable:
 
-		ttEnumStr enumstr("c:/sdk/include;c:/github/wxwidgets/include/wx", ';');
+		ttCEnumStr enumstr("c:/sdk/include;c:/github/wxwidgets/include/wx", ';');
 		while (enumstr.Enum())
 			puts(enumstr)
 */
@@ -20,13 +20,13 @@
 #ifndef __TTLIB_CENUMSTR_H__
 #define __TTLIB_CENUMSTR_H__
 
-#include "../include/ttstr.h"	// ttStr
+#include "../include/ttstring.h"	// ttCStr
 
-class ttEnumStr
+class ttCEnumStr
 {
 public:
-	ttEnumStr(const char* psz, char chSeparator = ';');	// This will make a copy of psz
-	ttEnumStr();	// If using this constructor, you must call SetNewStr() before calling Enum()
+	ttCEnumStr(const char* psz, char chSeparator = ';');	// This will make a copy of psz
+	ttCEnumStr();	// If using this constructor, you must call SetNewStr() before calling Enum()
 
 	// Class functions
 
@@ -44,7 +44,7 @@ protected:
 	// Class members
 
 	char* 	m_pszCur;
-	ttStr	m_csz;
+	ttCStr	m_csz;
 	char*	m_pszEnd;
 	char	m_chSeparator;
 };

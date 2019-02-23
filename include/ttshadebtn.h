@@ -13,7 +13,7 @@
 // Notes:		The above Code Project License also applies to the derivative work
 /////////////////////////////////////////////////////////////////////////////
 
-// For the original, see article at https://www.codeproject.com/articles/1121/ttShadeBtn
+// For the original, see article at https://www.codeproject.com/articles/1121/ttCShadeBtn
 
 #pragma once
 
@@ -21,14 +21,14 @@
 	#error This code will only work on Windows
 #endif
 
-#include "ttdib.h"	  // ttDib
-#include "ttwin.h"	  // ttWin
+#include "ttdib.h"	  // ttCDib
+#include "ttwin.h"	  // ttCWin
 
-class ttShadeBtn : public ttWin
+class ttCShadeBtn : public ttCWin
 {
 public:
-	ttShadeBtn();
-	~ttShadeBtn();
+	ttCShadeBtn();
+	~ttCShadeBtn();
 
 	typedef enum {
 		SHS_NOISE = 0,
@@ -57,7 +57,7 @@ public:
 	void	 SetTextAlign(UINT nTextAlign);
 	COLORREF SetTextColor(COLORREF new_color);
 
-	bool operator == (ttShadeBtn* pShade) { return m_hwnd == pShade->m_hwnd; }
+	bool operator == (ttCShadeBtn* pShade) { return m_hwnd == pShade->m_hwnd; }
 	operator HWND() const { return m_hwnd; }
 
 protected:
@@ -94,7 +94,7 @@ protected:
 	RECT	 m_rcIconBox;
 	UINT	 m_hIconAlign;
 	UINT	 m_TextAlign;
-	ttDib	 m_dNormal, m_dDown, m_dDisabled, m_dOver, m_dh, m_dv;
+	ttCDib	 m_dNormal, m_dDown, m_dDisabled, m_dOver, m_dh, m_dv;
 	bool	 m_Checked; 		// radio & check buttons
 	bool	 m_IsPushLike;		// radio & check buttons
 	bool	 m_flat;

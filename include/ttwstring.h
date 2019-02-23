@@ -36,18 +36,18 @@
 
 #include "ttstring.h"	// ttString
 
-class ttWString
+class ttCWStr
 {
 public:
-	ttWString(void)	{ m_psz = nullptr; }
-	ttWString(size_t cb) { m_psz = (wchar_t*) tt::malloc(cb); }
-	ttWString(const wchar_t* psz) { m_psz = tt::strdup(psz ? psz : L""); }
-	ttWString(const char* psz) { m_psz = nullptr; CopyNarrow(psz); }
+	ttCWStr(void)	{ m_psz = nullptr; }
+	ttCWStr(size_t cb) { m_psz = (wchar_t*) tt::malloc(cb); }
+	ttCWStr(const wchar_t* psz) { m_psz = tt::strdup(psz ? psz : L""); }
+	ttCWStr(const char* psz) { m_psz = nullptr; CopyNarrow(psz); }
 #ifdef _WINDOWS_
-	ttWString(HWND hwnd) { m_psz = nullptr; GetWindowText(hwnd); }
+	ttCWStr(HWND hwnd) { m_psz = nullptr; GetWindowText(hwnd); }
 #endif // _WINDOWS_
 
-	~ttWString() { if (m_psz)  tt::free(m_psz); }
+	~ttCWStr() { if (m_psz)  tt::free(m_psz); }
 
 	// Filename handling methods
 
@@ -79,8 +79,8 @@ public:
 
 	// When compiled with wxWidgets, IsSame() functions work with UTF8 strings, otherwise they only correctly handle the ANSI portion of UTF8 strings
 
-	bool	IsSameSubString(const wchar_t* psz);	// returns true if psz is an exact match to the first part of ttWString (case-insensitive)
-	bool	IsSameString(const wchar_t* psz);		// returns true if psz is an exact match to ttWString (case-insensitive)
+	bool	IsSameSubString(const wchar_t* psz);	// returns true if psz is an exact match to the first part of ttCWStr (case-insensitive)
+	bool	IsSameString(const wchar_t* psz);		// returns true if psz is an exact match to ttCWStr (case-insensitive)
 
 	wchar_t* GetQuotedString(wchar_t* pszQuote);	// returns pointer to first character after closing quote (or nullptr if not a quoted string)
 
@@ -105,12 +105,12 @@ public:
 	void operator+=(const wchar_t* psz);
 	void operator+=(wchar_t ch);
 	void operator+=(ptrdiff_t val);
-	void operator+=(ttWString csz);
+	void operator+=(ttCWStr csz);
 
 	wchar_t operator[](int pos);
 
 	bool operator==(const wchar_t* pwsz) { return (IsEmpty() || !pwsz) ? false : tt::samestr(m_psz, pwsz); }
-	bool operator==(const ttWString* pwstr) { return (IsEmpty() || !pwstr || pwstr->IsEmpty()) ? false : tt::samestr(m_psz, *pwstr); }
+	bool operator==(const ttCWStr* pwstr) { return (IsEmpty() || !pwstr || pwstr->IsEmpty()) ? false : tt::samestr(m_psz, *pwstr); }
 
 	bool CopyNarrow(const char* psz);	// convert UTF8 to UNICODE and store it
 

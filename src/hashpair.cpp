@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttHashPair
+// Name:		ttCHashPair
 // Purpose:		Class utilizing an array of HASH numbers and an associated value
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2004-2018 KeyWorks Software (Ralph Walden)
@@ -8,12 +8,12 @@
 
 #include "pch.h"
 
-#include "../include/tthashpair.h"	// ttHashPair
+#include "../include/tthashpair.h"	// ttCHashPair
 #include "../include/ttheap.h"		// memory allocation routines
 
 #define GROWTH_MALLOC  16
 
-ttHashPair::ttHashPair(size_t EstimatedMembers)
+ttCHashPair::ttCHashPair(size_t EstimatedMembers)
 {
 	if (!EstimatedMembers) {
 		m_cMalloced = 0;
@@ -26,12 +26,12 @@ ttHashPair::ttHashPair(size_t EstimatedMembers)
 	m_cMembers = 0;
 }
 
-ttHashPair::~ttHashPair()
+ttCHashPair::~ttCHashPair()
 {
 	Delete();
 }
 
-void ttHashPair::Delete()
+void ttCHashPair::Delete()
 {
 	if (m_pahash) {
 		tt::free(m_pahash);
@@ -40,7 +40,7 @@ void ttHashPair::Delete()
 	}
 }
 
-void ttHashPair::Add(size_t hash, size_t val)
+void ttCHashPair::Add(size_t hash, size_t val)
 {
 	// Note that we are adding the full HASH_PAIR structure, not a pointer to the structure
 
@@ -73,14 +73,14 @@ void ttHashPair::Add(size_t hash, size_t val)
 	++m_cMembers;
 }
 
-void ttHashPair::SetVal(size_t hash, size_t val)
+void ttCHashPair::SetVal(size_t hash, size_t val)
 {
 	HASH_PAIR* pPair = GetHashPair(hash);
 	if (pPair)
 		pPair->val = val;
 }
 
-void ttHashPair::Remove(size_t hashDel)
+void ttCHashPair::Remove(size_t hashDel)
 {
 	for (size_t pos = 0; pos < m_cMembers; pos++) {
 		if (m_pahash[pos].hash == hashDel) {
@@ -96,7 +96,7 @@ void ttHashPair::Remove(size_t hashDel)
 	}
 }
 
-bool ttHashPair::Find(size_t hash) const
+bool ttCHashPair::Find(size_t hash) const
 {
 	if (!m_pahash)
 		return false;
@@ -128,7 +128,7 @@ bool ttHashPair::Find(size_t hash) const
 	return false;
 }
 
-size_t ttHashPair::GetVal(size_t hash) const
+size_t ttCHashPair::GetVal(size_t hash) const
 {
 	if (!m_pahash)
 		return (size_t) -1;
@@ -160,7 +160,7 @@ size_t ttHashPair::GetVal(size_t hash) const
 	return (size_t) -1;
 }
 
-ttHashPair::HASH_PAIR* ttHashPair::FindInsertionPoint(size_t hash) const
+ttCHashPair::HASH_PAIR* ttCHashPair::FindInsertionPoint(size_t hash) const
 {
 	if (m_pahash[0].hash > hash)
 		return &m_pahash[0];	// insert at beginning
@@ -196,7 +196,7 @@ ttHashPair::HASH_PAIR* ttHashPair::FindInsertionPoint(size_t hash) const
 	return pLow;
 }
 
-ttHashPair::HASH_PAIR* ttHashPair::GetHashPair(size_t hash) const
+ttCHashPair::HASH_PAIR* ttCHashPair::GetHashPair(size_t hash) const
 {
 	if (!m_pahash)
 		return nullptr;

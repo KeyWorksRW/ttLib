@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttHeap
+// Name:		ttCHeap
 // Purpose:		Class for utilizing Windows heap manager
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 1998-2019 KeyWorks Software (Ralph Walden)
@@ -24,29 +24,29 @@
 	allocation functions provides a performance boost and eliminates the need to check for a null pointer on
 	return. If there is insufficient memory, the application will be terminated (see OOM()).
 
-	ttHeap can also be used to create a sub-heap. Any individual memory allocations on the sub-heap do not
+	ttCHeap can also be used to create a sub-heap. Any individual memory allocations on the sub-heap do not
 	need to be freed before the destructor as the entire sub-heap is destroyed at once. A class that wants to utilize
-	this functionality should inherit from ttHeap, and provide a serialization flag in it's constructor:
+	this functionality should inherit from ttCHeap, and provide a serialization flag in it's constructor:
 
-		classs MyClass :  public ttHeap
+		classs MyClass :  public ttCHeap
 		{
-			MyClass() : ttHeap(true) { } // true to make MyClass thread-safe
+			MyClass() : ttCHeap(true) { } // true to make MyClass thread-safe
 
 	Now all of the malloc/realloc/recalloc routines below will be allocated on the sub-heap, and do
 	not need to be specifically freed in the destructor.
 
-	Constructing ttHeap using another heap takes advantage of the sub-heap above by elimintating the need to
+	Constructing ttCHeap using another heap takes advantage of the sub-heap above by elimintating the need to
 	individually free every memory allocation in the destructor.
 */
 
-class ttHeap
+class ttCHeap
 {
 public:
-	ttHeap();
-	ttHeap(bool bSerialize);	// Creates a sub-heap. Use true for thread safe, false for speed (but not thread safe)
-	ttHeap(HANDLE hHeap);		// Pass in a heap handle or another ttHeap class (which will call the HANDLE() operator)
+	ttCHeap();
+	ttCHeap(bool bSerialize);	// Creates a sub-heap. Use true for thread safe, false for speed (but not thread safe)
+	ttCHeap(HANDLE hHeap);		// Pass in a heap handle or another ttCHeap class (which will call the HANDLE() operator)
 
-	~ttHeap();
+	~ttCHeap();
 
 	// Class functions
 
@@ -76,7 +76,7 @@ protected:
 
 	HANDLE	m_hHeap;
 	bool	m_bCreated;
-}; // end ttHeap
+}; // end ttCHeap
 
 // The tt namespace is used in other ttLib header files as well, so this is not a complete list. It is STRONGLY
 // recommended that you reference all functions in ttLib with "tt::". Do NOT declare "using namespace tt" unless you want
@@ -84,7 +84,7 @@ protected:
 // the issue.
 
 namespace tt {
-	extern ttHeap MainHeap;	// this uses the process heap rather then a sub-heap
+	extern ttCHeap MainHeap;	// this uses the process heap rather then a sub-heap
 
 	inline void*	calloc(size_t cb) { return tt::MainHeap.ttCalloc(cb); }
 	inline void*	calloc(size_t num, size_t cb) { return tt::MainHeap.ttCalloc(num * cb); }	// for compatability with C++ standard library

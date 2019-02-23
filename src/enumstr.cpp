@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttEnumStr
+// Name:		ttCEnumStr
 // Purpose:		Enumerate through substrings in a string
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2018-2019 KeyWorks Software (Ralph Walden)
@@ -9,15 +9,15 @@
 #include "pch.h"
 
 #include "../include/ttdebug.h" 	// ttASSERT macros
-#include "../include/ttenumstr.h"	// ttEnumStr
+#include "../include/ttenumstr.h"	// ttCEnumStr
 
-ttEnumStr::ttEnumStr()
+ttCEnumStr::ttCEnumStr()
 {
 	m_pszCur = nullptr;
 	m_pszEnd = nullptr;
 }
 
-ttEnumStr::ttEnumStr(const char* psz, char chSeparator)
+ttCEnumStr::ttCEnumStr(const char* psz, char chSeparator)
 {
 	if (psz)
 		m_csz = psz;
@@ -26,7 +26,7 @@ ttEnumStr::ttEnumStr(const char* psz, char chSeparator)
 	ResetEnum(chSeparator);
 }
 
-void ttEnumStr::ResetEnum(char chSeparator)
+void ttCEnumStr::ResetEnum(char chSeparator)
 {
 	if (m_csz.isempty()) {
 		m_pszCur = nullptr;
@@ -42,7 +42,7 @@ void ttEnumStr::ResetEnum(char chSeparator)
 	m_pszEnd = nullptr;
 }
 
-void ttEnumStr::SetNewStr(const char* psz, char chSeparator)
+void ttCEnumStr::SetNewStr(const char* psz, char chSeparator)
 {
 	if (psz)
 		m_csz = psz;
@@ -53,9 +53,9 @@ void ttEnumStr::SetNewStr(const char* psz, char chSeparator)
 	ResetEnum(chSeparator);
 }
 
-bool ttEnumStr::Enum(const char** ppszCurrent)
+bool ttCEnumStr::Enum(const char** ppszCurrent)
 {
-	ttASSERT_MSG(!m_csz.isnull(), "Calling Enum() without a valid master string (ttEnumStr(nullptr) or SetNewStr(nullptr))!");
+	ttASSERT_MSG(!m_csz.isnull(), "Calling Enum() without a valid master string (ttCEnumStr(nullptr) or SetNewStr(nullptr))!");
 	if (m_csz.isnull()) {
 		if (ppszCurrent)
 			*ppszCurrent = nullptr;

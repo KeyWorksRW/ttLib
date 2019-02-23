@@ -9,7 +9,7 @@
 #include "pch.h"		// precompiled header
 
 #include "../include/ttdebug.h" 	// for ttASSERTS
-#include "../include/ttstring.h"	// ttString
+#include "../include/ttstring.h"	// ttCStr
 
 #if !defined(_WINDOWS_) && !defined(_WX_WX_H_)
 	#error wxWidgets is required for non-Windows builds
@@ -89,7 +89,7 @@ bool tt::CreateDir(const char* pszDir)
 		return true;
 #endif
 
-	ttString cszDir(pszDir);
+	ttCStr cszDir(pszDir);
 	tt::BackslashToForwardslash(cszDir);
 
 	char* psz = tt::findlastchr(cszDir, '/');
@@ -122,7 +122,7 @@ bool tt::CreateDir(const wchar_t* pszDir)
 		return true;
 #endif
 
-	ttString cszDir(pszDir);
+	ttCStr cszDir(pszDir);
 	tt::BackslashToForwardslash(cszDir);
 
 	char* psz = tt::findlastchr(cszDir, '/');
@@ -142,7 +142,7 @@ bool tt::CreateDir(const wchar_t* pszDir)
 
 // A copy of pszFile is made, so okay if pszFile points to cszPath
 
-void tt::ConvertToRelative(const char* pszRoot, const char* pszFile, ttString& cszResult)
+void tt::ConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszResult)
 {
 	ttASSERT_NONEMPTY(pszRoot);
 	ttASSERT_NONEMPTY(pszFile);
@@ -152,7 +152,7 @@ void tt::ConvertToRelative(const char* pszRoot, const char* pszFile, ttString& c
 		return;
 	}
 
-	ttString cszRoot(pszRoot);
+	ttCStr cszRoot(pszRoot);
 	if (pszFile == tt::FindFilePortion(pszFile)) {	// this would mean we were only passed a filename
 		if (tt::FileExists(cszRoot)) {	// if the root included a filename, then remove it now
 			char* pszFilePortion = (char*) tt::FindFilePortion(cszRoot);
@@ -169,7 +169,7 @@ void tt::ConvertToRelative(const char* pszRoot, const char* pszFile, ttString& c
 	}
 
 	cszRoot.GetFullPathName();
-	ttString cszFile(pszFile);
+	ttCStr cszFile(pszFile);
 	cszFile.GetFullPathName();
 
 	if (cszRoot[0] != cszFile[0]) {	// probably on a different drive, but clearly there's nothing relative about it

@@ -39,19 +39,19 @@
 
 #include "ttheap.h" // ttHeap
 
-class ttString
+class ttCStr
 {
 public:
-	ttString(void)	{ m_psz = nullptr; }
-	ttString(size_t cb) { m_psz = (char*) tt::malloc(cb); }
-	ttString(const char* psz) { m_psz = tt::strdup(psz); }
-	ttString(const wchar_t* psz) { CopyWide(psz); }
-	ttString(ttString& csz) { m_psz = tt::strdup(csz); }
+	ttCStr(void)	{ m_psz = nullptr; }
+	ttCStr(size_t cb) { m_psz = (char*) tt::malloc(cb); }
+	ttCStr(const char* psz) { m_psz = tt::strdup(psz); }
+	ttCStr(const wchar_t* psz) { CopyWide(psz); }
+	ttCStr(ttCStr& csz) { m_psz = tt::strdup(csz); }
 #ifdef _WINDOWS_
-	ttString(HWND hwnd) { m_psz = nullptr; GetWindowText(hwnd); }
+	ttCStr(HWND hwnd) { m_psz = nullptr; GetWindowText(hwnd); }
 #endif // _WINDOWS_
 
-	~ttString() { if (m_psz) tt::free(m_psz); }
+	~ttCStr() { if (m_psz) tt::free(m_psz); }
 
 	char*	findext(const char* pszExt) { return (char*) tt::findext(m_psz, pszExt); }	// find filename extension
 	char*	findstr(const char* psz) { return tt::findstr(m_psz, psz); }
@@ -143,7 +143,7 @@ public:
 
 	void operator = (const char* psz);
 	void operator = (const wchar_t* pwsz) { CopyWide(pwsz); };
-	void operator = (ttString& csz) { *this = (char*) csz; }
+	void operator = (ttCStr& csz) { *this = (char*) csz; }
 
 	void operator += (const char* psz);
 	void operator += (char ch);
@@ -161,7 +161,7 @@ public:
 
 	void	TransferTo(char** ppsz) { if (ppsz) { *ppsz = m_psz; m_psz = nullptr; } }		// Caller will be responsible for freeing memory
 	void	TransferFrom(char** ppsz) { if (ppsz) { Delete(); m_psz = *ppsz; *ppsz = nullptr; } }
-	void	TransferFrom(ttString cszTo) { Delete(); cszTo.TransferTo(&m_psz); }
+	void	TransferFrom(ttCStr cszTo) { Delete(); cszTo.TransferTo(&m_psz); }
 
 protected:
 	// Class members

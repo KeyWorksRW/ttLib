@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttRegistry class
+// Name:		ttCRegistry class
 // Purpose:		Header-only class for working with the Windows registry
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 1998-2019 KeyWorks Software (Ralph Walden)
@@ -17,15 +17,15 @@
 
 // Header-only class
 
-class ttRegistry
+class ttCRegistry
 {
 public:
-	ttRegistry() { m_hkey = NULL; }
-	ttRegistry(const char* pszKey, bool fWrite = true) {
+	ttCRegistry() { m_hkey = NULL; }
+	ttCRegistry(const char* pszKey, bool fWrite = true) {
 		if (RegOpenKeyEx(HKEY_CURRENT_USER, pszKey, 0, fWrite ? KEY_ALL_ACCESS : KEY_READ, &m_hkey) != ERROR_SUCCESS)
 			m_hkey = NULL;
 	}
-	~ttRegistry() { if (m_hkey) RegCloseKey(m_hkey); }
+	~ttCRegistry() { if (m_hkey) RegCloseKey(m_hkey); }
 
 	bool Open(HKEY hkeyBase, const char* pszKey, bool fWrite = true) { if (m_hkey) RegCloseKey(m_hkey); return (RegOpenKeyEx(hkeyBase, pszKey, 0, fWrite ? KEY_ALL_ACCESS : KEY_READ, &m_hkey) == ERROR_SUCCESS); }
 	bool Create(HKEY hkeyBase, const char* pszKey) { if (m_hkey) RegCloseKey(m_hkey); return (RegCreateKeyEx(hkeyBase, pszKey, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS,	NULL, &m_hkey, NULL) == ERROR_SUCCESS); }

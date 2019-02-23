@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttFileDlg
+// Name:		ttCFileDlg
 // Purpose:		Wrapper around Windows GetOpenFileName() API
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
@@ -18,8 +18,8 @@
 #include <commdlg.h>
 
 #include "ttdebug.h"	// for ttASSERTS
-#include "ttstring.h"	// ttString
-#include "ttmultibtn.h"	// ttMultiBtn
+#include "ttstring.h"	// ttCStr
+#include "ttmultibtn.h"	// ttCMultiBtn
 
 #ifndef OFN_DONTADDTORECENT
 	#define OFN_DONTADDTORECENT			 0x02000000
@@ -29,11 +29,11 @@ namespace ttpriv {
 	UINT_PTR CALLBACK OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */, LPARAM lParam);
 }
 
-class ttFileDlg
+class ttCFileDlg
 {
 public:
-	ttFileDlg(HWND hwndParent = NULL);
-	~ttFileDlg();
+	ttCFileDlg(HWND hwndParent = NULL);
+	~ttCFileDlg();
 
 	// Class functions
 
@@ -74,16 +74,16 @@ private:
 	// Class members
 
 protected:
-	ttString  m_cszFileName;
-	ttString  m_cszCurDir;
-	ttString  m_cszFilter;
+	ttCStr  m_cszFileName;
+	ttCStr  m_cszCurDir;
+	ttCStr  m_cszFilter;
 
 	RECT	  m_rcPosition;
 
 	// This is malloc'd because the size changes depending on the version of Windows
 	OPENFILENAMEA* m_pofn;
 
-	ttMultiBtn	m_ShadedBtns;
+	ttCMultiBtn	m_ShadedBtns;
 	UINT		m_idOpenIcon;
 	UINT		m_idCancelIcon;
 

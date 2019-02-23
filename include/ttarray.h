@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttArray
+// Name:		ttCArray
 // Purpose:		Simple templated array
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2010-2019 KeyWorks Software (Ralph Walden)
@@ -16,14 +16,14 @@
 
 // A simple array of any type
 
-template <typename T> class ttArray
+template <typename T> class ttCArray
 {
 public:
-	ttArray() {
+	ttCArray() {
 		m_cAllocated = m_cItems = 0;
 		m_aData = NULL;
 	}
-	~ttArray() {
+	~ttCArray() {
 		if (m_aData)
 			tt::free(m_aData);
 	}

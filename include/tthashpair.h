@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttHashPair
+// Name:		ttCHashPair
 // Purpose:		Class utilizing an array of HASH numbers and an associated value
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2004-2018 KeyWorks Software (Ralph Walden)
@@ -16,11 +16,11 @@
 
 #include "../include/ttdebug.h"	// ASSERTs
 
-class ttHashPair
+class ttCHashPair
 {
 public:
-	ttHashPair(size_t EstimatedMembers = 0);
-	~ttHashPair();
+	ttCHashPair(size_t EstimatedMembers = 0);
+	~ttCHashPair();
 
 	typedef struct {
 		size_t hash;

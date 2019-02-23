@@ -1,10 +1,12 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		basethread.h
-// Purpose:
+// Name:		ttbasethread.h
+// Purpose:		Class for creating a single thread
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2018 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
+
+// see ttmultithread.h for a class that handles multiple threads
 
 #pragma once
 
@@ -16,11 +18,11 @@ namespace ttpriv {
 	unsigned __stdcall _BaseThread(void* pv);
 }
 
-class ttBaseThread
+class ttCBaseThread
 {
 public:
-	ttBaseThread();
-	~ttBaseThread();
+	ttCBaseThread();
+	~ttCBaseThread();
 
 	// Class functions
 
@@ -45,4 +47,4 @@ protected:
 	bool	m_bOleInitialized;
 
 
-}; // end ttBaseThread
+}; // end ttCBaseThread

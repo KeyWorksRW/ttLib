@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttHeap
+// Name:		ttCHeap
 // Purpose:		Class for utilizing Windows heap manager
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 1998-2019 KeyWorks Software (Ralph Walden)
@@ -9,30 +9,30 @@
 #include "pch.h"		// precompiled header
 
 #include "../include/ttdebug.h"	// ASSERTs
-#include "../include/ttheap.h"	// ttHeap
+#include "../include/ttheap.h"	// ttCHeap
 
-ttHeap tt::MainHeap;
+ttCHeap tt::MainHeap;
 
 /*
-	ttHeap can be constructed in one of three ways:
+	ttCHeap can be constructed in one of three ways:
 		1) no parameter -> uses the process heap, memory is NOT freed in destructor
 		2) bool -> creates a sub-heap, the parameter indicates if the sub-heap should be thread-safe or not
 		3) heap handle -> uses another sub-heap, sub-heap is not freed in destructor
 
-		#3 is typically used when you want a master ttHeap class that will share it's sub-heap with all child ttHeap classes, and
+		#3 is typically used when you want a master ttCHeap class that will share it's sub-heap with all child ttCHeap classes, and
 		free the entire sub-heap at once.
 
-			ttHeap master(true);
-			ttHeap child(master);	// this invokes master::HANDLE() and from then on use master's sub-heap
+			ttCHeap master(true);
+			ttCHeap child(master);	// this invokes master::HANDLE() and from then on use master's sub-heap
 */
 
-ttHeap::ttHeap()
+ttCHeap::ttCHeap()
 {
 	m_hHeap = GetProcessHeap();
 	m_bCreated = false;	// prevent deleting heap in destructor
 }
 
-ttHeap::ttHeap(bool bSerialize)
+ttCHeap::ttCHeap(bool bSerialize)
 {
 	m_hHeap = HeapCreate(bSerialize ? 0 : HEAP_NO_SERIALIZE, 4096, 0);
 	ttASSERT_MSG(m_hHeap, "Unable to create heap");
@@ -44,20 +44,20 @@ ttHeap::ttHeap(bool bSerialize)
 	m_bCreated = true;
 }
 
-ttHeap::ttHeap(HANDLE hHeap)
+ttCHeap::ttCHeap(HANDLE hHeap)
 {
 	ttASSERT(hHeap);
 	m_hHeap = hHeap;
 	m_bCreated = false;	// prevent deleting heap in destructor
 }
 
-ttHeap::~ttHeap()
+ttCHeap::~ttCHeap()
 {
 	if (m_bCreated && m_hHeap && m_hHeap != GetProcessHeap())
 		HeapDestroy(m_hHeap);
 }
 
-void* ttHeap::ttMalloc(size_t cb)
+void* ttCHeap::ttMalloc(size_t cb)
 {
 	void* pv = HeapAlloc(m_hHeap, 0, cb);
 	ttASSERT(pv);
@@ -69,7 +69,7 @@ void* ttHeap::ttMalloc(size_t cb)
 	return pv;
 }
 
-void* ttHeap::ttCalloc(size_t cb)
+void* ttCHeap::ttCalloc(size_t cb)
 {
 	void* pv = HeapAlloc(m_hHeap, 0 | HEAP_ZERO_MEMORY, cb);
 	if (!pv)
@@ -77,7 +77,7 @@ void* ttHeap::ttCalloc(size_t cb)
 	return pv;
 }
 
-void* ttHeap::ttRealloc(void* pv, size_t cb)
+void* ttCHeap::ttRealloc(void* pv, size_t cb)
 {
 	if (!pv)
 		return ttMalloc(cb);
@@ -87,7 +87,7 @@ void* ttHeap::ttRealloc(void* pv, size_t cb)
 	return pv;
 }
 
-void* ttHeap::ttRecalloc(void* pv, size_t cb)
+void* ttCHeap::ttRecalloc(void* pv, size_t cb)
 {
 	if (!pv)
 		return ttCalloc(cb);
@@ -97,7 +97,7 @@ void* ttHeap::ttRecalloc(void* pv, size_t cb)
 	return pv;
 }
 
-char* ttHeap::ttStrdup(const char* psz)
+char* ttCHeap::ttStrdup(const char* psz)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 
@@ -110,7 +110,7 @@ char* ttHeap::ttStrdup(const char* psz)
 	return pszDst;
 }
 
-wchar_t* ttHeap::ttStrdup(const wchar_t* pwsz)
+wchar_t* ttCHeap::ttStrdup(const wchar_t* pwsz)
 {
 	ttASSERT_MSG(pwsz, "NULL pointer!");
 
@@ -123,7 +123,7 @@ wchar_t* ttHeap::ttStrdup(const wchar_t* pwsz)
 	return pwszDst;
 }
 
-char* ttHeap::ttStrdup(const char* pszSrc, char** pszDst)
+char* ttCHeap::ttStrdup(const char* pszSrc, char** pszDst)
 {
 	ttASSERT_MSG(pszSrc, "NULL pointer!");
 

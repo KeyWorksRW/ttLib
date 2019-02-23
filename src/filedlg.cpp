@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttFileDlg
+// Name:		ttCFileDlg
 // Purpose:		Class for displaying Windows File Open dialog
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
@@ -14,7 +14,7 @@
 
 #include "../include/ttfiledlg.h"
 
-ttFileDlg::ttFileDlg(HWND hwndParent)
+ttCFileDlg::ttCFileDlg(HWND hwndParent)
 {
 	m_idOpenIcon = (UINT) -1;
 	m_idCancelIcon = (UINT) -1;
@@ -46,12 +46,12 @@ ttFileDlg::ttFileDlg(HWND hwndParent)
 	memset(&m_rcPosition, 0, sizeof(m_rcPosition));
 }
 
-ttFileDlg::~ttFileDlg()
+ttCFileDlg::~ttCFileDlg()
 {
 	tt::free(m_pofn);
 }
 
-bool ttFileDlg::GetOpenFileName()
+bool ttCFileDlg::GetOpenFileName()
 {
 	if (!::GetOpenFileNameA(m_pofn)) {
 #ifdef _DEBUG
@@ -66,7 +66,7 @@ bool ttFileDlg::GetOpenFileName()
 	return true;
 }
 
-bool ttFileDlg::GetSaveFileName()
+bool ttCFileDlg::GetSaveFileName()
 {
 	m_pofn->Flags &= ~OFN_FILEMUSTEXIST;
 	m_pofn->Flags |= OFN_NOREADONLYRETURN | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
@@ -82,7 +82,7 @@ bool ttFileDlg::GetSaveFileName()
 	return true;
 }
 
-void ttFileDlg::FixExtension()
+void ttCFileDlg::FixExtension()
 {
 	if (tt::strchr(m_cszFileName, '.'))
 		return;	// we have an extension, return
@@ -100,7 +100,7 @@ void ttFileDlg::FixExtension()
 	m_cszFileName.ChangeExtension(psz + 1);
 }
 
-void ttFileDlg::SetFilter(const char* pszFilters)
+void ttCFileDlg::SetFilter(const char* pszFilters)
 {
 	ttASSERT(pszFilters);
 	if (!pszFilters)
@@ -115,7 +115,7 @@ void ttFileDlg::SetFilter(const char* pszFilters)
 	m_pofn->lpstrFilter = m_cszFilter.getptr();
 }
 
-void ttFileDlg::SetFilter(int idResource)
+void ttCFileDlg::SetFilter(int idResource)
 {
 	m_cszFilter.GetResString(idResource);
 	char* psz = tt::strchr(m_cszFilter, '|');
@@ -130,7 +130,7 @@ UINT_PTR CALLBACK ttpriv::OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */,
 {
 	if (uMsg == WM_INITDIALOG) {
 		SetWindowLongPtr(hdlg, GWLP_USERDATA, ((OPENFILENAME*) lParam)->lCustData);
-		ttFileDlg* pThis = (ttFileDlg*) ((OPENFILENAME*) lParam)->lCustData;
+		ttCFileDlg* pThis = (ttCFileDlg*) ((OPENFILENAME*) lParam)->lCustData;
 
 		if (pThis->m_bShadeBtns) {
 			pThis->m_ShadedBtns.Initialize(GetParent(hdlg));
@@ -162,7 +162,7 @@ UINT_PTR CALLBACK ttpriv::OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */,
 
 			case CDN_FOLDERCHANGE:
 				{
-					ttFileDlg* pThis = (ttFileDlg*) GetWindowLongPtr(hdlg, GWLP_USERDATA);
+					ttCFileDlg* pThis = (ttCFileDlg*) GetWindowLongPtr(hdlg, GWLP_USERDATA);
 					if (pThis->m_bRepositionWindow)	{
 						pThis->m_bRepositionWindow = false;
 						MoveWindow(GetParent(hdlg), pThis->m_rcPosition.left, pThis->m_rcPosition.top,
@@ -173,7 +173,7 @@ UINT_PTR CALLBACK ttpriv::OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */,
 		}
 	}
 	else if (uMsg == WM_DESTROY) {
-		ttFileDlg* pThis = (ttFileDlg*) GetWindowLongPtr(hdlg, GWLP_USERDATA);
+		ttCFileDlg* pThis = (ttCFileDlg*) GetWindowLongPtr(hdlg, GWLP_USERDATA);
 		GetWindowRect(GetParent(hdlg), &pThis->m_rcPosition);
 	}
 	return 0;

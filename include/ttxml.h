@@ -6,7 +6,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 //////////////// Derivative work ////////////////////////////////////////////
-// Name:		ttXML, ttXMLBranch
+// Name:		ttCParseXML, ttCXMLBranch
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2003-2019 KeyWorks Software (Ralph Walden)
 // Licence:		Apache License (see ../LICENSE)
@@ -17,14 +17,14 @@
 #ifndef __TTLIB_KEYXML_H__
 #define __TTLIB_KEYXML_H__
 
-#include "ttheap.h" 		// ttHeap
-#include "tthashpair.h"		// ttHashPair
-#include "ttarray.h"		// ttArray
-#include "ttstring.h"		// ttString
-#include "ttfile.h" 		// ttFile
+#include "ttheap.h" 		// ttCHeap
+#include "tthashpair.h"		// ttCHashPair
+#include "ttarray.h"		// ttCArray
+#include "ttstring.h"		// ttCStr
+#include "ttfile.h" 		// ttCFile
 
-class ttXML;		// forward definition
-class ttXMLBranch;	// forward definition
+class ttCParseXML;		// forward definition
+class ttCXMLBranch;	// forward definition
 
 #define PARSE_MINIMAL			0x00000000 // Unset the following flags.
 #define PARSE_PI				0x00000002 // Parse '<?...?>'
@@ -218,8 +218,8 @@ namespace tt {
 
 	typedef struct
 	{
-		ttXML*			pKeyXML;			// pointer to the container class
-		ttXMLBranch*	parent;				// Pointer to parent
+		ttCParseXML*			pKeyXML;			// pointer to the container class
+		ttCXMLBranch*	parent;				// Pointer to parent
 		char*			pszName;			// Pointer to element name.
 		XMLENTITY		type;				// Branch type; see XMLENTITY.
 		size_t			cAttributes;		// Count attributes.
@@ -228,13 +228,13 @@ namespace tt {
 		size_t			cChildren;			// Count children in member 'child'.
 		size_t			cChildSpace;		// Available pointer space in 'child'.
 		size_t			nextChild;			// Set by FindFirstElement(), updated by FindNextElement()
-		ttXMLBranch**	aChildren;			// Array of pointers to children.
+		ttCXMLBranch**	aChildren;			// Array of pointers to children.
 		char*			pszData;			// Pointer to any associated string data.
 		HTML_ELEMENT	element;			// HTML Element -- only valid in an HTML file
 	} XMLBRANCH;
 }
 
-class ttXMLBranch : public tt::XMLBRANCH
+class ttCXMLBranch : public tt::XMLBRANCH
 {
 public:
 	bool IsNull()					const { return type == tt::ENTITY_NULL; }
@@ -255,30 +255,30 @@ public:
 
 	// Class functions
 
-	ttXMLBranch*	FindFirstElement(tt::HTML_ELEMENT element);
-	ttXMLBranch*	FindNextElement(tt::HTML_ELEMENT element);	// Must call FindFirstElement() before this
+	ttCXMLBranch*	FindFirstElement(tt::HTML_ELEMENT element);
+	ttCXMLBranch*	FindNextElement(tt::HTML_ELEMENT element);	// Must call FindFirstElement() before this
 
-	ttXMLBranch*	FindFirstElement(const char* pszName);
-	ttXMLBranch*	FindNextElement(const char* pszName);	// Must call FindFirstElement() before this
+	ttCXMLBranch*	FindFirstElement(const char* pszName);
+	ttCXMLBranch*	FindNextElement(const char* pszName);	// Must call FindFirstElement() before this
 
 	// Use GetAttribute() for the current branch, FindFirstAttribute to find a child branch containing the specified attribute/value
 
-	ttXMLBranch*	FindFirstAttribute(const char* pszAttribute, const char* pszValue = nullptr);	// find first attribute with specified name and (optional) value
+	ttCXMLBranch*	FindFirstAttribute(const char* pszAttribute, const char* pszValue = nullptr);	// find first attribute with specified name and (optional) value
 
 	const char*		GetAttribute(const char* pszName) const;
 	tt::XMLATTR*    GetAttributeAt(size_t i) { ttASSERT(i < cAttributes); return (i < cAttributes) ? aAttributes[i] : NULL; }
 	size_t			GetAttributesCount() const { return cAttributes; }
-	ttXMLBranch*	GetChildAt(size_t i) { ttASSERT(i < cChildren); return (i < cChildren) ? aChildren[i] : NULL; }
+	ttCXMLBranch*	GetChildAt(size_t i) { ttASSERT(i < cChildren); return (i < cChildren) ? aChildren[i] : NULL; }
 	size_t			GetChildrenCount() const { return cChildren; }
 	const char*		GetData() { return pszData ? pszData : ""; }
 	tt::HTML_ELEMENT	GetElementTag() const { return element; }
 	const char*		GetName() const { return pszName ? pszName : ""; }
-	ttXMLBranch*	GetSiblingAt(size_t i) { return (!IsRoot() && i < GetSiblingsCount()) ? parent->aChildren[i] : NULL; }
+	ttCXMLBranch*	GetSiblingAt(size_t i) { return (!IsRoot() && i < GetSiblingsCount()) ? parent->aChildren[i] : NULL; }
 	size_t			GetSiblingNumber();
 	size_t			GetSiblingsCount() const { return (!IsRoot()) ? parent->cChildren : 0; }
 	tt::XMLENTITY		GetType() const { return type; }
 	bool			RemoveChildAt(size_t i);
-	bool			ReplaceAttributeValue(ttXML* pxml, const char* pszName, const char* pszNewValue);
+	bool			ReplaceAttributeValue(ttCParseXML* pxml, const char* pszName, const char* pszNewValue);
 	const char*		GetFirstChildData() { if (cChildren) return GetChildAt(0)->GetData(); else return NULL; }
 
 	inline tt::XMLATTR* MapStringToAttributePtr(const char* pszString) const {
@@ -289,43 +289,43 @@ public:
 		return nullptr;
 	}
 
-	ttXMLBranch* operator[](size_t i){ return (ttXMLBranch*) GetChildAt(i); }
+	ttCXMLBranch* operator[](size_t i){ return (ttCXMLBranch*) GetChildAt(i); }
 };
 
-class ttXML : public ttHeap
+class ttCParseXML : public ttCHeap
 {
 public:
-	ttXML();
+	ttCParseXML();
 
 	void SetDocType(size_t type = tt::DOCTYPE_XHTML_STRICT);
 
 	HRESULT ParseXmlFile(const char* pszFile);	// returns S_OK if read, STG_E_FILENOTFOUND if not found
 	HRESULT ParseHtmlFile(const char* pszFile);
-	char*	ParseXmlString(char* pszXmlString, ttXMLBranch* pRoot = nullptr);
-	char*	ParseHtmlString(char* szXmlString, ttXMLBranch* pRoot = nullptr);
-	char*	ParseSitemapString(char* szXmlString, ttXMLBranch* pRoot = nullptr);
+	char*	ParseXmlString(char* pszXmlString, ttCXMLBranch* pRoot = nullptr);
+	char*	ParseHtmlString(char* szXmlString, ttCXMLBranch* pRoot = nullptr);
+	char*	ParseSitemapString(char* szXmlString, ttCXMLBranch* pRoot = nullptr);
 
 	HRESULT SaveXmlFile(const char* pszFileName);
-	void	SaveXmlFile(ttFile* pkf) { WriteBranch(nullptr, *pkf, 0); }	// nullptr means no parent
+	void	SaveXmlFile(ttCFile* pkf) { WriteBranch(nullptr, *pkf, 0); }	// nullptr means no parent
 	HRESULT SaveHtmlFile(const char* pszFileName);
-	void	SaveHtmlFile(ttFile* pkf) { WriteHtmlBranch(nullptr, *pkf); }
+	void	SaveHtmlFile(ttCFile* pkf) { WriteHtmlBranch(nullptr, *pkf); }
 
-	ttXMLBranch* GetRootBranch() { return m_pRoot; }
+	ttCXMLBranch* GetRootBranch() { return m_pRoot; }
 
-	ttXMLBranch* GetBodyBranch() { return m_pBodyBranch; }
-	ttXMLBranch* GetHeadBranch() { return m_pHeadBranch; }
-	ttXMLBranch* GetTitleBranch() { return m_pTitleBranch; }
+	ttCXMLBranch* GetBodyBranch() { return m_pBodyBranch; }
+	ttCXMLBranch* GetHeadBranch() { return m_pHeadBranch; }
+	ttCXMLBranch* GetTitleBranch() { return m_pTitleBranch; }
 
 	// Call AddRoot() when creating XML from scratch (no input file or string)
-	ttXMLBranch* AddRoot() { m_pRoot = NewBranch(tt::ENTITY_ROOT); m_pRoot->parent = m_pRoot; return m_pRoot; }
-	ttXMLBranch* AddBranch(ttXMLBranch* pParent, const char* pszBranchName, tt::XMLENTITY eType = tt::ENTITY_ELEMENT);
-	void		   AddAttribute(ttXMLBranch* pBranch, const char* pszName, const char* pszValue, size_t iGrow = 4 /* estimated new attributes */);
-	ttXMLBranch* AddDataChild(ttXMLBranch* pParent, const char* pszName, const char* pszData);
-	ttXMLBranch* GraftBranch(ttXMLBranch* pParent, tt::XMLENTITY eType = tt::ENTITY_ELEMENT);
+	ttCXMLBranch* AddRoot() { m_pRoot = NewBranch(tt::ENTITY_ROOT); m_pRoot->parent = m_pRoot; return m_pRoot; }
+	ttCXMLBranch* AddBranch(ttCXMLBranch* pParent, const char* pszBranchName, tt::XMLENTITY eType = tt::ENTITY_ELEMENT);
+	void		   AddAttribute(ttCXMLBranch* pBranch, const char* pszName, const char* pszValue, size_t iGrow = 4 /* estimated new attributes */);
+	ttCXMLBranch* AddDataChild(ttCXMLBranch* pParent, const char* pszName, const char* pszData);
+	ttCXMLBranch* GraftBranch(ttCXMLBranch* pParent, tt::XMLENTITY eType = tt::ENTITY_ELEMENT);
 
 	const char* GetTitle() {	// if an HTML/XHTML file was parsed, this will return the title (if any)
 		if (m_pTitleBranch && m_pTitleBranch->GetChildrenCount()) {
-			ttXMLBranch* pData = m_pTitleBranch->GetChildAt(0);
+			ttCXMLBranch* pData = m_pTitleBranch->GetChildAt(0);
 			if (pData && pData->GetType() == tt::ENTITY_PCDATA && pData->pszData)
 				return pData->GetData();
 		}
@@ -333,23 +333,23 @@ public:
 	}
 
 	size_t GetMSHLinkCount() { return m_aMSHLinks.GetCount(); }
-	ttXMLBranch* GetMSHLink(size_t pos) {	 return m_aMSHLinks[pos]; }
+	ttCXMLBranch* GetMSHLink(size_t pos) {	 return m_aMSHLinks[pos]; }
 
 	size_t GetObjectTagCount() { return m_aObjectTags.GetCount(); }
-	ttXMLBranch* GetObjectTag(size_t pos) {  return m_aObjectTags[pos]; }
+	ttCXMLBranch* GetObjectTag(size_t pos) {  return m_aObjectTags[pos]; }
 
 	char*	AllocateBuffer(size_t cb) { return (char*) ttMalloc(cb); }
-	void	AllocateStringBuffers(ttXMLBranch* pBranch = nullptr);	// convert all strings to separately allocated buffers
+	void	AllocateStringBuffers(ttCXMLBranch* pBranch = nullptr);	// convert all strings to separately allocated buffers
 	void	FreeBuffer(char* pszBuffer) { ttFree(pszBuffer); }
 	bool	isAllocatedStrings() { return m_bAllocatedStrings; }
 
 protected:
 	// Class functions
 
-	ttXMLBranch* NewBranch(tt::XMLENTITY eType = tt::ENTITY_ELEMENT);
-	tt::XMLATTR*	   AddAttribute(ttXMLBranch* pBranch, long lGrow);
-	HRESULT		   WriteBranch(ttXMLBranch* pBranch, ttFile& kf, size_t iIndent);
-	HRESULT		   WriteHtmlBranch(ttXMLBranch* pBranch, ttFile& kf);
+	ttCXMLBranch* NewBranch(tt::XMLENTITY eType = tt::ENTITY_ELEMENT);
+	tt::XMLATTR*	   AddAttribute(ttCXMLBranch* pBranch, long lGrow);
+	HRESULT		   WriteBranch(ttCXMLBranch* pBranch, ttCFile& kf, size_t iIndent);
+	HRESULT		   WriteHtmlBranch(ttCXMLBranch* pBranch, ttCFile& kf);
 	tt::HTML_ELEMENT   ParseElementTag(const char* pszName, const char* pszCurLoc, bool bEndTag = false);
 
 	tt::XMLATTR* NewAttribute(void) {
@@ -360,22 +360,22 @@ protected:
 
 	// Class members
 
-	ttXMLBranch*	m_pRoot;			// Pointer to current XML Document tree root.
+	ttCXMLBranch*	m_pRoot;			// Pointer to current XML Document tree root.
 	size_t		m_uOptions;				// Parser options.
 	bool		m_bAllocatedStrings;	// true if we allocated our own memory to hold strings
 	bool		m_bXmlDataIsland;		// true if we encountered one or more data islands
 
-	ttXMLBranch* m_pBodyBranch;
-	ttXMLBranch* m_pHeadBranch;
-	ttXMLBranch* m_pTitleBranch;
+	ttCXMLBranch* m_pBodyBranch;
+	ttCXMLBranch* m_pHeadBranch;
+	ttCXMLBranch* m_pTitleBranch;
 
-	ttArray<ttXMLBranch*> m_aMSHLinks;	// array of all MSHelp:link elements that appear
-	ttArray<ttXMLBranch*> m_aObjectTags;	// array of all <object> elements that appear
-	ttHashPair m_lstXmlTags;
-	ttHashPair m_lstUnknownTags;
+	ttCArray<ttCXMLBranch*> m_aMSHLinks;	// array of all MSHelp:link elements that appear
+	ttCArray<ttCXMLBranch*> m_aObjectTags;	// array of all <object> elements that appear
+	ttCHashPair m_lstXmlTags;
+	ttCHashPair m_lstUnknownTags;
 
-	ttString m_cszDocType;
-	ttFile m_kf;
+	ttCStr m_cszDocType;
+	ttCFile m_kf;
 };
 
 #endif	// __TTLIB_KEYXML_H__

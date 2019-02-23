@@ -15,7 +15,7 @@
 #endif
 
 #include "../include/ttcritsection.h"	// CCritSection, CCritLock
-#include "../include/ttstring.h"		// ttString
+#include "../include/ttstring.h"		// ttCStr
 #include "../include/ttstr.h"			// ttStr
 
 namespace tt {
@@ -182,14 +182,14 @@ const char* tt::GetResString(size_t idString)
 		// Is the English resource available?
 		if (tt::LanguageOffset && LoadStringA(tt::hinstResources, (UINT) idString, szStringBuf, sizeof(szStringBuf)) != 0) {
 #ifdef _DEBUG
-			ttString strMsg;
+			ttCStr strMsg;
 			strMsg.printf("Non-localized resource id: %zu", idString);
 			ttFAIL(strMsg);
 #endif
 			return (const char*) szStringBuf;
 		}
 #ifdef _DEBUG
-		ttString strMsg;
+		ttCStr strMsg;
 		strMsg.printf("Invalid string id: %zu", idString);
 		ttFAIL(strMsg);
 #endif
