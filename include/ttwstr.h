@@ -44,7 +44,7 @@ public:
 	ttCWStr(const wchar_t* psz) { m_psz = tt::StrDup(psz ? psz : L""); }
 	ttCWStr(const char* psz) { m_psz = nullptr; CopyNarrow(psz); }
 #ifdef _WINDOWS_
-	ttCWStr(HWND hwnd) { m_psz = nullptr; GetWindowText(hwnd); }
+	ttCWStr(HWND hwnd) { m_psz = nullptr; getWindowText(hwnd); }
 #endif // _WINDOWS_
 
 	~ttCWStr() { if (m_psz)  tt::FreeAlloc(m_psz); }
@@ -60,18 +60,18 @@ public:
 	const wchar_t* findLastSlash();		// Handles any mix of '\' and '/' in the filename
 
 #ifdef _WINDOWS_
-	void GetFullPathName();
+	void getFullPathName();
 #endif
 
 	// UI retrieving methods
 
 #ifdef _WINDOWS_
-	bool GetWindowText(HWND hwnd);
+	const wchar_t* getResString(size_t idString);
+	bool getWindowText(HWND hwnd);
 
 	// The following will always return a pointer, but if an error occurred, it will point to an empty string
-	const wchar_t* GetListBoxText(HWND hwnd) { return GetListBoxText(hwnd, ::SendMessage(hwnd, LB_GETCURSEL, 0, 0)); }
-	const wchar_t* GetListBoxText(HWND hwnd, size_t sel);
-	const wchar_t* getResString(size_t idString);
+	const wchar_t* getListBoxText(HWND hwnd) { return getListBoxText(hwnd, ::SendMessage(hwnd, LB_GETCURSEL, 0, 0)); }
+	const wchar_t* getListBoxText(HWND hwnd, size_t sel);
 #endif	// _WINDOWS_
 
 	void	MakeLower();
@@ -79,7 +79,7 @@ public:
 
 	// When compiled with wxWidgets, IsSame() functions work with UTF8 strings, otherwise they only correctly handle the ANSI portion of UTF8 strings
 
-	bool	IsSameSubString(const wchar_t* psz);	// returns true if psz is an exact match to the first part of ttCWStr (case-insensitive)
+	bool	isSameSubString(const wchar_t* psz);	// returns true if psz is an exact match to the first part of ttCWStr (case-insensitive)
 	bool	IsSameString(const wchar_t* psz);		// returns true if psz is an exact match to ttCWStr (case-insensitive)
 
 	wchar_t* GetQuotedString(wchar_t* pszQuote);	// returns pointer to first character after closing quote (or nullptr if not a quoted string)

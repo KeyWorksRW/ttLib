@@ -18,7 +18,7 @@
 #include <commdlg.h>
 
 #include "ttdebug.h"	// for ttASSERTS
-#include "ttstring.h"	// ttCStr
+#include "ttstr.h"	// ttCStr
 #include "ttmultibtn.h"	// ttCMultiBtn
 
 #ifndef OFN_DONTADDTORECENT
@@ -46,7 +46,7 @@ public:
 	void	SetFilter(int idResource);
 	void	SetFilter(const char* pszFilters);	// separate filters with '|' character
 	void	SetInitialDir(const char* pszFolder) { m_pofn->lpstrInitialDir = pszFolder; }
-	void	SetInitialFileName(const char* psz) { ttASSERT(tt::strlen(psz) < MAX_PATH); m_cszFileName = psz; }
+	void	SetInitialFileName(const char* psz) { ttASSERT(tt::strLen(psz) < MAX_PATH); m_cszFileName = psz; }
 	void	ShowCreatePrompt() { m_pofn->Flags &= ~OFN_FILEMUSTEXIST; m_pofn->Flags |= OFN_CREATEPROMPT; }
 	void	ShowReadOnlyBox() { m_pofn->Flags &= ~OFN_HIDEREADONLY; }
 	void	UseCurrentDirectory() { m_cszCurDir.getCWD(); m_pofn->lpstrInitialDir = m_cszCurDir; }
@@ -80,7 +80,7 @@ protected:
 
 	RECT	  m_rcPosition;
 
-	// This is malloc'd because the size changes depending on the version of Windows
+	// This is Malloc'd because the size changes depending on the version of Windows
 	OPENFILENAMEA* m_pofn;
 
 	ttCMultiBtn	m_ShadedBtns;

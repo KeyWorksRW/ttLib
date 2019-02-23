@@ -48,7 +48,7 @@ public:
 	ttCStr(const wchar_t* psz) { CopyWide(psz); }
 	ttCStr(ttCStr& csz) { m_psz = tt::StrDup(csz); }
 #ifdef _WINDOWS_
-	ttCStr(HWND hwnd) { m_psz = nullptr; GetWindowText(hwnd); }
+	ttCStr(HWND hwnd) { m_psz = nullptr; getWindowText(hwnd); }
 #endif // _WINDOWS_
 
 	~ttCStr() { if (m_psz) tt::FreeAlloc(m_psz); }
@@ -99,21 +99,21 @@ public:
 	bool	ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCaseSensitive = false);
 
 	char* findLastSlash();	// Handles any mix of '\' and '/' in the filename
-	char* FindExt() const;	// will return nullptr if no extension
+	char* findExt() const;	// will return nullptr if no extension
 
 #ifdef _WINDOWS_
-	void GetFullPathName();
+	void getFullPathName();
 #endif
 
 	// UI retrieving methods
 
 #ifdef _WINDOWS_
-	bool GetWindowText(HWND hwnd);
+	char* getResString(size_t idString);
+	bool  getWindowText(HWND hwnd);
 
 	// The following will always return a pointer, but if an error occurred, it will point to an empty string
-	char* GetListBoxText(HWND hwnd) { return GetListBoxText(hwnd, ::SendMessage(hwnd, LB_GETCURSEL, 0, 0)); }
-	char* GetListBoxText(HWND hwnd, size_t sel);
-	char* getResString(size_t idString);
+	char* getListBoxText(HWND hwnd) { return getListBoxText(hwnd, ::SendMessage(hwnd, LB_GETCURSEL, 0, 0)); }
+	char* getListBoxText(HWND hwnd, size_t sel);
 #endif	// _WINDOWS_
 
 	void	MakeLower();
@@ -121,13 +121,13 @@ public:
 
 	// if the first non whitespace character in pszString == chBegin, get everthing between chBegin and chEnd, otherwise get everything after the whitespace
 
-	char*	GetString(const char* pszString, char chBegin, char chEnd);
+	char*	getString(const char* pszString, char chBegin, char chEnd);
 
-	char*	GetAngleString(const char* pszString) { return GetString(pszString,    '<', '>'); }
-	char*	GetBracketsString(const char* pszString) { return GetString(pszString, '[', ']'); }
-	char*	GetParenthString(const char* pszString) { return GetString(pszString,  '(', ')'); }
+	char*	getAngleString(const char* pszString) { return getString(pszString,    '<', '>'); }
+	char*	getBracketsString(const char* pszString) { return getString(pszString, '[', ']'); }
+	char*	getParenthString(const char* pszString) { return getString(pszString,  '(', ')'); }
 
-	char*	GetQuotedString(const char* pszQuote);	// Handles single and double quote strings
+	char*	getQuotedString(const char* pszQuote);	// Handles single and double quote strings
 
 	char* cdecl printf(const char* pszFormat, ...);			// Deletes any current string before printing
 	char* cdecl printfAppend(const char* pszFormat, ...);	// Appends to the end of any current string
@@ -136,8 +136,8 @@ public:
 	size_t	sizeBuffer() { return tt::SizeAlloc(m_psz); }	// returns 0 if m_psz is null
 	void	Delete() { if (m_psz) { tt::FreeAlloc(m_psz); m_psz = nullptr; } }
 
-	char*	getptr() { return m_psz; }		// for when casting to char* is problematic
-	char**	getpPtr() { return &m_psz; }	// use with extreme caution!
+	char*	getPtr() { return m_psz; }		// for when casting to char* is problematic
+	char**	getPPtr() { return &m_psz; }	// use with extreme caution!
 
 	operator char*() const { return (char*) m_psz; }
 	operator void*() const { return (void*) m_psz; }

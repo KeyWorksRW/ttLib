@@ -17,7 +17,7 @@
 // running on a 64 bit platform. In addition, if you do use size_t or ptrdiff_t, you have to cast it to (int) every time
 // you use a CSimpleMap function.
 
-// On Windows, this class uses a sub-heap for malloc() and strdup(). When the class is deleted, the entire sub-heap is
+// On Windows, this class uses a sub-heap for Malloc() and StrDup(). When the class is deleted, the entire sub-heap is
 // deleted, rather then walking through and deleting each individual allocation.
 
 // This class contains all the methods of CSimpleMap with the exception of Set() and Remove() -- i.e., you cannot remove
@@ -89,8 +89,8 @@ public:
 	size_t GetCount() const { return m_cItems; }
 	size_t GetSize()  const { return m_cItems; }	// for compatibility with CSimpleMap
 
-	// The following functions can be used to allocate memory that won't have to be specifically freed -- it
-	// will be freed automatically when the heap is destroyed in ttCMap's destructor
+	// The following functions can be used to allocate memory that won't have to be specifically FreeAllocd -- it
+	// will be FreeAllocd automatically when the heap is destroyed in ttCMap's destructor
 
 	void  ttMalloc(size_t cb) { return m_pHeap->ttMalloc(cb); }
 	char* ttStrdup(const char* psz) { return m_pHeap->ttStrdup(psz); }

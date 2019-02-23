@@ -19,7 +19,7 @@
 #define __TTLIB_KEYFILE_H__
 
 #include "ttdebug.h"	// for ttASSERTS
-#include "ttstring.h"	// ttString
+#include "ttstr.h"	// ttString
 
 #ifdef _WINDOWS_
 	#include <Wininet.h>
@@ -47,7 +47,7 @@ public:
 
 	// Default is LF-only EOL. Call SetUnixLF(false) to get CR/LF EOL
 
-	void SetUnixLF(bool bUnix = true) { m_fUnixLF = bUnix; }	// Only affects WriteEol() functions
+	void SetUnixLF(bool bUnix = true) { m_fUnixLF = bUnix; }	// Only affects writeEol() functions
 
 	// For ReadFile, ReadURL and WriteFile() call GetErrorResult() for ERROR_ info
 
@@ -65,17 +65,17 @@ public:
 
 	bool	WriteFile(const char* pszFile);	// ERROR_INVALID_NAME, ERROR_EMPTY_BUFFER, ERROR_CANTOPEN, ERROR_CANTWRITE
 
-	bool	readline(char** ppszLine = nullptr);	// note that this converts \r into 0, so you can only read lines once -- trim(pszLine) is called before returning
-	void	PrepForReadLine() { m_pCurrent = m_pbuf; m_pszLine = m_pCurrent; m_bReadlineReady = true; }	// only needed if you aren't going to call readline
+	bool	readLine(char** ppszLine = nullptr);	// note that this converts \r into 0, so you can only read lines once -- trim(pszLine) is called before returning
+	void	PrepForReadLine() { m_pCurrent = m_pbuf; m_pszLine = m_pCurrent; m_bReadlineReady = true; }	// only needed if you aren't going to call readLine
 	char*	GetLnPtr() { return m_pszLine; }
 	bool	IsEndOfFile() const { return (!m_pCurrent || !*m_pCurrent) ? true : false; }
 
 	char*	GetParsedYamlLine();	// returns nullptr if blank, comment, section diveder, or %YAML line. Otherwises returns pointer to first non-space character, stripped of comment and trailing space
 
-	void	WriteStr(const char* psz);
-	void	WriteChar(char ch);
-	void	WriteEol(void);
-	void	WriteEol(const char* psz);
+	void	writeStr(const char* psz);
+	void	writeChar(char ch);
+	void	writeEol(void);
+	void	writeEol(const char* psz);
 
 	void	AddSingleLF();	// adds a CR/LF only if there isn't one already
 	size_t	GetCurLineLength();	// Use when writing data
@@ -88,7 +88,7 @@ public:
 
 	void	InsertStr(const char* pszText, char* pszPosition);		// pszPosition derived from previous call to GetCurPosition()
 	bool	ReplaceStr(const char* pszOldText, const char* pszNewText, bool fCaseSensitive = false);
-	void	Delete();	// frees memory, resets pointers
+	void	Delete();	// FreeAllocs memory, resets pointers
 
 	size_t	GetCurSize() const { return m_cbAllocated; }
 	char*	GetBeginPosition() const { return m_pbuf; }
@@ -105,9 +105,9 @@ public:
 			m_pCurrent = psz;
 	}
 
-	// Calling readline() will modify the contents -- which means you can't compare two ttCFile objects if you parsed one
-	// with readline(). To allow for this, call MakeCopy() after you have read the file into memory, and RestoreCopy() if
-	// you need to reset the file contents to they way they were before readline() was called.
+	// Calling readLine() will modify the contents -- which means you can't compare two ttCFile objects if you parsed one
+	// with readLine(). To allow for this, call MakeCopy() after you have read the file into memory, and RestoreCopy() if
+	// you need to reset the file contents to they way they were before readLine() was called.
 
 	void MakeCopy();
 	void RestoreCopy();
@@ -118,16 +118,16 @@ public:
 	operator uint8_t*() { return (uint8_t*) m_pszLine; };
 	operator char*()  const { return m_pszLine; }
 	operator const char*() const { return m_pszLine; }
-	void operator+=(const char* psz) { WriteStr(psz); }
+	void operator+=(const char* psz) { writeStr(psz); }
 	void operator=(const char* psz) {
 		ttASSERT_MSG(psz, "NULL pointer!");
 		if (m_pbuf)
 			Delete();
-		WriteStr(psz);
+		writeStr(psz);
 	}
 	char operator[](int pos) { return m_pszLine[pos]; }
 
-	char* m_pszLine;	// default line pointer when calling readline(nullptr)
+	char* m_pszLine;	// default line pointer when calling readLine(nullptr)
 
 protected:
 	void AllocateBuffer(size_t cbInitial = 16 * 1024);

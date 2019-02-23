@@ -29,7 +29,7 @@ ttCFileDlg::ttCFileDlg(HWND hwndParent)
 	if (_osv.dwMajorVersion >= 5)
 		cbStruct += sizeof(void*) + sizeof(DWORD) + sizeof(DWORD);
 #endif
-	m_pofn = (OPENFILENAMEA*) tt::calloc(cbStruct);
+	m_pofn = (OPENFILENAMEA*) tt::Calloc(cbStruct);
 
 	m_cszFileName.resize(MAX_PATH);
 
@@ -48,7 +48,7 @@ ttCFileDlg::ttCFileDlg(HWND hwndParent)
 
 ttCFileDlg::~ttCFileDlg()
 {
-	tt::free(m_pofn);
+	tt::FreeAlloc(m_pofn);
 }
 
 bool ttCFileDlg::GetOpenFileName()
@@ -84,17 +84,17 @@ bool ttCFileDlg::GetSaveFileName()
 
 void ttCFileDlg::FixExtension()
 {
-	if (tt::strchr(m_cszFileName, '.'))
+	if (tt::findChar(m_cszFileName, '.'))
 		return;	// we have an extension, return
 
 	const char* psz = m_pofn->lpstrFilter;
 	for (DWORD i = 1; i < m_pofn->nFilterIndex; i++) {
-		psz = psz + strlen(psz) + 1;
-		psz = psz + strlen(psz) + 1;
+		psz = psz + tt::strByteLen(psz);
+		psz = psz + tt::strByteLen(psz);
 	}
-	psz = psz + tt::strlen(psz) + 1;
+	psz = psz + tt::strLen(psz) + 1;
 	ttASSERT(psz);
-	char* pszTmp = tt::strchr(psz, ';');
+	char* pszTmp = tt::findChar(psz, ';');
 	if (pszTmp)
 		*pszTmp = '\0';
 	m_cszFileName.ChangeExtension(psz + 1);
@@ -107,23 +107,23 @@ void ttCFileDlg::SetFilter(const char* pszFilters)
 		return;
 
 	m_cszFilter = pszFilters;
-	char* psz = tt::strchr(m_cszFilter, '|');
+	char* psz = tt::findChar(m_cszFilter, '|');
 	while (psz) {
 		*psz = '\0';
-		psz = tt::strchr(psz + 1, '|');
+		psz = tt::findChar(psz + 1, '|');
 	}
-	m_pofn->lpstrFilter = m_cszFilter.getptr();
+	m_pofn->lpstrFilter = m_cszFilter.getPtr();
 }
 
 void ttCFileDlg::SetFilter(int idResource)
 {
-	m_cszFilter.GetResString(idResource);
-	char* psz = tt::strchr(m_cszFilter, '|');
+	m_cszFilter.getResString(idResource);
+	char* psz = tt::findChar(m_cszFilter, '|');
 	while (psz) {
 		*psz = '\0';
-		psz = tt::strchr(psz + 1, '|');
+		psz = tt::findChar(psz + 1, '|');
 	}
-	m_pofn->lpstrFilter = m_cszFilter.getptr();
+	m_pofn->lpstrFilter = m_cszFilter.getPtr();
 }
 
 UINT_PTR CALLBACK ttpriv::OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */, LPARAM lParam)

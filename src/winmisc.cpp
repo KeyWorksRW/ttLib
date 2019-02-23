@@ -15,8 +15,8 @@
 #endif
 
 #include "../include/ttcritsection.h"	// CCritSection, CCritLock
-#include "../include/ttstring.h"		// ttCStr
-#include "../include/ttstr.h"			// ttStr
+#include "../include/ttstr.h"		// ttCStr
+#include "../include/ttdebug.h" 		// ttASSERT macros
 
 namespace tt {
 	const char* pszMsgTitle;
@@ -27,10 +27,17 @@ namespace tt {
 
 void tt::InitCaller(HINSTANCE hinstRes, HWND hwnd, const char* pszTitle)
 {
-	tt::pszMsgTitle = tt::strdup(pszTitle ? pszTitle : "");
+	tt::pszMsgTitle = tt::StrDup(pszTitle ? pszTitle : "");
 
 	tt::hinstResources = hinstRes;
-	tt::hwndParent = hwnd;
+	tt::hwndMsgBoxParent = hwnd;
+}
+
+void tt::setMsgBoxTitle(const char* pszTitle)
+{
+	if (tt::pszMsgTitle)
+		tt::FreeAlloc((void*) tt::pszMsgTitle);
+	tt::pszMsgTitle = tt::StrDup(pszTitle ? pszTitle : "");
 }
 
 // Note that these message boxes will work in a console app as well as a windowed app
@@ -42,17 +49,17 @@ int tt::MsgBox(const char* pszMsg, UINT uType)
 
 int tt::MsgBox(UINT idResource, UINT uType)
 {
-	ttStr strRes;
-	strRes.GetResString(idResource);
-	return MessageBoxA(GetActiveWindow(), strRes.isnonempty() ? (char*) strRes : "missing resource id", (tt::pszMsgTitle ? tt::pszMsgTitle : ""), uType);
+	ttCStr strRes;
+	strRes.getResString(idResource);
+	return MessageBoxA(GetActiveWindow(), strRes.isNonEmpty() ? (char*) strRes : "missing resource id", (tt::pszMsgTitle ? tt::pszMsgTitle : ""), uType);
 }
 
 int __cdecl tt::MsgBoxFmt(const char* pszFormat, UINT uType, ...)
 {
-	ttStr csz;
+	ttCStr csz;
 	va_list argList;
 	va_start(argList, uType);
-	tt::vprintf(&csz.m_psz, pszFormat, argList);
+	tt::vprintf(csz.getPPtr(), pszFormat, argList);
 	va_end(argList);
 
 	return MessageBoxA(GetActiveWindow(), csz, tt::pszMsgTitle ? tt::pszMsgTitle : "", uType);
@@ -60,13 +67,13 @@ int __cdecl tt::MsgBoxFmt(const char* pszFormat, UINT uType, ...)
 
 int __cdecl tt::MsgBoxFmt(int idResource, UINT uType, ...)
 {
-	ttStr cszTmp;
-	cszTmp.GetResString(idResource);
+	ttCStr cszTmp;
+	cszTmp.getResString(idResource);
 
-	ttStr csz;
+	ttCStr csz;
 	va_list argList;
 	va_start(argList, uType);
-	tt::vprintf(&csz.m_psz, cszTmp, argList);
+	tt::vprintf(csz.getPPtr(), cszTmp, argList);
 	va_end(argList);
 
 	return MessageBoxA(GetActiveWindow(), csz, tt::pszMsgTitle ? tt::pszMsgTitle : "", uType);
@@ -89,7 +96,7 @@ HFONT tt::CreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold, bool fI
 	lf.lfItalic = (BYTE) fItalics;
 	if (fBold)
 		lf.lfWeight = FW_BOLD;
-	tt::strcpy_s(lf.lfFaceName, LF_FACESIZE, pszTypeFace);
+	tt::strCopy_s(lf.lfFaceName, LF_FACESIZE, pszTypeFace);
 
 	HFONT hfont = CreateFontIndirectA(&lf);
 	DeleteDC(hdc);
@@ -174,7 +181,7 @@ const char* tt::LoadTxtResource(int idRes, uint32_t* pcbFile, HINSTANCE hinst)
 
 */
 
-const char* tt::GetResString(size_t idString)
+const char* tt::getResString(size_t idString)
 {
 	static char szStringBuf[1024];
 
@@ -223,10 +230,10 @@ void __cdecl tt::KeyTrace(const char* pszFormat, ...)
 			return;
 	}
 
-	ttStr csz;
+	ttCStr csz;
 	va_list argList;
 	va_start(argList, pszFormat);
-	tt::vprintf(&csz.m_psz, pszFormat, argList);
+	tt::vprintf(csz.getPPtr(), pszFormat, argList);
 	va_end(argList);
 
 	// We don't want two threads trying to send text at the same time, so we wrap the rest of this in a critical section
@@ -246,12 +253,12 @@ void __cdecl tt::KeyTrace(const char* pszFormat, ...)
 		}
 	}
 
-	ttASSERT(tt::strlen(csz) < 4094);
+	ttASSERT(tt::strLen(csz) < 4094);
 
-	if (tt::strlen(csz) >= 4094)
-		csz.m_psz[4093] = 0;	// truncate to size KeyView can handle
+	if (tt::strLen(csz) >= 4094)
+		csz.getPtr()[4093] = 0;	// truncate to size KeyView can handle
 
-	tt::strcpy_s(g_pszKeyViewMap, 4093, csz);
+	tt::strCopy_s(g_pszKeyViewMap, 4093, csz);
 
 	SendMessage(hwndKeyView, WMP_KEY_TRACE_MSG, 0, 0);
 }

@@ -43,7 +43,7 @@ ttCDib::ttCDib()
 ttCDib::~ttCDib()
 {
 	if (hDib)
-		tt::free(hDib);
+		tt::FreeAlloc(hDib);
 }
 
 bool ttCDib::IsWin30Dib() {
@@ -70,7 +70,7 @@ HDIB  ttCDib::Create(DWORD dwWidth, DWORD dwHeight, WORD wBitCount)
 	DWORD				dwLen;	// size of memory block
 
 	if (hDib)
-		tt::free(hDib);
+		tt::FreeAlloc(hDib);
 	hDib = nullptr;
 
 	// Make sure bits per pixel is valid
@@ -117,7 +117,7 @@ HDIB  ttCDib::Create(DWORD dwWidth, DWORD dwHeight, WORD wBitCount)
 	// table, and the bits
 	dwLen = GetSize();
 
-	hDib = tt::malloc(dwLen); // alloc memory block to store our bitmap
+	hDib = tt::Malloc(dwLen); // alloc memory block to store our bitmap
 	if (!hDib)
 		return nullptr;
 

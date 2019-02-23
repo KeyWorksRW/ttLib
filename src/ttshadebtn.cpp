@@ -21,7 +21,7 @@
 
 #include "pch.h"
 
-#include "../include/ttstring.h"	// ttCStr
+#include "../include/ttstr.h"	// ttCStr
 #include "../include/ttdebug.h"		// ttASSERT macros
 #include "../include/ttshadebtn.h"	// ttCShadeBtn
 
@@ -62,12 +62,12 @@ ttCShadeBtn::ttCShadeBtn()
 	// on dialog buttons, and you might end up with an unreadable button as a result.
 
 #if 0
-	NONCLIENTMETRICS* pmetrics = (NONCLIENTMETRICS*) tt::calloc(sizeof(NONCLIENTMETRICS));
+	NONCLIENTMETRICS* pmetrics = (NONCLIENTMETRICS*) tt::Calloc(sizeof(NONCLIENTMETRICS));
 	pmetrics->cbSize = sizeof(NONCLIENTMETRICS);
 	if (SystemParametersInfo(SPI_GETNONCLIENTMETRICS, 0, pmetrics, 0)) {
 		SetFont(&pmetrics->lfMessageFont);
 	}
-	tt::free(pmetrics);
+	tt::FreeAlloc(pmetrics);
 #endif
 }
 
@@ -76,7 +76,7 @@ ttCShadeBtn::~ttCShadeBtn()
 	if (m_hFont)
 		DeleteObject(m_hFont);
 	if (m_pLF)
-		tt::free(m_pLF);
+		tt::FreeAlloc(m_pLF);
 	if (m_hIconDown != m_hIcon && m_hIconDown)
 		DestroyIcon(m_hIconDown);
 	if (m_hIconHighLight != m_hIcon && m_hIconHighLight)
@@ -92,7 +92,7 @@ bool ttCShadeBtn::SetFont(LOGFONT* pNewStyle)
 {
 	if (pNewStyle) {
 		if (m_pLF == NULL)
-			m_pLF = (LOGFONT*) tt::calloc(sizeof(LOGFONT));
+			m_pLF = (LOGFONT*) tt::Calloc(sizeof(LOGFONT));
 		if (m_pLF) {
 			memcpy(m_pLF, pNewStyle, sizeof(LOGFONT));
 			if (m_hFont)
@@ -107,7 +107,7 @@ bool ttCShadeBtn::SetFont(LOGFONT* pNewStyle)
 bool ttCShadeBtn::SetFont(const char* pszFontName, long lSize, long lWeight, BYTE bItalic, BYTE bUnderline)
 {
 	if (m_pLF == NULL)
-		m_pLF = (LOGFONT*) tt::calloc(sizeof(LOGFONT));
+		m_pLF = (LOGFONT*) tt::Calloc(sizeof(LOGFONT));
 	if (m_pLF) {
 		strncpy_s(m_pLF->lfFaceName, sizeof(m_pLF->lfFaceName), pszFontName, 31);
 		m_pLF->lfHeight = lSize;
@@ -474,7 +474,7 @@ void ttCShadeBtn::OnPaint()
     HANDLE hBitmap = CreateCompatibleBitmap(hdcPaint, cx, cy);
 	HBITMAP hOldBitmap = (HBITMAP) SelectObject(hdcMem, hBitmap); // select the destination for MemDC
 
-	cszCaption.GetWindowText(*this);							// get button text
+	cszCaption.getWindowText(*this);							// get button text
 	SetBkMode(hdcMem, TRANSPARENT);
 	// with MemDC we need to select the font...
 

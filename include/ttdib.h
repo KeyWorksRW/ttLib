@@ -19,9 +19,9 @@
 	#error This code will only work on Windows
 #endif
 
-// REVIEW: [randalphwa - 1/10/2019] This is a bug waiting to happen. Handles in Windows are freed with DeleteObject().
+// REVIEW: [randalphwa - 1/10/2019] This is a bug waiting to happen. Handles in Windows are FreeAllocd with DeleteObject().
 // HDIB looks like a GDI Object, and if it really was, it would be handed to DeleteObject(). A HANDLE in Windows is a
-// pointer, but you do NOT use standard memory routines to allocate/free it the way HDIB is being used here. The HDIB
+// pointer, but you do NOT use standard memory routines to allocate/FreeAlloc it the way HDIB is being used here. The HDIB
 // should be replaced with a void* since it gets cast to different structure pointers.
 
 #define HDIB HANDLE

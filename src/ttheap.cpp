@@ -15,12 +15,12 @@ ttCHeap tt::MainHeap;
 
 /*
 	ttCHeap can be constructed in one of three ways:
-		1) no parameter -> uses the process heap, memory is NOT freed in destructor
+		1) no parameter -> uses the process heap, memory is NOT FreeAllocd in destructor
 		2) bool -> creates a sub-heap, the parameter indicates if the sub-heap should be thread-safe or not
-		3) heap handle -> uses another sub-heap, sub-heap is not freed in destructor
+		3) heap handle -> uses another sub-heap, sub-heap is not FreeAllocd in destructor
 
 		#3 is typically used when you want a master ttCHeap class that will share it's sub-heap with all child ttCHeap classes, and
-		free the entire sub-heap at once.
+		FreeAlloc the entire sub-heap at once.
 
 			ttCHeap master(true);
 			ttCHeap child(master);	// this invokes master::HANDLE() and from then on use master's sub-heap
@@ -87,7 +87,7 @@ void* ttCHeap::ttRealloc(void* pv, size_t cb)
 	return pv;
 }
 
-void* ttCHeap::ttRecalloc(void* pv, size_t cb)
+void* ttCHeap::ttReCalloc(void* pv, size_t cb)
 {
 	if (!pv)
 		return ttCalloc(cb);
@@ -104,7 +104,7 @@ char* ttCHeap::ttStrdup(const char* psz)
 	if (!psz || !*psz)
 		psz = "";
 
-	size_t cb = tt::strbyte(psz);
+	size_t cb = tt::strByteLen(psz);
 	char* pszDst = (char*) ttMalloc(cb);
 	memcpy(pszDst, psz, cb);
 	return pszDst;
@@ -117,7 +117,7 @@ wchar_t* ttCHeap::ttStrdup(const wchar_t* pwsz)
 	if (!pwsz || !*pwsz)
 		pwsz = L"";
 
-	size_t cb = tt::strbyte(pwsz);
+	size_t cb = tt::strByteLen(pwsz);
 	wchar_t* pwszDst = (wchar_t*) ttMalloc(cb);
 	memcpy(pwszDst, pwsz, cb);
 	return pwszDst;
@@ -129,7 +129,7 @@ char* ttCHeap::ttStrdup(const char* pszSrc, char** pszDst)
 
 	if (!pszSrc || !*pszSrc)
 		pszSrc = "";
-	size_t cb = tt::strbyte(pszSrc);
+	size_t cb = tt::strByteLen(pszSrc);
 	*pszDst = *pszDst ? (char*) HeapReAlloc(m_hHeap, 0, *pszDst, cb) : (char*) HeapAlloc(m_hHeap, 0, cb);
 	memcpy(*pszDst, pszSrc, cb);
 	return *pszDst;

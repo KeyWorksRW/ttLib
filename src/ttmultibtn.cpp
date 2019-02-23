@@ -19,7 +19,7 @@ BOOL WINAPI ttpriv::EnumBtnProc(HWND hwnd, LPARAM lval)
 	char szClass[MAX_PATH];
 	if ((GetWindowLong(hwnd, GWL_STYLE) & 0x0f) < BS_CHECKBOX) {
 		GetClassName(hwnd, szClass, sizeof(szClass));
-		if (tt::samestri(szClass, "Button")) {
+		if (tt::isSameStri(szClass, "Button")) {
 			ttCMultiBtn* pMultiBtn = (ttCMultiBtn*) lval;
 			ttCShadeBtn* pBtn = new ttCShadeBtn;
 			pBtn->SubClass(hwnd);

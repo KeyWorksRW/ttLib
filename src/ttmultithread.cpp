@@ -39,7 +39,7 @@ ttCMultiThrd::~ttCMultiThrd()
 			m_aThrds[iThread]->m_semStart.Post();
 			semTerminate.Wait();
 		}
-		kfree(m_aThrds);		// note that we do not call delete on the individual threads as per wxThread docs
+		kFreeAlloc(m_aThrds);		// note that we do not call delete on the individual threads as per wxThread docs
 	}
 	delete m_psemAvailThrd;
 #else	// not _WX_WX_H_
@@ -54,7 +54,7 @@ ttCMultiThrd::~ttCMultiThrd()
 		}
 	}
 	if (m_ahsemDone)
-		tt::free(m_ahsemDone);
+		tt::FreeAlloc(m_ahsemDone);
 #endif	// _WX_WX_H_
 }
 
@@ -81,10 +81,10 @@ void ttCMultiThrd::InitializeThreads(size_t cThreads)	// 0 means create as many 
 	m_cThreads = (cThreads == 0) ? (size_t) cpus : cThreads;
 
 #ifdef	_WX_WX_H_
-	m_aThrds = (CMultiChildThread**) tt::malloc(sizeof(CMultiChildThread**) * m_cThreads);
+	m_aThrds = (CMultiChildThread**) tt::Malloc(sizeof(CMultiChildThread**) * m_cThreads);
 #else	// not _WX_WX_H_
-	m_aThrdInfo = (MULTI_THRD_INFO*) tt::malloc(sizeof(MULTI_THRD_INFO) * m_cThreads);
-	m_ahsemDone = (HANDLE*) tt::malloc(sizeof(HANDLE) * m_cThreads);
+	m_aThrdInfo = (MULTI_THRD_INFO*) tt::Malloc(sizeof(MULTI_THRD_INFO) * m_cThreads);
+	m_ahsemDone = (HANDLE*) tt::Malloc(sizeof(HANDLE) * m_cThreads);
 #endif	// _WX_WX_H_
 
 	for (size_t iThread = 0; iThread < cThreads; iThread++) {

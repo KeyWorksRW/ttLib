@@ -30,7 +30,7 @@ public:
 	void SetClassBkgrnd(HBRUSH hbkgrnd) { if (m_pwc) m_pwc->hbrBackground = hbkgrnd; }	// constructor will have set this to COLOR_WINDOW + 1
 	void SetClassCursor(HCURSOR hcur) { if (m_pwc) m_pwc->hCursor = hcur; }
 	void SetClassMenu(size_t idMenuResource) { if (m_pwc) m_pwc->lpszMenuName = (LPCTSTR) idMenuResource; }
-	bool SetClassName(const char* pszClassName);	// returns false if strlen(pszClassName) > 255
+	bool SetClassName(const char* pszClassName);	// returns false if strLen(pszClassName) > 255
 	void SetClassStyle(DWORD style) { if (m_pwc) m_pwc->style = style; }	// constructor will have set this to CS_HREDRAW | CS_VREDRAW
 	void SetWndExtra(int cbExtra) { if (m_pwc) m_pwc->cbWndExtra = cbExtra; }
 	void SetClsExtra(int cbExtra) { if (m_pwc) m_pwc->cbClsExtra = cbExtra; }

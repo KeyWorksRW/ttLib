@@ -7,13 +7,13 @@
 /////////////////////////////////////////////////////////////////////////////
 
 // Under Windows, all the classes here use their own private heap. The advantage of this approach is that
-// none of the individual allocations need to be freed -- the entire heap is destroyed when the class
+// none of the individual allocations need to be FreeAllocd -- the entire heap is destroyed when the class
 // destructor is called. By default, all the classes use a non-serialized private heap -- which means
 // multiple threads need to use a crit section if accessing a shared instance of these classes.
 
 // In a non-Windows build the classes will be serialized if the underlying ttMalloc() routines are serialed,
-// and the underlying CTTHeap destructor will free all memory allocated by this class (but because it will be
-// calling free() for every item allocated, it will be a lot slower then the _WINDOWS_ version).
+// and the underlying CTTHeap destructor will FreeAlloc all memory allocated by this class (but because it will be
+// calling FreeAlloc() for every item allocated, it will be a lot slower then the _WINDOWS_ version).
 
 #include "pch.h"
 
@@ -120,7 +120,7 @@ bool ttCList::Find(const char* pszKey) const
 		return m_HashPair.Find(pszNormalized);
 
 	for (size_t i = 0; i < m_cItems; i++)	{
-		if (tt::samestr(m_aptrs[i], pszNormalized))
+		if (tt::isSameStr(m_aptrs[i], pszNormalized))
 			return true;
 	}
 	return false;
@@ -139,7 +139,7 @@ size_t ttCList::GetPos(const char* pszKey) const
 		return m_HashPair.GetVal(pszNormalized);
 
 	for (size_t pos = 0; pos < m_cItems; ++pos)	{
-		if (tt::samestr(m_aptrs[pos], pszNormalized))
+		if (tt::isSameStr(m_aptrs[pos], pszNormalized))
 			return pos;
 	}
 	return (size_t) -1;
@@ -458,7 +458,7 @@ bool ttCDblList::FindKey(const char* pszKey, size_t* ppos) const
 		return false;
 	if (m_bIgnoreCase) {
 		for (size_t i = 0; i < m_cItems; i++)	{
-			if (tt::samestri(m_aptrs[i].pszKey, pszKey)) {
+			if (tt::isSameStri(m_aptrs[i].pszKey, pszKey)) {
 				if (ppos)
 					*ppos = i;
 				return true;
@@ -467,7 +467,7 @@ bool ttCDblList::FindKey(const char* pszKey, size_t* ppos) const
 	}
 	else {
 		for (size_t i = 0; i < m_cItems; i++)	{
-			if (tt::samestr(m_aptrs[i].pszKey, pszKey))	{
+			if (tt::isSameStr(m_aptrs[i].pszKey, pszKey))	{
 				if (ppos)
 					*ppos = i;
 				return true;
@@ -484,7 +484,7 @@ bool ttCDblList::FindVal(const char* pszVal, size_t* ppos) const
 		return false;
 	if (m_bIgnoreCase) {
 		for (size_t i = 0; i < m_cItems; i++)	{
-			if (tt::samestri(m_aptrs[i].pszVal, pszVal)) {
+			if (tt::isSameStri(m_aptrs[i].pszVal, pszVal)) {
 				if (ppos)
 					*ppos = i;
 				return true;
@@ -493,7 +493,7 @@ bool ttCDblList::FindVal(const char* pszVal, size_t* ppos) const
 	}
 	else {
 		for (size_t i = 0; i < m_cItems; i++)	{
-			if (tt::samestr(m_aptrs[i].pszVal, pszVal)) {
+			if (tt::isSameStr(m_aptrs[i].pszVal, pszVal)) {
 				if (ppos)
 					*ppos = i;
 				return true;
@@ -526,14 +526,14 @@ char* ttCDblList::GetMatchingVal(const char* pszKey) const
 		return nullptr;
 	if (m_bIgnoreCase) {
 		for (size_t pos = 0; pos < m_cItems; ++pos)	{
-			if (tt::samestri(m_aptrs[pos].pszKey, pszKey)) {
+			if (tt::isSameStri(m_aptrs[pos].pszKey, pszKey)) {
 				return m_aptrs[pos].pszVal;
 			}
 		}
 	}
 	else {
 		for (size_t pos = 0; pos < m_cItems; ++pos)	{
-			if (tt::samestr(m_aptrs[pos].pszKey, pszKey)) {
+			if (tt::isSameStr(m_aptrs[pos].pszKey, pszKey)) {
 				return m_aptrs[pos].pszVal;
 			}
 		}
@@ -637,7 +637,7 @@ void ttCStrIntList::Add(const char* pszKey, ptrdiff_t newVal)
 		return;
 
 	for (size_t pos = 0; pos < m_cItems; ++pos)	{
-		if (tt::samestr(m_aptrs[pos].pszKey, pszKey)) {
+		if (tt::isSameStr(m_aptrs[pos].pszKey, pszKey)) {
 			ptrdiff_t cItems = m_aptrs[pos].pVal[0];
 			for (ptrdiff_t valPos = 1; valPos <= cItems; ++valPos) {
 				if (newVal == m_aptrs[pos].pVal[valPos])
@@ -713,7 +713,7 @@ bool ttCStrIntList::FindKey(const char* pszKey, size_t* ppos) const
 	if (!pszKey || !*pszKey)
 		return false;
 	for (size_t pos = 0; pos < m_cItems; ++pos)	{
-		if (tt::samestr(m_aptrs[pos].pszKey, pszKey))	{
+		if (tt::isSameStr(m_aptrs[pos].pszKey, pszKey))	{
 			if (ppos)
 				*ppos = pos;
 			return true;
@@ -730,7 +730,7 @@ bool ttCStrIntList::GetValCount(const char* pszKey, ptrdiff_t* pVal) const
 	if (!pszKey || !*pszKey || !pVal)
 		return false;
 	for (size_t posKey = 0; posKey < m_cItems; ++posKey)	{
-		if (tt::samestr(m_aptrs[posKey].pszKey, pszKey)) {
+		if (tt::isSameStr(m_aptrs[posKey].pszKey, pszKey)) {
 			*pVal = m_aptrs[posKey].pVal[0];
 			return true;
 		}
@@ -754,7 +754,7 @@ bool ttCStrIntList::GetVal(const char* pszKey, ptrdiff_t* pVal, size_t posVal) c
 	if (!pszKey || !*pszKey || !pVal)
 		return false;
 	for (size_t posKey = 0; posKey < m_cItems; ++posKey)	{
-		if (tt::samestr(m_aptrs[posKey].pszKey, pszKey)) {
+		if (tt::isSameStr(m_aptrs[posKey].pszKey, pszKey)) {
 			if ((ptrdiff_t) posVal > m_aptrs[posKey].pVal[0])
 				return false;
 			*pVal = m_aptrs[posKey].pVal[posVal];

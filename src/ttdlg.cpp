@@ -61,7 +61,7 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 #endif
 		ttCDlg* pThis = (ttCDlg*) lParam;
 		pThis->m_hwnd = hdlg;
-		if (!tt::IsValidWindow(pThis->m_hwndParent))
+		if (!tt::isValidWindow(pThis->m_hwndParent))
 			pThis->m_hwndParent = GetActiveWindow();
 
 		if (pThis->m_bCenterWindow) {
@@ -182,18 +182,18 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 	return FALSE;
 }
 
-ptrdiff_t ttCDlg::GetControlInteger(ptrdiff_t id) const
+ptrdiff_t ttCDlg::getControlInteger(ptrdiff_t id) const
 {
 	char szBuf[20];
-	GetControlText(id, szBuf, sizeof(szBuf) - 1);
-	return tt::atoi(szBuf);
+	getControlText(id, szBuf, sizeof(szBuf) - 1);
+	return tt::Atoi(szBuf);
 }
 
-void ttCDlg::SetControlInteger(ptrdiff_t id, ptrdiff_t val) const
+void ttCDlg::setControlInteger(ptrdiff_t id, ptrdiff_t val) const
 {
 	char szBuf[20];
-	tt::itoa(val, szBuf, sizeof(szBuf));
-	SetControlText(id, szBuf);
+	tt::Itoa(val, szBuf, sizeof(szBuf));
+	setControlText(id, szBuf);
 }
 
 static BOOL (WINAPI* tt_pfnAnimateWindow)(HWND, DWORD, DWORD);

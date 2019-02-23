@@ -28,7 +28,7 @@ ttCEnumStr::ttCEnumStr(const char* psz, char chSeparator)
 
 void ttCEnumStr::ResetEnum(char chSeparator)
 {
-	if (m_csz.isempty()) {
+	if (m_csz.isEmpty()) {
 		m_pszCur = nullptr;
 		m_pszEnd = nullptr;
 		return;
@@ -64,7 +64,7 @@ bool ttCEnumStr::Enum(const char** ppszCurrent)
 
 	if (m_pszCur == nullptr) {	// means we haven't been called before, or ResetEnum() was called to reset
 		m_pszCur = m_csz;
-		m_pszEnd = tt::findchr(m_pszCur, m_chSeparator);
+		m_pszEnd = tt::findChar(m_pszCur, m_chSeparator);
 		if (m_pszEnd)
 			*m_pszEnd = 0;
 		if (ppszCurrent)
@@ -80,8 +80,8 @@ bool ttCEnumStr::Enum(const char** ppszCurrent)
 		else {
 			*m_pszEnd = m_chSeparator;
 			do {	// handle doubled characters, or characters with only space between them (";;" or "; ;")
-				m_pszCur = tt::nextnonspace(m_pszEnd + 1);
-				m_pszEnd = tt::findchr(m_pszCur, m_chSeparator);
+				m_pszCur = tt::findNonSpace(m_pszEnd + 1);
+				m_pszEnd = tt::findChar(m_pszCur, m_chSeparator);
 			} while(*m_pszCur == m_chSeparator && m_pszEnd);
 
 			if (*m_pszCur == m_chSeparator) {	// means we got to the end with no more separators

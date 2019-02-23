@@ -62,7 +62,7 @@ void ttCStr::ChangeExtension(const char* pszExtension)
 	*this += pszExtension;
 }
 
-char* ttCStr::FindExt() const
+char* ttCStr::findExt() const
 {
 	char* psz = tt::findLastChar(m_psz, '.');
 	if (psz == m_psz || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/')	// ignore .file, ./file, and ../file
@@ -127,7 +127,7 @@ char* ttCStr::getCWD()
 
 #ifdef _WINDOWS_
 
-void ttCStr::GetFullPathName()
+void ttCStr::getFullPathName()
 {
 	ttASSERT(m_psz);
 	char szPath[MAX_PATH];
@@ -135,7 +135,7 @@ void ttCStr::GetFullPathName()
 	tt::StrDup(szPath, &m_psz);
 }
 
-char* ttCStr::GetListBoxText(HWND hwnd, size_t sel)
+char* ttCStr::getListBoxText(HWND hwnd, size_t sel)
 {
 	if (m_psz)
 		tt::FreeAlloc(m_psz);
@@ -180,7 +180,7 @@ char* ttCStr::getResString(size_t idString)
 	return m_psz;
 }
 
-bool ttCStr::GetWindowText(HWND hwnd)
+bool ttCStr::getWindowText(HWND hwnd)
 {
 	if (m_psz) {
 		 tt::FreeAlloc(m_psz);
@@ -503,7 +503,7 @@ char* ttCStr::Utoa(uint64_t val)
 	return tt::StrDup(szNum, &m_psz);
 }
 
-char* ttCStr::GetString(const char* pszString, char chBegin, char chEnd)
+char* ttCStr::getString(const char* pszString, char chBegin, char chEnd)
 {
 	ttASSERT_NONEMPTY(pszString);
 
@@ -546,7 +546,7 @@ char* ttCStr::GetString(const char* pszString, char chBegin, char chEnd)
 	return m_psz;
 }
 
-char* ttCStr::GetQuotedString(const char* pszQuote)
+char* ttCStr::getQuotedString(const char* pszQuote)
 {
 	ttASSERT_NONEMPTY(pszQuote);
 
@@ -561,21 +561,21 @@ char* ttCStr::GetQuotedString(const char* pszQuote)
 	switch (*pszQuote) {
 		default:
 		case '"':	// CH_QUOTE
-			return GetString(pszQuote, CH_QUOTE, CH_QUOTE);
+			return getString(pszQuote, CH_QUOTE, CH_QUOTE);
 
 		case '\'':	// CH_SQUOTE
-			return GetString(pszQuote, CH_SQUOTE, CH_SQUOTE);
+			return getString(pszQuote, CH_SQUOTE, CH_SQUOTE);
 
 		case '`':	// CH_START_QUOTE
-			return GetString(pszQuote, CH_START_QUOTE, CH_END_QUOTE);
+			return getString(pszQuote, CH_START_QUOTE, CH_END_QUOTE);
 
 		case '<':
-			return GetString(pszQuote, '<', '>');
+			return getString(pszQuote, '<', '>');
 
 		case '[':	// CH_LEFT_BRACKET
-			return GetString(pszQuote, '[', ']');
+			return getString(pszQuote, '[', ']');
 
 		case '(':	// CH_OPEN_PAREN
-			return GetString(pszQuote, '[', ']');
+			return getString(pszQuote, '[', ']');
 	}
 }

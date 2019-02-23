@@ -8,9 +8,9 @@
 
 #include "pch.h"
 
-#include "../include/ttdebug.h" 		// ttASSERT macros
-#include "../include/ttstr.h"	// ttStr
-#include "../include/ttwin.h"			// ttCWin
+#include "../include/ttdebug.h" 	// ttASSERT macros
+#include "../include/ttstr.h"	// ttCStr
+#include "../include/ttwin.h"		// ttCWin
 
 // This is the Window procedure used by all windows that ttCWin created or subclassed.
 
@@ -76,7 +76,7 @@ bool ttCWin::SetClassName(const char* pszClassName)
 {
 	ttASSERT_NONEMPTY(pszClassName);
 
-	if (!pszClassName || !*pszClassName || tt::strlen(pszClassName) > 256)	// Windows limits class names to 256 characters
+	if (!pszClassName || !*pszClassName || tt::strLen(pszClassName) > 256)	// Windows limits class names to 256 characters
 		return false;
 
 	if (m_pszClassName)
@@ -91,9 +91,9 @@ bool ttCWin::CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWN
 {
 	if (m_pwc) {	// means the class hasn't been registered yet
 		if (!m_pszClassName) {
-			ttStr cszClass(32);
-			cszClass.strcpy("ttCWin");
-			tt::hextoa(GetTickCount(), (char*) cszClass + cszClass.strlen(), true);
+			ttCStr cszClass(32);
+			cszClass.strCopy("ttCWin");
+			tt::Hextoa(GetTickCount(), (char*) cszClass + cszClass.strLen(), true);
 			m_pszClassName = _strdup(cszClass);
 			m_pwc->lpszClassName = m_pszClassName;
 		}
@@ -116,7 +116,7 @@ bool ttCWin::CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWN
 			CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 			hwndParent, hmenu, m_hinst, (void*) this);
 
-	return tt::IsValidWindow(m_hwnd);
+	return tt::isValidWindow(m_hwnd);
 }
 
 bool ttCWin::SubClass(HWND hwnd)
@@ -145,7 +145,7 @@ bool ttCWin::AttachWnd(HWND hwnd)
 	// Deleting m_pwc and getting the window's class name makes it possible to call CreateWnd and create another window
 	// of the same type that we attached to.
 
-	ttStr cszClassName(256);
+	ttCStr cszClassName(256);
 	if (::GetClassNameA(hwnd, cszClassName, (int) cszClassName.sizeBuffer()) != 0) {
 		if (m_pwc) {
 			delete m_pwc;

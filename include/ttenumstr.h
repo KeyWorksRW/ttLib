@@ -20,7 +20,7 @@
 #ifndef __TTLIB_CENUMSTR_H__
 #define __TTLIB_CENUMSTR_H__
 
-#include "../include/ttstring.h"	// ttCStr
+#include "../include/ttstr.h"	// ttCStr
 
 class ttCEnumStr
 {
@@ -37,8 +37,8 @@ public:
 	char* GetCurrent() const { return m_pszCur; }	// value is undefined if Enum() returned false
 	operator char*() const { return m_pszCur; }
 
-	bool operator == (const char* psz)	{ return tt::samestr(m_pszCur, psz); }
-	bool operator == (char* psz)		{ return tt::samestr(m_pszCur, psz); }
+	bool operator == (const char* psz)	{ return tt::isSameStr(m_pszCur, psz); }
+	bool operator == (char* psz)		{ return tt::isSameStr(m_pszCur, psz); }
 
 protected:
 	// Class members

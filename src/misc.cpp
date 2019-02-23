@@ -9,7 +9,7 @@
 #include "pch.h"
 
 #include "../include/ttdebug.h" 	// for ttASSERTS
-#include "../include/ttstring.h"	// ttCStr
+#include "../include/ttstr.h"	// ttCStr
 
 size_t tt::HashFromSz(const char* psz)
 {

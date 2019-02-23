@@ -11,8 +11,7 @@
 #include <stdio.h>
 
 #include "../include/ttdebug.h" 		// ttASSERT macros
-#include "../include/ttstring.h"		// ttCStr
-#include "../include/ttstr.h"			// ttStr
+#include "../include/ttstr.h"		// ttCStr
 #include "../include/ttcritsection.h"	// CCritSection
 
 #ifndef _INC_STDLIB
@@ -32,8 +31,8 @@ __declspec(noreturn) void tt::OOM(void)
 	if (answer == IDYES)
 		DebugBreak();
 	// Don't use GetCurrentWindowHandle() since that might only return an active window
-	if (tt::hwndParent && IsWindow(tt::hwndParent))
-		SendMessage(tt::hwndParent, WM_CLOSE, 0, 0);	// attempt to give the application window a graceful way to shut down
+	if (tt::hwndMsgBoxParent && IsWindow(tt::hwndMsgBoxParent))
+		SendMessage(tt::hwndMsgBoxParent, WM_CLOSE, 0, 0);	// attempt to give the application window a graceful way to shut down
 #elif _WX_WX_H_
 	wxFAIL_MSG("Out of Memory!!!");
 #endif	// __WINDOWS_ and _WX_WX_H_
@@ -88,8 +87,8 @@ bool tt::AssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFu
 		return false;
 	}
 
-	if (tt::hwndParent && IsWindow(tt::hwndParent))
-		SendMessage(tt::hwndParent, WM_CLOSE, 0, 0);	// attempt to give the application window a graceful way to shut down
+	if (tt::hwndMsgBoxParent && IsWindow(tt::hwndMsgBoxParent))
+		SendMessage(tt::hwndMsgBoxParent, WM_CLOSE, 0, 0);	// attempt to give the application window a graceful way to shut down
 
 	crtAssert.Unlock();
 	ExitProcess((UINT) -1);
@@ -148,10 +147,10 @@ void _cdecl tt::CATCH_HANDLER(const char* pszFormat, ...)
 	if (!pszFormat)
 		return;
 
-	ttStr strMsg;
+	ttCStr strMsg;
 	va_list argList;
 	va_start(argList, pszFormat);
-	tt::vprintf(&strMsg.m_psz, pszFormat, argList);
+	tt::vprintf(strMsg.getPPtr(), pszFormat, argList);
 	va_end(argList);
 
 #ifdef _WINDOWS_
@@ -163,8 +162,8 @@ void _cdecl tt::CATCH_HANDLER(const char* pszFormat, ...)
 		return;
 	}
 	else if (answer != IDIGNORE) {
-		if (tt::hwndParent && IsWindow(tt::hwndParent))
-			SendMessage(tt::hwndParent, WM_CLOSE, 0, 0);	// attempt to give the application window a graceful way to shut down
+		if (tt::hwndMsgBoxParent && IsWindow(tt::hwndMsgBoxParent))
+			SendMessage(tt::hwndMsgBoxParent, WM_CLOSE, 0, 0);	// attempt to give the application window a graceful way to shut down
 		ExitProcess((UINT) -1);
 	}
 

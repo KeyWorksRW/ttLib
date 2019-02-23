@@ -12,7 +12,7 @@
 #define __TTLIB_TTHEAP_H__
 
 // CAUTION! If you include this file and your code specifies "using namespace tt;" then ALL of your standard memory
-// functions (malloc, size, free, etc.) will be replaced. If you don't want that to happen, then do NOT specify
+// functions (Malloc, size, FreeAlloc, etc.) will be replaced. If you don't want that to happen, then do NOT specify
 // "using namespace tt;" and instead use the "tt::" namespace prefix for all ttLib functions including the ones here.
 
 #ifndef _WINDOWS_
@@ -25,18 +25,18 @@
 	return. If there is insufficient memory, the application will be terminated (see OOM()).
 
 	ttCHeap can also be used to create a sub-heap. Any individual memory allocations on the sub-heap do not
-	need to be freed before the destructor as the entire sub-heap is destroyed at once. A class that wants to utilize
+	need to be FreeAllocd before the destructor as the entire sub-heap is destroyed at once. A class that wants to utilize
 	this functionality should inherit from ttCHeap, and provide a serialization flag in it's constructor:
 
 		classs MyClass :  public ttCHeap
 		{
 			MyClass() : ttCHeap(true) { } // true to make MyClass thread-safe
 
-	Now all of the malloc/realloc/recalloc routines below will be allocated on the sub-heap, and do
-	not need to be specifically freed in the destructor.
+	Now all of the Malloc/ReAlloc/ReCalloc routines below will be allocated on the sub-heap, and do
+	not need to be specifically FreeAllocd in the destructor.
 
 	Constructing ttCHeap using another heap takes advantage of the sub-heap above by elimintating the need to
-	individually free every memory allocation in the destructor.
+	individually FreeAlloc every memory allocation in the destructor.
 */
 
 class ttCHeap
@@ -57,14 +57,14 @@ public:
 	void* ttMalloc(size_t cb);	// under _DEBUG, will fill with 0xCD
 	void* ttCalloc(size_t cb);
 	void* ttRealloc(void* pv, size_t cb);
-	void* ttRecalloc(void* pv, size_t cb);
+	void* ttReCalloc(void* pv, size_t cb);
 
 	void  ttFree(void* pv) { if (pv) HeapFree(m_hHeap, 0, pv); }
 
 	char*	 ttStrdup(const char* psz);
 	wchar_t* ttStrdup(const wchar_t* pwsz);
 
-	char*	 ttStrdup(const char* psz, char** ppszDst);		// allocates/reallocates *ppszDst
+	char*	ttStrdup(const char* psz, char** ppszDst);		// allocates/ReAllocates *ppszDst
 
 	size_t	ttSize(const void* pv) { return pv ? HeapSize(m_hHeap, 0, pv) : 0; }
 	bool	ttValidate(const void* pv) { return HeapValidate(m_hHeap, 0, pv); }
@@ -86,17 +86,19 @@ protected:
 namespace tt {
 	extern ttCHeap MainHeap;	// this uses the process heap rather then a sub-heap
 
-	inline void*	calloc(size_t cb) { return tt::MainHeap.ttCalloc(cb); }
-	inline void*	calloc(size_t num, size_t cb) { return tt::MainHeap.ttCalloc(num * cb); }	// for compatability with C++ standard library
-	inline void		free(void *pv) { tt::MainHeap.ttFree(pv); }
-	inline void*	malloc(size_t cb) { return tt::MainHeap.ttMalloc(cb); }
-	inline void*	realloc(void* pv, size_t cbNew) { return tt::MainHeap.ttRealloc(pv, cbNew); }
-	inline void*	recalloc(void* pv, size_t cbNew) { return tt::MainHeap.ttRecalloc(pv, cbNew); }
-	inline char*	strdup(const char* psz) { return tt::MainHeap.ttStrdup(psz); }
-	inline wchar_t*	strdup(const wchar_t* pwsz) { return tt::MainHeap.ttStrdup(pwsz); }
-	inline char*	strdup(const char* psz, char** ppszDst) { return tt::MainHeap.ttStrdup(psz, ppszDst); }
-	inline size_t	size(const void* pv) { return tt::MainHeap.ttSize(pv); }
-	inline bool		validate(const void* pv) { return tt::MainHeap.ttValidate(pv); }
+	// These are just shortcuts so you can use something like tt::Calloc(cb) instead of tt::MainHeap.ttCalloc(cb)
+
+	inline void*	Calloc(size_t cb) { return tt::MainHeap.ttCalloc(cb); }
+	inline void*	Calloc(size_t num, size_t cb) { return tt::MainHeap.ttCalloc(num * cb); }	// for compatability with C++ standard library
+	inline void		FreeAlloc(void *pv) { tt::MainHeap.ttFree(pv); }
+	inline void*	Malloc(size_t cb) { return tt::MainHeap.ttMalloc(cb); }
+	inline void*	ReAlloc(void* pv, size_t cbNew) { return tt::MainHeap.ttRealloc(pv, cbNew); }
+	inline void*	ReCalloc(void* pv, size_t cbNew) { return tt::MainHeap.ttReCalloc(pv, cbNew); }
+	inline char*	StrDup(const char* psz) { return tt::MainHeap.ttStrdup(psz); }
+	inline wchar_t*	StrDup(const wchar_t* pwsz) { return tt::MainHeap.ttStrdup(pwsz); }
+	inline char*	StrDup(const char* psz, char** ppszDst) { return tt::MainHeap.ttStrdup(psz, ppszDst); }
+	inline size_t	SizeAlloc(const void* pv) { return tt::MainHeap.ttSize(pv); }
+	inline bool		ValidateAlloc(const void* pv) { return tt::MainHeap.ttValidate(pv); }
 }	// end namespace tt
 
 #endif	// __TTLIB_TTHEAP_H__

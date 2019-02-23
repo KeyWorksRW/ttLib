@@ -20,7 +20,7 @@
 #include "ttheap.h" 		// ttCHeap
 #include "tthashpair.h"		// ttCHashPair
 #include "ttarray.h"		// ttCArray
-#include "ttstring.h"		// ttCStr
+#include "ttstr.h"		// ttCStr
 #include "ttfile.h" 		// ttCFile
 
 class ttCParseXML;		// forward definition
@@ -250,7 +250,7 @@ public:
 	bool IsDTD_ELEMENT()			const { return type == tt::ENTITY_DTD_ELEMENT; }
 	bool IsDTD_ENTITY()				const { return type == tt::ENTITY_DTD_ENTITY; }
 	bool IsDTD_NOTATION()			const { return type == tt::ENTITY_DTD_NOTATION; }
-	bool IsNamed(const char* pszNamed)	const { return pszName ? tt::samestri(pszName, pszNamed) : false; }
+	bool IsNamed(const char* pszNamed)	const { return pszName ? tt::isSameStri(pszName, pszNamed) : false; }
 	bool IsRoot()					const { return this == parent; }
 
 	// Class functions
@@ -283,7 +283,7 @@ public:
 
 	inline tt::XMLATTR* MapStringToAttributePtr(const char* pszString) const {
 		for (size_t i = 0; i < cAttributes; i++) {
-			if (tt::samestri(pszString, aAttributes[i]->pszName))
+			if (tt::isSameStri(pszString, aAttributes[i]->pszName))
 				return aAttributes[i];
 		}
 		return nullptr;

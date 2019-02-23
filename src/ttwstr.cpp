@@ -111,7 +111,7 @@ void ttCWStr::GetCWD()
 
 #ifdef _WINDOWS_
 
-void ttCWStr::GetFullPathName()
+void ttCWStr::getFullPathName()
 {
 	ttASSERT(m_psz);
 	wchar_t szPath[MAX_PATH];
@@ -120,7 +120,7 @@ void ttCWStr::GetFullPathName()
 	m_psz = tt::StrDup(szPath);
 }
 
-const wchar_t* ttCWStr::GetListBoxText(HWND hwnd, size_t sel)
+const wchar_t* ttCWStr::getListBoxText(HWND hwnd, size_t sel)
 {
 	if (m_psz)
 		tt::FreeAlloc(m_psz);
@@ -167,7 +167,7 @@ const wchar_t* ttCWStr::getResString(size_t idString)
 	return m_psz;
 }
 
-bool ttCWStr::GetWindowText(HWND hwnd)
+bool ttCWStr::getWindowText(HWND hwnd)
 {
 	if (m_psz) {
 		 tt::FreeAlloc(m_psz);
@@ -259,7 +259,7 @@ wchar_t* ttCWStr::GetQuotedString(wchar_t* pszQuote)
 	return (*pszQuote ? pszQuote + 1 : pszQuote);
 }
 
-bool ttCWStr::IsSameSubString(const wchar_t* pszSub)
+bool ttCWStr::isSameSubString(const wchar_t* pszSub)
 {
 	if (!m_psz || !pszSub)
 		return false;
