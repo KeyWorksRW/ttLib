@@ -1,6 +1,6 @@
 Options:
   Project:     ttLib        # project target name
-  PCH:         pch.h        # "none" or name of header file to use for precompilation
+  PCH:         pch.h        # precompiled header
   optimize:    space        # speed or space (default)
   exe_type:    lib          # [window | console | lib | dll]
   64Bit:       true         # create 64-bit project as well as 32-bit project
@@ -11,29 +11,29 @@ Options:
 Files:
   pch.cpp
 
-  basethread.cpp		# ttBaseThread class
-  enumstr.cpp			# ttEnumStr class
   filedir.cpp			# file and directory handling
-  hashpair.cpp			# ttHashPair
   misc.cpp				# miscellaneous functions
-  multithread.cpp		# ttMultiThrd class
   strfuncs.cpp			# string handling and ttStr class
+  ttbasethread.cpp		# ttBaseThread class
   ttdebug.cpp			# debug and assertion handling
   ttdirdlg.cpp			# dialog for selecting a directory
+  ttenumstr.cpp 		# ttEnumStr class
   ttfile.cpp			# ttFile class
+  tthashpair.cpp			# ttHashPair
   ttheap.cpp			# ttHeap class
   ttlist.cpp			# ttList class
+  ttmultithread.cpp 	# ttMultiThrd class
   ttprintf.cpp			# printf
   ttstring.cpp			# ttString class
-  ttwstring.cpp			# ttWString class
-  ttxml.cpp				# ttXML class
+  ttwstring.cpp 		# ttWString class
+  ttxml.cpp 			# ttXML class
 
 # _WINDOWS_ only files
 
-  filedlg.cpp
-  multibtn.cpp
-  shadebtn.cpp
   ttdib.cpp
   ttdlg.cpp
+  ttfiledlg.cpp
+  ttmultibtn.cpp
+  ttshadebtn.cpp
   ttwin.cpp
   winmisc.cpp
