@@ -182,18 +182,18 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 	return FALSE;
 }
 
-ptrdiff_t ttCDlg::getControlInteger(ptrdiff_t id) const
+ptrdiff_t ttCDlg::GetControlInteger(ptrdiff_t id) const
 {
 	char szBuf[20];
-	getControlText(id, szBuf, sizeof(szBuf) - 1);
+	GetControlText(id, szBuf, sizeof(szBuf) - 1);
 	return tt::Atoi(szBuf);
 }
 
-void ttCDlg::setControlInteger(ptrdiff_t id, ptrdiff_t val) const
+void ttCDlg::SetControlInteger(ptrdiff_t id, ptrdiff_t val) const
 {
 	char szBuf[20];
 	tt::Itoa(val, szBuf, sizeof(szBuf));
-	setControlText(id, szBuf);
+	SetControlText(id, szBuf);
 }
 
 static BOOL (WINAPI* tt_pfnAnimateWindow)(HWND, DWORD, DWORD);
