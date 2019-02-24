@@ -31,7 +31,7 @@ public:
 	bool Create(HKEY hkeyBase, const char* pszKey) { if (m_hkey) RegCloseKey(m_hkey); return (RegCreateKeyEx(hkeyBase, pszKey, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS,	NULL, &m_hkey, NULL) == ERROR_SUCCESS); }
 	void Close() { if (m_hkey) RegCloseKey(m_hkey), m_hkey = NULL; }
 
-	bool writeString(const char* pszKey, const char* pszValue) { return (RegSetValueEx(m_hkey, pszKey, 0, REG_SZ, (PBYTE) pszValue, (DWORD) strLen(pszValue) + 1) == ERROR_SUCCESS); }
+	bool WriteString(const char* pszKey, const char* pszValue) { return (RegSetValueEx(m_hkey, pszKey, 0, REG_SZ, (PBYTE) pszValue, (DWORD) tt::strLen(pszValue) + 1) == ERROR_SUCCESS); }
 	bool ReadString(const char* pszName, PSTR pszDst, DWORD cbDst = MAX_PATH) { DWORD type; return (RegQueryValueEx(m_hkey, pszName, NULL, &type, (LPBYTE) pszDst, &cbDst) == ERROR_SUCCESS); }
 
 	bool WriteInt(const char* pszKey, int val) { return (RegSetValueEx(m_hkey, pszKey, 0, REG_DWORD, (PBYTE) &val, sizeof(val)) == ERROR_SUCCESS); }
