@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttMultiThrd
+// Name:		ttCMultiThrd
 // Purpose:		Class for utilizing Windows heap manager
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2010-2018 KeyWorks Software (Ralph Walden)
@@ -8,14 +8,14 @@
 
 #include "pch.h"
 
-#include "../include/ttdebug.h" 	// ASSERTs
-#include "../include/multithread.h"	// ttMultiThrd
+#include "../include/ttdebug.h" 		// ttASSERT macros
+#include "../include/ttmultithread.h"	// ttCMultiThrd
 
 #ifndef _WX_WX_H_
 	DWORD __stdcall _MultiThread(void* pv);
 #endif
 
-ttMultiThrd::ttMultiThrd()
+ttCMultiThrd::ttCMultiThrd()
 {
 	m_cThreads = 0;
 	m_bEndThreads = m_bCanceled = false;
@@ -27,7 +27,7 @@ ttMultiThrd::ttMultiThrd()
 #endif
 }
 
-ttMultiThrd::~ttMultiThrd()
+ttCMultiThrd::~ttCMultiThrd()
 {
 #ifdef _WX_WX_H_
 	if (m_aThrds) {
@@ -39,7 +39,7 @@ ttMultiThrd::~ttMultiThrd()
 			m_aThrds[iThread]->m_semStart.Post();
 			semTerminate.Wait();
 		}
-		kfree(m_aThrds);		// note that we do not call delete on the individual threads as per wxThread docs
+		kFreeAlloc(m_aThrds);		// note that we do not call delete on the individual threads as per wxThread docs
 	}
 	delete m_psemAvailThrd;
 #else	// not _WX_WX_H_
@@ -54,11 +54,11 @@ ttMultiThrd::~ttMultiThrd()
 		}
 	}
 	if (m_ahsemDone)
-		tt::free(m_ahsemDone);
+		tt::FreeAlloc(m_ahsemDone);
 #endif	// _WX_WX_H_
 }
 
-void ttMultiThrd::InitializeThreads(size_t cThreads)	// 0 means create as many threads as there are CPUs
+void ttCMultiThrd::InitializeThreads(size_t cThreads)	// 0 means create as many threads as there are CPUs
 {
 #ifdef	_WX_WX_H_
 	int cpus = wxThread::GetCPUCount();
@@ -81,10 +81,10 @@ void ttMultiThrd::InitializeThreads(size_t cThreads)	// 0 means create as many t
 	m_cThreads = (cThreads == 0) ? (size_t) cpus : cThreads;
 
 #ifdef	_WX_WX_H_
-	m_aThrds = (CMultiChildThread**) tt::malloc(sizeof(CMultiChildThread**) * m_cThreads);
+	m_aThrds = (CMultiChildThread**) tt::Malloc(sizeof(CMultiChildThread**) * m_cThreads);
 #else	// not _WX_WX_H_
-	m_aThrdInfo = (MULTI_THRD_INFO*) tt::malloc(sizeof(MULTI_THRD_INFO) * m_cThreads);
-	m_ahsemDone = (HANDLE*) tt::malloc(sizeof(HANDLE) * m_cThreads);
+	m_aThrdInfo = (MULTI_THRD_INFO*) tt::Malloc(sizeof(MULTI_THRD_INFO) * m_cThreads);
+	m_ahsemDone = (HANDLE*) tt::Malloc(sizeof(HANDLE) * m_cThreads);
 #endif	// _WX_WX_H_
 
 	for (size_t iThread = 0; iThread < cThreads; iThread++) {
@@ -111,7 +111,7 @@ void ttMultiThrd::InitializeThreads(size_t cThreads)	// 0 means create as many t
 	}
 }
 
-size_t ttMultiThrd::GetAvailableThreads()
+size_t ttCMultiThrd::GetAvailableThreads()
 {
 	size_t nAvail = 0;
 	for (size_t iThread = 0; iThread < m_cThreads; iThread++) {
@@ -126,7 +126,7 @@ size_t ttMultiThrd::GetAvailableThreads()
 	return nAvail;
 }
 
-void ttMultiThrd::StartThread(void* pvData1, void* pvData2)
+void ttCMultiThrd::StartThread(void* pvData1, void* pvData2)
 {
 #ifdef	_WX_WX_H_
 	if (!m_aThrds)
@@ -159,14 +159,14 @@ void ttMultiThrd::StartThread(void* pvData1, void* pvData2)
 #endif
 }
 
-void ttMultiThrd::CancelThreads()
+void ttCMultiThrd::CancelThreads()
 {
 	m_bCanceled = true;
 	WaitForThreadsToComplete();
 	m_bCanceled = false;
 }
 
-void ttMultiThrd::WaitForThreadsToComplete()
+void ttCMultiThrd::WaitForThreadsToComplete()
 {
 #ifdef	_WX_WX_H_
 	for (size_t iThread = 0; iThread < m_cThreads; iThread++) {
@@ -221,11 +221,11 @@ wxThread::ExitCode CMultiChildThread::Entry()
 
 DWORD __stdcall _MultiThread(void* pv)
 {
-	ttMultiThrd* pThis = (ttMultiThrd*) pv;
+	ttCMultiThrd* pThis = (ttCMultiThrd*) pv;
 	DWORD thrdID = GetCurrentThreadId();
 	ptrdiff_t pos = pThis->m_threadMap.FindKey(thrdID);
 	ttASSERT(pos >= 0);	// theoretically impossible
-	ttMultiThrd::MULTI_THRD_INFO* pThrdInfo = pThis->m_threadMap.GetValueAt(pos);
+	ttCMultiThrd::MULTI_THRD_INFO* pThrdInfo = pThis->m_threadMap.GetValueAt(pos);
 
 	for (;;) {
 		if (WaitForSingleObject(pThrdInfo->hsemStart, INFINITE) != WAIT_OBJECT_0)

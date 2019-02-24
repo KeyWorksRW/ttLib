@@ -30,47 +30,47 @@ rule lib
 
 build $outdir/pch.obj: compilePCH pch.cpp
 
-build $outdir/basethread.obj: compile basethread.cpp | $outdir/pch.obj
-
-build $outdir/enumstr.obj: compile enumstr.cpp | $outdir/pch.obj
-
 build $outdir/filedir.obj: compile filedir.cpp | $outdir/pch.obj
-
-build $outdir/hashpair.obj: compile hashpair.cpp | $outdir/pch.obj
 
 build $outdir/misc.obj: compile misc.cpp | $outdir/pch.obj
 
-build $outdir/multithread.obj: compile multithread.cpp | $outdir/pch.obj
-
 build $outdir/strfuncs.obj: compile strfuncs.cpp | $outdir/pch.obj
+
+build $outdir/ttbasethread.obj: compile ttbasethread.cpp | $outdir/pch.obj
 
 build $outdir/ttdebug.obj: compile ttdebug.cpp | $outdir/pch.obj
 
 build $outdir/ttdirdlg.obj: compile ttdirdlg.cpp | $outdir/pch.obj
 
+build $outdir/ttenumstr.obj: compile ttenumstr.cpp | $outdir/pch.obj
+
 build $outdir/ttfile.obj: compile ttfile.cpp | $outdir/pch.obj
+
+build $outdir/tthashpair.obj: compile tthashpair.cpp | $outdir/pch.obj
 
 build $outdir/ttheap.obj: compile ttheap.cpp | $outdir/pch.obj
 
 build $outdir/ttlist.obj: compile ttlist.cpp | $outdir/pch.obj
 
+build $outdir/ttmultithread.obj: compile ttmultithread.cpp | $outdir/pch.obj
+
 build $outdir/ttprintf.obj: compile ttprintf.cpp | $outdir/pch.obj
 
-build $outdir/ttstring.obj: compile ttstring.cpp | $outdir/pch.obj
+build $outdir/ttstr.obj: compile ttstr.cpp | $outdir/pch.obj
 
-build $outdir/ttwstring.obj: compile ttwstring.cpp | $outdir/pch.obj
+build $outdir/ttwstr.obj: compile ttwstr.cpp | $outdir/pch.obj
 
 build $outdir/ttxml.obj: compile ttxml.cpp | $outdir/pch.obj
-
-build $outdir/filedlg.obj: compile filedlg.cpp | $outdir/pch.obj
-
-build $outdir/multibtn.obj: compile multibtn.cpp | $outdir/pch.obj
-
-build $outdir/shadebtn.obj: compile shadebtn.cpp | $outdir/pch.obj
 
 build $outdir/ttdib.obj: compile ttdib.cpp | $outdir/pch.obj
 
 build $outdir/ttdlg.obj: compile ttdlg.cpp | $outdir/pch.obj
+
+build $outdir/ttfiledlg.obj: compile ttfiledlg.cpp | $outdir/pch.obj
+
+build $outdir/ttmultibtn.obj: compile ttmultibtn.cpp | $outdir/pch.obj
+
+build $outdir/ttshadebtn.obj: compile ttshadebtn.cpp | $outdir/pch.obj
 
 build $outdir/ttwin.obj: compile ttwin.cpp | $outdir/pch.obj
 
@@ -78,27 +78,27 @@ build $outdir/winmisc.obj: compile winmisc.cpp | $outdir/pch.obj
 
 build ../lib/ttLibD.lib : lib $
   $outdir/pch.obj $
-  $outdir/basethread.obj $
-  $outdir/enumstr.obj $
   $outdir/filedir.obj $
-  $outdir/hashpair.obj $
   $outdir/misc.obj $
-  $outdir/multithread.obj $
   $outdir/strfuncs.obj $
+  $outdir/ttbasethread.obj $
   $outdir/ttdebug.obj $
   $outdir/ttdirdlg.obj $
+  $outdir/ttenumstr.obj $
   $outdir/ttfile.obj $
+  $outdir/tthashpair.obj $
   $outdir/ttheap.obj $
   $outdir/ttlist.obj $
+  $outdir/ttmultithread.obj $
   $outdir/ttprintf.obj $
-  $outdir/ttstring.obj $
-  $outdir/ttwstring.obj $
+  $outdir/ttstr.obj $
+  $outdir/ttwstr.obj $
   $outdir/ttxml.obj $
-  $outdir/filedlg.obj $
-  $outdir/multibtn.obj $
-  $outdir/shadebtn.obj $
   $outdir/ttdib.obj $
   $outdir/ttdlg.obj $
+  $outdir/ttfiledlg.obj $
+  $outdir/ttmultibtn.obj $
+  $outdir/ttshadebtn.obj $
   $outdir/ttwin.obj $
   $outdir/winmisc.obj
 

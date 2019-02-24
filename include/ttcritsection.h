@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttCritSection, ttCritLock
+// Name:		ttCritSection, ttCCritLock
 // Purpose:		Class for creating, locking, and unlocking a critical section
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
@@ -13,16 +13,16 @@
 #ifndef __TTLIB_CRITSECTION_H__
 #define __TTLIB_CRITSECTION_H__
 
-class ttCritSection
+class ttCCritSection
 {
 public:
 #ifdef _WINDOWS_
 
-	ttCritSection()	{
+	ttCCritSection()	{
 		memset(&m_cs, 0, sizeof(CRITICAL_SECTION));
 		InitializeCriticalSection(&m_cs);
 	};
-	~ttCritSection() {
+	~ttCCritSection() {
 		DeleteCriticalSection(&m_cs);
 	};
 
@@ -43,16 +43,16 @@ private:
 	void Lock() { m_cs.Enter(); }
 	void Unlock() { m_cs.Leave(); }
 #endif	// _WINDOWS_
-}; // end ttCritSection
+}; // end ttCCritSection
 
 /*
 	Designed to keep a Critical Section locked until the destructor is called
 
 	Example:
-		ttCritSection csFoo;
+		ttCCritSection csFoo;
 
 		if (somecondition) {
-			ttCritLock cl(&csFoo);	// locks csFoo
+			ttCCritLock cl(&csFoo);	// locks csFoo
 			...
 		}
 
@@ -60,10 +60,10 @@ private:
 
 */
 
-class ttCritLock
+class ttCCritLock
 {
 public:
-	ttCritLock(ttCritSection* pcs) {
+	ttCCritLock(ttCCritSection* pcs) {
 		if (!pcs) {
 			m_pcs = nullptr;
 			return;
@@ -71,7 +71,7 @@ public:
 		m_pcs = pcs;
 		pcs->Lock();
 	}
-	~ttCritLock() {
+	~ttCCritLock() {
 		if (m_pcs)
 			m_pcs->Unlock();
 	}
@@ -82,7 +82,7 @@ public:
 		m_pcs = nullptr;
 	}
 
-	ttCritSection* m_pcs;
+	ttCCritSection* m_pcs;
 };
 
 #endif	// __TTLIB_CRITSECTION_H__

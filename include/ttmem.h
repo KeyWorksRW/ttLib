@@ -15,34 +15,34 @@
 #include "ttheap.h" 	// ttHeap
 
 /*
-  ttMem and ttTMem allow you to allocate memory that will automatically be freed when the class gets destroyed.
+  ttCMem and ttCTMem allow you to allocate memory that will automatically be FreeAllocd when the class gets destroyed.
 
   if (some condition) {
-	ttMem szBuf(256);
-	strcpy(szBuf, "text");
-	strcat(szBuf, "more text");
+	ttCMem szBuf(256);
+	strCopy(szBuf, "text");
+	strCat(szBuf, "more text");
 	cout << (char*) szBuf;
-  } // szBuf is freed because it went out of scope
+  } // szBuf is FreeAllocd because it went out of scope
 */
 
-class ttMem	// Header-only class
+class ttCMem	// Header-only class
 {
 public:
-	ttMem(void) { m_pb = nullptr; }
-	ttMem(size_t size) { m_pb = (uint8_t*) tt::malloc(size); }
-	~ttMem(void) {
+	ttCMem(void) { m_pb = nullptr; }
+	ttCMem(size_t size) { m_pb = (uint8_t*) tt::Malloc(size); }
+	~ttCMem(void) {
 		if (m_pb)
-			tt::free(m_pb);
+			tt::FreeAlloc(m_pb);
 		m_pb = nullptr;
 	}
 	void resize(size_t cb) {
 		if (!m_pb)
-			m_pb = (uint8_t*) tt::malloc(cb);
+			m_pb = (uint8_t*) tt::Malloc(cb);
 		else {
-			m_pb = (uint8_t*) tt::realloc(m_pb, cb);
+			m_pb = (uint8_t*) tt::ReAlloc(m_pb, cb);
 		}
 	}
-	size_t size() { return tt::size(m_pb); }
+	size_t size() { return tt::SizeAlloc(m_pb); }
 
 	operator void*() { return (void*) m_pb; };
 	operator const char*() { return (const char*) m_pb; };
@@ -52,23 +52,23 @@ public:
 	uint8_t* m_pb;
 };
 
-template <typename T> class ttTMem	// Header-only class
+template <typename T> class ttCTMem	// Header-only class
 {
 public:
-	ttTMem() { m_p = NULL; }
-	ttTMem(size_t size) { m_p = (T) tt::malloc(size); }
-	~ttTMem() {
+	ttCTMem() { m_p = NULL; }
+	ttCTMem(size_t size) { m_p = (T) tt::Malloc(size); }
+	~ttCTMem() {
 		if (m_p)
-			tt::free(m_p);
+			tt::FreeAlloc(m_p);
 	}
 
 	void resize(size_t cb) {
 		if (!m_p)
-			m_p = (T) tt::malloc(cb);
+			m_p = (T) tt::Malloc(cb);
 		else
-			m_p = (T) tt::realloc(m_p, cb);
+			m_p = (T) tt::ReAlloc(m_p, cb);
 	}
-	size_t size() { return tt::size(m_p); }
+	size_t size() { return tt::SizeAlloc(m_p); }
 
 	operator T()	{ ttASSERT(m_p); return m_p; };
 	T operator->() { ttASSERT(m_p); return m_p; };

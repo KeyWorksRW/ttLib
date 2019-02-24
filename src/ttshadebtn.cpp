@@ -13,7 +13,7 @@
 // Notes:		The above Code Project License also applies to the derivative work
 /////////////////////////////////////////////////////////////////////////////
 
-// For the original, see article at https://www.codeproject.com/articles/1121/ttShadeBtn
+// For the original, see article at https://www.codeproject.com/articles/1121/ttCShadeBtn
 
 #ifndef _WINDOWS_
 	#error This code will only work on Windows
@@ -21,9 +21,9 @@
 
 #include "pch.h"
 
-#include "../include/ttstring.h"	// ttString
-#include "../include/shadebtn.h"	// ttShadeBtn
+#include "../include/ttstr.h"	// ttCStr
 #include "../include/ttdebug.h"		// ttASSERT macros
+#include "../include/ttshadebtn.h"	// ttCShadeBtn
 
 /*
 
@@ -34,8 +34,7 @@
 
 */
 
-
-ttShadeBtn::ttShadeBtn()
+ttCShadeBtn::ttCShadeBtn()
 {
 	m_Border = TRUE;		// draw 3D border
 	m_FocusRectMargin = 4;	// focus dotted rect margin
@@ -54,7 +53,7 @@ ttShadeBtn::ttShadeBtn()
 
 	// Forcing the font size to 8 may cause display problems with asian languages. However, setting it to
 	// 0 may cause it to be much larger then originally intended for the button. Ultimately, if this
-	// default font is unsatisfactory, the caller should call ttShadeBtn::SetFont().
+	// default font is unsatisfactory, the caller should call ttCShadeBtn::SetFont().
 
 	m_hFont = tt::CreateLogFont("MS Shell Dlg", 8);
 
@@ -63,21 +62,21 @@ ttShadeBtn::ttShadeBtn()
 	// on dialog buttons, and you might end up with an unreadable button as a result.
 
 #if 0
-	NONCLIENTMETRICS* pmetrics = (NONCLIENTMETRICS*) tt::calloc(sizeof(NONCLIENTMETRICS));
+	NONCLIENTMETRICS* pmetrics = (NONCLIENTMETRICS*) tt::Calloc(sizeof(NONCLIENTMETRICS));
 	pmetrics->cbSize = sizeof(NONCLIENTMETRICS);
 	if (SystemParametersInfo(SPI_GETNONCLIENTMETRICS, 0, pmetrics, 0)) {
 		SetFont(&pmetrics->lfMessageFont);
 	}
-	tt::free(pmetrics);
+	tt::FreeAlloc(pmetrics);
 #endif
 }
 
-ttShadeBtn::~ttShadeBtn()
+ttCShadeBtn::~ttCShadeBtn()
 {
 	if (m_hFont)
 		DeleteObject(m_hFont);
 	if (m_pLF)
-		tt::free(m_pLF);
+		tt::FreeAlloc(m_pLF);
 	if (m_hIconDown != m_hIcon && m_hIconDown)
 		DestroyIcon(m_hIconDown);
 	if (m_hIconHighLight != m_hIcon && m_hIconHighLight)
@@ -89,11 +88,11 @@ ttShadeBtn::~ttShadeBtn()
 	m_hwnd = NULL;
 }
 
-bool ttShadeBtn::SetFont(LOGFONT* pNewStyle)
+bool ttCShadeBtn::SetFont(LOGFONT* pNewStyle)
 {
 	if (pNewStyle) {
 		if (m_pLF == NULL)
-			m_pLF = (LOGFONT*) tt::calloc(sizeof(LOGFONT));
+			m_pLF = (LOGFONT*) tt::Calloc(sizeof(LOGFONT));
 		if (m_pLF) {
 			memcpy(m_pLF, pNewStyle, sizeof(LOGFONT));
 			if (m_hFont)
@@ -105,10 +104,10 @@ bool ttShadeBtn::SetFont(LOGFONT* pNewStyle)
 	return false;
 }
 
-bool ttShadeBtn::SetFont(const char* pszFontName, long lSize, long lWeight, BYTE bItalic, BYTE bUnderline)
+bool ttCShadeBtn::SetFont(const char* pszFontName, long lSize, long lWeight, BYTE bItalic, BYTE bUnderline)
 {
 	if (m_pLF == NULL)
-		m_pLF = (LOGFONT*) tt::calloc(sizeof(LOGFONT));
+		m_pLF = (LOGFONT*) tt::Calloc(sizeof(LOGFONT));
 	if (m_pLF) {
 		strncpy_s(m_pLF->lfFaceName, sizeof(m_pLF->lfFaceName), pszFontName, 31);
 		m_pLF->lfHeight = lSize;
@@ -123,7 +122,7 @@ bool ttShadeBtn::SetFont(const char* pszFontName, long lSize, long lWeight, BYTE
 	return false;
 }
 
-void ttShadeBtn::SetButtonStyle(UINT nStyle, BOOL bRedraw)
+void ttCShadeBtn::SetButtonStyle(UINT nStyle, BOOL bRedraw)
 {
 	m_IsPushLike = ((nStyle & BS_PUSHLIKE)	!= 0);
 	m_flat = ((nStyle & BS_FLAT)  != 0);
@@ -148,7 +147,7 @@ void ttShadeBtn::SetButtonStyle(UINT nStyle, BOOL bRedraw)
 		InvalidateRect(*this, NULL, TRUE);	// REVIEW: [randalphwa - 1/26/2019] Can we get away with setting FALSE for bErase?
 }
 
-void ttShadeBtn::SetTextAlign(UINT nTextAlign)
+void ttCShadeBtn::SetTextAlign(UINT nTextAlign)
 {
 //	see DrawText() styles...
 	switch (nTextAlign){
@@ -166,7 +165,7 @@ void ttShadeBtn::SetTextAlign(UINT nTextAlign)
 	m_TextAlign |= (DT_SINGLELINE | DT_VCENTER);
 }
 
-void ttShadeBtn::SetIcon(UINT nIcon, UINT nIconAlign, UINT nIconDown, UINT nIconHighLight)
+void ttCShadeBtn::SetIcon(UINT nIcon, UINT nIconAlign, UINT nIconDown, UINT nIconHighLight)
 {
 	if (m_hIconDown != m_hIcon && m_hIconDown)
 		DestroyIcon(m_hIconDown);
@@ -229,7 +228,7 @@ void ttShadeBtn::SetIcon(UINT nIcon, UINT nIconAlign, UINT nIconDown, UINT nIcon
 	}
 }
 
-void ttShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, BYTE coloring, COLORREF color)
+void ttCShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, BYTE coloring, COLORREF color)
 {
 	long	sXSize,sYSize,bytes,j,i,k,h;
 	BYTE	*iDst, *posDst;
@@ -449,19 +448,19 @@ void ttShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, B
 	m_dDown.Clone(&m_dOver);
 }
 
-COLORREF ttShadeBtn::SetTextColor(COLORREF new_color)
+COLORREF ttCShadeBtn::SetTextColor(COLORREF new_color)
 {
 	COLORREF tmp_color = m_TextColor;
 	m_TextColor = new_color;
 	return tmp_color;	// returns the previous color
 }
 
-void ttShadeBtn::OnPaint()
+void ttCShadeBtn::OnPaint()
 {
 	PAINTSTRUCT ps;
 	HDC hdcPaint = BeginPaint(*this, &ps);
 
-	ttString cszCaption;
+	ttCStr cszCaption;
 	RECT rcClient;
 	GetClientRect(*this, &rcClient);
 
@@ -475,7 +474,7 @@ void ttShadeBtn::OnPaint()
     HANDLE hBitmap = CreateCompatibleBitmap(hdcPaint, cx, cy);
 	HBITMAP hOldBitmap = (HBITMAP) SelectObject(hdcMem, hBitmap); // select the destination for MemDC
 
-	cszCaption.GetWindowText(*this);							// get button text
+	cszCaption.getWindowText(*this);							// get button text
 	SetBkMode(hdcMem, TRANSPARENT);
 	// with MemDC we need to select the font...
 
@@ -606,7 +605,7 @@ void ttShadeBtn::OnPaint()
 	EndPaint(*this, &ps);
 }
 
-void ttShadeBtn::Draw3dRect(HDC hdc, RECT* prc, COLORREF clrTopLeft, COLORREF clrBottomRight)
+void ttCShadeBtn::Draw3dRect(HDC hdc, RECT* prc, COLORREF clrTopLeft, COLORREF clrBottomRight)
 {
 	int x = prc->left;
 	int y = prc->top;
@@ -615,7 +614,7 @@ void ttShadeBtn::Draw3dRect(HDC hdc, RECT* prc, COLORREF clrTopLeft, COLORREF cl
 	Draw3dRect(hdc, x, y, cx, cy, clrTopLeft, clrBottomRight);
 }
 
-void ttShadeBtn::Draw3dRect(HDC hdc, int x, int y, int cx, int cy, COLORREF clrTopLeft, COLORREF clrBottomRight)
+void ttCShadeBtn::Draw3dRect(HDC hdc, int x, int y, int cx, int cy, COLORREF clrTopLeft, COLORREF clrBottomRight)
 {
 	FillSolidRect(hdc, x, y, cx - 1, 1, clrTopLeft);
 	FillSolidRect(hdc, x, y, 1, cy - 1, clrTopLeft);
@@ -623,7 +622,7 @@ void ttShadeBtn::Draw3dRect(HDC hdc, int x, int y, int cx, int cy, COLORREF clrT
 	FillSolidRect(hdc, x, y + cy, cx, -1, clrBottomRight);
 }
 
-void ttShadeBtn::FillSolidRect(HDC hdc, int x, int y, int cx, int cy, COLORREF clr)
+void ttCShadeBtn::FillSolidRect(HDC hdc, int x, int y, int cx, int cy, COLORREF clr)
 {
 	RECT rect = { x, y, x + cx, y + cy };
 	::FillRect(hdc, &rect, (HBRUSH) (ULONG_PTR) clr);

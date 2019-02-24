@@ -10,9 +10,9 @@
 
 #include "pch.h"
 
-#include "../include/ttdebug.h" // for ttASSERTS
-#include "../include/ttheap.h"	// ttHeap
-#include "../include/ttstr.h"	// ttStr
+#include "../include/ttdebug.h" 	// for ttASSERTS
+#include "../include/ttheap.h"		// ttCHeap
+#include "../include/ttstr.h"	// ttCStr
 
 class ttPrintfPtr
 {
@@ -21,9 +21,9 @@ public:
 		ttASSERT_MSG(ppszDst, "NULL pointer!");
 		m_ppszDst = ppszDst;
 		if (m_ppszDst && *m_ppszDst)
-			tt::free(*m_ppszDst);
+			tt::FreeAlloc(*m_ppszDst);
 		m_cAvail = 128;
-		m_psz = (char*) tt::malloc(m_cAvail + 1);
+		m_psz = (char*) tt::Malloc(m_cAvail + 1);
 		*m_psz = 0;
 	}
 	~ttPrintfPtr() {
@@ -31,11 +31,11 @@ public:
 			*m_ppszDst = m_psz;
 	}
 
-	void realloc(size_t cb) { m_psz = (char*) tt::realloc(m_psz, cb); m_cAvail = cb;}
+	void ReAlloc(size_t cb) { m_psz = (char*) tt::ReAlloc(m_psz, cb); m_cAvail = cb;}
 	void Need(size_t cb);
-	void strcat(const char* psz) {
-		Need(tt::strbyte(m_psz) + tt::strbyte(psz));
-		tt::strcat_s(m_psz, m_cAvail, psz);
+	void strCat(const char* psz) {
+		Need(tt::strByteLen(m_psz) + tt::strByteLen(psz));
+		tt::strCat_s(m_psz, m_cAvail, psz);
 	}
 
 	operator char*()  { return (char*) m_psz; };
@@ -52,7 +52,7 @@ void ttPrintfPtr::Need(size_t cb)
 		cb <<= 7;
 		cb +=  0x80;	// round up allocation size to 128
 		ttASSERT_MSG(cb < tt::MAX_STRING_LEN, "Attempting to printf to a string that is now larger than 16 megs!");
-		realloc(cb);	// allow it even if >= MAX_STRING_LEN, but strcat() will no longer add to it.
+		ReAlloc(cb);	// allow it even if >= MAX_STRING_LEN, but strCat() will no longer add to it.
 		m_cAvail = cb - 1;
 	}
 }
@@ -80,7 +80,7 @@ char* cdecl tt::printf(char** ppszDst, const char* pszFormat, ...)
 // Note that the limit here of 64k is smaller then the kstr functions that use 16m (_KSTRMAX)
 
 #define MAX_STRING (64 * 1024)	// Use this to limit the length of a single string as a security precaution
-#define	DEST_SIZE (tt::size(sptr) - sizeof(char))
+#define	DEST_SIZE (tt::SizeAlloc(sptr) - sizeof(char))
 
 void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 {
@@ -102,13 +102,13 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 			size_t cb = (pszEnd - pszBegin);
 			if (!cb)
 				return;	// empty format string
-			cb += tt::strbyte(sptr);
+			cb += tt::strByteLen(sptr);
 			ttASSERT(cb <= MAX_STRING);
 			if (cb > MAX_STRING) // empty or invalid string
 				return;
 			sptr.Need(cb);
 
-			char* pszTmp = sptr + tt::strlen(sptr);
+			char* pszTmp = sptr + tt::strLen(sptr);
 			while (pszBegin < pszEnd) {
 				*pszTmp++ = *pszBegin++;
 			}
@@ -144,11 +144,11 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 			chPad = 0;
 			pszEnd++;
 		}
-		if (tt::isdigit(*pszEnd)) {
-			cbMin = tt::atoi(pszEnd++);
+		if (tt::isDigit(*pszEnd)) {
+			cbMin = tt::Atoi(pszEnd++);
 			if (cbMin > CB_MAX_FMT_WIDTH)
 				cbMin = CB_MAX_FMT_WIDTH;
-			while (tt::isdigit(*pszEnd))
+			while (tt::isDigit(*pszEnd))
 				pszEnd++;
 		}
 
@@ -156,7 +156,7 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 			char szBuf[2];
 			szBuf[0] = (uint8_t) (va_arg (argList, int) & 0xFF);
 			szBuf[1] = '\0';
-			sptr.strcat(szBuf);
+			sptr.strCat(szBuf);
 			pszEnd++;
 			continue;
 		}
@@ -169,7 +169,7 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 			size_t cb = WideCharToMultiByte(CP_ACP, 0, szwBuf, sizeof(szwBuf), szBuf, sizeof(szBuf), NULL, NULL);
 			ttASSERT(cb < sizeof(szBuf));
 			szBuf[cb] = '\0';
-			sptr.strcat(szBuf);
+			sptr.strCat(szBuf);
 			pszEnd++;
 			continue;
 		}
@@ -178,74 +178,74 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 #if defined(_WIN64) || defined(__x86_64__) || defined(__ppc64__)	// TODO: [randalphwa - 08-30-2018] Need CLANG preprocessor flag
 			// note that we don't have to do any special processing if not compiling 64-bit app, as size_t will be same as int
 			if (bSize_t) {
-				tt::itoa(va_arg(argList, _int64), szNumBuf, sizeof(szNumBuf) - 1);
+				tt::Itoa(va_arg(argList, _int64), szNumBuf, sizeof(szNumBuf) - 1);
 			}
 			else {
-				tt::itoa(va_arg(argList, int), szNumBuf, sizeof(szNumBuf) - 1);
+				tt::Itoa(va_arg(argList, int), szNumBuf, sizeof(szNumBuf) - 1);
 			}
 #else	// not defined(_WIN64) || defined(__x86_64__) || defined(__ppc64__)
-			tt::itoa(va_arg(argList, int), szNumBuf, sizeof(szNumBuf) - 1);
+			tt::Itoa(va_arg(argList, int), szNumBuf, sizeof(szNumBuf) - 1);
 #endif	// defined(_WIN64) || defined(__x86_64__) || defined(__ppc64__)
 			if (cbMin >= 0) {
 				char szTmp[CB_MAX_FMT_WIDTH + 1];
-				size_t diff = cbMin - tt::strlen(szNumBuf);
+				size_t diff = cbMin - tt::strLen(szNumBuf);
 				if (diff > 0) {
 					szTmp[diff--] = 0;
 					while (diff >= 0)
 						szTmp[diff--] = chPad;
-					sptr.strcat(szTmp);
+					sptr.strCat(szTmp);
 				}
 			}
-			sptr.strcat(szNumBuf);
+			sptr.strCat(szNumBuf);
 			pszEnd++;
 			continue;
 		}
 		else if (*pszEnd == 'u') {
-			tt::utoa(va_arg(argList, unsigned int), szNumBuf, sizeof(szNumBuf));
+			tt::Utoa(va_arg(argList, unsigned int), szNumBuf, sizeof(szNumBuf));
 			if (cbMin >= 0) {
 				char szTmp[CB_MAX_FMT_WIDTH + 1];
-				size_t diff = cbMin - tt::strlen(szNumBuf);
+				size_t diff = cbMin - tt::strLen(szNumBuf);
 				if (diff > 0) {
 					szTmp[diff--] = 0;
 					while (diff >= 0)
 						szTmp[diff--] = chPad;
-					sptr.strcat(szTmp);
+					sptr.strCat(szTmp);
 				}
 			}
-			sptr.strcat(szNumBuf);
+			sptr.strCat(szNumBuf);
 			pszEnd++;
 			continue;
 		}
 		else if (*pszEnd == 'x') {
-			tt::hextoa(va_arg(argList, int), szNumBuf, false);
+			tt::Hextoa(va_arg(argList, int), szNumBuf, false);
 			if (cbMin >= 0) {
 				char szTmp[CB_MAX_FMT_WIDTH + 1];
-				size_t diff = cbMin - tt::strlen(szNumBuf);
+				size_t diff = cbMin - tt::strLen(szNumBuf);
 				if (diff > 0) {
 					szTmp[diff--] = 0;
 					while (diff >= 0)
 						szTmp[diff--] = chPad;
-					sptr.strcat(szTmp);
+					sptr.strCat(szTmp);
 				}
 			}
-			sptr.strcat(szNumBuf);
+			sptr.strCat(szNumBuf);
 			pszEnd++;
 			continue;
 		}
 		else if (*pszEnd == 'X') {
 			ttASSERT_MSG(!bSize_t, "zX and IX not supported");
-			tt::hextoa(va_arg(argList, int), szNumBuf, true);
+			tt::Hextoa(va_arg(argList, int), szNumBuf, true);
 			if (cbMin >= 0) {
 				char szTmp[CB_MAX_FMT_WIDTH + 1];
-				size_t diff = cbMin - tt::strlen(szNumBuf);
+				size_t diff = cbMin - tt::strLen(szNumBuf);
 				if (diff > 0) {
 					szTmp[diff--] = 0;
 					while (diff >= 0)
 						szTmp[diff--] = chPad;
-					sptr.strcat(szTmp);
+					sptr.strCat(szTmp);
 				}
 			}
-			sptr.strcat(szNumBuf);
+			sptr.strCat(szNumBuf);
 			pszEnd++;
 			continue;
 		}
@@ -259,10 +259,10 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 					|| IsBadReadPtr(psz, 1)	// IsBadReadPtr() is technically obsolete, but it prevents a crash if caller forgets to supply enough parameters.
 #endif
 					) {
-				ttASSERT_MSG(psz, "NULL pointer passed to ttString::printf(\"%s");
+				ttASSERT_MSG(psz, "NULL pointer passed to ttCStr::printf(\"%s");
 				psz = "(missing argument for %s)";
 			}
-			sptr.strcat(psz);
+			sptr.strCat(psz);
 			pszEnd++;
 			continue;
 		}
@@ -272,23 +272,23 @@ WideChar:
 			if (!pwsz)
 				pwsz = L"(null)";
 
-			size_t cb = tt::strlen(pwsz) * sizeof(wchar_t);
+			size_t cb = tt::strLen(pwsz) * sizeof(wchar_t);
 			ttASSERT(cb < MAX_STRING);
 			if (cb <= 0 || cb > MAX_STRING) // empty or invalid string
 				return;
 
-			char* psz = (char*) tt::malloc(cb + 1);
+			char* psz = (char*) tt::Malloc(cb + 1);
 			// BUGBUG: [ralphw - 07-14-2018] Following line is _WINDOWS_ only
 			cb = WideCharToMultiByte(CP_ACP, 0, pwsz, (_int32) (cb / sizeof(wchar_t)), psz, (_int32) cb, nullptr, nullptr);
 			psz[cb] = '\0';
 
-			sptr.strcat(psz);
+			sptr.strCat(psz);
 			pszEnd++;
-			tt::free(psz);
+			tt::FreeAlloc(psz);
 			continue;
 		}
 		else if (*pszEnd == '%') {
-			sptr.strcat("%");
+			sptr.strCat("%");
 			pszEnd++;
 			continue;
 		}
@@ -298,17 +298,17 @@ WideChar:
 
 			ttFAIL("Invalid format string for printf");
 #ifdef _DEBUG
-			sptr.strcat("Invalid format string: ");
+			sptr.strCat("Invalid format string: ");
 #endif // _DEBUG
-			sptr.strcat("%");
-			sptr.strcat(pszEnd);
+			sptr.strCat("%");
+			sptr.strCat(pszEnd);
 			break;
 		}
 	}
 
 	// Now readjust the allocation to the actual size
 
-	sptr.realloc(tt::strbyte(sptr));
+	sptr.ReAlloc(tt::strByteLen(sptr));
 }
 
 char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargList)
@@ -318,26 +318,26 @@ char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargLi
 	switch (*pszEnd) {
 		case 'n':	// 'n' is deprecated, 'd' should be used instead
 		case 'd':
-			tt::itoa((int) va_arg(*pargList, int), szBuf, sizeof(szBuf));
+			tt::Itoa((int) va_arg(*pargList, int), szBuf, sizeof(szBuf));
 			ttpriv::AddCommasToNumber(szBuf, szBuf, sizeof(szBuf));
 			break;
 
 		case 'I':	// 64-bit version of 'd' and 'u' that works in 32-bit builds
-			if (tt::samesubstri(pszEnd, "I64d"))
-				tt::itoa(va_arg(*pargList, int64_t), szBuf, sizeof(szBuf));
-			else if (tt::samesubstri(pszEnd, "I64u"))
-				tt::utoa(va_arg(*pargList, uint64_t), szBuf, sizeof(szBuf));
+			if (tt::isSameSubStri(pszEnd, "I64d"))
+				tt::Itoa(va_arg(*pargList, int64_t), szBuf, sizeof(szBuf));
+			else if (tt::isSameSubStri(pszEnd, "I64u"))
+				tt::Utoa(va_arg(*pargList, uint64_t), szBuf, sizeof(szBuf));
 			ttpriv::AddCommasToNumber(szBuf, szBuf, sizeof(szBuf));
 			pszEnd += 3;	// skip over I64 portion, then count normally
 			break;
 
 		case 't':	// use for size_t parameters, this will handle both 32 and 64 bit compilations
-			tt::utoa(va_arg(*pargList, size_t), szBuf, sizeof(szBuf));
+			tt::Utoa(va_arg(*pargList, size_t), szBuf, sizeof(szBuf));
 			ttpriv::AddCommasToNumber(szBuf, szBuf, sizeof(szBuf));
 			break;
 
 		case 'u':
-			tt::utoa(va_arg(*pargList, unsigned int), szBuf, sizeof(szBuf));
+			tt::Utoa(va_arg(*pargList, unsigned int), szBuf, sizeof(szBuf));
 			ttpriv::AddCommasToNumber(szBuf, szBuf, sizeof(szBuf));
 			break;
 
@@ -358,9 +358,9 @@ char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargLi
 #ifdef _WINDOWS_
 		case 'r':
 			{
-				ttStr cszRes;
-				cszRes.GetResString(va_arg(*pargList, int));
-				sptr.strcat(cszRes);
+				ttCStr cszRes;
+				cszRes.getResString(va_arg(*pargList, int));
+				sptr.strCat(cszRes);
 			}
 			break;
 
@@ -371,7 +371,7 @@ char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargLi
 				if (FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
 						NULL, va_arg(*pargList, int), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 						(char*) &pszMsg, 0, NULL) != 0) {
-					sptr.strcat(pszMsg);
+					sptr.strCat(pszMsg);
 					LocalFree((HLOCAL) pszMsg);
 				}
 			}
@@ -380,9 +380,9 @@ char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargLi
 
 		case 'q':
 			try {
-				sptr.strcat("\042");
-				sptr.strcat(va_arg(*pargList, const char*));
-				sptr.strcat("\042");
+				sptr.strCat("\042");
+				sptr.strCat(va_arg(*pargList, const char*));
+				sptr.strCat("\042");
 			}
 			catch (...) {
 				ttFAIL("Exception in ProcessKFmt -- bad %%kq pointer");
@@ -390,7 +390,7 @@ char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargLi
 			break;
 	}
 	if (szBuf[0])
-		sptr.strcat(szBuf);
+		sptr.strCat(szBuf);
 
 	return (char*) (pszEnd + 1);
 }
@@ -401,9 +401,9 @@ char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargLi
 void ttpriv::AddCommasToNumber(char* pszNum, char* pszDst, size_t cbDst)
 {
 	if (pszDst != pszNum)
-		tt::strcpy_s(pszDst, cbDst, pszNum);	// copy the number, performa all additional work in-place in the destination buffer
+		tt::strCopy_s(pszDst, cbDst, pszNum);	// copy the number, performa all additional work in-place in the destination buffer
 
-	ptrdiff_t cbNum = tt::strlen(pszDst);	// needs to be signed because it can go negative
+	ptrdiff_t cbNum = tt::strLen(pszDst);	// needs to be signed because it can go negative
 	if (cbNum < 4) {
 		ttASSERT(cbNum < (ptrdiff_t) cbDst);
 		return;
@@ -422,7 +422,7 @@ void ttpriv::AddCommasToNumber(char* pszNum, char* pszDst, size_t cbDst)
 	if (cbStart == 0)
 		cbStart += 3;
 	while (cbStart < cbNum) {
-		memmove(pszDst + cbStart + 1, pszDst + cbStart, tt::strbyte(pszDst + cbStart));	// make space for a comma
+		memmove(pszDst + cbStart + 1, pszDst + cbStart, tt::strByteLen(pszDst + cbStart));	// make space for a comma
 		pszDst[cbStart] = ',';
 		++cbNum;		// track that we added a comma for loop comparison
 		cbStart += 4;	// 3 numbers plus the comma

@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttDib
+// Name:		ttCDib
 // Purpose:		Class for handling Device Independent Bitmap
 // Author:		Davide Pizzolato
 // Copyright:   Copyright (c) [2001] Davide Pizzolato
@@ -29,7 +29,7 @@
 
 #define IS_WIN30_DIB(lpbi)	((*(LPDWORD)(lpbi))==sizeof(BITMAPINFOHEADER))
 
-ttDib::ttDib()
+ttCDib::ttCDib()
 {
 	hDib = NULL;
 
@@ -40,37 +40,37 @@ ttDib::ttDib()
 	m_nColors = 0;
 }
 
-ttDib::~ttDib()
+ttCDib::~ttCDib()
 {
 	if (hDib)
-		tt::free(hDib);
+		tt::FreeAlloc(hDib);
 }
 
-bool ttDib::IsWin30Dib() {
+bool ttCDib::IsWin30Dib() {
 	return ((*(LPDWORD)(hDib)) == sizeof(BITMAPINFOHEADER));
 }
 
-WORD ttDib::GetPaletteSize()
+WORD ttCDib::GetPaletteSize()
 {
 //	  if (IsWin30Dib())
 		return (m_nColors * sizeof(RGBQUAD));
 //	  else return (m_nColors * sizeof(RGBTRIPLE));
 }
 
-BYTE* ttDib::GetBits()
+BYTE* ttCDib::GetBits()
 {
 	if (hDib)
 		return ((BYTE*) hDib + *(LPDWORD) hDib + GetPaletteSize());
 	return nullptr;
 }
 
-HDIB  ttDib::Create(DWORD dwWidth, DWORD dwHeight, WORD wBitCount)
+HDIB  ttCDib::Create(DWORD dwWidth, DWORD dwHeight, WORD wBitCount)
 {
 	LPBITMAPINFOHEADER	lpbi;	// pointer to BITMAPINFOHEADER
 	DWORD				dwLen;	// size of memory block
 
 	if (hDib)
-		tt::free(hDib);
+		tt::FreeAlloc(hDib);
 	hDib = nullptr;
 
 	// Make sure bits per pixel is valid
@@ -117,7 +117,7 @@ HDIB  ttDib::Create(DWORD dwWidth, DWORD dwHeight, WORD wBitCount)
 	// table, and the bits
 	dwLen = GetSize();
 
-	hDib = tt::malloc(dwLen); // alloc memory block to store our bitmap
+	hDib = tt::Malloc(dwLen); // alloc memory block to store our bitmap
 	if (!hDib)
 		return nullptr;
 
@@ -129,7 +129,7 @@ HDIB  ttDib::Create(DWORD dwWidth, DWORD dwHeight, WORD wBitCount)
 	return hDib; //return handle to the DIB
 }
 
-long ttDib::Draw(HDC pDC, long xoffset, long yoffset)
+long ttCDib::Draw(HDC pDC, long xoffset, long yoffset)
 {
 	if (hDib && pDC)  {
 		// palette must be correctly filled
@@ -142,7 +142,7 @@ long ttDib::Draw(HDC pDC, long xoffset, long yoffset)
 	return 0;
 }
 
-long ttDib::Stretch(HDC pDC, long xoffset, long yoffset, long xsize, long ysize)
+long ttCDib::Stretch(HDC pDC, long xoffset, long yoffset, long xsize, long ysize)
 {
 	if (hDib && pDC) {
 		// palette must be correctly filled
@@ -155,7 +155,7 @@ long ttDib::Stretch(HDC pDC, long xoffset, long yoffset, long xsize, long ysize)
 	return 0;
 }
 
-void ttDib::SetPaletteIndex(BYTE idx, BYTE r, BYTE g, BYTE b)
+void ttCDib::SetPaletteIndex(BYTE idx, BYTE r, BYTE g, BYTE b)
 {
 	if (hDib && m_nColors) {
 		BYTE* iDst = (BYTE*) hDib + sizeof(BITMAPINFOHEADER);
@@ -169,7 +169,7 @@ void ttDib::SetPaletteIndex(BYTE idx, BYTE r, BYTE g, BYTE b)
 	}
 }
 
-void ttDib::SetPaletteIndex(BYTE idx, RGBQUAD c)
+void ttCDib::SetPaletteIndex(BYTE idx, RGBQUAD c)
 {
 	if (hDib && m_nColors){
 		BYTE* iDst = (BYTE*) hDib + sizeof(BITMAPINFOHEADER);
@@ -183,7 +183,7 @@ void ttDib::SetPaletteIndex(BYTE idx, RGBQUAD c)
 	}
 }
 
-void ttDib::SetPaletteIndex(BYTE idx, COLORREF cr)
+void ttCDib::SetPaletteIndex(BYTE idx, COLORREF cr)
 {
 	if (hDib && m_nColors){
 		BYTE* iDst = (BYTE*) hDib + sizeof(BITMAPINFOHEADER);
@@ -197,7 +197,7 @@ void ttDib::SetPaletteIndex(BYTE idx, COLORREF cr)
 	}
 }
 
-RGBQUAD ttDib::GetPaletteIndex(BYTE idx)
+RGBQUAD ttCDib::GetPaletteIndex(BYTE idx)
 {
 	RGBQUAD rgb = {0,0,0,0};
 	if (hDib && m_nColors){
@@ -213,7 +213,7 @@ RGBQUAD ttDib::GetPaletteIndex(BYTE idx)
 	return rgb;
 }
 
-BYTE ttDib::GetPixelIndex(long x, long y)
+BYTE ttCDib::GetPixelIndex(long x, long y)
 {
 	if ((hDib == NULL)	|| (m_nColors == 0)  || (x < 0)  || (y < 0)  || (x >= m_bi.biWidth)  || (y >= m_bi.biHeight))
 		return 0;
@@ -221,7 +221,7 @@ BYTE ttDib::GetPixelIndex(long x, long y)
 	return iDst[(m_bi.biHeight - y - 1) * m_LineWidth + x];
 }
 
-RGBQUAD ttDib::GetPixelColor(long x, long y)
+RGBQUAD ttCDib::GetPixelColor(long x, long y)
 {
 	RGBQUAD rgb = {0, 0, 0, 0};
 	if ((hDib == NULL)	|| (x < 0)	|| (y < 0)	|| (x >= m_bi.biWidth) || (y >= m_bi.biHeight))
@@ -237,7 +237,7 @@ RGBQUAD ttDib::GetPixelColor(long x, long y)
 	}
 }
 
-void ttDib::SetPixelIndex(long x, long y, BYTE i)
+void ttCDib::SetPixelIndex(long x, long y, BYTE i)
 {
 	if ((hDib == NULL) || (m_nColors == 0) || (x < 0) || (y < 0) || (x >= m_bi.biWidth) || (y >= m_bi.biHeight))
 		return;
@@ -245,12 +245,12 @@ void ttDib::SetPixelIndex(long x, long y, BYTE i)
 	iDst[(m_bi.biHeight - y - 1) * m_LineWidth + x] = i;
 }
 
-void ttDib::SetPixelColor(long x, long y, COLORREF cr)
+void ttCDib::SetPixelColor(long x, long y, COLORREF cr)
 {
 	SetPixelColor(x,y,RGB2RGBQUAD(cr));
 }
 
-void ttDib::SetPixelColor(long x,long y,RGBQUAD c)
+void ttCDib::SetPixelColor(long x,long y,RGBQUAD c)
 {
 	if ((hDib == NULL) || (x < 0) || (y < 0) || (x >= m_bi.biWidth) || (y >= m_bi.biHeight))
 		return;
@@ -262,7 +262,7 @@ void ttDib::SetPixelColor(long x,long y,RGBQUAD c)
 	}
 }
 
-BYTE ttDib::GetNearestIndex(RGBQUAD c)
+BYTE ttCDib::GetNearestIndex(RGBQUAD c)
 {
 	if ((hDib == NULL) || (m_nColors == 0))
 		return 0;
@@ -295,7 +295,7 @@ BYTE ttDib::GetNearestIndex(RGBQUAD c)
 /* initially set for achromatic colors */
 #define UNDEFINED (HSLMAX*2/3)
 
-RGBQUAD ttDib::RGBtoHSL(RGBQUAD lRGBColor)
+RGBQUAD ttCDib::RGBtoHSL(RGBQUAD lRGBColor)
 {
 	BYTE R, G, B;				  // input RGB values
 	BYTE H, L, S;				  // output HSL values
@@ -340,7 +340,7 @@ RGBQUAD ttDib::RGBtoHSL(RGBQUAD lRGBColor)
 	return hsl;
 }
 
-WORD ttDib::HueToRGB(WORD n1, WORD n2, WORD hue)
+WORD ttCDib::HueToRGB(WORD n1, WORD n2, WORD hue)
 {
 	// range check: note values passed add/subtract thirds of range
 	if (hue < 0)
@@ -359,12 +359,12 @@ WORD ttDib::HueToRGB(WORD n1, WORD n2, WORD hue)
 		return (n1);
 }
 
-RGBQUAD ttDib::HSLtoRGB(COLORREF cHSLColor)
+RGBQUAD ttCDib::HSLtoRGB(COLORREF cHSLColor)
 {
 	return HSLtoRGB(RGB2RGBQUAD(cHSLColor));
 }
 
-RGBQUAD ttDib::HSLtoRGB(RGBQUAD lHSLColor)
+RGBQUAD ttCDib::HSLtoRGB(RGBQUAD lHSLColor)
 {
 	WORD hue, lum, sat;
 	BYTE R, G, B;				  // RGB component values
@@ -393,7 +393,7 @@ RGBQUAD ttDib::HSLtoRGB(RGBQUAD lHSLColor)
 	return rgb;
 }
 
-RGBQUAD ttDib::RGB2RGBQUAD(COLORREF cr)
+RGBQUAD ttCDib::RGB2RGBQUAD(COLORREF cr)
 {
 	RGBQUAD c;
 	c.rgbRed = GetRValue(cr & 0xFF);	// get R, G, and B out of DWORD
@@ -403,12 +403,12 @@ RGBQUAD ttDib::RGB2RGBQUAD(COLORREF cr)
 	return c;
 }
 
-COLORREF ttDib::RGBQUAD2RGB(RGBQUAD c)
+COLORREF ttCDib::RGBQUAD2RGB(RGBQUAD c)
 {
 	return RGB(c.rgbRed, c.rgbGreen, c.rgbBlue);
 }
 
-void ttDib::SetGrayPalette()
+void ttCDib::SetGrayPalette()
 {
 	if ((hDib == NULL) || (m_nColors == 0))
 		return;
@@ -426,7 +426,7 @@ void ttDib::SetGrayPalette()
 	memcpy(iDst, ppal, GetPaletteSize());
 }
 
-void ttDib::BlendPalette(COLORREF cr, long perc)
+void ttCDib::BlendPalette(COLORREF cr, long perc)
 {
 	if ((hDib == NULL) || (m_nColors == 0))
 		return;
@@ -445,19 +445,19 @@ void ttDib::BlendPalette(COLORREF cr, long perc)
 	}
 }
 
-long ttDib::GetSize()
+long ttCDib::GetSize()
 {
 	return m_bi.biSize + m_bi.biSizeImage + GetPaletteSize();
 }
 
-void ttDib::Clone(ttDib *src)
+void ttCDib::Clone(ttCDib *src)
 {
 	Create(src->GetWidth(), src->GetHeight(), src->GetBitCount());
 	if (hDib)
 		memcpy(hDib, src->hDib, GetSize());
 }
 
-void ttDib::Clear(BYTE bval)
+void ttCDib::Clear(BYTE bval)
 {
 	if (hDib)
 		memset(GetBits(), bval, m_bi.biSizeImage);

@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttDlg
+// Name:		ttCDlg
 // Purpose:		Class for displaying a modal dialog
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
@@ -8,8 +8,8 @@
 
 #pragma once
 
-#ifndef __TTLIB_ttDlg_H__
-#define __TTLIB_ttDlg_H__
+#ifndef __TTLIB_TTCDLG_H__
+#define __TTLIB_TTCDLG_H__
 
 #ifndef _WINDOWS_
 	#error This code will only work on Windows
@@ -21,14 +21,14 @@
 // If you use BEGIN_TTMSG_MAP/END_TTMSG_MAP then you can use all the regular handlers from ttmsgmap.h just as if it was an
 // ATL CDialogImpl derived class
 
-// Classes are also provided for some dialog controls: ttComboBox, ttListBox, ttListView
+// Classes are also provided for some dialog controls: ttCComboBox, ttCListBox, ttCListView
 
 #include <CommCtrl.h>
 
 #include "ttdebug.h"	// for ttASSERTS
-#include "ttstring.h"	// ttString
-#include "ttwstring.h"	// ttWString
-#include "multibtn.h"	// ttMultiBtn
+#include "ttstr.h"	// ttCStr
+#include "ttwstr.h"	// ttCWStr
+#include "ttmultibtn.h"	// ttCMultiBtn
 
 #ifndef __DLG_ID__
 	#ifdef _DEBUG
@@ -44,10 +44,10 @@ namespace ttpriv {
 	INT_PTR WINAPI DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam);
 }
 
-class ttDlg
+class ttCDlg
 {
 public:
-	ttDlg(UINT idTemplate, HWND hwnd = NULL);
+	ttCDlg(UINT idTemplate, HWND hwnd = NULL);
 
 	INT_PTR DoModal();
 
@@ -71,11 +71,11 @@ public:
 	BOOL GetControlRect(ptrdiff_t id, RECT* prc) const { return ::GetWindowRect(GetDlgItem(id), prc); }
 
 	void GetControlText(ptrdiff_t id, char* pszText, int cchMax = MAX_PATH) const { (void) ::GetWindowTextA(GetDlgItem(id), pszText, cchMax); }
-	void GetControlText(ptrdiff_t id, ttString* pcsz) const { pcsz->GetWindowText(GetDlgItem(id)); }
+	void GetControlText(ptrdiff_t id, ttCStr* pcsz) const { pcsz->getWindowText(GetDlgItem(id)); }
 	void SetControlText(ptrdiff_t id, const char* pszText) const { ttASSERT(pszText); (void) ::SetWindowTextA(GetDlgItem(id), pszText); }
 
 	void GetControlText(ptrdiff_t id, wchar_t* pwszText, int cchMax = MAX_PATH) const { (void) ::GetWindowTextW(GetDlgItem(id), pwszText, cchMax); }
-	void GetControlText(ptrdiff_t id, ttWString* pcsz) const { pcsz->GetWindowText(GetDlgItem(id)); }
+	void GetControlText(ptrdiff_t id, ttCWStr* pcsz) const { pcsz->getWindowText(GetDlgItem(id)); }
 	void SetControlText(ptrdiff_t id, const wchar_t* pwszText) const { ttASSERT(pwszText); (void) ::SetWindowTextW(GetDlgItem(id), pwszText); }
 
 	void SetTitle(const char* pszTitle) { ::SetWindowTextA(*this, pszTitle); }
@@ -94,7 +94,7 @@ public:
 	void SetCheck(int id, BOOL bCheck = TRUE) const { (void) SendMessage(id, BM_SETCHECK, bCheck); }
 	void UnCheck(int id) const { (void) SendMessage(id, BM_SETCHECK, FALSE); }
 
-	HICON SetIcon(HICON hIcon, BOOL bBigIcon = TRUE) { ttASSERT(::IsWindow(m_hwnd)); return (HICON)::SendMessage(m_hwnd, WM_SETICON, bBigIcon, (LPARAM)hIcon); }
+	HICON setIcon(HICON hIcon, BOOL bBigIcon = TRUE) { ttASSERT(::IsWindow(m_hwnd)); return (HICON)::SendMessage(m_hwnd, WM_SETICON, bBigIcon, (LPARAM)hIcon); }
 
 	LRESULT SendMessage(int id, UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::SendMessage(GetDlgItem(id), msg, wParam, lParam); }
 	LRESULT SendMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::SendMessage(*this, msg, wParam, lParam); }
@@ -106,13 +106,8 @@ public:
 	void EndDialog(int nResult = IDCANCEL) const { ::EndDialog(m_hwnd, nResult); }
 	void FadeWindow();
 
-	[[deprecated]] void KDDX_Text(int id, ttString& csz) {  (m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz)); }
-	[[deprecated]] void KDDX_Text(int id, ttWString& csz) { (m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz)); }
-	[[deprecated]] void KDDX_Check(int id, bool& bFlag) {   (m_bInitializing ? SetCheck(id, bFlag) : (void) (bFlag = GetCheck(id))); }
-	[[deprecated]] void KDDX_Int(int id, ptrdiff_t* pVal) { (m_bInitializing ? SetControlInteger(id, *pVal) : (void) (*pVal = GetControlInteger(id))); }
-
-	void ttDDX_Text(int id, ttString& csz) {  (m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz)); }
-	void ttDDX_Text(int id, ttWString& csz) { (m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz)); }
+	void ttDDX_Text(int id, ttCStr& csz) {  (m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz)); }
+	void ttDDX_Text(int id, ttCWStr& csz) { (m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz)); }
 	void ttDDX_Check(int id, bool& bFlag) {   (m_bInitializing ? SetCheck(id, bFlag) : (void) (bFlag = GetCheck(id))); }
 	void ttDDX_Int(int id, ptrdiff_t* pVal) { (m_bInitializing ? SetControlInteger(id, *pVal) : (void) (*pVal = GetControlInteger(id))); }
 
@@ -135,17 +130,17 @@ protected:
 	HWND m_hwnd;			// m_hwnd vs m_hWnd -- SDK/include, ATL and WTL use both variants. We're sticking with all lowercase.
 	HWND m_hwndParent;
 
-	ttMultiBtn m_ShadedBtns;
+	ttCMultiBtn m_ShadedBtns;
 
 	LRESULT m_result;
-}; // end of ttDlg
+}; // end of ttCDlg
 
-class ttComboBox
+class ttCComboBox
 {
 public:
-	ttComboBox() { m_hwnd = NULL; }
-	ttComboBox(HWND hwndCtrl) { m_hwnd = hwndCtrl; }
-	ttComboBox(HWND hwndParent, int id) { m_hwnd = ::GetDlgItem(hwndParent, id); ttASSERT_MSG(m_hwnd, "Invalid Combo-box id"); }
+	ttCComboBox() { m_hwnd = NULL; }
+	ttCComboBox(HWND hwndCtrl) { m_hwnd = hwndCtrl; }
+	ttCComboBox(HWND hwndParent, int id) { m_hwnd = ::GetDlgItem(hwndParent, id); ttASSERT_MSG(m_hwnd, "Invalid Combo-box id"); }
 
 	void Attach(HWND hwndCtrl) { m_hwnd = hwndCtrl; }
 	void Initialize(int id) { ttASSERT(m_hwnd); m_hwnd = ::GetDlgItem(GetParent(m_hwnd), id); }
@@ -173,7 +168,7 @@ public:
 
 	LRESULT Add(const char* psz) const { ttASSERT(psz); return SendMessage(CB_ADDSTRING, 0, (LPARAM) psz); }
 	LRESULT Add(const wchar_t* pwsz) const { ttASSERT(pwsz); return SendMessageW(CB_ADDSTRING, 0, (LPARAM) pwsz); }
-	LRESULT Add(int val) const { char szNum[30]; tt::itoa(val, szNum, sizeof(szNum)); return SendMessageA(CB_ADDSTRING, 0, (LPARAM) szNum); }
+	LRESULT Add(int val) const { char szNum[30]; tt::Itoa(val, szNum, sizeof(szNum)); return SendMessageA(CB_ADDSTRING, 0, (LPARAM) szNum); }
 	LRESULT AddString(const char* psz) const { ttASSERT(psz); return SendMessage(CB_ADDSTRING, 0, (LPARAM) psz); }
 	LRESULT AddString(const wchar_t* pwsz) const { ttASSERT(pwsz); return SendMessageW(CB_ADDSTRING, 0, (LPARAM) pwsz); }
 	LRESULT InsertString(int index, const char* psz) const { ttASSERT(psz); return SendMessage(CB_INSERTSTRING, index, (LPARAM) psz); }
@@ -199,7 +194,7 @@ public:
 
 	void SetFont(HFONT hfont) { SendMessage(WM_SETFONT, (WPARAM) hfont); }
 
-	void Invalidate(BOOL bErase = TRUE) { ttASSERT(m_hwnd); InvalidateRect(m_hwnd, nullptr, bErase); }
+	void InValidateAlloc(BOOL bErase = TRUE) { ttASSERT(m_hwnd); InvalidateRect(m_hwnd, nullptr, bErase); }
 
 	void operator += (const char* psz) const { ttASSERT(psz); SendMessage(CB_ADDSTRING, 0, (LPARAM) psz); }
 	void operator += (const wchar_t* pwsz) const { ttASSERT(pwsz); SendMessageW(CB_ADDSTRING, 0, (LPARAM) pwsz); }
@@ -209,12 +204,12 @@ public:
 	HWND m_hwnd;
 };
 
-class ttListBox
+class ttCListBox
 {
 public:
-	ttListBox() { m_hwnd = NULL; }
-	ttListBox(HWND hwndCtrl) { m_hwnd = hwndCtrl; }
-	ttListBox(HWND hwndParent, int id) { m_hwnd = GetDlgItem(hwndParent, id); ttASSERT_MSG(m_hwnd, "Invalid Listbox id"); }
+	ttCListBox() { m_hwnd = NULL; }
+	ttCListBox(HWND hwndCtrl) { m_hwnd = hwndCtrl; }
+	ttCListBox(HWND hwndParent, int id) { m_hwnd = GetDlgItem(hwndParent, id); ttASSERT_MSG(m_hwnd, "Invalid Listbox id"); }
 
 	void	Initialize(int id) { ttASSERT(m_hwnd); m_hwnd = GetDlgItem(GetParent(m_hwnd), id); }
 	void	Initialize(HWND hdlg, int id) { m_hwnd = ::GetDlgItem(hdlg, id); }
@@ -229,8 +224,8 @@ public:
 
 	LRESULT	GetText(char* psz, int index = -1) const { return SendMessageA(LB_GETTEXT, (index == -1) ? GetCurSel() : index, (LPARAM) psz); }
 	LRESULT	GetText(wchar_t* pwsz, int index = -1) const { return SendMessageW(LB_GETTEXT, (index == -1) ? GetCurSel() : index, (LPARAM) pwsz); }	// wide char version
-	void	GetText(ttString* pcsz, int index = -1) const { pcsz->GetListBoxText(*this, (index == -1) ? GetCurSel() : index); }
-	void	GetText(ttWString* pcsz, int index = -1) const { pcsz->GetListBoxText(*this, (index == -1) ? GetCurSel() : index); }						// wide char version
+	void	GetText(ttCStr* pcsz, int index = -1) const { pcsz->getListBoxText(*this, (index == -1) ? GetCurSel() : index); }
+	void	GetText(ttCWStr* pcsz, int index = -1) const { pcsz->getListBoxText(*this, (index == -1) ? GetCurSel() : index); }						// wide char version
 
 	LRESULT	GetCount() const { return SendMessage(LB_GETCOUNT); }
 	LRESULT	GetSelCount() const { ttASSERT((GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL))); return SendMessage(LB_GETSELCOUNT); }
@@ -302,7 +297,7 @@ public:
 					ttASSERT_MSG(!(GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)), "SelectString only works on single-selection listbox");
 					return SendMessageW(LB_SELECTSTRING, iStart, (LPARAM) pwszString); }
 
-	void	Invalidate(BOOL bErase = TRUE) { InvalidateRect(m_hwnd, NULL, bErase); }
+	void	InValidateAlloc(BOOL bErase = TRUE) { InvalidateRect(m_hwnd, NULL, bErase); }
 	void	DisableRedraw(void) { SendMessage(WM_SETREDRAW, FALSE); }
 	void	EnableRedraw(void)	 { SendMessage(WM_SETREDRAW, TRUE); }
 
@@ -312,11 +307,11 @@ public:
 	HWND m_hwnd;
 };
 
-class ttListView
+class ttCListView
 {
 public:
-	ttListView() { m_hwnd = NULL; }
-	ttListView(HWND hwndParent, int id) { m_hwnd = ::GetDlgItem(hwndParent, id); ttASSERT_MSG(m_hwnd, "Invalid Listview id"); }
+	ttCListView() { m_hwnd = NULL; }
+	ttCListView(HWND hwndParent, int id) { m_hwnd = ::GetDlgItem(hwndParent, id); ttASSERT_MSG(m_hwnd, "Invalid Listview id"); }
 
 	void	Initialize(int id) { ttASSERT(m_hwnd); m_hwnd = GetDlgItem(GetParent(m_hwnd), id); };
 	void	Initialize(HWND hdlg, int id) { m_hwnd = ::GetDlgItem(hdlg, id); };
@@ -351,4 +346,4 @@ public:
 	LVCOLUMN m_lvColumn;
 };
 
-#endif	// __TTLIB_ttDlg_H__
+#endif	// __TTLIB_TTCDLG_H__

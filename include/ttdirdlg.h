@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttDirDlg
+// Name:		ttCDirDlg
 // Purpose:		Class for displaying a dialog to select a directory
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2019 KeyWorks Software (Ralph Walden)
@@ -10,12 +10,13 @@
 
 #include <shlobj.h>
 
-#include "../../ttLib/include/ttwstring.h"	// ttWString
+#include "../include/ttstr.h"
+#include "../include/ttwstr.h"	// ttCWStr
 
-class ttDirDlg
+class ttCDirDlg
 {
 public:
-	ttDirDlg();
+	ttCDirDlg();
 
 	// Class functions
 
@@ -29,7 +30,7 @@ public:
 protected:
 	// Class members
 
-	ttWString m_cwszTitle;	// defaults to "Select a Folder"
-	ttWString m_cwszStartingDir;
-	ttString  m_cszDirName;
+	ttCWStr m_cwszTitle;	// defaults to "Select a Folder"
+	ttCWStr m_cwszStartingDir;
+	ttCStr  m_cszDirName;
 };

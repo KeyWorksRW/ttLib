@@ -10,10 +10,9 @@
 
 #include <stdio.h>
 
-#include "../include/ttdebug.h"
-#include "../include/ttstring.h"	// ttString
-#include "../include/ttstr.h"		// ttStr
-#include "../include/critsection.h"	// CCritSection
+#include "../include/ttdebug.h" 		// ttASSERT macros
+#include "../include/ttstr.h"		// ttCStr
+#include "../include/ttcritsection.h"	// CCritSection
 
 #ifndef _INC_STDLIB
 	__declspec(noreturn) void __cdecl exit(int _Code);
@@ -32,8 +31,8 @@ __declspec(noreturn) void tt::OOM(void)
 	if (answer == IDYES)
 		DebugBreak();
 	// Don't use GetCurrentWindowHandle() since that might only return an active window
-	if (tt::hwndParent && IsWindow(tt::hwndParent))
-		SendMessage(tt::hwndParent, WM_CLOSE, 0, 0);	// attempt to give the application window a graceful way to shut down
+	if (tt::hwndMsgBoxParent && IsWindow(tt::hwndMsgBoxParent))
+		SendMessage(tt::hwndMsgBoxParent, WM_CLOSE, 0, 0);	// attempt to give the application window a graceful way to shut down
 #elif _WX_WX_H_
 	wxFAIL_MSG("Out of Memory!!!");
 #endif	// __WINDOWS_ and _WX_WX_H_
@@ -46,7 +45,7 @@ __declspec(noreturn) void tt::OOM(void)
 #ifdef _DEBUG
 
 namespace ttdbg {
-	ttCritSection crtAssert;
+	ttCCritSection crtAssert;
 	bool bNoAssert = false;		// Setting this to true will cause AssertionMsg to return without doing anything
 }
 
@@ -88,8 +87,8 @@ bool tt::AssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFu
 		return false;
 	}
 
-	if (tt::hwndParent && IsWindow(tt::hwndParent))
-		SendMessage(tt::hwndParent, WM_CLOSE, 0, 0);	// attempt to give the application window a graceful way to shut down
+	if (tt::hwndMsgBoxParent && IsWindow(tt::hwndMsgBoxParent))
+		SendMessage(tt::hwndMsgBoxParent, WM_CLOSE, 0, 0);	// attempt to give the application window a graceful way to shut down
 
 	crtAssert.Unlock();
 	ExitProcess((UINT) -1);
@@ -116,7 +115,7 @@ bool tt::AssertionMsg(const wchar_t* pwszMsg, const char* pszFile, const char* p
 	crtAssert.Lock();
 	bool bResult;
 	{	// use a brace so that cszMsg gets deleted before we release the critical section
-		ttString cszMsg;
+		ttCStr cszMsg;
 
 		// We special case a null or empty pszMsg -- ttASSERT_NONEMPTY(ptr) takes advantage of this
 
@@ -148,10 +147,10 @@ void _cdecl tt::CATCH_HANDLER(const char* pszFormat, ...)
 	if (!pszFormat)
 		return;
 
-	ttStr strMsg;
+	ttCStr strMsg;
 	va_list argList;
 	va_start(argList, pszFormat);
-	tt::vprintf(&strMsg.m_psz, pszFormat, argList);
+	tt::vprintf(strMsg.getPPtr(), pszFormat, argList);
 	va_end(argList);
 
 #ifdef _WINDOWS_
@@ -163,8 +162,8 @@ void _cdecl tt::CATCH_HANDLER(const char* pszFormat, ...)
 		return;
 	}
 	else if (answer != IDIGNORE) {
-		if (tt::hwndParent && IsWindow(tt::hwndParent))
-			SendMessage(tt::hwndParent, WM_CLOSE, 0, 0);	// attempt to give the application window a graceful way to shut down
+		if (tt::hwndMsgBoxParent && IsWindow(tt::hwndMsgBoxParent))
+			SendMessage(tt::hwndMsgBoxParent, WM_CLOSE, 0, 0);	// attempt to give the application window a graceful way to shut down
 		ExitProcess((UINT) -1);
 	}
 
@@ -197,7 +196,7 @@ void tt::doReportLastError(const char* pszFile, const char* pszFunc, int line)
 DWORD tt::CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc, int line)
 {
 	if (::GetDlgItem(hwnd, id) == NULL) {
-		ttString cszMsg;
+		ttCStr cszMsg;
 		cszMsg.printf("Invalid dialog control id: %s (%u)", pszID, id);
 		tt::AssertionMsg(cszMsg, pszFile, pszFunc, line);
 	}

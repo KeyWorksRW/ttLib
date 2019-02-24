@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttTime
+// Name:		ttCTime
 // Purpose:		Class for handling a Windows SYSTEMTIME or FILETIME structure
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
@@ -12,19 +12,19 @@
 #define __TTLIB_KTIME_H__
 
 #ifndef _WINDOWS_
-	#error ttTime can only be used when building for Windows. Use wxWidgets file-io for cross-platform functionality
+	#error ttCTime can only be used when building for Windows. Use wxWidgets file-io for cross-platform functionality
 #endif
 
-#include "ttstring.h"	// ttString
+#include "ttstr.h"	// ttCStr
 
 // This is a header-only class.
 
-class ttTime
+class ttCTime
 {
 public:
-	ttTime() { GetLocalTime(); }
-	ttTime(FILETIME* pftm, bool bLocalTime = false) { ttASSERT(pftm); ConvertFileTime(pftm, bLocalTime); }	// Copies the file time into a SYSTEMTIME structure
-	~ttTime() { }
+	ttCTime() { GetLocalTime(); }
+	ttCTime(FILETIME* pftm, bool bLocalTime = false) { ttASSERT(pftm); ConvertFileTime(pftm, bLocalTime); }	// Copies the file time into a SYSTEMTIME structure
+	~ttCTime() { }
 
 	int GetYear() const { return (int) m_tm.wYear; }
 	int GetMonth() const { return (int) m_tm.wMonth; }	   // month of year (1 = Jan)
@@ -82,10 +82,10 @@ protected:
 
 	// We keep a copy of each format in case we're called multiple times in a printf() call
 
-	ttString m_cszDate;
-	ttString m_cszTime;
-	ttString m_cszFull;
-	ttString m_cszShort;
+	ttCStr m_cszDate;
+	ttCStr m_cszTime;
+	ttCStr m_cszFull;
+	ttCStr m_cszShort;
 };
 
 #endif	// __TTLIB_KTIME_H__

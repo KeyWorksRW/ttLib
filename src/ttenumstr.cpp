@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttEnumStr
+// Name:		ttCEnumStr
 // Purpose:		Enumerate through substrings in a string
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2018-2019 KeyWorks Software (Ralph Walden)
@@ -8,16 +8,16 @@
 
 #include "pch.h"
 
-#include "../include/ttdebug.h"	// ASSERTs
-#include "../include/enumstr.h"
+#include "../include/ttdebug.h" 	// ttASSERT macros
+#include "../include/ttenumstr.h"	// ttCEnumStr
 
-ttEnumStr::ttEnumStr()
+ttCEnumStr::ttCEnumStr()
 {
 	m_pszCur = nullptr;
 	m_pszEnd = nullptr;
 }
 
-ttEnumStr::ttEnumStr(const char* psz, char chSeparator)
+ttCEnumStr::ttCEnumStr(const char* psz, char chSeparator)
 {
 	if (psz)
 		m_csz = psz;
@@ -26,9 +26,9 @@ ttEnumStr::ttEnumStr(const char* psz, char chSeparator)
 	ResetEnum(chSeparator);
 }
 
-void ttEnumStr::ResetEnum(char chSeparator)
+void ttCEnumStr::ResetEnum(char chSeparator)
 {
-	if (m_csz.isempty()) {
+	if (m_csz.isEmpty()) {
 		m_pszCur = nullptr;
 		m_pszEnd = nullptr;
 		return;
@@ -42,7 +42,7 @@ void ttEnumStr::ResetEnum(char chSeparator)
 	m_pszEnd = nullptr;
 }
 
-void ttEnumStr::SetNewStr(const char* psz, char chSeparator)
+void ttCEnumStr::SetNewStr(const char* psz, char chSeparator)
 {
 	if (psz)
 		m_csz = psz;
@@ -53,9 +53,9 @@ void ttEnumStr::SetNewStr(const char* psz, char chSeparator)
 	ResetEnum(chSeparator);
 }
 
-bool ttEnumStr::Enum(const char** ppszCurrent)
+bool ttCEnumStr::Enum(const char** ppszCurrent)
 {
-	ttASSERT_MSG(!m_csz.isnull(), "Calling Enum() without a valid master string (ttEnumStr(nullptr) or SetNewStr(nullptr))!");
+	ttASSERT_MSG(!m_csz.isnull(), "Calling Enum() without a valid master string (ttCEnumStr(nullptr) or SetNewStr(nullptr))!");
 	if (m_csz.isnull()) {
 		if (ppszCurrent)
 			*ppszCurrent = nullptr;
@@ -64,7 +64,7 @@ bool ttEnumStr::Enum(const char** ppszCurrent)
 
 	if (m_pszCur == nullptr) {	// means we haven't been called before, or ResetEnum() was called to reset
 		m_pszCur = m_csz;
-		m_pszEnd = tt::findchr(m_pszCur, m_chSeparator);
+		m_pszEnd = tt::findChar(m_pszCur, m_chSeparator);
 		if (m_pszEnd)
 			*m_pszEnd = 0;
 		if (ppszCurrent)
@@ -80,8 +80,8 @@ bool ttEnumStr::Enum(const char** ppszCurrent)
 		else {
 			*m_pszEnd = m_chSeparator;
 			do {	// handle doubled characters, or characters with only space between them (";;" or "; ;")
-				m_pszCur = tt::nextnonspace(m_pszEnd + 1);
-				m_pszEnd = tt::findchr(m_pszCur, m_chSeparator);
+				m_pszCur = tt::findNonSpace(m_pszEnd + 1);
+				m_pszEnd = tt::findChar(m_pszCur, m_chSeparator);
 			} while(*m_pszCur == m_chSeparator && m_pszEnd);
 
 			if (*m_pszCur == m_chSeparator) {	// means we got to the end with no more separators

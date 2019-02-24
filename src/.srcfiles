@@ -1,39 +1,39 @@
 Options:
-  Project:     ttLib        # project target name
-  PCH:         pch.h        # "none" or name of header file to use for precompilation
-  optimize:    space        # speed or space (default)
-  exe_type:    lib          # [window | console | lib | dll]
-  64Bit:       true         # create 64-bit project as well as 32-bit project
-  bit_suffix:  true         # add "64" to the end of the project name (e.g., ttLib64.lib) for 64-bit builds
-  WarnLevel:   4            # compiler warning level (1-4) (default if not specified is 4)
-  TargetDirs:  ../lib       # both 32-bit and 64-bit libaries will be built here
+	Project:	 ttLib		  # project target name
+	PCH:		 pch.h		  # precompiled header
+	optimize:	 space		  # speed or space (default)
+	exe_type:	 lib		  # [window | console | lib | dll]
+	64Bit:		 true		  # create 64-bit project as well as 32-bit project
+	bit_suffix:	 true		  # add "64" to the end of the project name (e.g., ttLib64.lib) for 64-bit builds
+	WarnLevel:	 4			  # compiler warning level (1-4) (default if not specified is 4)
+	TargetDirs:	 ../lib		  # both 32-bit and 64-bit libaries will be built here
 
 Files:
-  pch.cpp
+	pch.cpp
 
-  basethread.cpp		# ttBaseThread class
-  enumstr.cpp			# ttEnumStr class
-  filedir.cpp			# file and directory handling
-  hashpair.cpp			# ttHashPair
-  misc.cpp				# miscellaneous functions
-  multithread.cpp		# ttMultiThrd class
-  strfuncs.cpp			# string handling and ttStr class
-  ttdebug.cpp			# debug and assertion handling
-  ttdirdlg.cpp			# dialog for selecting a directory
-  ttfile.cpp			# ttFile class
-  ttheap.cpp			# ttHeap class
-  ttlist.cpp			# ttList class
-  ttprintf.cpp			# printf
-  ttstring.cpp			# ttString class
-  ttwstring.cpp			# ttWString class
-  ttxml.cpp				# ttXML class
+	filedir.cpp			# file and directory handling
+	misc.cpp			# miscellaneous functions
+	strfuncs.cpp		# string handling and ttStr class
+	ttbasethread.cpp	# ttCBaseThread class
+	ttdebug.cpp			# debug and assertion handling
+	ttdirdlg.cpp		# dialog for selecting a directory
+	ttenumstr.cpp		# ttCEnumStr class
+	ttfile.cpp			# ttCFile class
+	tthashpair.cpp		# ttCHashPair
+	ttheap.cpp			# ttCHeap class
+	ttlist.cpp			# ttCList class
+	ttmultithread.cpp	# ttCMultiThrd class
+	ttprintf.cpp		# printf
+	ttstr.cpp			# ttCStr class
+	ttwstr.cpp			# ttCWStr class
+	ttxml.cpp			# ttCParseXML class
 
 # _WINDOWS_ only files
 
-  filedlg.cpp
-  multibtn.cpp
-  shadebtn.cpp
-  ttdib.cpp
-  ttdlg.cpp
-  ttwin.cpp
-  winmisc.cpp
+	ttdib.cpp
+	ttdlg.cpp
+	ttfiledlg.cpp
+	ttmultibtn.cpp
+	ttshadebtn.cpp
+	ttwin.cpp
+	winmisc.cpp

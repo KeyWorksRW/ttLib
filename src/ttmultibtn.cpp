@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttMultiBtn
-// Purpose:		Class for applying ttShadeBtn to every button in a dialog
+// Name:		ttCMultiBtn
+// Purpose:		Class for applying ttCShadeBtn to every button in a dialog
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see LICENSE)
@@ -12,16 +12,16 @@
 	#error This code will only work on Windows
 #endif
 
-#include "../include/multibtn.h"	// ttMultiBtn
+#include "../include/ttmultibtn.h"	// ttCMultiBtn
 
 BOOL WINAPI ttpriv::EnumBtnProc(HWND hwnd, LPARAM lval)
 {
 	char szClass[MAX_PATH];
 	if ((GetWindowLong(hwnd, GWL_STYLE) & 0x0f) < BS_CHECKBOX) {
 		GetClassName(hwnd, szClass, sizeof(szClass));
-		if (tt::samestri(szClass, "Button")) {
-			ttMultiBtn* pMultiBtn = (ttMultiBtn*) lval;
-			ttShadeBtn* pBtn = new ttShadeBtn;
+		if (tt::isSameStri(szClass, "Button")) {
+			ttCMultiBtn* pMultiBtn = (ttCMultiBtn*) lval;
+			ttCShadeBtn* pBtn = new ttCShadeBtn;
 			pBtn->SubClass(hwnd);
 			pBtn->SetShade(pMultiBtn->m_btnShade);
 			pMultiBtn->m_aBtns.Add(pBtn);
@@ -30,20 +30,20 @@ BOOL WINAPI ttpriv::EnumBtnProc(HWND hwnd, LPARAM lval)
 	return TRUE;
 }
 
-ttMultiBtn::~ttMultiBtn()
+ttCMultiBtn::~ttCMultiBtn()
 {
 	for (size_t i = 0; i < m_aBtns.GetCount(); i++) {
 		delete m_aBtns[i];
 	}
 }
 
-void ttMultiBtn::Initialize(HWND hwndParent, ttShadeBtn::BTN_SHADE shade)
+void ttCMultiBtn::Initialize(HWND hwndParent, ttCShadeBtn::BTN_SHADE shade)
 {
 	m_btnShade = shade;
 	EnumChildWindows(hwndParent, (WNDENUMPROC) ttpriv::EnumBtnProc, (LPARAM) this);
 }
 
-void ttMultiBtn::SetIcon(int idBtn, int idIcon, UINT nIconAlign)
+void ttCMultiBtn::SetIcon(int idBtn, int idIcon, UINT nIconAlign)
 {
 	ttASSERT_MSG(m_aBtns.GetCount(), "Calling SetIcon without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
 
@@ -61,7 +61,7 @@ void ttMultiBtn::SetIcon(int idBtn, int idIcon, UINT nIconAlign)
 	}
 }
 
-ttShadeBtn* ttMultiBtn::FindShadeBtn(int id)
+ttCShadeBtn* ttCMultiBtn::FindShadeBtn(int id)
 {
 	ttASSERT_MSG(m_aBtns.GetCount(), "Calling FindShadeBtn without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
 

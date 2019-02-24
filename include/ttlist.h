@@ -1,12 +1,12 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttList, ttDblList
+// Name:		ttCList, ttCDblList
 // Purpose:		String arrays based off a private heap
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2005-2018 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
-// All the classes here use their own private heap. The advantage of this approach is that none of the individual allocations need to be freed -- the entire heap is destroyed
+// All the classes here use their own private heap. The advantage of this approach is that none of the individual allocations need to be FreeAllocd -- the entire heap is destroyed
 // when the class destructor is called. By default, all the classes use a non-serialized private heap -- which means multiple threads need to use a crit section if accessing
 // a shared class.
 
@@ -15,15 +15,15 @@
 #ifndef __TTLIB_STRLIST_H__
 #define __TTLIB_STRLIST_H__
 
-#include "ttheap.h"		// ttHeap
-#include "hashpair.h"	// ttHashPair
-#include "ttstring.h"	// ttString
+#include "ttheap.h"		// ttCHeap
+#include "tthashpair.h"	// ttHashPair
+#include "ttstr.h"	// ttCStr
 
-class ttList : public ttHeap
+class ttCList : public ttCHeap
 {
 public:
-	ttList(bool bSerialize = true);		// true makes the class thread safe
-	ttList(HANDLE hHeap);
+	ttCList(bool bSerialize = true);		// true makes the class thread safe
+	ttCList(HANDLE hHeap);
 
 	enum {
 		FLG_ADD_DUPLICATES	= 1 << 0,	// add the string even if it has already been added
@@ -65,7 +65,7 @@ public:
 	/*
 		Example usage:
 
-			ttList lst;
+			ttCList lst;
 			// ... add a bunch of strings
 			lst.BeginEnum();
 			while(lst.Enum())
@@ -96,7 +96,7 @@ protected:
 	void qsorti(ptrdiff_t low, ptrdiff_t high);
 	void qsortCol(ptrdiff_t low, ptrdiff_t high);
 
-	char* NormalizeString(const char* pszFileName, ttString& cszKey) const;
+	char* NormalizeString(const char* pszFileName, ttCStr& cszKey) const;
 
 	bool isNoDuplicates() const { return (m_flags & FLG_ADD_DUPLICATES) ? false : true; }
 
@@ -108,25 +108,25 @@ protected:
 	size_t m_cAllocated;
 	char** m_aptrs;
 
-	ttString m_cszKey;
+	ttCStr m_cszKey;
 	size_t m_flags;
 	size_t m_SortColumn;
 
-	ttHashPair m_HashPair;
+	ttCHashPair m_HashPair;
 	bool   m_bSerialize;
 };
 
-// Holds a pair of strings, referenced as Key and Val. Note that unlike ttList, the default behaviour is to allow
+// Holds a pair of strings, referenced as Key and Val. Note that unlike ttCList, the default behaviour is to allow
 // duplicate keys
 
-class ttDblList : public ttHeap
+class ttCDblList : public ttCHeap
 {
 public:
 	void IgnoreCase() { m_bIgnoreCase = true; }	// ignore case when searching for keys or values
 	void PreventDuplicateKeys();				// key won't be added if it already exists
 
-	ttDblList(bool bSerialize = false);
-	~ttDblList();
+	ttCDblList(bool bSerialize = false);
+	~ttCDblList();
 
 	void Add(const char* pszKey, const char* pszVal);
 
@@ -174,12 +174,12 @@ protected:
 	bool m_bSerialize;
 	bool m_bIgnoreCase;
 
-	ttHashPair* m_pHashLookup;
+	ttCHashPair* m_pHashLookup;
 };
 
-// Similar to ttDblList only the val is an array of ptrdiff_t instead of a char*
+// Similar to ttCDblList only the val is an array of ptrdiff_t instead of a char*
 
-class ttStrIntList : public ttHeap
+class ttCStrIntList : public ttCHeap
 {
 public:
 	typedef struct {
@@ -187,7 +187,7 @@ public:
 		ptrdiff_t* pVal;
 	} DBLPTRS;
 
-	ttStrIntList(bool bSerialize = false);
+	ttCStrIntList(bool bSerialize = false);
 
 	/*
 		If the string already exists, but the Val doesn't, Add() will add the Val to the array of Vals
@@ -219,7 +219,7 @@ public:
 		You can enumerate through all the numbers assigned to a string using code
 		similar to the following:
 
-		ttStrIntList strList;
+		ttCStrIntList strList;
 		// add some string/number pairs
 		if (strList.BeginEnum("my key")) {
 			ptrdiff_t num;

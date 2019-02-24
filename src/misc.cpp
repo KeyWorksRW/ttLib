@@ -9,7 +9,7 @@
 #include "pch.h"
 
 #include "../include/ttdebug.h" 	// for ttASSERTS
-#include "../include/ttstring.h"	// ttString
+#include "../include/ttstr.h"	// ttCStr
 
 size_t tt::HashFromSz(const char* psz)
 {
@@ -54,7 +54,7 @@ size_t tt::HashFromSz(const wchar_t* psz)
 
 size_t tt::HashFromURL(const char* pszURL)
 {
-	ttString csz(pszURL);
+	ttCStr csz(pszURL);
 	tt::BackslashToForwardslash(csz);
 	csz.MakeLower();
 	return tt::HashFromSz(csz);
@@ -62,7 +62,7 @@ size_t tt::HashFromURL(const char* pszURL)
 
 size_t tt::HashFromURL(const wchar_t* pszURL)
 {
-	ttString csz(pszURL);
+	ttCStr csz(pszURL);
 	tt::BackslashToForwardslash(csz);
 	csz.MakeLower();
 	return HashFromSz(csz);

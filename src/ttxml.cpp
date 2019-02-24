@@ -6,7 +6,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 //////////////// Derivative work ////////////////////////////////////////////
-// Name:		CKeyXML, ttXMLBranch
+// Name:		CKeyXML, ttCXMLBranch
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2003-2019 KeyWorks Software (Ralph Walden)
 // Licence:		Apache License (see ../LICENSE)
@@ -15,14 +15,14 @@
 #include "pch.h"
 
 #include "../include/ttxml.h"
-#include "../include/ttfile.h"	// ttFile
-#include "../include/ttmem.h"	// ttMem, ttTMem
+#include "../include/ttfile.h"	// ttCFile
+#include "../include/ttmem.h"	// ttMem, ttCTMem
 
 #pragma warning(disable: 4996)	// 'function' : function may be unsafe
 
 #define GROW_SIZE 1 // Default child element & attribute space growth increment.
 
-inline bool IsSpace(char c) { return (c > -1 && c < '!'); }		// REVIEW: [randalphwa - 10/1/2018] should this be changed to IsWhiteSpace?
+inline bool isSpace(char c) { return (c > -1 && c < '!'); }		// REVIEW: [randalphwa - 10/1/2018] should this be changed to IsWhiteSpace?
 
 using namespace tt;
 
@@ -162,26 +162,26 @@ namespace {
 	};
 } // end of anonymous namespace
 
-HTML_ELEMENT ttXML::ParseElementTag(const char* pszName, const char* pszCurLoc, bool bEndTag)
+HTML_ELEMENT ttCParseXML::ParseElementTag(const char* pszName, const char* pszCurLoc, bool bEndTag)
 {
 	const ELEMENT_PAIRS* pElem = aElementPairs;
 	while (pElem->pszElementName) {
-		if (tt::samestri(pszName, pElem->pszElementName))
+		if (tt::isSameStri(pszName, pElem->pszElementName))
 			return pElem->element;
 		pElem++;
 	}
 
-	if (tt::samestri(pszName, "MSHelp:")) {
+	if (tt::isSameStri(pszName, "MSHelp:")) {
 		return ELEMENT_MSH_TAG;
 	}
 
 	// The tag name is unknown. We look for a close tag with the same name, and if found, we assume this is an XML tag.
 
-	if (pszCurLoc && tt::strlen(pszName) < 254) {
+	if (pszCurLoc && tt::strLen(pszName) < 254) {
 		char szClose[256];
 		szClose[0] = '\\';
-		tt::strcpy(szClose, pszName);
-		if (tt::stristr(pszCurLoc, szClose)) {
+		tt::strCopy(szClose, pszName);
+		if (tt::findStri(pszCurLoc, szClose)) {
 			if (!m_lstXmlTags.Find(pszName)) {
 				m_lstXmlTags.Add(pszName);
 			}
@@ -206,8 +206,8 @@ bool StrWtrim(char** s)
 	while(**s > 0 && **s < '!') // skip over leading whitespace
 		++(*s);
 
-	char* pszEnd = *s + (tt::strlen(*s) - 1);
-	while (IsSpace(*pszEnd) && pszEnd > *s)
+	char* pszEnd = *s + (tt::strLen(*s) - 1);
+	while (isSpace(*pszEnd) && pszEnd > *s)
 		pszEnd--;
 	pszEnd++;
 	*pszEnd = 0;
@@ -226,8 +226,8 @@ void _StrWnorm(char** s)
 
 	// Now we "normalize" by combining multiple spaces into a single space
 
-	size_t n = tt::strbyte(*s);
-	ttTMem<char*> pszNorm(sizeof(char) * n);
+	size_t n = tt::strByteLen(*s);
+	ttCTMem<char*> pszNorm(sizeof(char) * n);
 	size_t j = 1;
 	pszNorm[0] = (*s)[0];
 	n--;	// ignore zero-terminating character
@@ -243,11 +243,11 @@ void _StrWnorm(char** s)
 	}
 	if (j < n) {	// Normalization buffer is actually different then input.
 		pszNorm[j] = 0;
-		tt::strcpy(*s, pszNorm); // Copy it back to input.
+		tt::strCopy(*s, pszNorm); // Copy it back to input.
 	}
 }
 
-ttXML::ttXML()
+ttCParseXML::ttCParseXML()
 {
 	m_pRoot = NULL;
 	m_uOptions = PARSE_DEFAULT;
@@ -257,28 +257,28 @@ ttXML::ttXML()
 	m_pBodyBranch = NULL;
 }
 
-ttXMLBranch* ttXML::GraftBranch(ttXMLBranch* pParent, XMLENTITY eType)
+ttCXMLBranch* ttCParseXML::GraftBranch(ttCXMLBranch* pParent, XMLENTITY eType)
 {
 	ttASSERT(pParent);
 	if (!pParent)
 		return NULL; // Must have a parent.
 	if (pParent->cChildren == pParent->cChildSpace) { //Out of pointer space.
-		ttXMLBranch** t = (ttXMLBranch**) ttRealloc(pParent->aChildren, sizeof(ttXMLBranch*) * (pParent->cChildSpace + GROW_SIZE)); // Grow pointer space.
+		ttCXMLBranch** t = (ttCXMLBranch**) ttRealloc(pParent->aChildren, sizeof(ttCXMLBranch*) * (pParent->cChildSpace + GROW_SIZE)); // Grow pointer space.
 		if (t) { //Reallocation succeeded.
 			pParent->aChildren = t;
 			pParent->cChildSpace += GROW_SIZE; //Update the available space.
 		}
 	}
-	ttXMLBranch* pChild = NewBranch(eType); // Allocate a new child.
+	ttCXMLBranch* pChild = NewBranch(eType); // Allocate a new child.
 	pChild->parent = pParent; // Set it's parent pointer.
 	pParent->aChildren[pParent->cChildren] = pChild; // Set the parent's child pointer.
 	pParent->cChildren++; //One more child.
 	return pChild;
 }
 
-ttXMLBranch* ttXML::NewBranch(XMLENTITY eType)
+ttCXMLBranch* ttCParseXML::NewBranch(XMLENTITY eType)
 {
-	ttXMLBranch* p = (ttXMLBranch*) ttCalloc(sizeof(ttXMLBranch)); // Allocate one branch.
+	ttCXMLBranch* p = (ttCXMLBranch*) ttCalloc(sizeof(ttCXMLBranch)); // Allocate one branch.
 	p->pKeyXML = this;
 	p->type = eType; // Set the desired type.
 	p->element = ELEMENT_UNKNOWN;
@@ -295,13 +295,13 @@ ttXMLBranch* ttXML::NewBranch(XMLENTITY eType)
 			eType == ENTITY_ELEMENT || //Only these will have children.
 			eType == ENTITY_DOCTYPE ||
 			eType == ENTITY_ROOT) {
-		p->aChildren = (ttXMLBranch**) ttMalloc(sizeof(ttXMLBranch*));	// Allocate one child.
+		p->aChildren = (ttCXMLBranch**) ttMalloc(sizeof(ttCXMLBranch*));	// Allocate one child.
 		p->cChildSpace = 1;
 	}
 	return p;
 }
 
-XMLATTR* ttXML::AddAttribute(ttXMLBranch* pBranch, LONG lGrow)
+XMLATTR* ttCParseXML::AddAttribute(ttCXMLBranch* pBranch, LONG lGrow)
 {
 	ttASSERT(pBranch);
 	if (!pBranch)
@@ -310,7 +310,7 @@ XMLATTR* ttXML::AddAttribute(ttXMLBranch* pBranch, LONG lGrow)
 	if (!a)
 		return NULL;
 	if (pBranch->cAttributes == pBranch->cAttributeSpace) { // Out of space, so grow.
-		XMLATTR** t = (XMLATTR**) ttRealloc(pBranch->aAttributes, sizeof(ttXMLBranch*) *(pBranch->cAttributeSpace + lGrow));
+		XMLATTR** t = (XMLATTR**) ttRealloc(pBranch->aAttributes, sizeof(ttCXMLBranch*) *(pBranch->cAttributeSpace + lGrow));
 		if (t) {
 			pBranch->aAttributes = t;
 			pBranch->cAttributeSpace += lGrow;
@@ -321,7 +321,7 @@ XMLATTR* ttXML::AddAttribute(ttXMLBranch* pBranch, LONG lGrow)
 	return a;
 }
 
-void ttXML::AllocateStringBuffers(ttXMLBranch* pBranch)
+void ttCParseXML::AllocateStringBuffers(ttCXMLBranch* pBranch)
 {
 	if (!pBranch) {
 		pBranch = GetRootBranch();
@@ -375,9 +375,9 @@ void ttXML::AllocateStringBuffers(ttXMLBranch* pBranch)
 	}
 }
 
-HRESULT ttXML::SaveXmlFile(const char* pszFileName)
+HRESULT ttCParseXML::SaveXmlFile(const char* pszFileName)
 {
-	ttFile kf;
+	ttCFile kf;
 	WriteBranch(NULL, kf, 0);
 	if (kf.WriteFile(pszFileName))
 		return S_OK;
@@ -387,7 +387,7 @@ HRESULT ttXML::SaveXmlFile(const char* pszFileName)
 
 #pragma warning(disable : 4062) // switch doesn't handle all enumerated types
 
-HRESULT ttXML::WriteBranch(ttXMLBranch* pBranch, ttFile& kf, size_t iIndent)
+HRESULT ttCParseXML::WriteBranch(ttCXMLBranch* pBranch, ttCFile& kf, size_t iIndent)
 {
 	if (!pBranch) {
 		pBranch = GetRootBranch();
@@ -418,9 +418,9 @@ HRESULT ttXML::WriteBranch(ttXMLBranch* pBranch, ttFile& kf, size_t iIndent)
 				for (size_t iAttribute = 0; iAttribute < pBranch->GetAttributesCount(); iAttribute++) {
 					XMLATTR* pAttr = pBranch->GetAttributeAt(iAttribute);
 					if (pAttr->pszName) {
-						cbAttrs += tt::strlen(pAttr->pszName);
+						cbAttrs += tt::strLen(pAttr->pszName);
 						if (pAttr->pszValue)
-							cbAttrs += tt::strlen(pAttr->pszValue);
+							cbAttrs += tt::strLen(pAttr->pszValue);
 						cbAttrs += 2;	// include room for spacing
 					}
 				}
@@ -445,7 +445,7 @@ HRESULT ttXML::WriteBranch(ttXMLBranch* pBranch, ttFile& kf, size_t iIndent)
 				}
 				if (pBranch->GetChildrenCount()) {
 					kf.WriteStr(">");
-					ttXMLBranch* pFirstChild = pBranch->GetChildAt(0);
+					ttCXMLBranch* pFirstChild = pBranch->GetChildAt(0);
 					if (pFirstChild->type != ENTITY_PCDATA)
 						kf.WriteEol("");
 
@@ -504,9 +504,9 @@ HRESULT ttXML::WriteBranch(ttXMLBranch* pBranch, ttFile& kf, size_t iIndent)
 	return S_OK;
 }
 
-HRESULT ttXML::SaveHtmlFile(const char* pszFileName)
+HRESULT ttCParseXML::SaveHtmlFile(const char* pszFileName)
 {
-	ttFile kf;
+	ttCFile kf;
 	WriteHtmlBranch(NULL, kf);
 	if (kf.WriteFile(pszFileName))
 		return S_OK;
@@ -514,7 +514,7 @@ HRESULT ttXML::SaveHtmlFile(const char* pszFileName)
 		return E_FAIL;
 }
 
-HRESULT ttXML::WriteHtmlBranch(ttXMLBranch* pBranch, ttFile& kf)
+HRESULT ttCParseXML::WriteHtmlBranch(ttCXMLBranch* pBranch, ttCFile& kf)
 {
 	if (!pBranch) {
 		pBranch = GetRootBranch();
@@ -523,7 +523,7 @@ HRESULT ttXML::WriteHtmlBranch(ttXMLBranch* pBranch, ttFile& kf)
 		ttASSERT(pBranch->type == ENTITY_ROOT);
 		HRESULT hr = S_OK;
 
-		if (m_cszDocType.isnonempty()) {
+		if (m_cszDocType.isNonEmpty()) {
 			kf.WriteStr(m_cszDocType);
 		}
 
@@ -557,7 +557,7 @@ HRESULT ttXML::WriteHtmlBranch(ttXMLBranch* pBranch, ttFile& kf)
 				}
 				if (pBranch->GetChildrenCount()) {
 					kf.WriteStr(">");
-					ttXMLBranch* pFirstChild = pBranch->GetChildAt(0);
+					ttCXMLBranch* pFirstChild = pBranch->GetChildAt(0);
 					if (pFirstChild->type != ENTITY_PCDATA)
 						kf.WriteEol();
 
@@ -610,16 +610,16 @@ HRESULT ttXML::WriteHtmlBranch(ttXMLBranch* pBranch, ttFile& kf)
 	return S_OK;
 }
 
-ttXMLBranch* ttXML::AddBranch(ttXMLBranch* pParent, const char* pszBranchName, XMLENTITY eType)
+ttCXMLBranch* ttCParseXML::AddBranch(ttCXMLBranch* pParent, const char* pszBranchName, XMLENTITY eType)
 {
 	ttASSERT(pParent);
 
-	ttXMLBranch* pBranch = GraftBranch(pParent, eType);
+	ttCXMLBranch* pBranch = GraftBranch(pParent, eType);
 	pBranch->pszName = ttStrdup(pszBranchName);
 	return pBranch;
 }
 
-void ttXML::AddAttribute(ttXMLBranch* pBranch, const char* pszName, const char* pszValue, size_t iGrow)
+void ttCParseXML::AddAttribute(ttCXMLBranch* pBranch, const char* pszName, const char* pszValue, size_t iGrow)
 {
 	ttASSERT(pBranch);
 	ttASSERT(pszName);
@@ -632,7 +632,7 @@ void ttXML::AddAttribute(ttXMLBranch* pBranch, const char* pszName, const char* 
 	pAttr->pszValue = ttStrdup(pszValue);
 
 	if (pBranch->cAttributes == pBranch->cAttributeSpace) { // Out of space, so grow.
-		XMLATTR** t = (XMLATTR**) ttRealloc(pBranch->aAttributes, sizeof(ttXMLBranch*) *(pBranch->cAttributeSpace + iGrow));
+		XMLATTR** t = (XMLATTR**) ttRealloc(pBranch->aAttributes, sizeof(ttCXMLBranch*) *(pBranch->cAttributeSpace + iGrow));
 		if (t) {
 			pBranch->aAttributes = t;
 			pBranch->cAttributeSpace += iGrow;
@@ -647,7 +647,7 @@ void ttXML::AddAttribute(ttXMLBranch* pBranch, const char* pszName, const char* 
 	pBranch->cAttributes++;
 }
 
-ttXMLBranch* ttXML::AddDataChild(ttXMLBranch* pParent, const char* pszName, const char* pszData)
+ttCXMLBranch* ttCParseXML::AddDataChild(ttCXMLBranch* pParent, const char* pszName, const char* pszData)
 {
 	ttASSERT(pParent);
 	ttASSERT(pszName);
@@ -655,17 +655,17 @@ ttXMLBranch* ttXML::AddDataChild(ttXMLBranch* pParent, const char* pszName, cons
 	ttASSERT(pszData);
 	ttASSERT(*pszData);
 
-	ttXMLBranch* pChild = AddBranch(pParent, pszName);
-	ttXMLBranch* pSubChild = GraftBranch(pChild, ENTITY_PCDATA);
+	ttCXMLBranch* pChild = AddBranch(pParent, pszName);
+	ttCXMLBranch* pSubChild = GraftBranch(pChild, ENTITY_PCDATA);
 	pSubChild->pszData = ttStrdup(pszData);
 	return pSubChild;
 }
 
-// Note that we do NOT free the memory for this node, since we don't have a pointer to CKeyXML that handles memory management
-// If the caller needs to free this memory, he should free the pointer to the deleted child and its attributes either before or
+// Note that we do NOT FreeAlloc the memory for this node, since we don't have a pointer to CKeyXML that handles memory management
+// If the caller needs to FreeAlloc this memory, he should FreeAlloc the pointer to the deleted child and its attributes either before or
 // after this call.
 
-bool ttXMLBranch::RemoveChildAt(size_t i)
+bool ttCXMLBranch::RemoveChildAt(size_t i)
 {
 	ttASSERT(i < cChildren);
 	if (i >= cChildren)
@@ -678,9 +678,9 @@ bool ttXMLBranch::RemoveChildAt(size_t i)
 	return false;
 }
 
-bool ttXMLBranch::ReplaceAttributeValue(ttXML* pxml, const char* pszAttribute, const char* pszNewValue) {
+bool ttCXMLBranch::ReplaceAttributeValue(ttCParseXML* pxml, const char* pszAttribute, const char* pszNewValue) {
 	for (size_t i = 0; i < cAttributes; i++) {
-		if (tt::samestri(pszAttribute, aAttributes[i]->pszName)) {
+		if (tt::isSameStri(pszAttribute, aAttributes[i]->pszName)) {
 			if (pxml->isAllocatedStrings())
 				pKeyXML->ttFree(aAttributes[i]->pszValue);
 			aAttributes[i]->pszValue = pKeyXML->ttStrdup(pszNewValue);
@@ -690,7 +690,7 @@ bool ttXMLBranch::ReplaceAttributeValue(ttXML* pxml, const char* pszAttribute, c
 	return false;
 }
 
-HRESULT ttXML::ParseXmlFile(const char* pszFile)
+HRESULT ttCParseXML::ParseXmlFile(const char* pszFile)
 {
 	ttASSERT_NONEMPTY(pszFile);
 
@@ -708,7 +708,7 @@ HRESULT ttXML::ParseXmlFile(const char* pszFile)
 	return S_OK;
 }
 
-HRESULT ttXML::ParseHtmlFile(const char* pszFile)
+HRESULT ttCParseXML::ParseHtmlFile(const char* pszFile)
 {
 	ttASSERT_NONEMPTY(pszFile);
 
@@ -726,7 +726,7 @@ HRESULT ttXML::ParseHtmlFile(const char* pszFile)
 	return S_OK;
 }
 
-size_t ttXMLBranch::GetSiblingNumber()
+size_t ttCXMLBranch::GetSiblingNumber()
 {
 	if (!parent)
 		return 0;
@@ -739,14 +739,14 @@ size_t ttXMLBranch::GetSiblingNumber()
 	return 0;
 }
 
-ttXMLBranch* ttXMLBranch::FindFirstElement(const char* pszElement)
+ttCXMLBranch* ttCXMLBranch::FindFirstElement(const char* pszElement)
 {
 	if (cChildren > 0) {
 		for (nextChild = 0; nextChild < cChildren; ++nextChild) {
-			if (aChildren[nextChild]->pszName && tt::samestri(aChildren[nextChild]->pszName, pszElement))
+			if (aChildren[nextChild]->pszName && tt::isSameStri(aChildren[nextChild]->pszName, pszElement))
 				return aChildren[nextChild];
 			else if (aChildren[nextChild]->cChildren) {
-				ttXMLBranch* pBranch = aChildren[nextChild]->FindFirstElement(pszElement);
+				ttCXMLBranch* pBranch = aChildren[nextChild]->FindFirstElement(pszElement);
 				if (pBranch)
 					return pBranch;
 			}
@@ -755,13 +755,13 @@ ttXMLBranch* ttXMLBranch::FindFirstElement(const char* pszElement)
 	return nullptr;
 }
 
-ttXMLBranch* ttXMLBranch::FindNextElement(const char* pszElement)
+ttCXMLBranch* ttCXMLBranch::FindNextElement(const char* pszElement)
 {
 	for (++nextChild; nextChild < cChildren; ++nextChild) {
-		if (aChildren[nextChild]->pszName && tt::samestri(aChildren[nextChild]->pszName, pszElement))
+		if (aChildren[nextChild]->pszName && tt::isSameStri(aChildren[nextChild]->pszName, pszElement))
 			return aChildren[nextChild];
 		else if (aChildren[nextChild]->cChildren) {
-			ttXMLBranch* pBranch = aChildren[nextChild]->FindFirstElement(pszElement);
+			ttCXMLBranch* pBranch = aChildren[nextChild]->FindFirstElement(pszElement);
 			if (pBranch)
 				return pBranch;
 		}
@@ -769,14 +769,14 @@ ttXMLBranch* ttXMLBranch::FindNextElement(const char* pszElement)
 	return nullptr;
 }
 
-ttXMLBranch* ttXMLBranch::FindFirstElement(HTML_ELEMENT elementSrch)
+ttCXMLBranch* ttCXMLBranch::FindFirstElement(HTML_ELEMENT elementSrch)
 {
 	if (cChildren > 0) {
 		for (nextChild = 0; nextChild < cChildren; ++nextChild) {
 			if (aChildren[nextChild]->element == elementSrch)
 				return aChildren[nextChild];
 			else if (aChildren[nextChild]->cChildren) {
-				ttXMLBranch* pBranch = aChildren[nextChild]->FindFirstElement(elementSrch);
+				ttCXMLBranch* pBranch = aChildren[nextChild]->FindFirstElement(elementSrch);
 				if (pBranch)
 					return pBranch;
 			}
@@ -785,13 +785,13 @@ ttXMLBranch* ttXMLBranch::FindFirstElement(HTML_ELEMENT elementSrch)
 	return nullptr;
 }
 
-ttXMLBranch* ttXMLBranch::FindNextElement(HTML_ELEMENT Element)
+ttCXMLBranch* ttCXMLBranch::FindNextElement(HTML_ELEMENT Element)
 {
 	for (++nextChild; nextChild < cChildren; ++nextChild) {
 		if (aChildren[nextChild]->element == Element)
 			return aChildren[nextChild];
 		else if (aChildren[nextChild]->cChildren) {
-			ttXMLBranch* pBranch = aChildren[nextChild]->FindFirstElement(Element);
+			ttCXMLBranch* pBranch = aChildren[nextChild]->FindFirstElement(Element);
 			if (pBranch)
 				return pBranch;
 		}
@@ -802,7 +802,7 @@ ttXMLBranch* ttXMLBranch::FindNextElement(HTML_ELEMENT Element)
 // Parse through all the children to see if any of them have the named attribute (pszAttribute). If pszValue is non-null,
 // then if the attribute is found it must also have the same value as pszValue.
 
-ttXMLBranch* ttXMLBranch::FindFirstAttribute(const char* pszAttribute, const char* pszValue)
+ttCXMLBranch* ttCXMLBranch::FindFirstAttribute(const char* pszAttribute, const char* pszValue)
 {
 	ttASSERT_NONEMPTY(pszAttribute);
 
@@ -816,13 +816,13 @@ ttXMLBranch* ttXMLBranch::FindFirstAttribute(const char* pszAttribute, const cha
 				if (pszAttrVal) {
 					if (!pszValue)
 						return aChildren[i];
-					else if (tt::samestri(pszAttrVal, pszValue))
+					else if (tt::isSameStri(pszAttrVal, pszValue))
 						return aChildren[i];
 				}
 			}
 
 			if (aChildren[i]->cChildren) {
-				ttXMLBranch* pBranch = aChildren[i]->FindFirstAttribute(pszAttribute, pszValue);
+				ttCXMLBranch* pBranch = aChildren[i]->FindFirstAttribute(pszAttribute, pszValue);
 				if (pBranch)
 					return pBranch; //Found.
 			}
@@ -831,7 +831,7 @@ ttXMLBranch* ttXMLBranch::FindFirstAttribute(const char* pszAttribute, const cha
 	return nullptr;
 }
 
-const char* ttXMLBranch::GetAttribute(const char* pszAttribute) const
+const char* ttCXMLBranch::GetAttribute(const char* pszAttribute) const
 {
 	ttASSERT(pszAttribute);
 	if (!pszAttribute)
@@ -843,7 +843,7 @@ const char* ttXMLBranch::GetAttribute(const char* pszAttribute) const
 		return NULL;
 }
 
-void ttXML::SetDocType(size_t type)
+void ttCParseXML::SetDocType(size_t type)
 {
 	switch (type) {
 		case DOCTYPE_XHTML_STRICT:
@@ -870,16 +870,16 @@ void ttXML::SetDocType(size_t type)
 
 #define GROW_SIZE 1 // Default child element & attribute space growth increment.
 
-inline bool IsSymbol(char c) { return (tt::isalpha(c) || tt::isdigit(c) || c=='_' || c==':' || c=='-' || c=='.'); }
+inline bool IsSymbol(char c) { return (tt::isAlpha(c) || tt::isDigit(c) || c=='_' || c==':' || c=='-' || c=='.'); }
 inline bool IsEnter(char c) { return (c == '<'); }
 inline bool IsLeave(char c) { return (c == '>'); }
 inline bool IsDash(char c) { return (c=='-'); }
-inline bool IsAttrSymbol(char c) { return (!IsSpace(c) && !IsEnter(c) && !IsLeave(c)); }
+inline bool IsAttrSymbol(char c) { return (!isSpace(c) && !IsEnter(c) && !IsLeave(c)); }
 
 inline char* SkipSymbol(char* psz) { while (IsSymbol(*psz)) psz++; return psz; }
 inline char* SkipAttrSymbol(char* psz) { while (IsAttrSymbol(*psz)) psz++; return psz; }
 
-inline bool	 IsFormatableElement(ttXMLBranch* pBranch) {
+inline bool	 IsFormatableElement(ttCXMLBranch* pBranch) {
 	if (pBranch->element == ELEMENT_PRE || pBranch->element == ELEMENT_SCRIPT)
 		return true;
 	while (pBranch->parent && pBranch->type != ENTITY_ROOT) {
@@ -903,12 +903,12 @@ inline bool	 IsFormatableElement(ttXMLBranch* pBranch) {
 #define ScanUntil(x)		{ while(*psz != 0 && !(x)) ++psz; if (!*psz) return psz; }
 #define ScanWhile(x)		{ while((x)) ++psz; if (*psz==0) return psz; }
 
-char* ttXML::ParseXmlString(char* psz, ttXMLBranch* pRoot)
+char* ttCParseXML::ParseXmlString(char* psz, ttCXMLBranch* pRoot)
 {
 	ttASSERT(psz);
 	if (!psz)
 		return psz;
-	ttXMLBranch* pBranch;
+	ttCXMLBranch* pBranch;
 
 	if (!pRoot) {
 		m_pRoot = NewBranch(ENTITY_ROOT); // Allocate a new root.
@@ -1100,7 +1100,7 @@ LOC_CLASSIFY: // What kind of element?
 										++psz;
 										if (*psz=='E') { //'<!DOCTYPE...'
 											++psz;
-											while(IsSpace(*psz))
+											while(isSpace(*psz))
 												++psz;
 											if (!*psz)
 												return psz;
@@ -1118,7 +1118,7 @@ LOC_CLASSIFY: // What kind of element?
 											*psz++ = 0;
 											if (!*psz)
 												return psz;
-											if (IsSpace(cChar))
+											if (isSpace(cChar))
 												SkipWS(); // Eat any whitespace.
 LOC_DOCTYPE_SYMBOL:
 											if (IsSymbol(*psz)) {
@@ -1207,20 +1207,20 @@ LOC_DOCTYPE_QUOTE:
 					if (!*psz)
 						return psz;
 					XMLENTITY e = ENTITY_DTD_ENTITY;
-					if (tt::samestri(pMark, "ATTLIST"))
+					if (tt::isSameStri(pMark, "ATTLIST"))
 						e = ENTITY_DTD_ATTLIST;
-					else if (tt::samestri(pMark, "ELEMENT"))
+					else if (tt::isSameStri(pMark, "ELEMENT"))
 						e = ENTITY_DTD_ELEMENT;
-					else if (tt::samestri(pMark, "NOTATION"))
+					else if (tt::isSameStri(pMark, "NOTATION"))
 						e = ENTITY_DTD_NOTATION;
 					Push(e); // Graft a new branch on the tree.
-					if (*psz != 0 && IsSpace(cChar)) {
+					if (*psz != 0 && isSpace(cChar)) {
 						SkipWS(); // Eat whitespace.
 						if (IsSymbol(*psz) || *psz =='%') {
 							pMark = psz;
 							if (*psz =='%')	{ // Could be '<!ENTITY % name' -or- '<!ENTITY %name'
 								++psz;
-								if (IsSpace(*psz)) {
+								if (isSpace(*psz)) {
 									SkipWS(); // Eat whitespace.
 									*(psz-1) ='%';
 									pBranch->pszName = (psz-1);
@@ -1235,7 +1235,7 @@ LOC_DOCTYPE_QUOTE:
 							*psz++ = 0;
 							if (!*psz)
 								return psz;
-							if (IsSpace(cChar)) {
+							if (isSpace(cChar)) {
 								SkipWS(); // Eat whitespace.
 								if (e == ENTITY_DTD_ENTITY) { // Special case; may have multiple quoted sections w/anything inside.
 									pBranch->pszData = psz; // Just store everything here.
@@ -1306,10 +1306,10 @@ LOC_ELEMENT: // Scan for & store element name.
 					Pop();
 					continue;
 				}
-				else if (!IsSpace(cChar))
+				else if (!isSpace(cChar))
 					goto LOC_PCDATA; // No attributes, so scan for PCDATA.
 				else {
-					ttASSERT(IsSpace(cChar));
+					ttASSERT(isSpace(cChar));
 					SkipWS(); // Eat any whitespace.
 LOC_ATTRIBUTE:
 					if (IsSymbol(*psz) || *psz =='%') { //<... #...
@@ -1322,7 +1322,7 @@ LOC_ATTRIBUTE:
 						*psz++ = 0;
 						if (!*psz)
 							return psz;
-						if (IsSpace(cChar))
+						if (isSpace(cChar))
 							SkipWS(); // Eat any whitespace.
 						if ((IsConnective(cChar) || IsConnective(*psz))) { //'<... #=...'
 							if (IsConnective(*psz))
@@ -1332,7 +1332,7 @@ LOC_ATTRIBUTE:
 								cChar = *psz; // Save quote char to avoid breaking on "''" -or- '""'.
 								++psz; // Step over the quote.
 								a->pszValue = psz; // Save the offset.
-								psz = tt::strchr(psz, cChar);
+								psz = tt::findChar(psz, cChar);
 								if (!psz)
 									return NULL;
 								*psz++ = 0;
@@ -1356,7 +1356,7 @@ LOC_ATTRIBUTE:
 										++psz;
 									goto LOC_PCDATA;
 								}
-								if (IsSpace(*psz)) { // This may indicate a following attribute.
+								if (isSpace(*psz)) { // This may indicate a following attribute.
 									SkipWS(); // Eat any whitespace.
 									goto LOC_ATTRIBUTE; // Go scan for additional attributes.
 								}
@@ -1484,12 +1484,12 @@ bool DoesEndTagCloseChildren(HTML_ELEMENT element) // returns true if the elemen
 		return false;
 }
 
-char* ttXML::ParseHtmlString(char* psz, ttXMLBranch* pRoot)
+char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
 {
 	ttASSERT(psz);
 	if (!psz)
 		return psz;
-	ttXMLBranch* pBranch;
+	ttCXMLBranch* pBranch;
 	bool bInScriptSection = false;
 	HTML_ELEMENT elemNew;
 
@@ -1668,9 +1668,9 @@ LOC_CLASSIFY: // What kind of element?
 					}
 					continue; // Probably a corrupted CDATA section, so just eat it.
 				}
-				else if (tt::samesubstri(psz, "DOCTYPE")) {
+				else if (tt::isSameSubStri(psz, "DOCTYPE")) {
 					psz += sizeof("DOCTYPE");
-					while(IsSpace(*psz))
+					while(isSpace(*psz))
 						++psz;
 					if (!*psz)
 						return psz;
@@ -1685,7 +1685,7 @@ LOC_CLASSIFY: // What kind of element?
 					*psz++ = 0;
 					if (!*psz)
 						return psz;
-					if (IsSpace(cChar))
+					if (isSpace(cChar))
 						SkipWS(); // Eat any whitespace.
 LOC_DOCTYPE_SYMBOL:
 					if (IsSymbol(*psz)) {
@@ -1758,20 +1758,20 @@ LOC_DOCTYPE_QUOTE:
 					if (!*psz)
 						return psz;
 					XMLENTITY e = ENTITY_DTD_ENTITY;
-					if (tt::samestri(pMark,"ATTLIST"))
+					if (tt::isSameStri(pMark,"ATTLIST"))
 						e = ENTITY_DTD_ATTLIST;
-					else if (tt::samestri(pMark,"ELEMENT"))
+					else if (tt::isSameStri(pMark,"ELEMENT"))
 						e = ENTITY_DTD_ELEMENT;
-					else if (tt::samestri(pMark,"NOTATION"))
+					else if (tt::isSameStri(pMark,"NOTATION"))
 						e = ENTITY_DTD_NOTATION;
 					Push(e); // Graft a new branch on the tree.
-					if (*psz != 0 && IsSpace(cChar)) {
+					if (*psz != 0 && isSpace(cChar)) {
 						SkipWS(); // Eat whitespace.
 						if (IsSymbol(*psz) || *psz == '%') {
 							pMark = psz;
 							if (*psz == '%')	{ // Could be '<!ENTITY % name' -or- '<!ENTITY %name'
 								++psz;
-								if (IsSpace(*psz)) {
+								if (isSpace(*psz)) {
 									SkipWS(); // Eat whitespace.
 									*(psz-1) = '%';
 									pBranch->pszName = (psz-1);
@@ -1786,7 +1786,7 @@ LOC_DOCTYPE_QUOTE:
 							*psz++ = 0;
 							if (!*psz)
 								return psz;
-							if (IsSpace(cChar)) {
+							if (isSpace(cChar)) {
 								SkipWS(); // Eat whitespace.
 								if (e == ENTITY_DTD_ENTITY) { // Special case; may have multiple quoted sections w/anything inside.
 									pBranch->pszData = psz;  // Just store everything here.
@@ -1894,7 +1894,7 @@ LOC_ELEMENT: // Scan for & store element name.
 					m_pTitleBranch = pBranch;
 
 				if (IsClose(cChar)) {	//'</...'
-					const char* pszStart = tt::nextnonspace(psz + 1);
+					const char* pszStart = tt::findNonSpace(psz + 1);
 					while (*psz && !IsLeave(*psz))	// Scan for '>', stepping over the tag name.
 						psz++;
 					char chSave = *psz;
@@ -1915,11 +1915,11 @@ LOC_ELEMENT: // Scan for & store element name.
 						Pop();
 					goto LOC_PCDATA;
 				}
-				else if (!IsSpace(cChar))
+				else if (!isSpace(cChar))
 					goto LOC_PCDATA; // No attributes, so scan for PCDATA.
 
 				else {
-					ttASSERT(IsSpace(cChar));
+					ttASSERT(isSpace(cChar));
 					bInScriptSection = (pBranch->element == ELEMENT_SCRIPT);
 					SkipWS(); // Eat any whitespace.
 LOC_ATTRIBUTE:
@@ -1934,7 +1934,7 @@ LOC_ATTRIBUTE:
 						CharLower(a->pszName);	// XHTML DTD requires attributes to be lower case
 						if (!*psz)
 							return psz;
-						if (IsSpace(cChar))
+						if (isSpace(cChar))
 							SkipWS(); // Eat any whitespace.
 						if ((IsConnective(cChar) || IsConnective(*psz))) { //'<... #=...'
 							if (IsConnective(*psz))
@@ -1944,7 +1944,7 @@ LOC_ATTRIBUTE:
 								cChar = *psz; // Save quote char to avoid breaking on "''" -or- '""'.
 								++psz; // Step over the quote.
 								a->pszValue = psz; // Save the offset.
-								psz = tt::strchr(psz, cChar);
+								psz = tt::findChar(psz, cChar);
 								if (!psz)
 									return NULL;
 								*psz++ = 0;
@@ -1965,7 +1965,7 @@ LOC_ATTRIBUTE:
 										++psz;
 									goto LOC_PCDATA;
 								}
-								if (IsSpace(*psz)) { // This may indicate a following attribute.
+								if (isSpace(*psz)) { // This may indicate a following attribute.
 									SkipWS(); // Eat any whitespace.
 									goto LOC_ATTRIBUTE; // Go scan for additional attributes.
 								}
@@ -1991,7 +1991,7 @@ LOC_ATTRIBUTE:
 										++psz;
 									goto LOC_PCDATA;
 								}
-								if (IsSpace(*psz)) { // This may indicate a following attribute.
+								if (isSpace(*psz)) { // This may indicate a following attribute.
 									SkipWS(); // Eat any whitespace.
 									goto LOC_ATTRIBUTE; // Go scan for additional attributes.
 								}
@@ -2027,7 +2027,7 @@ LOC_PCDATA: //'>...<'
 						SkipWS(); // Eat whitespace if no genuine PCDATA here.
 					if (IsEnter(*psz)) { // We hit a '<...', with only whitespace, so don't bother storing anything.
 						if (IsClose(psz[1])) { //'</...'
-							const char* pszStart = tt::nextnonspace(psz + 2);
+							const char* pszStart = tt::findNonSpace(psz + 2);
 							while (*psz && !IsLeave(*psz))	// Scan for '>', stepping over the tag name.
 								psz++;
 							*psz = 0;
@@ -2060,7 +2060,7 @@ LOC_PCDATA: //'>...<'
 								// if we are within a <form> section.
 
 								if (elemClose == ELEMENT_FORM && pBranch->element != ELEMENT_FORM) {
-									ttXMLBranch* pParent = pBranch->parent;
+									ttCXMLBranch* pParent = pBranch->parent;
 									while (pParent->element != ELEMENT_FORM && pParent->type != ENTITY_ROOT)	{
 										pParent = pParent->parent;
 									}
@@ -2116,7 +2116,7 @@ LOC_PCDATA: //'>...<'
 							bInScriptSection = false;
 							break;
 						}
-						if (tt::samesubstri(tt::nextnonspace(psz + 1), "/script")) {
+						if (tt::isSameSubStri(tt::findNonSpace(psz + 1), "/script")) {
 							bInScriptSection = false;
 							break;
 						}
@@ -2188,7 +2188,7 @@ LOC_PCDATA: //'>...<'
 							goto LOC_LEAVE;
 						}
 						SkipWS();	// skip over any whitespite
-						if (tt::isalpha(*psz)) {
+						if (tt::isAlpha(*psz)) {
 							char* pszElement = psz;
 							ScanWhile(IsSymbol(*psz));
 							char chSave = *psz;

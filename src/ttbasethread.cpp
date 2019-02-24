@@ -10,22 +10,22 @@
 
 #include <process.h>
 
-#include "../include/basethread.h"	// ttBaseThread
-#include "../include/ttdebug.h" 	// ttASSERT macros
+#include "../include/ttbasethread.h"	// ttCBaseThread
+#include "../include/ttdebug.h" 		// ttASSERT macros
 
-ttBaseThread::ttBaseThread ()
+ttCBaseThread::ttCBaseThread ()
 {
 	m_hthrdWorker = NULL;
 	m_bCancelThread = false;
 	m_bOleInitialized = false;
 };
 
-ttBaseThread::~ttBaseThread ()
+ttCBaseThread::~ttCBaseThread ()
 {
 	StopThread();
 };
 
-void ttBaseThread::StartThread()
+void ttCBaseThread::StartThread()
 {
 	ttASSERT(m_hthrdWorker == NULL);
 	if (m_hthrdWorker)
@@ -34,7 +34,7 @@ void ttBaseThread::StartThread()
 	m_hthrdWorker = (HANDLE) _beginthreadex(NULL, 0, ttpriv::_BaseThread, this, 0, NULL);
 }
 
-void ttBaseThread::StopThread()
+void ttCBaseThread::StopThread()
 {
 	if (m_hthrdWorker) {
 		SetCancelThreadPending();
@@ -44,7 +44,7 @@ void ttBaseThread::StopThread()
 	}
 }
 
-void ttBaseThread::WaitForThreadToComplete()
+void ttCBaseThread::WaitForThreadToComplete()
 {
 	if (m_hthrdWorker) {
 		WaitForSingleObject(m_hthrdWorker, INFINITE);
@@ -53,7 +53,7 @@ void ttBaseThread::WaitForThreadToComplete()
 	}
 }
 
-void ttBaseThread::InitializeThreadForOle()
+void ttCBaseThread::InitializeThreadForOle()
 {
 	HRESULT hr = ::CoInitialize(NULL);
 	if (SUCCEEDED(hr)) {
@@ -68,7 +68,7 @@ void ttBaseThread::InitializeThreadForOle()
 
 unsigned __stdcall ttpriv::_BaseThread(void* pv)
 {
-	ttBaseThread* pThis = (ttBaseThread*) pv;
+	ttCBaseThread* pThis = (ttCBaseThread*) pv;
 	pThis->doThreadWork();
 
 	if (pThis->m_bOleInitialized)

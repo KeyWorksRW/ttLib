@@ -10,17 +10,17 @@
 
 #include "pch.h"
 
-#include "../include/ttdirdlg.h"	// ttDirDlg
+#include "../include/ttdirdlg.h"	// ttCDirDlg
 #include "../include/ttdebug.h" 	// ttASSERT macros
 
 #pragma comment(lib, "ole32.lib")
 
-ttDirDlg::ttDirDlg()
+ttCDirDlg::ttCDirDlg()
 {
 	m_cwszTitle = L"Select a Folder";
 }
 
-bool ttDirDlg::GetFolderName(HWND hwndParent)
+bool ttCDirDlg::GetFolderName(HWND hwndParent)
 {
 	IFileOpenDialog *pfd;
 	auto hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd));

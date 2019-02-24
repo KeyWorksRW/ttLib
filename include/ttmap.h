@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttMap
+// Name:		ttCMap
 // Purpose:		Class for storing key/value pairs
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2018-2019 KeyWorks Software (Ralph Walden)
@@ -11,20 +11,20 @@
 #ifndef __TTLIB_TTMAP_H__
 #define __TTLIB_TTMAP_H__
 
-#include "ttheap.h" // ttHeap
+#include "ttheap.h" // ttCHeap
 
 // As of 2018, ATL::CSimpleMap still uses int instead of size_t/ptrdiff_t resulting in a minor performance penalty when
 // running on a 64 bit platform. In addition, if you do use size_t or ptrdiff_t, you have to cast it to (int) every time
 // you use a CSimpleMap function.
 
-// On Windows, this class uses a sub-heap for malloc() and strdup(). When the class is deleted, the entire sub-heap is
+// On Windows, this class uses a sub-heap for Malloc() and StrDup(). When the class is deleted, the entire sub-heap is
 // deleted, rather then walking through and deleting each individual allocation.
 
 // This class contains all the methods of CSimpleMap with the exception of Set() and Remove() -- i.e., you cannot remove
-// or change a key/value pair once added to ttMap.
+// or change a key/value pair once added to ttCMap.
 
 template <class TKey, class TVal>
-class ttMap
+class ttCMap
 {
 public:
 	typedef struct {
@@ -32,13 +32,13 @@ public:
 		TVal val;
 	} MAP_PAIR;
 
-	ttMap() {
+	ttCMap() {
 		m_cAllocated = 0;
 		m_cItems = 0;
 		m_aMapPairs = nullptr;
-		m_pHeap = new ttHeap(true);
+		m_pHeap = new ttCHeap(true);
 	}
-	~ttMap() {
+	~ttCMap() {
 		delete m_pHeap;
 	}
 
@@ -89,8 +89,8 @@ public:
 	size_t GetCount() const { return m_cItems; }
 	size_t GetSize()  const { return m_cItems; }	// for compatibility with CSimpleMap
 
-	// The following functions can be used to allocate memory that won't have to be specifically freed -- it
-	// will be freed automatically when the heap is destroyed in ttMap's destructor
+	// The following functions can be used to allocate memory that won't have to be specifically FreeAllocd -- it
+	// will be FreeAllocd automatically when the heap is destroyed in ttCMap's destructor
 
 	void  ttMalloc(size_t cb) { return m_pHeap->ttMalloc(cb); }
 	char* ttStrdup(const char* psz) { return m_pHeap->ttStrdup(psz); }
@@ -101,7 +101,7 @@ protected:
 	ptrdiff_t m_cItems;
 	ptrdiff_t m_cAllocated;
 
-	ttHeap*  m_pHeap;
+	ttCHeap*  m_pHeap;
 	MAP_PAIR* m_aMapPairs;
 };
 

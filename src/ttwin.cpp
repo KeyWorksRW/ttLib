@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttWin
+// Name:		ttCWin
 // Purpose:		Class for working with windows
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2018-2019 KeyWorks Software (Ralph Walden)
@@ -8,13 +8,13 @@
 
 #include "pch.h"
 
-#include "../include/ttdebug.h" 		// ttASSERT macros
-#include "../../ttLib/include/ttstr.h"	// ttStr
-#include "../include/ttwin.h"			// ttWin
+#include "../include/ttdebug.h" 	// ttASSERT macros
+#include "../include/ttstr.h"	// ttCStr
+#include "../include/ttwin.h"		// ttCWin
 
-// This is the Window procedure used by all windows that ttWin created or subclassed.
+// This is the Window procedure used by all windows that ttCWin created or subclassed.
 
-LRESULT WINAPI ttpriv::ttWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+LRESULT WINAPI ttpriv::ttCWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	if (msg == WM_CREATE) {
 		CREATESTRUCT* pcs = (CREATESTRUCT*) lParam;
@@ -23,7 +23,7 @@ LRESULT WINAPI ttpriv::ttWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 			SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR) pThis);
 	}
 
-	ttWin* pThis = (ttWin*) GetWindowLongPtr(hwnd, GWLP_USERDATA);
+	ttCWin* pThis = (ttCWin*) GetWindowLongPtr(hwnd, GWLP_USERDATA);
 	if (!pThis)
 		return DefWindowProc(hwnd, msg, wParam, lParam);
 
@@ -46,7 +46,7 @@ LRESULT WINAPI ttpriv::ttWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 	return 0;
 }
 
-ttWin::ttWin()
+ttCWin::ttCWin()
 {
 	m_hwnd = NULL;
 	m_hwndParent = NULL;
@@ -58,13 +58,13 @@ ttWin::ttWin()
 	m_pwc = new WNDCLASSEX;
 	memset(m_pwc, 0, sizeof(WNDCLASSEXA));
 	m_pwc->cbSize = sizeof(WNDCLASSEXA);
-	m_pwc->lpfnWndProc = ttpriv::ttWinProc;
+	m_pwc->lpfnWndProc = ttpriv::ttCWinProc;
 	m_pwc->style = CS_HREDRAW | CS_VREDRAW;
 	m_pwc->hbrBackground = (HBRUSH) (LONG_PTR) (COLOR_WINDOW + 1);
 	m_pwc->hCursor = LoadCursor(NULL, IDC_ARROW);
 }
 
-ttWin::~ttWin()
+ttCWin::~ttCWin()
 {
 	if (m_pwc)	// this will have already been deleted if CreateWnd or Attach was called
 		delete m_pwc;
@@ -72,11 +72,11 @@ ttWin::~ttWin()
 		::free((void*) m_pszClassName);
 }
 
-bool ttWin::SetClassName(const char* pszClassName)
+bool ttCWin::SetClassName(const char* pszClassName)
 {
 	ttASSERT_NONEMPTY(pszClassName);
 
-	if (!pszClassName || !*pszClassName || tt::strlen(pszClassName) > 256)	// Windows limits class names to 256 characters
+	if (!pszClassName || !*pszClassName || tt::strLen(pszClassName) > 256)	// Windows limits class names to 256 characters
 		return false;
 
 	if (m_pszClassName)
@@ -87,13 +87,13 @@ bool ttWin::SetClassName(const char* pszClassName)
 	return true;
 }
 
-bool ttWin::CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWND hwndParent, RECT* prcPosition, HMENU hmenu)
+bool ttCWin::CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWND hwndParent, RECT* prcPosition, HMENU hmenu)
 {
 	if (m_pwc) {	// means the class hasn't been registered yet
 		if (!m_pszClassName) {
-			ttStr cszClass(32);
-			cszClass.strcpy("ttWin");
-			tt::hextoa(GetTickCount(), (char*) cszClass + cszClass.strlen(), true);
+			ttCStr cszClass(32);
+			cszClass.strCopy("ttCWin");
+			tt::Hextoa(GetTickCount(), (char*) cszClass + cszClass.strLen(), true);
 			m_pszClassName = _strdup(cszClass);
 			m_pwc->lpszClassName = m_pszClassName;
 		}
@@ -116,10 +116,10 @@ bool ttWin::CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWND
 			CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 			hwndParent, hmenu, m_hinst, (void*) this);
 
-	return tt::IsValidWindow(m_hwnd);
+	return tt::isValidWindow(m_hwnd);
 }
 
-bool ttWin::SubClass(HWND hwnd)
+bool ttCWin::SubClass(HWND hwnd)
 {
 	ttASSERT_MSG(!m_SubClassProc, "You can only subclass a window once!");
 
@@ -131,12 +131,12 @@ bool ttWin::SubClass(HWND hwnd)
 
 	SetWindowLongPtrA(hwnd, GWLP_USERDATA, (LONG_PTR) this);
 
-	m_SubClassProc = (WNDPROC) SetWindowLongPtrA(hwnd, GWLP_WNDPROC, (LONG_PTR) ttpriv::ttWinProc);
+	m_SubClassProc = (WNDPROC) SetWindowLongPtrA(hwnd, GWLP_WNDPROC, (LONG_PTR) ttpriv::ttCWinProc);
 
 	return (m_SubClassProc != nullptr);
 }
 
-bool ttWin::AttachWnd(HWND hwnd)
+bool ttCWin::AttachWnd(HWND hwnd)
 {
 	if (hwnd == NULL || !IsWindow(hwnd))
 		return false;
@@ -145,7 +145,7 @@ bool ttWin::AttachWnd(HWND hwnd)
 	// Deleting m_pwc and getting the window's class name makes it possible to call CreateWnd and create another window
 	// of the same type that we attached to.
 
-	ttStr cszClassName(256);
+	ttCStr cszClassName(256);
 	if (::GetClassNameA(hwnd, cszClassName, (int) cszClassName.sizeBuffer()) != 0) {
 		if (m_pwc) {
 			delete m_pwc;

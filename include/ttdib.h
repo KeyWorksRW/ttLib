@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttDib
+// Name:		ttCDib
 // Purpose:		Class for handling Device Independent Bitmap
 // Author:		Davide Pizzolato
 // Copyright:	Copyright (c) [2001] Davide Pizzolato
@@ -19,24 +19,24 @@
 	#error This code will only work on Windows
 #endif
 
-// REVIEW: [randalphwa - 1/10/2019] This is a bug waiting to happen. Handles in Windows are freed with DeleteObject().
+// REVIEW: [randalphwa - 1/10/2019] This is a bug waiting to happen. Handles in Windows are FreeAllocd with DeleteObject().
 // HDIB looks like a GDI Object, and if it really was, it would be handed to DeleteObject(). A HANDLE in Windows is a
-// pointer, but you do NOT use standard memory routines to allocate/free it the way HDIB is being used here. The HDIB
+// pointer, but you do NOT use standard memory routines to allocate/FreeAlloc it the way HDIB is being used here. The HDIB
 // should be replaced with a void* since it gets cast to different structure pointers.
 
 #define HDIB HANDLE
 
-class ttDib
+class ttCDib
 {
 public:
-	ttDib();
-	~ttDib();
+	ttCDib();
+	~ttCDib();
 
 	// Class functions
 
 	void	 BlendPalette(COLORREF cr,long perc);
 	void	 Clear(BYTE bval=0);
-	void	 Clone(ttDib *src);
+	void	 Clone(ttCDib *src);
 	HDIB	 Create(DWORD dwWidth, DWORD dwHeight, WORD wBitCount);
 	long	 Draw(HDC pDC, long xoffset, long yoffset);
 	WORD	 GetBitCount() {return m_bi.biBitCount;};

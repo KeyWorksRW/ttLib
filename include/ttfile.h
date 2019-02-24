@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttFile
+// Name:		ttCFile
 // Purpose:		class for reading and writing files, strings, data, etc.
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
@@ -19,19 +19,19 @@
 #define __TTLIB_KEYFILE_H__
 
 #include "ttdebug.h"	// for ttASSERTS
-#include "ttstring.h"	// ttString
+#include "ttstr.h"	// ttString
 
 #ifdef _WINDOWS_
 	#include <Wininet.h>
 	#include <objidl.h>	// for IStream interface
 #endif
 
-class ttFile
+class ttCFile
 {
 public:
-	ttFile();
-	ttFile(ptrdiff_t cb);
-	~ttFile();
+	ttCFile();
+	ttCFile(ptrdiff_t cb);
+	~ttCFile();
 
 	typedef enum {
 		ERROR_NONE,
@@ -47,11 +47,12 @@ public:
 
 	// Default is LF-only EOL. Call SetUnixLF(false) to get CR/LF EOL
 
-	void SetUnixLF(bool bUnix = true) { m_fUnixLF = bUnix; }	// Only affects WriteEol() functions
+	void SetUnixLF(bool bUnix = true) { m_fUnixLF = bUnix; }	// Only affects writeEol() functions
 
 	// For ReadFile, ReadURL and WriteFile() call GetErrorResult() for ERROR_ info
 
 	bool	ReadFile(const char* pszFile);	// ERROR_INVALID_NAME, ERROR_CANTOPEN, ERROR_SEEK_FAILURE, ERROR_CANTREAD
+	bool	WriteFile(const char* pszFile);	// ERROR_INVALID_NAME, ERROR_EMPTY_BUFFER, ERROR_CANTOPEN, ERROR_CANTWRITE
 
 #ifdef _WINDOWS_
 	bool	ReadURL(const char* pszURL, HINTERNET hInternet = NULL);	// ERROR_INVALID_NAME, ERROR_SERVICE_DOES_NOT_EXIST if cannot access, ERROR_CANTOPEN if URL not found
@@ -63,10 +64,8 @@ public:
 
 	bool	UnicodeToAnsi();	// convert loaded file from Unicode to Ansi. Will return false if file not read.
 
-	bool	WriteFile(const char* pszFile);	// ERROR_INVALID_NAME, ERROR_EMPTY_BUFFER, ERROR_CANTOPEN, ERROR_CANTWRITE
-
-	bool	readline(char** ppszLine = nullptr);	// note that this converts \r into 0, so you can only read lines once -- trim(pszLine) is called before returning
-	void	PrepForReadLine() { m_pCurrent = m_pbuf; m_pszLine = m_pCurrent; m_bReadlineReady = true; }	// only needed if you aren't going to call readline
+	bool	ReadLine(char** ppszLine = nullptr);	// note that this converts \r into 0, so you can only read lines once -- trim(pszLine) is called before returning
+	void	PrepForReadLine() { m_pCurrent = m_pbuf; m_pszLine = m_pCurrent; m_bReadlineReady = true; }	// only needed if you aren't going to call readLine
 	char*	GetLnPtr() { return m_pszLine; }
 	bool	IsEndOfFile() const { return (!m_pCurrent || !*m_pCurrent) ? true : false; }
 
@@ -88,14 +87,14 @@ public:
 
 	void	InsertStr(const char* pszText, char* pszPosition);		// pszPosition derived from previous call to GetCurPosition()
 	bool	ReplaceStr(const char* pszOldText, const char* pszNewText, bool fCaseSensitive = false);
-	void	Delete();	// frees memory, resets pointers
+	void	Delete();	// FreeAllocs memory, resets pointers
 
 	size_t	GetCurSize() const { return m_cbAllocated; }
 	char*	GetBeginPosition() const { return m_pbuf; }
 	char*	GetEndPosition() const { return m_pEnd; }
 
-	char* GetCurPosition() { return m_pCurrent; }	// used for InsertStr()
-	bool  isUnicode() { return (m_pbuf && m_pEnd > m_pbuf + 2 && (BYTE) m_pbuf[0] == 0xFF && (BYTE) m_pbuf[1] == 0xFE); }
+	char*	GetCurPosition() { return m_pCurrent; }	// used for InsertStr()
+	bool 	isUnicode() { return (m_pbuf && m_pEnd > m_pbuf + 2 && (BYTE) m_pbuf[0] == 0xFF && (BYTE) m_pbuf[1] == 0xFE); }
 
 	void SetCurPosition(char* psz) {
 		ttASSERT(psz);
@@ -105,9 +104,9 @@ public:
 			m_pCurrent = psz;
 	}
 
-	// Calling readline() will modify the contents -- which means you can't compare two ttFile objects if you parsed one
-	// with readline(). To allow for this, call MakeCopy() after you have read the file into memory, and RestoreCopy() if
-	// you need to reset the file contents to they way they were before readline() was called.
+	// Calling readLine() will modify the contents -- which means you can't compare two ttCFile objects if you parsed one
+	// with readLine(). To allow for this, call MakeCopy() after you have read the file into memory, and RestoreCopy() if
+	// you need to reset the file contents to they way they were before readLine() was called.
 
 	void MakeCopy();
 	void RestoreCopy();
@@ -127,7 +126,7 @@ public:
 	}
 	char operator[](int pos) { return m_pszLine[pos]; }
 
-	char* m_pszLine;	// default line pointer when calling readline(nullptr)
+	char* m_pszLine;	// default line pointer when calling readLine(nullptr)
 
 protected:
 	void AllocateBuffer(size_t cbInitial = 16 * 1024);
