@@ -53,6 +53,8 @@ public:
 
 	~ttCStr() { if (m_psz) tt::FreeAlloc(m_psz); }
 
+	// Method naming conventions are lower camel case when matching tt:: namespace functions
+
 	char*	findExt(const char* pszExt) { return (char*) tt::findExt(m_psz, pszExt); }	// find filename extension
 	char*	findStr(const char* psz) { return tt::findStr(m_psz, psz); }
 	char*	findStri(const char* psz) { return tt::findStri(m_psz, psz); }
