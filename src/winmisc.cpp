@@ -20,7 +20,7 @@
 
 namespace tt {
 	const char* pszMsgTitle;
-	HWND		hwndParent;
+	HWND		hwndMsgBoxParent;
 	HINSTANCE	hinstResources;		// Used to determine where to load resources from. If nullptr, it will us
 	size_t		LanguageOffset;		// language offset used to load other languages from .rc file
 }
