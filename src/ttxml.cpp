@@ -406,11 +406,11 @@ HRESULT ttCParseXML::WriteBranch(ttCXMLBranch* pBranch, ttCFile& kf, size_t iInd
 		switch (pBranch->type) {
 			case ENTITY_ELEMENT:
 				for (size_t i = 0; i < iIndent; i++)
-					kf.writeStr("\t");
+					kf.WriteStr("\t");
 
-				kf.writeStr("<");
+				kf.WriteStr("<");
 				if (pBranch->pszName)
-					kf.writeStr(pBranch->pszName);
+					kf.WriteStr(pBranch->pszName);
 				// first find out how long the attribute names will be to see if they will fit on a single line
 
 				cbAttrs = 0;
@@ -429,66 +429,66 @@ HRESULT ttCParseXML::WriteBranch(ttCXMLBranch* pBranch, ttCFile& kf, size_t iInd
 					XMLATTR* pAttr = pBranch->GetAttributeAt(iAttribute);
 					if (pAttr->pszName) {
 						if (pBranch->GetAttributesCount() > 1 && cbAttrs > 80) {
-							kf.writeEol("");
+							kf.WriteEol("");
 							for (size_t i = 0; i < iIndent + 1; i++)
-								kf.writeStr("\t");
+								kf.WriteStr("\t");
 						}
 						else {
-							kf.writeStr(" ");
+							kf.WriteStr(" ");
 						}
-						kf.writeStr(pAttr->pszName);
-						kf.writeStr("=\042");
+						kf.WriteStr(pAttr->pszName);
+						kf.WriteStr("=\042");
 						if (pAttr->pszValue)
-							kf.writeStr(pAttr->pszValue);
-						kf.writeStr("\042");
+							kf.WriteStr(pAttr->pszValue);
+						kf.WriteStr("\042");
 					}
 				}
 				if (pBranch->GetChildrenCount()) {
-					kf.writeStr(">");
+					kf.WriteStr(">");
 					ttCXMLBranch* pFirstChild = pBranch->GetChildAt(0);
 					if (pFirstChild->type != ENTITY_PCDATA)
-						kf.writeEol("");
+						kf.WriteEol("");
 
 					HRESULT hr = WriteBranch(pFirstChild, kf, iIndent + 1);
 					if (FAILED(hr))
 						return hr;
 					if (pFirstChild->type != ENTITY_PCDATA) {
 						for (size_t i = 0; i < iIndent; i++)
-							kf.writeStr("\t");
+							kf.WriteStr("\t");
 					}
-					kf.writeStr("</");
+					kf.WriteStr("</");
 					if (pBranch->pszName)
-						kf.writeStr(pBranch->pszName);
-					kf.writeEol(">");
+						kf.WriteStr(pBranch->pszName);
+					kf.WriteEol(">");
 				}
 				else {
-					kf.writeEol("/>");
+					kf.WriteEol("/>");
 				}
 				break;
 
 			case ENTITY_PI:
 				for (size_t i = 0; i < iIndent; i++)
-					kf.writeChar('\t');
-				kf.writeStr("<?");
+					kf.WriteChar('\t');
+				kf.WriteStr("<?");
 				if (pBranch->pszName)
-					kf.writeStr(pBranch->pszName);
+					kf.WriteStr(pBranch->pszName);
 				for (size_t iAttribute = 0; iAttribute < pBranch->GetAttributesCount(); iAttribute++) {
 					XMLATTR* pAttr = pBranch->GetAttributeAt(iAttribute);
 					if (pAttr->pszName) {
-						kf.writeChar(' ');
-						kf.writeStr(pAttr->pszName);
-						kf.writeStr("=\042");
+						kf.WriteChar(' ');
+						kf.WriteStr(pAttr->pszName);
+						kf.WriteStr("=\042");
 						if (pAttr->pszValue)
-							kf.writeStr(pAttr->pszValue);
-						kf.writeStr("\042");
+							kf.WriteStr(pAttr->pszValue);
+						kf.WriteStr("\042");
 					}
 				}
-				kf.writeEol("?>");
+				kf.WriteEol("?>");
 				break;
 
 			case ENTITY_PCDATA:
 				if (pBranch->pszData)
-					kf.writeStr(pBranch->pszData);
+					kf.WriteStr(pBranch->pszData);
 				ttASSERT(!pBranch->GetAttributesCount());
 				ttASSERT(!pBranch->GetChildrenCount());
 				break;
@@ -524,7 +524,7 @@ HRESULT ttCParseXML::WriteHtmlBranch(ttCXMLBranch* pBranch, ttCFile& kf)
 		HRESULT hr = S_OK;
 
 		if (m_cszDocType.isNonEmpty()) {
-			kf.writeStr(m_cszDocType);
+			kf.WriteStr(m_cszDocType);
 		}
 
 		if (pBranch->GetChildrenCount())
@@ -536,65 +536,65 @@ HRESULT ttCParseXML::WriteHtmlBranch(ttCXMLBranch* pBranch, ttCFile& kf)
 	for (size_t iSibling = 1;;iSibling++) {
 		switch (pBranch->type) {
 			case ENTITY_ELEMENT:
-				kf.writeStr("<");
+				kf.WriteStr("<");
 				if (pBranch->pszName)
-					kf.writeStr(pBranch->pszName);
+					kf.WriteStr(pBranch->pszName);
 				for (size_t iAttribute = 0; iAttribute < pBranch->GetAttributesCount(); iAttribute++) {
 					XMLATTR* pAttr = pBranch->GetAttributeAt(iAttribute);
 					if (pAttr->pszName) {
 						if (pBranch->GetAttributesCount() > 1) {
-							kf.writeEol("");
+							kf.WriteEol("");
 						}
 						else {
-							kf.writeStr(" ");
+							kf.WriteStr(" ");
 						}
-						kf.writeStr(pAttr->pszName);
-						kf.writeStr("=\042");
+						kf.WriteStr(pAttr->pszName);
+						kf.WriteStr("=\042");
 						if (pAttr->pszValue)
-							kf.writeStr(pAttr->pszValue);
-						kf.writeStr("\042");
+							kf.WriteStr(pAttr->pszValue);
+						kf.WriteStr("\042");
 					}
 				}
 				if (pBranch->GetChildrenCount()) {
-					kf.writeStr(">");
+					kf.WriteStr(">");
 					ttCXMLBranch* pFirstChild = pBranch->GetChildAt(0);
 					if (pFirstChild->type != ENTITY_PCDATA)
-						kf.writeEol();
+						kf.WriteEol();
 
 					HRESULT hr = WriteHtmlBranch(pFirstChild, kf);
 					if (FAILED(hr))
 						return hr;
-					kf.writeStr("</");
+					kf.WriteStr("</");
 					if (pBranch->pszName)
-						kf.writeStr(pBranch->pszName);
-					kf.writeEol(">");
+						kf.WriteStr(pBranch->pszName);
+					kf.WriteEol(">");
 				}
 				else {
-					kf.writeEol(">");
+					kf.WriteEol(">");
 				}
 				break;
 
 			case ENTITY_PI:
-				kf.writeStr("<?");
+				kf.WriteStr("<?");
 				if (pBranch->pszName)
-					kf.writeStr(pBranch->pszName);
+					kf.WriteStr(pBranch->pszName);
 				for (size_t iAttribute = 0; iAttribute < pBranch->GetAttributesCount(); iAttribute++) {
 					XMLATTR* pAttr = pBranch->GetAttributeAt(iAttribute);
 					if (pAttr->pszName) {
-						kf.writeChar(' ');
-						kf.writeStr(pAttr->pszName);
-						kf.writeStr("=\042");
+						kf.WriteChar(' ');
+						kf.WriteStr(pAttr->pszName);
+						kf.WriteStr("=\042");
 						if (pAttr->pszValue)
-							kf.writeStr(pAttr->pszValue);
-						kf.writeStr("\042");
+							kf.WriteStr(pAttr->pszValue);
+						kf.WriteStr("\042");
 					}
 				}
-				kf.writeEol("?>");
+				kf.WriteEol("?>");
 				break;
 
 			case ENTITY_PCDATA:
 				if (pBranch->pszData)
-					kf.writeStr(pBranch->pszData);
+					kf.WriteStr(pBranch->pszData);
 				ttASSERT(!pBranch->GetAttributesCount());
 				ttASSERT(!pBranch->GetChildrenCount());
 				break;

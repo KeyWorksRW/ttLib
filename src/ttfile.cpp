@@ -326,7 +326,7 @@ bool ttCFile::ReadResource(DWORD idResource)	// _WINDOWS_ only
 
 #endif	// _WINDOWS_
 
-void ttCFile::writeChar(char ch)
+void ttCFile::WriteChar(char ch)
 {
 	ttASSERT(!m_bReadlineReady);
 	if (!m_pbuf)
@@ -336,7 +336,7 @@ void ttCFile::writeChar(char ch)
 		AllocateMoreMemory();
 }
 
-void ttCFile::writeEol()	// Write only \n if m_fUnixLF, else \r\n
+void ttCFile::WriteEol()	// Write only \n if m_fUnixLF, else \r\n
 {
 	if (!m_pbuf)
 		AllocateBuffer();
@@ -348,7 +348,7 @@ void ttCFile::writeEol()	// Write only \n if m_fUnixLF, else \r\n
 	*m_pCurrent = 0;
 }
 
-void ttCFile::writeEol(const char* psz)
+void ttCFile::WriteEol(const char* psz)
 {
 	ttASSERT(!m_bReadlineReady);
 	ttASSERT_MSG(psz, "NULL pointer!");
@@ -370,7 +370,7 @@ void ttCFile::writeEol(const char* psz)
 	*m_pCurrent = 0;
 }
 
-void ttCFile::writeStr(const char* psz)
+void ttCFile::WriteStr(const char* psz)
 {
 	ttASSERT(!m_bReadlineReady);
 	ttASSERT_NONEMPTY(psz);
@@ -399,10 +399,10 @@ void cdecl ttCFile::printf(const char* pszFormat, ...)
 	tt::vprintf(csz.getPPtr(), pszFormat, argList);
 	va_end(argList);
 
-	writeStr(csz);
+	WriteStr(csz);
 }
 
-bool ttCFile::readLine(char** ppszLine)
+bool ttCFile::ReadLine(char** ppszLine)
 {
 	ttASSERT_MSG(m_pbuf, "Attempting to read a line from an empty ttCFile!");
 	if (!m_pbuf)
@@ -482,7 +482,7 @@ bool ttCFile::ReplaceStr(const char* pszOldText, const char* pszNewText, bool fC
 {
 	ttASSERT_MSG(pszOldText, "NULL pointer!");
 	ttASSERT(*pszOldText);
-	ttASSERT_MSG(!*m_pCurrent, "m_pCurrent does not appear to be pointing to the end of the buffer. Did you call readLine?");
+	ttASSERT_MSG(!*m_pCurrent, "m_pCurrent does not appear to be pointing to the end of the buffer. Did you call ReadLine?");
 
 	if (!pszNewText)
 		pszNewText = "";
@@ -494,7 +494,7 @@ bool ttCFile::ReplaceStr(const char* pszOldText, const char* pszNewText, bool fC
 	if (!pszPos)
 		return false;
 
-	ttASSERT_MSG(pszPos < m_pCurrent, "m_pCurrent does not appear to be pointing to the end of the buffer. Did you call readLine?");
+	ttASSERT_MSG(pszPos < m_pCurrent, "m_pCurrent does not appear to be pointing to the end of the buffer. Did you call ReadLine?");
 	if (pszPos >= m_pCurrent)
 		return false;
 
@@ -503,7 +503,7 @@ bool ttCFile::ReplaceStr(const char* pszOldText, const char* pszNewText, bool fC
 
 	if (cbNew == 0) {	// delete the old text since new text is empty
 		ptrdiff_t cb = m_pCurrent - pszPos;
-		ttASSERT_MSG(cb > 0, "m_pCurrent does not appear to be pointing to the end of the buffer. Did you call readLine()? You can't use ReplaceStr() if you called readLine()");
+		ttASSERT_MSG(cb > 0, "m_pCurrent does not appear to be pointing to the end of the buffer. Did you call ReadLine()? You can't use ReplaceStr() if you called ReadLine()");
 		memmove(pszPos, pszPos + cbOld, cb);
 		m_pCurrent -= cbOld;
 		ttASSERT_MSG(!*m_pCurrent, "m_pCurrent did not get changed correctly");
@@ -528,7 +528,7 @@ bool ttCFile::ReplaceStr(const char* pszOldText, const char* pszNewText, bool fC
 			*pszPos++ = *pszNewText++;
 		}
 		ptrdiff_t cb = m_pCurrent - pszPos;
-		ttASSERT_MSG(cb > 0, "m_pCurrent does not appear to be pointing to the end of the buffer. Did you call readLine()? You can't use ReplaceStr() if you called readLine()");
+		ttASSERT_MSG(cb > 0, "m_pCurrent does not appear to be pointing to the end of the buffer. Did you call ReadLine()? You can't use ReplaceStr() if you called ReadLine()");
 		memmove(pszPos, pszPos + cbOld, cb);
 		m_pCurrent -= cbOld;
 		ttASSERT_MSG(!*m_pCurrent, "m_pCurrent did not get changed correctly");
@@ -599,17 +599,17 @@ void ttCFile::AddSingleLF()
 	if (!m_pCurrent)
 		return;
 	if (m_pCurrent == m_pbuf) {
-		writeEol();
+		WriteEol();
 		return;
 	}
 	m_pCurrent--;
 	while (m_pCurrent > m_pbuf && (*m_pCurrent == ' ' || *m_pCurrent == '\t'))
 		m_pCurrent--;
 	if (m_pCurrent == m_pbuf)
-		writeEol();
+		WriteEol();
 	else if (*m_pCurrent != '\n') {
 		m_pCurrent++;
-		writeEol();
+		WriteEol();
 	}
 	else
 		m_pCurrent++;
@@ -634,7 +634,7 @@ void ttCFile::Backup(size_t cch)
 char* ttCFile::GetParsedYamlLine()
 {
 	if (!m_bReadlineReady)
-		readLine();
+		ReadLine();
 	ttASSERT_MSG(m_bReadlineReady, "Attempting to call GetParsedYamlLine() without a properly read file!");
 
 	const char* pszLine = tt::findNonSpace(m_pszLine);	// ignore any leading spaces

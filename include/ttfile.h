@@ -52,6 +52,7 @@ public:
 	// For ReadFile, ReadURL and WriteFile() call GetErrorResult() for ERROR_ info
 
 	bool	ReadFile(const char* pszFile);	// ERROR_INVALID_NAME, ERROR_CANTOPEN, ERROR_SEEK_FAILURE, ERROR_CANTREAD
+	bool	WriteFile(const char* pszFile);	// ERROR_INVALID_NAME, ERROR_EMPTY_BUFFER, ERROR_CANTOPEN, ERROR_CANTWRITE
 
 #ifdef _WINDOWS_
 	bool	ReadURL(const char* pszURL, HINTERNET hInternet = NULL);	// ERROR_INVALID_NAME, ERROR_SERVICE_DOES_NOT_EXIST if cannot access, ERROR_CANTOPEN if URL not found
@@ -63,19 +64,17 @@ public:
 
 	bool	UnicodeToAnsi();	// convert loaded file from Unicode to Ansi. Will return false if file not read.
 
-	bool	WriteFile(const char* pszFile);	// ERROR_INVALID_NAME, ERROR_EMPTY_BUFFER, ERROR_CANTOPEN, ERROR_CANTWRITE
-
-	bool	readLine(char** ppszLine = nullptr);	// note that this converts \r into 0, so you can only read lines once -- trim(pszLine) is called before returning
+	bool	ReadLine(char** ppszLine = nullptr);	// note that this converts \r into 0, so you can only read lines once -- trim(pszLine) is called before returning
 	void	PrepForReadLine() { m_pCurrent = m_pbuf; m_pszLine = m_pCurrent; m_bReadlineReady = true; }	// only needed if you aren't going to call readLine
 	char*	GetLnPtr() { return m_pszLine; }
 	bool	IsEndOfFile() const { return (!m_pCurrent || !*m_pCurrent) ? true : false; }
 
 	char*	GetParsedYamlLine();	// returns nullptr if blank, comment, section diveder, or %YAML line. Otherwises returns pointer to first non-space character, stripped of comment and trailing space
 
-	void	writeStr(const char* psz);
-	void	writeChar(char ch);
-	void	writeEol(void);
-	void	writeEol(const char* psz);
+	void	WriteStr(const char* psz);
+	void	WriteChar(char ch);
+	void	WriteEol(void);
+	void	WriteEol(const char* psz);
 
 	void	AddSingleLF();	// adds a CR/LF only if there isn't one already
 	size_t	GetCurLineLength();	// Use when writing data
@@ -94,8 +93,8 @@ public:
 	char*	GetBeginPosition() const { return m_pbuf; }
 	char*	GetEndPosition() const { return m_pEnd; }
 
-	char* GetCurPosition() { return m_pCurrent; }	// used for InsertStr()
-	bool  isUnicode() { return (m_pbuf && m_pEnd > m_pbuf + 2 && (BYTE) m_pbuf[0] == 0xFF && (BYTE) m_pbuf[1] == 0xFE); }
+	char*	GetCurPosition() { return m_pCurrent; }	// used for InsertStr()
+	bool 	isUnicode() { return (m_pbuf && m_pEnd > m_pbuf + 2 && (BYTE) m_pbuf[0] == 0xFF && (BYTE) m_pbuf[1] == 0xFE); }
 
 	void SetCurPosition(char* psz) {
 		ttASSERT(psz);
@@ -118,12 +117,12 @@ public:
 	operator uint8_t*() { return (uint8_t*) m_pszLine; };
 	operator char*()  const { return m_pszLine; }
 	operator const char*() const { return m_pszLine; }
-	void operator+=(const char* psz) { writeStr(psz); }
+	void operator+=(const char* psz) { WriteStr(psz); }
 	void operator=(const char* psz) {
 		ttASSERT_MSG(psz, "NULL pointer!");
 		if (m_pbuf)
 			Delete();
-		writeStr(psz);
+		WriteStr(psz);
 	}
 	char operator[](int pos) { return m_pszLine[pos]; }
 
