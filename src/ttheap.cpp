@@ -134,3 +134,30 @@ char* ttCHeap::ttStrdup(const char* pszSrc, char** pszDst)
 	memcpy(*pszDst, pszSrc, cb);
 	return *pszDst;
 }
+
+#ifndef _INC_STDLIB
+	__declspec(noreturn) void __cdecl exit(int _Code);
+#endif
+
+// In _DEBUG builds, tt::OOM() will provide an option to invoke a debugger before exiting. In non-debug builds it will simply exit.
+
+__declspec(noreturn) void tt::OOM(void)
+{
+#ifdef _DEBUG
+
+#ifdef _WINDOWS_
+	int answer = MessageBoxA(GetActiveWindow(), "Out of Memory!!!", "Do you want to call DebugBreak()?", MB_YESNO | MB_ICONERROR);
+
+	if (answer == IDYES)
+		DebugBreak();
+	// Don't use GetCurrentWindowHandle() since that might only return an active window
+	if (tt::hwndMsgBoxParent && IsWindow(tt::hwndMsgBoxParent))
+		SendMessage(tt::hwndMsgBoxParent, WM_CLOSE, 0, 0);	// attempt to give the application window a graceful way to shut down
+#elif _WX_WX_H_
+	wxFAIL_MSG("Out of Memory!!!");
+#endif	// __WINDOWS_ and _WX_WX_H_
+
+#endif	// _DEBUG
+
+	exit(-1);
+}
