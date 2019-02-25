@@ -13,4 +13,5 @@
 ### Issue Type:
 - [ ] Bug report
 - [ ] Feature request
-- [ ] Question
+- [ ] Other
+
