@@ -19,7 +19,6 @@ namespace tt {
 	bool AssertionMsg(const wchar_t* pszMsg, const char* pszFile, const char* pszFunction, int line);
 	void doReportLastError(const char* pszFile, const char* pszFunc, int line);
 	void SetAsserts(bool bDisable);	// enables disables all assertion messages
-	void _cdecl CATCH_HANDLER(const char* pszFormat, ...);
 	__declspec(noreturn) void OOM(void);
 
 #ifdef _WINDOWS_
@@ -57,9 +56,6 @@ namespace tt {
 	#define ttASSERT_HRESULT(hr, pszMsg)
 	#define ttReportLastError()
 #endif
-
-	#define CATCH_HANDLER __noop
-	#define AssertionMsg  __noop
 
 #endif	// _DEBUG
 

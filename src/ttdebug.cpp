@@ -14,36 +14,6 @@
 #include "../include/ttstr.h"		// ttCStr
 #include "../include/ttcritsection.h"	// CCritSection
 
-#ifndef _INC_STDLIB
-	__declspec(noreturn) void __cdecl exit(int _Code);
-#endif
-
-// OOM() is the one function here which also exists in non-DEBUG builds. Everything else is DEBUG-only.
-// Under both _DEBUG and _NDEBUG builds, it always exits the program
-
-__declspec(noreturn) void tt::OOM(void)
-{
-#ifdef _DEBUG
-
-#ifdef _WINDOWS_
-	int answer = MessageBoxA(GetActiveWindow(), "Out of Memory!!!", "Do you want to call DebugBreak()?", MB_YESNO | MB_ICONERROR);
-
-	if (answer == IDYES)
-		DebugBreak();
-	// Don't use GetCurrentWindowHandle() since that might only return an active window
-	if (tt::hwndMsgBoxParent && IsWindow(tt::hwndMsgBoxParent))
-		SendMessage(tt::hwndMsgBoxParent, WM_CLOSE, 0, 0);	// attempt to give the application window a graceful way to shut down
-#elif _WX_WX_H_
-	wxFAIL_MSG("Out of Memory!!!");
-#endif	// __WINDOWS_ and _WX_WX_H_
-
-#endif	// _DEBUG
-
-	exit(-1);
-}
-
-#ifdef _DEBUG
-
 namespace ttdbg {
 	ttCCritSection crtAssert;
 	bool bNoAssert = false;		// Setting this to true will cause AssertionMsg to return without doing anything
@@ -137,52 +107,6 @@ void tt::SetAsserts(bool bDisable)
 	ttdbg::bNoAssert = bDisable;
 }
 
-// Displays a message box displaying the catch message with an option to ignore, break into a debugger, or exit the program. Example:
-//
-// try {
-//	   ...
-// }
-// catch (...) {
-//	   CATCH_HANDLER("%s (%d) : Exception in %s()", __FILE__, __LINE__, __func__);
-// }
-
-void _cdecl tt::CATCH_HANDLER(const char* pszFormat, ...)
-{
-	ttASSERT(pszFormat);
-	if (!pszFormat)
-		return;
-
-	ttCStr strMsg;
-	va_list argList;
-	va_start(argList, pszFormat);
-	tt::vprintf(strMsg.getPPtr(), pszFormat, argList);
-	va_end(argList);
-
-#ifdef _WINDOWS_
-
-	int answer = MessageBoxA(GetActiveWindow(), strMsg, "Retry to call DebugBreak()", MB_ABORTRETRYIGNORE);
-
-	if (answer == IDRETRY) {
-		DebugBreak();
-		return;
-	}
-	else if (answer != IDIGNORE) {
-		if (tt::hwndMsgBoxParent && IsWindow(tt::hwndMsgBoxParent))
-			SendMessage(tt::hwndMsgBoxParent, WM_CLOSE, 0, 0);	// attempt to give the application window a graceful way to shut down
-		ExitProcess((UINT) -1);
-	}
-
-#else	// not _WINDOWS_
-
-#ifdef _WX_WX_H_
-	wxFAIL_MSG(strMsg);
-#else	// not _WX_WX_H_
-	asm volatile ("int $3");
-#endif	// _WX_WX_H_
-
-#endif	// _WINDOWS_
-}
-
 #ifdef _WINDOWS_
 
 void tt::doReportLastError(const char* pszFile, const char* pszFunc, int line)
@@ -209,5 +133,3 @@ DWORD tt::CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile,
 }
 
 #endif	// _WINDOWS_
-
-#endif	// _DEBUG
