@@ -132,6 +132,11 @@ bool tt::AssertionMsg(const wchar_t* pwszMsg, const char* pszFile, const char* p
 	return bResult;
 }
 
+void tt::SetAsserts(bool bDisable)
+{
+	ttdbg::bNoAssert = bDisable;
+}
+
 // Displays a message box displaying the catch message with an option to ignore, break into a debugger, or exit the program. Example:
 //
 // try {
