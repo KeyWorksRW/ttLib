@@ -94,7 +94,7 @@ public:
 	void SetCheck(int id, BOOL bCheck = TRUE) const { (void) SendMessage(id, BM_SETCHECK, bCheck); }
 	void UnCheck(int id) const { (void) SendMessage(id, BM_SETCHECK, FALSE); }
 
-	HICON setIcon(HICON hIcon, BOOL bBigIcon = TRUE) { ttASSERT(::IsWindow(m_hwnd)); return (HICON)::SendMessage(m_hwnd, WM_SETICON, bBigIcon, (LPARAM)hIcon); }
+	HICON SetIcon(HICON hIcon, BOOL bBigIcon = TRUE) { ttASSERT(::IsWindow(m_hwnd)); return (HICON)::SendMessage(m_hwnd, WM_SETICON, bBigIcon, (LPARAM)hIcon); }
 
 	LRESULT SendMessage(int id, UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::SendMessage(GetDlgItem(id), msg, wParam, lParam); }
 	LRESULT SendMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::SendMessage(*this, msg, wParam, lParam); }
