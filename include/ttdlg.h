@@ -26,9 +26,9 @@
 #include <CommCtrl.h>
 
 #include "ttdebug.h"	// for ttASSERTS
-#include "ttstr.h"	// ttCStr
-#include "ttwstr.h"	// ttCWStr
-#include "ttmultibtn.h"	// ttCMultiBtn
+#include "ttstr.h"		// ttCStr
+#include "ttwstr.h" 	// ttCWStr
+#include "ttmultibtn.h" // ttCMultiBtn
 
 #ifndef __DLG_ID__
 	#ifdef _DEBUG
