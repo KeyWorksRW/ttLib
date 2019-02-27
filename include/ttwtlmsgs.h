@@ -1,14 +1,15 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:		wtlmsgs.h
-// Purpose:		Substitute for <atlcrack.h> without requiring atlapp.h
+// Purpose:		Macros for mapping Windows messages to functions
 // Author:		Ralph Walden
 // Copyright:	Copyright (c) 2013-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
-// This header file can be used as a replacement for <atlcrack.h> and in addition to <atlwin.h>. It will work with
-// ATL/WTL windows and dialogs as well as ttWin and ttDlg classes. It generates slightly more code than ttmsgmap.h when
-// used with ttWin or ttDlg, but can be very useful when converting a dialog/window from ATL/WTL to a tt dialog or window.
+// This header file can be used as a complete replacement for <atlcrack.h> or as an addition to <atlwin.h>. It will work
+// with ATL/WTL windows and dialogs as well as ttWin and ttDlg classes. It generates slightly more code than ttmsgmap.h
+// when used with ttWin or ttDlg, but can be very useful when converting a dialog/window from ATL/WTL to a tt dialog or
+// window.
 
 // Note that unlike atlcrack/atlwin, if you provide a message handler then it always assumes you have handled the message
 // (bHandled is not passed to your function, nor is it checked when the function returns). In addition, the function only
