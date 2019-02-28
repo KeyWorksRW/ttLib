@@ -189,6 +189,8 @@ public:
 
 	ttCStrIntList(bool bSerialize = false);
 
+	void IgnoreCase() { m_bIgnoreCase = true; }	// ignore case when searching for keys
+
 	/*
 		If the string already exists, but the Val doesn't, Add() will add the Val to the array of Vals
 		associated with the string. I.e.,
@@ -243,6 +245,7 @@ protected:
 	ptrdiff_t m_posEnumVal;
 
 	bool m_bSerialize;
+	bool m_bIgnoreCase;
 };
 
 #endif	// __TTLIB_STRLIST_H__

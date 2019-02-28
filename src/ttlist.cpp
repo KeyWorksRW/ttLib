@@ -628,6 +628,7 @@ ttCStrIntList::ttCStrIntList(bool bSerialize) : ttCHeap(bSerialize)
 	m_aptrs = nullptr;
 	m_bSerialize = bSerialize;
 	m_posEnumKey = (size_t) -1;
+	m_bIgnoreCase = false;
 }
 
 void ttCStrIntList::Add(const char* pszKey, ptrdiff_t newVal)
@@ -637,7 +638,7 @@ void ttCStrIntList::Add(const char* pszKey, ptrdiff_t newVal)
 		return;
 
 	for (size_t pos = 0; pos < m_cItems; ++pos)	{
-		if (tt::isSameStr(m_aptrs[pos].pszKey, pszKey)) {
+		if (m_bIgnoreCase ? tt::isSameStri(m_aptrs[pos].pszKey, pszKey) : tt::isSameStr(m_aptrs[pos].pszKey, pszKey)) {
 			ptrdiff_t cItems = m_aptrs[pos].pVal[0];
 			for (ptrdiff_t valPos = 1; valPos <= cItems; ++valPos) {
 				if (newVal == m_aptrs[pos].pVal[valPos])
@@ -713,7 +714,7 @@ bool ttCStrIntList::FindKey(const char* pszKey, size_t* ppos) const
 	if (!pszKey || !*pszKey)
 		return false;
 	for (size_t pos = 0; pos < m_cItems; ++pos)	{
-		if (tt::isSameStr(m_aptrs[pos].pszKey, pszKey))	{
+		if (m_bIgnoreCase ? tt::isSameStri(m_aptrs[pos].pszKey, pszKey) : tt::isSameStr(m_aptrs[pos].pszKey, pszKey)) {
 			if (ppos)
 				*ppos = pos;
 			return true;
@@ -729,9 +730,9 @@ bool ttCStrIntList::GetValCount(const char* pszKey, ptrdiff_t* pVal) const
 
 	if (!pszKey || !*pszKey || !pVal)
 		return false;
-	for (size_t posKey = 0; posKey < m_cItems; ++posKey)	{
-		if (tt::isSameStr(m_aptrs[posKey].pszKey, pszKey)) {
-			*pVal = m_aptrs[posKey].pVal[0];
+	for (size_t pos = 0; pos < m_cItems; ++pos)	{
+		if (m_bIgnoreCase ? tt::isSameStri(m_aptrs[pos].pszKey, pszKey) : tt::isSameStr(m_aptrs[pos].pszKey, pszKey)) {
+			*pVal = m_aptrs[pos].pVal[0];
 			return true;
 		}
 	}
@@ -754,7 +755,7 @@ bool ttCStrIntList::GetVal(const char* pszKey, ptrdiff_t* pVal, size_t posVal) c
 	if (!pszKey || !*pszKey || !pVal)
 		return false;
 	for (size_t posKey = 0; posKey < m_cItems; ++posKey)	{
-		if (tt::isSameStr(m_aptrs[posKey].pszKey, pszKey)) {
+		if (m_bIgnoreCase ? tt::isSameStri(m_aptrs[posKey].pszKey, pszKey) : tt::isSameStr(m_aptrs[posKey].pszKey, pszKey)) {
 			if ((ptrdiff_t) posVal > m_aptrs[posKey].pVal[0])
 				return false;
 			*pVal = m_aptrs[posKey].pVal[posVal];
