@@ -137,6 +137,7 @@ namespace tt {
 	inline void		 setResInst(HINSTANCE hinst) { hinstResources = hinst; }
 	inline void		 setMsgBoxParent(HWND hwnd) { hwndMsgBoxParent = hwnd; }
 		   void		 setMsgBoxTitle(const char* pszMsgTitle);
+	inline const char* getMsgBoxTitle() { return pszMsgTitle; }
 #endif
 
 	void	ConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszResult);
