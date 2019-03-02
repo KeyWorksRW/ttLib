@@ -13,6 +13,12 @@
 
 class ttCStr;	 // forward definition
 
+extern bool (_cdecl *pttAssertHandlerA)(const char* pszMsg, const char* pszFile, const char* pszFunction, int line);
+extern bool (_cdecl *pttAssertHandlerW)(const wchar_t* pszMsg, const char* pszFile, const char* pszFunction, int line);
+
+typedef bool (_cdecl *TTASSERTHANDLERA)(const char* pszMsg, const char* pszFile, const char* pszFunction, int line);
+typedef bool (_cdecl *TTASSERTHANDLERW)(const wchar_t* pszMsg, const char* pszFile, const char* pszFunction, int line);
+
 // The tt namespace is used in other ttLib header files as well, so this is not a complete list.
 
 namespace tt {
@@ -169,6 +175,9 @@ namespace tt {
 	size_t	HashFromSz(const wchar_t* psz);
 	size_t	HashFromURL(const char* pszURL);
 	size_t	HashFromURL(const wchar_t* pszURL);
+
+	inline void	SetAssertHandlerA(TTASSERTHANDLERA pFunc) { pttAssertHandlerA = pFunc; }	// Replace the ttLib assertion handler with your own
+	inline void	SetAssertHandlerW(TTASSERTHANDLERW pFunc) { pttAssertHandlerW = pFunc; }
 
 #ifdef _WINDOWS_
 	const char* getResString(size_t idString);

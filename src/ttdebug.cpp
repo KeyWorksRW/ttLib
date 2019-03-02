@@ -14,9 +14,13 @@
 #include "../include/ttstr.h"		// ttCStr
 #include "../include/ttcritsection.h"	// CCritSection
 
+bool (_cdecl *pttAssertHandlerA)(const char* pszMsg, const char* pszFile, const char* pszFunction, int line) = nullptr;
+bool (_cdecl *pttAssertHandlerW)(const wchar_t* pszMsg, const char* pszFile, const char* pszFunction, int line) = nullptr;
+
 namespace ttdbg {
 	ttCCritSection crtAssert;
 	bool bNoAssert = false;		// Setting this to true will cause AssertionMsg to return without doing anything
+	bool bNoRecurse = false;
 }
 
 using namespace ttdbg;
@@ -27,6 +31,15 @@ bool tt::AssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFu
 {
 	if (ttdbg::bNoAssert)
 		return false;
+
+	// if pttAssertHandlerA calls us, then we need to use a normal assert message
+
+	if (pttAssertHandlerA && !bNoRecurse) {
+		bNoRecurse = true;
+		bool bResult = pttAssertHandlerA(pszMsg, pszFile, pszFunction, line);
+		bNoRecurse = false;
+		return bResult;
+	}
 
 	crtAssert.Lock();
 
@@ -81,6 +94,9 @@ bool tt::AssertionMsg(const wchar_t* pwszMsg, const char* pszFile, const char* p
 {
 	if (ttdbg::bNoAssert)
 		return false;
+
+	if (pttAssertHandlerW)
+		return pttAssertHandlerW(pwszMsg, pszFile, pszFunction, line);
 
 	crtAssert.Lock();
 	bool bResult;
