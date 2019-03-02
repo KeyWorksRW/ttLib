@@ -40,7 +40,11 @@ INT_PTR ttCDlg::DoModal(HWND hwndParent)
 {
 	if (hwndParent)
 		m_hwndParent = hwndParent;
+
+	HWND hwndSave = tt::hwndMsgBoxParent;
 	INT_PTR result = ::DialogBoxParam(tt::hinstResources, MAKEINTRESOURCE(m_idTemplate), m_hwndParent, (DLGPROC) ttpriv::DlgProc, (LPARAM) this);
+	tt::hwndMsgBoxParent = hwndSave;
+
 #ifdef _DEBUG
 	if (result == -1) {
 		HRSRC hrsrc = FindResource(tt::hinstResources, MAKEINTRESOURCE(m_idTemplate), RT_DIALOG);
@@ -63,6 +67,7 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 #endif
 		ttCDlg* pThis = (ttCDlg*) lParam;
 		pThis->m_hwnd = hdlg;
+		tt::hwndMsgBoxParent = hdlg;
 		if (!tt::isValidWindow(pThis->m_hwndParent))
 			pThis->m_hwndParent = GetActiveWindow();
 
