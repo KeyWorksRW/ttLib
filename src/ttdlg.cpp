@@ -110,13 +110,16 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 				int cx = tt::RC_WIDTH(rc);
 				int cy = tt::RC_HEIGHT(rc);
 
+#if 0	// [randalphwa - 3/2/2019] This centers the window based on the owner.
 				if (pThis->m_hwndParent) {
 					GetWindowRect(pThis->m_hwndParent, &rc);
 				}
 				else {
 					SystemParametersInfo(SPI_GETWORKAREA, 0, &rc, 0);
 				}
-
+#else	// [randalphwa - 3/2/2019] This centers the window based on the working area of the desktop.
+				SystemParametersInfo(SPI_GETWORKAREA, 0, &rc, 0);
+#endif
 				int left = rc.left + (tt::RC_WIDTH(rc) - cx) / 2;
 				int top	 = rc.top + (tt::RC_HEIGHT(rc) - cy) / 2;
 
