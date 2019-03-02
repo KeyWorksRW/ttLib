@@ -36,8 +36,10 @@ ttCDlg::ttCDlg(UINT idTemplate, HWND hwnd)
 	m_bInitializing = true;
 };
 
-INT_PTR ttCDlg::DoModal()
+INT_PTR ttCDlg::DoModal(HWND hwndParent)
 {
+	if (hwndParent)
+		m_hwndParent = hwndParent;
 	INT_PTR result = ::DialogBoxParam(tt::hinstResources, MAKEINTRESOURCE(m_idTemplate), m_hwndParent, (DLGPROC) ttpriv::DlgProc, (LPARAM) this);
 #ifdef _DEBUG
 	if (result == -1) {

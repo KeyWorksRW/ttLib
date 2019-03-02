@@ -49,7 +49,7 @@ class ttCDlg
 public:
 	ttCDlg(UINT idTemplate, HWND hwnd = NULL);
 
-	INT_PTR DoModal();
+	INT_PTR DoModal(HWND hwndParent = NULL);
 
 	// BEGIN_TTMSG_MAP in ttmsgmap.h will override this
 	virtual bool OnMsgMap(UINT /* uMsg */, WPARAM /* wParam */, LPARAM /* lParam */, LRESULT& lResult) { lResult = 0; return false; }
