@@ -14,7 +14,7 @@
 #include "ttheap.h"		// ttHeap
 #include "ttdebug.h"	// for ttASSERT
 
-// A simple array of any type
+// A simple header-only array of any type
 
 template <typename T> class ttCArray
 {
@@ -30,13 +30,13 @@ public:
 
 	void Add(const T t) {
 		if (m_cItems >= m_cAllocated) {
-			m_cAllocated += 32;
+			m_cAllocated += 8;	// allocate room for 8 items at a time
 			m_aData = (T*) (m_aData ? tt::ReAlloc(m_aData, m_cAllocated * sizeof(T)) : tt::Malloc(m_cAllocated * sizeof(T)));
 		}
 		m_aData[m_cItems++] = t;
 	}
 
-	bool Find(const T t, size_t* ppos = NULL) const {
+	bool Find(const T t, size_t* ppos = nullptr) const {
 		for (size_t pos = 0; pos < m_cItems; pos++) {
 			if (m_aData[pos] == t) {
 				if (ppos) {
