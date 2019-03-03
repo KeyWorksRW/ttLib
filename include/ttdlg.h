@@ -25,7 +25,7 @@
 
 #include <CommCtrl.h>
 
-#include "ttdebug.h"	// for ttASSERTS
+#include "ttdebug.h"	// ttASSERT macros
 #include "ttstr.h"		// ttCStr
 #include "ttwstr.h" 	// ttCWStr
 #include "ttmultibtn.h" // ttCMultiBtn

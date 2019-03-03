@@ -37,7 +37,7 @@
 #ifndef __TTLIB_CSTR_H__
 #define __TTLIB_CSTR_H__
 
-#include "ttheap.h" // ttHeap
+#include "ttheap.h" // ttCHeap
 
 class ttCStr
 {

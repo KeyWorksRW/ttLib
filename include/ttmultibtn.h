@@ -12,8 +12,8 @@
 	#error This code will only work on Windows
 #endif
 
-#include "../include/ttarray.h" 	// CTTArray
-#include "../include/ttshadebtn.h"	// CShadeBtn
+#include "ttarray.h"		// ttCArray
+#include "ttshadebtn.h" 	// ttCShadeBtn
 
 namespace ttpriv {
 	BOOL WINAPI EnumBtnProc(HWND hwnd, LPARAM lval);

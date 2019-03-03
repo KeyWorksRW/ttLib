@@ -20,11 +20,11 @@
 #include "ttheap.h" 		// ttCHeap
 #include "tthashpair.h"		// ttCHashPair
 #include "ttarray.h"		// ttCArray
-#include "ttstr.h"		// ttCStr
+#include "ttstr.h"			// ttCStr
 #include "ttfile.h" 		// ttCFile
 
 class ttCParseXML;		// forward definition
-class ttCXMLBranch;	// forward definition
+class ttCXMLBranch; 	// forward definition
 
 #define PARSE_MINIMAL			0x00000000 // Unset the following flags.
 #define PARSE_PI				0x00000002 // Parse '<?...?>'

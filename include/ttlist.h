@@ -16,8 +16,8 @@
 #define __TTLIB_STRLIST_H__
 
 #include "ttheap.h"		// ttCHeap
-#include "tthashpair.h"	// ttHashPair
-#include "ttstr.h"	// ttCStr
+#include "tthashpair.h" // ttCHashPair
+#include "ttstr.h"		// ttCStr
 
 class ttCList : public ttCHeap
 {

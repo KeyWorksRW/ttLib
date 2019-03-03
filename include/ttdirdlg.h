@@ -10,8 +10,8 @@
 
 #include <shlobj.h>
 
-#include "../include/ttstr.h"
-#include "../include/ttwstr.h"	// ttCWStr
+#include "ttstr.h"		// ttCStr
+#include "ttwstr.h" 	// ttCWStr
 
 class ttCDirDlg
 {

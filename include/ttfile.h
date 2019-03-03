@@ -18,8 +18,8 @@
 #ifndef __TTLIB_KEYFILE_H__
 #define __TTLIB_KEYFILE_H__
 
-#include "ttdebug.h"	// for ttASSERTS
-#include "ttstr.h"	// ttString
+#include "ttdebug.h"	// ttASSERT macros
+#include "ttstr.h"		// ttCStr
 
 #ifdef _WINDOWS_
 	#include <Wininet.h>

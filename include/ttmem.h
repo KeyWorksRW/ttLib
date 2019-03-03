@@ -11,8 +11,8 @@
 #ifndef __TTLIB_TTMEM_H__
 #define __TTLIB_TTMEM_H__
 
-#include "ttdebug.h"	// Various debugging functionality
-#include "ttheap.h" 	// ttHeap
+#include "ttdebug.h"	// ttASSERT macros
+#include "ttheap.h" 	// ttCHeap
 
 /*
   ttCMem and ttCTMem allow you to allocate memory that will automatically be FreeAllocd when the class gets destroyed.

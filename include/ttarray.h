@@ -11,8 +11,8 @@
 #ifndef __TTLIB_TTARRAY_H__
 #define __TTLIB_TTARRAY_H__
 
-#include "ttheap.h"		// ttHeap
-#include "ttdebug.h"	// for ttASSERT
+#include "ttheap.h" 	// ttCHeap
+#include "ttdebug.h"	// ttASSERT macros
 
 // A simple header-only array of any type
 

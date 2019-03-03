@@ -34,7 +34,7 @@
 
 #pragma once
 
-#include "ttstr.h"	// ttString
+#include "ttstr.h"	// ttCStr
 
 class ttCWStr
 {

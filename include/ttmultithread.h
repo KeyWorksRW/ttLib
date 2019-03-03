@@ -28,7 +28,7 @@
 
 // a try/catch section is placed around the call to doThreadWork
 
-#include "ttmap.h"	// ttMap
+#include "ttmap.h"	// ttCMap
 
 #ifdef _WX_WX_H_
 	class CMultiChildThread;	// forward definition

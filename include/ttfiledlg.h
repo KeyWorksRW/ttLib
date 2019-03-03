@@ -18,7 +18,7 @@
 #include <commdlg.h>
 
 #include "ttdebug.h"	// for ttASSERTS
-#include "ttstr.h"	// ttCStr
+#include "ttstr.h"		// ttCStr
 #include "ttmultibtn.h"	// ttCMultiBtn
 
 #ifndef OFN_DONTADDTORECENT

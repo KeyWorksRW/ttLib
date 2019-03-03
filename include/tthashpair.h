@@ -14,7 +14,7 @@
 #ifndef __TTLIB_HASHPAIR_H__
 #define __TTLIB_HASHPAIR_H__
 
-#include "../include/ttdebug.h"	// ASSERTs
+#include "ttdebug.h"	// ttASSERT macros
 
 class ttCHashPair
 {
