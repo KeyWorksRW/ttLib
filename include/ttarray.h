@@ -54,7 +54,7 @@ public:
 	T operator[](size_t pos) const {
 		ttASSERT(pos < m_cItems);
 		if (pos >= m_cItems)
-			return NULL;
+			throw;
 		return m_aData[pos];
 	}
 
