@@ -2,6 +2,7 @@
 lib/
 build/
 .private/
+bonepile/
 
 # General file extensions to ignore
 *.backup
