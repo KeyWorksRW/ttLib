@@ -1,0 +1,23 @@
+Options:
+	Project: ttTrace
+	PCH:        pch.h     # "none" or name of header file to use for precompilation
+	exe_type:   window    # [window | console | lib | dll]
+	static_crt: false     # link to static or DLL version of CRT
+	permissive: true      # Permissive compiler option (needed for WTL)
+	64Bit:      true      # create 64-bit project
+	bit_suffix: true      # add "64" to the end of the project name (e.g., foo64.exe)
+
+# Before making pulblic, change ../../ttLib to ../ttLib to use sub module instead of actual repository
+
+	IncDirs: ../include;../WTL
+	TargetDirs:	 ../bin; ../bin64
+	BuildLibs: ../lib/ttLib
+
+Files:
+	pch.cpp
+	trace.rc
+
+	init.cpp
+	traceview.cpp
+	mainfrm.cpp
+	prefs.cpp

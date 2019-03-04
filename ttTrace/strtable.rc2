@@ -1,0 +1,19 @@
+//
+// STRTABLE.RC2 - resources Microsoft Visual C++ does not edit directly
+//
+
+#ifdef APSTUDIO_INVOKED
+	#error this file is not editable by Microsoft Visual C++
+#endif //APSTUDIO_INVOKED
+
+#include "strtable.h"
+
+STRINGTABLE
+BEGIN
+	IDS_OOM					"There is not enough memory available for this task.\nQuit one or more applications to increase available memory, and then try again."
+	IDS_CANNOT_OPEN			"Cannot open %kq"
+	IDS_INTERNAL_ERROR		"An internal error has occurred."
+	IDS_FILE_MAPPING_ERROR	"Unable to create file mapping memory for messages"
+	IDS_WRITE_ERROR		  	"An error occurred while writing to \042%s\042."
+	IDS_FILE_SAVED		  	"File saved"
+END
