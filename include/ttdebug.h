@@ -14,19 +14,24 @@
 #ifndef __TTLIB_ASSERTS_H__
 #define __TTLIB_ASSERTS_H__
 
+// Note that all functions listed here are available in release builds. Only the macros are removed in release builds
+
 namespace tt {
 	bool AssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFunction, int line);
 	bool AssertionMsg(const wchar_t* pszMsg, const char* pszFile, const char* pszFunction, int line);
 	void doReportLastError(const char* pszFile, const char* pszFunc, int line);
 	void SetAsserts(bool bDisable);	// enables disables all assertion messages
+
 	__declspec(noreturn) void OOM(void);
+
+	void cdecl ttTrace(const char* pszFormat, ...);	// formats a string and displays it in a ttTrace window (if ttTrace is running)
 
 	extern const WPARAM WMP_TRACE_GENERAL; // WM_USER + 0x1f3;	// general message to send to ttTrace
 	extern const WPARAM WMP_TRACE_MSG;     // WM_USER + 0x1f5;	// trace message to send to ttTrace
 	extern const WPARAM WMP_CLEAR_TRACE;   // WM_USER + 0x1f9;	// clears the ttTrace window
 
 	extern const char* txtTraceClass;		// class name of window to send trace messages to
-	extern const char* txtTraceShareName;	// name of shared memory to send strings/data to ttTrace
+	extern const char* txtTraceShareName;	// name of shared memory to write to
 
 #ifdef _WINDOWS_
 	DWORD CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc, int line);

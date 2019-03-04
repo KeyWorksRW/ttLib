@@ -30,6 +30,11 @@ namespace ttdbg {
 	ttCCritSection crtAssert;
 	bool bNoAssert = false;		// Setting this to true will cause AssertionMsg to return without doing anything
 	bool bNoRecurse = false;
+
+	HANDLE hTraceMapping = NULL;
+	HWND hwndTrace = NULL;
+	ttCCritSection g_csTrace;
+	char* g_pszTraceMap = nullptr;
 }
 
 using namespace ttdbg;
@@ -155,6 +160,53 @@ DWORD tt::CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile,
 		tt::AssertionMsg(cszMsg, pszFile, pszFunc, line);
 	}
 	return id;
+}
+
+// WARNING! Do not call ttASSERT in this function or you will end up with a recursive call.
+
+void __cdecl tt::ttTrace(const char* pszFormat, ...)
+{
+	// We don't want two threads trying to send text at the same time, so we wrap the function in a critical section
+
+	ttCCritLock lock(&g_csTrace);
+
+	if (!pszFormat || !*pszFormat)
+		return;
+
+	if (!IsWindow(hwndTrace)) {
+		hwndTrace = FindWindowA(tt::txtTraceClass, NULL);
+		if (!hwndTrace)
+			return;
+	}
+
+	ttCStr csz;
+	va_list argList;
+	va_start(argList, pszFormat);
+	tt::vprintf(csz.getPPtr(), pszFormat, argList);
+	va_end(argList);
+
+	if (!hTraceMapping) {
+		hTraceMapping = CreateFileMappingA(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 4096, tt::txtTraceShareName);
+		if (!hTraceMapping) {
+			hwndTrace = NULL;
+			return;
+		}
+	}
+	if (!g_pszTraceMap) {
+		g_pszTraceMap = (char*) MapViewOfFile(hTraceMapping, FILE_MAP_WRITE, 0, 0, 0);
+		if (!g_pszTraceMap) {
+			hwndTrace = NULL;
+			return;
+		}
+	}
+
+	tt::strCopy(g_pszTraceMap, 4093, csz);
+	tt::strCat(g_pszTraceMap, 4094, "\r\n");
+
+	SendMessage(hwndTrace, tt::WMP_TRACE_MSG, 0, 0);
+
+	UnmapViewOfFile(g_pszTraceMap);
+	g_pszTraceMap = nullptr;
 }
 
 #endif	// _WINDOWS_
