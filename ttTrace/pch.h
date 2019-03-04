@@ -24,6 +24,8 @@
 
 #include <windows.h>
 
+// Ensure the following libraries get passed to the linker
+
 #pragma comment(lib, "kernel32.lib")
 #pragma comment(lib, "user32.lib")
 #pragma comment(lib, "comdlg32.lib")
@@ -31,10 +33,10 @@
 #pragma comment(lib, "advapi32.lib")
 #pragma comment(lib, "gdi32.lib")
 
+#include <stdint.h>
 #include <ttdebug.h>	// ttASSERT macros
-#define ATLASSERT(expr) ttASSERT(expr)
 
-// Turn off ATL warnings
+#define ATLASSERT(expr) ttASSERT(expr)
 
 #include <atldef.h>
 #include <atlbase.h>
@@ -50,14 +52,8 @@ extern CAppModule _Module;
 #include <atlframe.h>
 #include <atlctrls.h>
 
-#include <stdint.h>
-
 #include <ttlib.h>	// Master header file for ttLib
 
-extern const char* txtVersion;
-extern const char* txtCopyRight;
-
-#include "funcs.h"
 #include "strtable.h"
 
 typedef struct {
