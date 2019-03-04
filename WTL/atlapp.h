@@ -11,6 +11,10 @@
 
 #pragma once
 
+#ifdef __clang__
+	#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif // __clang__
+
 #ifndef __cplusplus
 	#error WTL requires C++ compilation (use a .cpp suffix)
 #endif

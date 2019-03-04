@@ -11,6 +11,10 @@
 
 #pragma once
 
+#ifdef __clang__
+	#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif // __clang__
+
 #ifndef __ATLAPP_H__
 	#error atlframe.h requires atlapp.h to be included first
 #endif
@@ -2168,7 +2172,7 @@ public:
 		for( ; pMap->m_nID != (WORD)-1; pMap++, pUIData++)
 		{
 			if(nID == (int)pMap->m_nID)
-			{		
+			{
 				pUIData->m_wState = (WORD)(dwState | pMap->m_wType);
 				m_wDirtyType |= pMap->m_wType;
 				break;   // found
@@ -3471,7 +3475,6 @@ public:
 };
 
 #endif // (_MSC_VER >= 1900)
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // CDoubleBufferImpl - Provides double-buffer painting support to any window
