@@ -92,3 +92,7 @@ ipch/
 *.vspscc
 *.vspx
 *.vssscc
+
+# VSCode files
+.vscode/
+*.code-workspace
