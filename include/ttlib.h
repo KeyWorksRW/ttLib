@@ -79,10 +79,14 @@ namespace tt {
 	// force "normal" calls to secure version -- possible buffer overflow if destination isn't large enough
 
 	inline char* strCat(char* pszDst, const char* pszSrc) { strCat_s(pszDst, tt::MAX_STRING_LEN, pszSrc); return pszDst; }
+	inline char* strCat(char* pszDst, size_t maxDst, const char* pszSrc) { strCat_s(pszDst, maxDst, pszSrc); return pszDst; }
 	inline char* strCopy(char* pszDst, const char* pszSrc) { strCopy_s(pszDst, tt::MAX_STRING_LEN, pszSrc); return pszDst; }
+	inline char* strCopy(char* pszDst, size_t maxDst, const char* pszSrc) { strCopy_s(pszDst, maxDst, pszSrc); return pszDst; }
 
-	inline void  strCat(wchar_t* pwszDst, const wchar_t* pszSrc) { tt::strCat_s(pwszDst, tt::MAX_STRING_LEN, pszSrc); }
-	inline void  strCopy(wchar_t* pwszDst, const wchar_t* pszSrc) { tt::strCopy_s(pwszDst, tt::MAX_STRING_LEN, pszSrc); }
+	inline void  strCat(wchar_t* pwszDst, const wchar_t* pwszSrc) { tt::strCat_s(pwszDst, tt::MAX_STRING_LEN, pwszSrc); }
+	inline void  strCat(wchar_t* pwszDst, size_t maxDst, const wchar_t* pwszSrc) { tt::strCat_s(pwszDst, maxDst, pwszSrc); }
+	inline void  strCopy(wchar_t* pwszDst, const wchar_t* pwszSrc) { tt::strCopy_s(pwszDst, tt::MAX_STRING_LEN, pwszSrc); }
+	inline void  strCopy(wchar_t* pwszDst, size_t maxDst, const wchar_t* pwszSrc) { tt::strCopy_s(pwszDst, maxDst, pwszSrc); }
 
 	// Use strLen() to get the number of characters without trailing zero, use strByteLen() to get the number of
 	// bytes including the terminating zero
