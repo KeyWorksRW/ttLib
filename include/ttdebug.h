@@ -21,6 +21,13 @@ namespace tt {
 	void SetAsserts(bool bDisable);	// enables disables all assertion messages
 	__declspec(noreturn) void OOM(void);
 
+	extern const WPARAM WMP_TRACE_GENERAL; // WM_USER + 0x1f3;	// general message to send to ttTrace
+	extern const WPARAM WMP_TRACE_MSG;     // WM_USER + 0x1f5;	// trace message to send to ttTrace
+	extern const WPARAM WMP_CLEAR_TRACE;   // WM_USER + 0x1f9;	// clears the ttTrace window
+
+	extern const char* txtTraceClass;		// class name of window to send trace messages to
+	extern const char* txtTraceShareName;	// name of shared memory to send strings/data to ttTrace
+
 #ifdef _WINDOWS_
 	DWORD CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc, int line);
 #endif

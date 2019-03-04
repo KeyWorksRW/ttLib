@@ -11,11 +11,20 @@
 #include <stdio.h>
 
 #include "../include/ttdebug.h" 		// ttASSERT macros
-#include "../include/ttstr.h"		// ttCStr
+#include "../include/ttstr.h"			// ttCStr
 #include "../include/ttcritsection.h"	// CCritSection
 
 bool (_cdecl *pttAssertHandlerA)(const char* pszMsg, const char* pszFile, const char* pszFunction, int line) = nullptr;
 bool (_cdecl *pttAssertHandlerW)(const wchar_t* pszMsg, const char* pszFile, const char* pszFunction, int line) = nullptr;
+
+const WPARAM tt::WMP_TRACE_GENERAL = WM_USER + 0x1f3;
+const WPARAM tt::WMP_TRACE_MSG   = WM_USER + 0x1f5;
+const WPARAM tt::WMP_CLEAR_TRACE = WM_USER + 0x1f9;		// clears the ttTrace window
+
+	// DO NOT CHANGE THESE TWO NAMES! Multiple applications expect these names and will no longer send trace messages if you change them.
+
+const char* tt::txtTraceClass     = "KeyViewMsgs";
+const char* tt::txtTraceShareName = "hhw_share";
 
 namespace ttdbg {
 	ttCCritSection crtAssert;
