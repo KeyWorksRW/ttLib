@@ -8,8 +8,6 @@
 
 #include "pch.h"
 
-#include "version.txt"	// Version (txtVersion) and Copyright (txtCopyRight) information
-
 #include "resource.h"
 #include "traceview.h"
 #include "aboutdlg.h"
