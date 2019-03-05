@@ -55,7 +55,7 @@ void ttCMultiBtn::SetIcon(int idBtn, int idIcon, UINT nIconAlign)
 #ifdef _DEBUG
 		if (IsWindow(*m_aBtns[i])) {
 			int id = GetDlgCtrlID(*m_aBtns[i]);
-			tt::KeyTrace("Non-tracked DlgId: %s\n", id);
+			tt::Trace("ttCMultiBtn: Icon not set for button id:%d", id);
 		}
 #endif
 	}
