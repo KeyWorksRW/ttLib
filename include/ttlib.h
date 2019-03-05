@@ -195,7 +195,6 @@ namespace tt {
 	ptrdiff_t	CompareFileTime(FILETIME* pftSrc, FILETIME* pftDst);
 	HFONT		CreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold = false, bool fItalics = false);
 
-	void cdecl	KeyTrace(const char* pszFormat, ...);	// formats a string and displays it in a KeyView window (if KeyView is running)
 
 	inline int	RC_HEIGHT(const RECT* prc) { return prc->bottom - prc->top; };
 	inline int	RC_HEIGHT(const RECT rc) { return rc.bottom - rc.top; };
@@ -208,6 +207,8 @@ namespace tt {
 #endif	// _WINDOWS_
 
 // Remove these after all KeyWorks projects compile cleanly without them
+
+[[deprecated]]		void cdecl	KeyTrace(const char* pszFormat, ...);	// formats a string and displays it in a KeyView window (if KeyView is running)
 
 [[deprecated]]	inline char* strchr(const char* psz, char ch) { return findChar(psz, ch); }
 [[deprecated]]	inline char* strchrR(const char* psz, char ch) { return findLastChar(psz, ch); }
