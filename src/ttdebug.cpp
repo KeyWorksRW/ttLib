@@ -25,6 +25,7 @@ const WPARAM tt::WMP_CLEAR_TRACE = WM_USER + 0x1f9;		// clears the ttTrace windo
 
 const char* tt::txtTraceClass     = "KeyViewMsgs";
 const char* tt::txtTraceShareName = "hhw_share";
+HWND tt::hwndTrace = NULL;
 
 namespace ttdbg {
 	ttCCritSection crtAssert;
@@ -32,9 +33,9 @@ namespace ttdbg {
 	bool bNoRecurse = false;
 
 	HANDLE hTraceMapping = NULL;
-	HWND hwndTrace = NULL;
 	ttCCritSection g_csTrace;
 	char* g_pszTraceMap = nullptr;
+	DWORD g_cLastTickCheck = 0;		// used to determine whether to check for hwndTrace again
 }
 
 #if 0
@@ -181,7 +182,7 @@ DWORD tt::CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile,
 
 // WARNING! Do not call ttASSERT in this function or you will end up with a recursive call.
 
-void __cdecl tt::ttTrace(const char* pszFormat, ...)
+void __cdecl tt::Trace(const char* pszFormat, ...)
 {
 	// We don't want two threads trying to send text at the same time, so we wrap the function in a critical section
 
@@ -190,10 +191,19 @@ void __cdecl tt::ttTrace(const char* pszFormat, ...)
 	if (!pszFormat || !*pszFormat)
 		return;
 
-	if (!IsWindow(hwndTrace)) {
-		hwndTrace = FindWindowA(tt::txtTraceClass, NULL);
-		if (!hwndTrace)
-			return;
+	if (!tt::isValidWindow(tt::hwndTrace)) {
+		// Trace could be called a lot, and we don't really want to be searching for the window constantly.
+
+		DWORD cCurTick = GetTickCount();
+		cCurTick /= 1000;	// convert to seconds
+
+		if (g_cLastTickCheck == 0 || cCurTick > g_cLastTickCheck + 5) {
+			tt::hwndTrace = FindWindowA(tt::txtTraceClass, NULL);
+			if (!hwndTrace) {
+				g_cLastTickCheck = cCurTick;
+				return;
+			}
+		}
 	}
 
 	ttCStr csz;
@@ -220,7 +230,7 @@ void __cdecl tt::ttTrace(const char* pszFormat, ...)
 	tt::strCopy(g_pszTraceMap, 4093, csz);
 	tt::strCat(g_pszTraceMap, 4094, "\r\n");
 
-	SendMessage(hwndTrace, tt::WMP_TRACE_MSG, 0, 0);
+	SendMessage(tt::hwndTrace, tt::WMP_TRACE_MSG, 0, 0);
 
 	UnmapViewOfFile(g_pszTraceMap);
 	g_pszTraceMap = nullptr;
