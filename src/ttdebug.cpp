@@ -37,6 +37,23 @@ namespace ttdbg {
 	char* g_pszTraceMap = nullptr;
 }
 
+#if 0
+// [randalphwa - 3/5/2019] We don't currently expose this, but if a caller needs access to these variables, they could
+// copy this section into their own code to gain access. Alternatively, we could put it in ttdebug.h--I just don't think
+// it's going to be used often enough, and I'd rather not have clutter in ttdebug.h that almost no one will use.
+
+namespace ttdbg {
+	extern ttCCritSection crtAssert;
+	extern bool bNoAssert;		// Setting this to true will cause AssertionMsg to return without doing anything
+	extern bool bNoRecurse;
+
+	extern HANDLE hTraceMapping;
+	extern HWND hwndTrace;
+	extern ttCCritSection g_csTrace;
+	extern char* g_pszTraceMap;
+}
+#endif
+
 using namespace ttdbg;
 
 // Displays a message box displaying the ASSERT with an option to ignore, break into a debugger, or exit the program
