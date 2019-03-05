@@ -25,6 +25,7 @@ namespace tt {
 	__declspec(noreturn) void OOM(void);
 
 	void cdecl Trace(const char* pszFormat, ...);	// formats a string and displays it in a ttTrace window (if ttTrace is running)
+	void TraceClear();								// clears the ttTrace window if ttTrace is running
 
 	extern HWND hwndTrace;					// handle to ttTrace main window (if it was running when ttTrace was called;
 	extern const WPARAM WMP_TRACE_GENERAL; // WM_USER + 0x1f3;	// general message to send to ttTrace
@@ -43,7 +44,9 @@ namespace tt {
 	#define ttASSERT(exp) (void)((!!(exp)) || tt::AssertionMsg(#exp, __FILE__, __func__, __LINE__))
 	#define ttASSERT_MSG(exp, pszMsg) { if (!(exp)) tt::AssertionMsg(pszMsg, __FILE__, __func__, __LINE__); }
 	#define ttFAIL(pszMsg) tt::AssertionMsg(pszMsg, __FILE__, __func__, __LINE__)
+
 	#define ttTRACE(msg) tt::Trace(msg)
+	#define ttTRACE_CLEAR() tt::TraceClear();
 
 	// checks for both ptr == NULL and *ptr == NULL
 	#define ttASSERT_NONEMPTY(ptr) { if (!ptr || !*ptr) tt::AssertionMsg(ptr, __FILE__, __func__, __LINE__); }	// AssertionMsg figures out if it's nullptr or just empty
@@ -61,7 +64,9 @@ namespace tt {
 	#define ttASSERT(exp)
 	#define ttASSERT_MSG(exp, pszMsg)
 	#define ttFAIL(pszMsg)
+
 	#define ttTRACE(msg)
+	#define ttTRACE_CLEAR()
 
 	#define ttASSERT_NONEMPTY(ptr)
 

@@ -236,4 +236,15 @@ void __cdecl tt::Trace(const char* pszFormat, ...)
 	g_pszTraceMap = nullptr;
 }
 
+void tt::TraceClear()
+{
+	ttCCritLock lock(&g_csTrace);
+	if (!tt::isValidWindow(tt::hwndTrace))
+		return;
+	SendMessage(tt::hwndTrace, tt::WMP_CLEAR_TRACE, 0, 0);
+}
+
+
+
+
 #endif	// _WINDOWS_
