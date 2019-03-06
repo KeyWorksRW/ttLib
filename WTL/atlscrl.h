@@ -470,9 +470,9 @@ public:
 		ATLASSERT(::IsWindow(pT->m_hWnd));
 
 		int zDelta = (int)GET_WHEEL_DELTA_WPARAM(wParam);
-		int nScrollCode = (m_nWheelLines == WHEEL_PAGESCROLL) ? ((zDelta > 0) ? SB_PAGEUP : SB_PAGEDOWN) : ((zDelta > 0) ? SB_LINEUP : SB_LINEDOWN);
+		int nScrollCode = (m_nWheelLines == (int) WHEEL_PAGESCROLL) ? ((zDelta > 0) ? SB_PAGEUP : SB_PAGEDOWN) : ((zDelta > 0) ? SB_LINEUP : SB_LINEDOWN);
 		m_zDelta += zDelta;   // cumulative
-		int zTotal = (m_nWheelLines == WHEEL_PAGESCROLL) ? abs(m_zDelta) : abs(m_zDelta) * m_nWheelLines;
+		int zTotal = (m_nWheelLines == (int) WHEEL_PAGESCROLL) ? abs(m_zDelta) : abs(m_zDelta) * m_nWheelLines;
 		if(m_sizeAll.cy > m_sizeClient.cy)
 		{
 			for(int i = 0; i < zTotal; i += WHEEL_DELTA)
@@ -500,9 +500,9 @@ public:
 		ATLASSERT(::IsWindow(pT->m_hWnd));
 
 		int zDelta = (int)GET_WHEEL_DELTA_WPARAM(wParam);
-		int nScrollCode = (m_nHWheelChars == WHEEL_PAGESCROLL) ? ((zDelta > 0) ? SB_PAGERIGHT : SB_PAGELEFT) : ((zDelta > 0) ? SB_LINERIGHT : SB_LINELEFT);
+		int nScrollCode = (m_nHWheelChars == (int) WHEEL_PAGESCROLL) ? ((zDelta > 0) ? SB_PAGERIGHT : SB_PAGELEFT) : ((zDelta > 0) ? SB_LINERIGHT : SB_LINELEFT);
 		m_zHDelta += zDelta;   // cumulative
-		int zTotal = (m_nHWheelChars == WHEEL_PAGESCROLL) ? abs(m_zHDelta) : abs(m_zHDelta) * m_nHWheelChars;
+		int zTotal = (m_nHWheelChars == (int) WHEEL_PAGESCROLL) ? abs(m_zHDelta) : abs(m_zHDelta) * m_nHWheelChars;
 		if(m_sizeAll.cx > m_sizeClient.cx)
 		{
 			for(int i = 0; i < zTotal; i += WHEEL_DELTA)
@@ -1254,14 +1254,14 @@ public:
 	};
 
 // Data members
-	SIZE m_sizeLogAll;		
-	SIZE m_sizeLogLine;	
+	SIZE m_sizeLogAll;
+	SIZE m_sizeLogLine;
 	SIZE m_sizeLogPage;
 	float m_fZoomScale;
 	float m_fZoomScaleMin;
 	float m_fZoomScaleMax;
 	float m_fZoomDelta;   // Used in ZOOMMODE_IN and ZOOMMODE_OUT on left-button click.
-	int m_nZoomMode;		
+	int m_nZoomMode;
 	RECT m_rcTrack;
 	bool m_bTracking;
 
@@ -1501,11 +1501,11 @@ public:
 		}
 
 		ATLASSERT((size.cx > 0) && (size.cy > 0));
-		
+
 		float fScaleH = (float)(this->m_sizeClient.cx  + 1) / (float)size.cx;
 		float fScaleV = (float)(this->m_sizeClient.cy + 1) / (float)size.cy;
 		float fZoomScale = __min(fScaleH, fScaleV) * m_fZoomScale;
-		pT->Zoom(pt, fZoomScale);		
+		pT->Zoom(pt, fZoomScale);
 	}
 
 	void Zoom(float fZoomScale, bool bCenter = true)
@@ -1533,7 +1533,7 @@ public:
 		SIZE sizeAll = {};
 		sizeAll.cx = (int)((float)m_sizeLogAll.cx * fZoomScale);
 		sizeAll.cy = (int)((float)m_sizeLogAll.cy * fZoomScale);
-		
+
 		// Update scroll bars and window
 		CScrollImpl< T >::SetScrollSize(sizeAll);
 
@@ -1604,7 +1604,7 @@ public:
 		ATLASSERT(lpPoints);
 		T* pT = static_cast<T*>(this);
 		ATLASSERT(::IsWindow(pT->m_hWnd));
-	
+
 		CWindowDC dc(pT->m_hWnd);
 		pT->PrepareDC(dc.m_hDC);
 		dc.LPtoDP(lpPoints, nCount);
@@ -1614,7 +1614,7 @@ public:
 	{
 		pt.x += this->m_ptOffset.x;
 		pt.y += this->m_ptOffset.y;
-	}	
+	}
 
 	void DeviceToClient(POINT &pt)
 	{
@@ -1639,7 +1639,7 @@ public:
 			if(xOfs > xMax)
 				xOfs = xMax;
 		}
-		
+
 		int yOfs = pt.y - (rect.bottom / 2) + this->m_ptOffset.y;
 		if(yOfs < 0)
 		{
@@ -1842,7 +1842,7 @@ public:
 				}
 				::MapWindowPoints(pT->m_hWnd, NULL, (LPPOINT)&rcClip, 2);
 				::ClipCursor(&rcClip);
-			}	
+			}
 		}
 
 		bHandled = FALSE;
@@ -1897,7 +1897,7 @@ public:
 
 		bHandled = FALSE;
 		return 0;
-	}	
+	}
 };
 
 ///////////////////////////////////////////////////////////////////////////////
