@@ -53,12 +53,12 @@ public:
 	}
 	const TKey GetKeyAt(ptrdiff_t pos) const {
 		if (pos < 0 || pos >= m_cItems)
-			return (TKey) nullptr;
+			return (TKey) NULL;
 		return m_aMapPairs[pos].key;
 	}
 	const TVal GetValueAt(ptrdiff_t pos) const {
 		if (pos < 0 || pos >= m_cItems)
-			return (TVal) nullptr;
+			return (TVal) NULL;
 		return m_aMapPairs[pos].val;
 	}
 	ptrdiff_t FindKey(const TKey key) const {
@@ -87,8 +87,8 @@ public:
 		return (TVal) NULL;
 	}
 
-	size_t GetCount() const { return m_cItems; }
-	size_t GetSize()  const { return m_cItems; }	// for compatibility with CSimpleMap
+	ptrdiff_t GetCount() const { return m_cItems; }
+	ptrdiff_t GetSize()  const { return m_cItems; }	// for compatibility with CSimpleMap
 
 	// The following functions can be used to allocate memory that won't have to be specifically FreeAllocd -- it
 	// will be FreeAllocd automatically when the heap is destroyed in ttCMap's destructor
