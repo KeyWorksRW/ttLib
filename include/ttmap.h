@@ -42,13 +42,14 @@ public:
 		delete m_pHeap;
 	}
 
-	void Add(const TKey key, const TVal val) {
+	ptrdiff_t Add(const TKey key, const TVal val) {
 		if (m_cItems >= m_cAllocated) {
-			m_cAllocated += 32;	// add room for 32 items at a time
+			m_cAllocated += 8;	// number of items to add at a time
 			m_aMapPairs = (MAP_PAIR*) m_pHeap->ttRealloc(m_aMapPairs, m_cAllocated * sizeof(MAP_PAIR));
 		}
 		m_aMapPairs[m_cItems].key = key;
-		m_aMapPairs[m_cItems++].val = val;
+		m_aMapPairs[m_cItems].val = val;
+		return m_cItems++;
 	}
 	const TKey GetKeyAt(ptrdiff_t pos) const {
 		if (pos < 0 || pos >= m_cItems)
