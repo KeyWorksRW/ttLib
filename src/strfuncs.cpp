@@ -18,7 +18,6 @@
 
 size_t tt::strLen(const char* psz)
 {
-	ttASSERT_MSG(psz, "NULL pointer!");
 	if (psz) {
 		size_t cch = ::strlen(psz);	// now that we know it's not a null pointer, call the standard version of strLen
 		ttASSERT_MSG(cch < tt::MAX_STRING_LEN, "String is too long!");
@@ -31,7 +30,6 @@ size_t tt::strLen(const char* psz)
 
 size_t tt::strLen(const wchar_t* pwsz)
 {
-	ttASSERT_MSG(pwsz, "NULL pointer!");
 	if (pwsz) {
 		size_t cch = wcslen(pwsz);
 		// We use MAX_STRING_LEN as a max buffer size, so we need to divide by the size of wchar_t
@@ -115,11 +113,13 @@ int tt::strCopy_s(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
 
 int tt::strCat_s(char* pszDst, size_t cbDest, const char* pszSrc)
 {
-	ttASSERT_MSG(pszDst, "NULL pointer!");
-	ttASSERT_MSG(pszSrc, "NULL pointer!");
+	ttASSERT_MSG(pszDst, "NULL pointer!");		// We leave this assert because this is a serious problem for the caller
+	// ttASSERT_MSG(pszSrc, "NULL pointer!");	// Issue #45--limit asserts when we handle a nullptr correctly
 
 	if (pszDst == nullptr || pszSrc == nullptr)
 		return EINVAL;
+	if (!*pszSrc)
+		return 0;
 
 	int result = 0;
 
@@ -149,10 +149,11 @@ int tt::strCat_s(char* pszDst, size_t cbDest, const char* pszSrc)
 int tt::strCat_s(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");
-	ttASSERT_MSG(pszSrc, "NULL pointer!");
 
 	if (pszDst == nullptr || pszSrc == nullptr)
 		return EINVAL;
+	if (!*pszSrc)
+		return 0;
 
 	int result = 0;
 
@@ -239,9 +240,7 @@ wchar_t* tt::findLastChar(const wchar_t* psz, wchar_t ch)
 
 bool tt::isSameStr(const char* psz1, const char* psz2)
 {
-	ttASSERT_MSG(psz1, "NULL pointer!");
-	ttASSERT_MSG(psz2, "NULL pointer!");
-	if (!psz1 || !psz2)
+	if (!psz1 || !psz2)		// note that we return false even if both strings are a null pointer
 		return false;
 
 	while (*psz1 == *psz2) {
@@ -255,8 +254,6 @@ bool tt::isSameStr(const char* psz1, const char* psz2)
 
 bool tt::isSameStr(const wchar_t* psz1, const wchar_t* psz2)
 {
-	ttASSERT_MSG(psz1, "NULL pointer!");
-	ttASSERT_MSG(psz2, "NULL pointer!");
 	if (!psz1 || !psz2)
 		return false;
 
@@ -309,8 +306,6 @@ bool tt::isSameStri(const wchar_t* psz1, const wchar_t* psz2)
 
 bool tt::isSameSubStr(const char* pszMain, const char* pszSub)
 {
-	ttASSERT_MSG(pszMain, "NULL pointer!");
-	ttASSERT_MSG(pszSub, "NULL pointer!");
 	if (!pszMain || !pszSub)
 		return false;
 
@@ -325,8 +320,6 @@ bool tt::isSameSubStr(const char* pszMain, const char* pszSub)
 
 bool tt::isSameSubStr(const wchar_t* pszMain, const wchar_t* pszSub)
 {
-	ttASSERT_MSG(pszMain, "NULL pointer!");
-	ttASSERT_MSG(pszSub, "NULL pointer!");
 	if (!pszMain || !pszSub)
 		return false;
 
@@ -341,8 +334,6 @@ bool tt::isSameSubStr(const wchar_t* pszMain, const wchar_t* pszSub)
 
 bool tt::isSameSubStri(const char* pszMain, const char* pszSub)
 {
-	ttASSERT_MSG(pszMain, "NULL pointer!");
-	ttASSERT_MSG(pszSub, "NULL pointer!");
 	if (!pszMain || !pszSub)
 		return false;
 
@@ -359,8 +350,6 @@ bool tt::isSameSubStri(const char* pszMain, const char* pszSub)
 
 bool tt::isSameSubStri(const wchar_t* pszMain, const wchar_t* pszSub)
 {
-	ttASSERT_MSG(pszMain, "NULL pointer!");
-	ttASSERT_MSG(pszSub, "NULL pointer!");
 	if (!pszMain || !pszSub)
 		return false;
 
@@ -379,8 +368,6 @@ bool tt::isSameSubStri(const wchar_t* pszMain, const wchar_t* pszSub)
 
 char* tt::findExt(const char* pszPath, const char* pszExt)
 {
-	ttASSERT_MSG(pszPath, "NULL pointer!");
-	ttASSERT_MSG(pszExt, "NULL pointer!");
 	if (!pszPath || !pszExt)
 		return nullptr;
 
@@ -390,8 +377,6 @@ char* tt::findExt(const char* pszPath, const char* pszExt)
 
 wchar_t* tt::findExt(const wchar_t* pszPath, const wchar_t* pszExt)
 {
-	ttASSERT_MSG(pszPath, "NULL pointer!");
-	ttASSERT_MSG(pszExt, "NULL pointer!");
 	if (!pszPath || !pszExt)
 		return nullptr;
 
@@ -401,10 +386,10 @@ wchar_t* tt::findExt(const wchar_t* pszPath, const wchar_t* pszExt)
 
 char* tt::findStri(const char* pszMain, const char* pszSub)
 {
-	ttASSERT_MSG(pszMain, "NULL pointer!");
-	ttASSERT_MSG(pszSub, "NULL pointer!");
 	if (!pszMain || !pszSub)
 		return nullptr;
+	if (!*pszSub)
+		return (char*) pszMain;	// matches what strstr does
 
 #ifdef _WX_WX_H_
 	wxString sMain(pszMain);
@@ -455,10 +440,10 @@ char* tt::findStri(const char* pszMain, const char* pszSub)
 
 char* tt::findStr(const char* pszMain, const char* pszSub)
 {
-	ttASSERT_MSG(pszMain, "NULL pointer!");
-	ttASSERT_MSG(pszSub, "NULL pointer!");
-	if (!pszMain || !pszSub || !*pszSub)
+	if (!pszMain || !pszSub)
 		return nullptr;
+	if (!*pszSub)
+		return (char*) pszMain;	// matches what strstr does
 
 // We keep the first character of pszSub in first_ch. First we loop trying to find a match for this character.
 // Once we have found a match, we start with the second character of both pszMain and pszSub and walk through
@@ -498,10 +483,10 @@ char* tt::findStr(const char* pszMain, const char* pszSub)
 
 wchar_t* tt::findStr(const wchar_t* pszMain, const wchar_t* pszSub)
 {
-	ttASSERT_MSG(pszMain, "NULL pointer!");
-	ttASSERT_MSG(pszSub, "NULL pointer!");
-	if (!pszMain || !pszSub || !*pszSub)
+	if (!pszMain || !pszSub)
 		return nullptr;
+	if (!*pszSub)
+		return (wchar_t*) pszMain;	// matches what strstr does
 
 // We keep the first character of pszSub in first_ch. First we loop trying to find a match for this character.
 // Once we have found a match, we start with the second character of both pszMain and pszSub and walk through
@@ -541,10 +526,10 @@ wchar_t* tt::findStr(const wchar_t* pszMain, const wchar_t* pszSub)
 
 wchar_t* tt::findStri(const wchar_t* pszMain, const wchar_t* pszSub)
 {
-	ttASSERT_MSG(pszMain, "NULL pointer!");
-	ttASSERT_MSG(pszSub, "NULL pointer!");
 	if (!pszMain || !pszSub)
 		return nullptr;
+	if (!*pszSub)
+		return pszMain;	// matches what strstr does
 
 	wxString sMain(pszMain);
 	wxString sSub(pszSub);
@@ -560,7 +545,7 @@ wchar_t* tt::findStri(const wchar_t* pszMain, const wchar_t* pszSub)
 
 char* tt::nextChar(const char*psz)
 {
-	ttASSERT_NONEMPTY(psz);
+	ttASSERT_NONEMPTY(psz);		// This is a serious problem for the caller so we assert (see Issue #45 for discussion)
 	if (!psz)
 		return nullptr;
 	if (!*psz)
@@ -631,7 +616,6 @@ wchar_t* tt::stepOver(const wchar_t* psz)
 
 void tt::trimRight(char* psz)
 {
-	ttASSERT_MSG(psz, "NULL pointer!");
 	if (!psz || !*psz)
 		return;
 
