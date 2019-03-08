@@ -40,9 +40,10 @@ class ttCWStr
 {
 public:
 	ttCWStr(void)	{ m_psz = nullptr; }
-	ttCWStr(size_t cb) { m_psz = (wchar_t*) tt::Malloc(cb); }
-	ttCWStr(const wchar_t* psz) { m_psz = tt::StrDup(psz ? psz : L""); }
-	ttCWStr(const char* psz) { m_psz = nullptr; CopyNarrow(psz); }
+	ttCWStr(size_t cb) { m_psz = (wchar_t*) tt::Malloc(cb); }	// Caution! cb is bytes, not wide chars
+	ttCWStr(const wchar_t* pwsz) { m_psz = pwsz ? tt::StrDup(pwsz) : nullptr; }
+	ttCWStr(const char* psz) { m_psz = nullptr; if (psz) CopyNarrow(psz); }
+	ttCWStr(ttCWStr& cwsz) { m_psz = cwsz.getPtr() ? tt::StrDup(cwsz.getPtr()) : nullptr; }
 #ifdef _WINDOWS_
 	ttCWStr(HWND hwnd) { m_psz = nullptr; getWindowText(hwnd); }
 #endif // _WINDOWS_
@@ -93,7 +94,7 @@ public:
 	void	 Delete() { if (m_psz) { tt::FreeAlloc(m_psz); m_psz = nullptr; } }
 	wchar_t* Enlarge(size_t cbTotalSize);	// increase buffer size if needed
 
-	wchar_t* getptr() { return m_psz; }	// for when casting to char* is problematic
+	wchar_t* getPtr() { return m_psz; }	// for when casting to char* is problematic
 
 	operator const wchar_t*() const { return (const wchar_t*) m_psz; }
 	operator wchar_t*() const { return (wchar_t*) m_psz; }

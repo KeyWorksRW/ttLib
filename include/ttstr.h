@@ -44,9 +44,9 @@ class ttCStr
 public:
 	ttCStr(void)	{ m_psz = nullptr; }
 	ttCStr(size_t cb) { m_psz = (char*) tt::Malloc(cb); }
-	ttCStr(const char* psz) { m_psz = tt::StrDup(psz); }
-	ttCStr(const wchar_t* psz) { CopyWide(psz); }
-	ttCStr(ttCStr& csz) { m_psz = tt::StrDup(csz); }
+	ttCStr(const char* psz) { m_psz = psz ? tt::StrDup(psz) : nullptr; }
+	ttCStr(const wchar_t* pwsz) { if (pwsz) CopyWide(pwsz); }
+	ttCStr(ttCStr& csz) { m_psz = csz.getPtr() ? tt::StrDup(csz) : nullptr; }
 #ifdef _WINDOWS_
 	ttCStr(HWND hwnd) { m_psz = nullptr; getWindowText(hwnd); }
 #endif // _WINDOWS_
