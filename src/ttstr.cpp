@@ -288,10 +288,11 @@ bool ttCStr::ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCa
 {
 	ttASSERT_MSG(pszOldText, "NULL pointer!");
 	ttASSERT(*pszOldText);
-	ttASSERT(pszNewText);
 
-	if (!pszOldText || !*pszOldText || !pszNewText || !m_psz || !*m_psz)
+	if (!pszOldText || !*pszOldText || !m_psz || !*m_psz)
 		return false;
+	if (!pszNewText)
+		pszNewText = "";
 
 	char* pszPos = bCaseSensitive ? tt::findStr(m_psz, pszOldText) : tt::findStri(m_psz, pszOldText);
 	if (!pszPos)
@@ -336,8 +337,6 @@ bool ttCStr::ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCa
 
 void ttCStr::operator=(const char* psz)
 {
-	ttASSERT_MSG(psz, "null pointer!");
-
 	if (m_psz && m_psz == psz)	// This can happen when getting a point to ttCStr and then assigning it to the same ttCStr
 		return;
 
