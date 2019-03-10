@@ -43,7 +43,7 @@ namespace tt {
 	bool isSameSubStr(const char* pszMain, const char* pszSub);	// true if sub string matches first part of main string
 	bool isSameSubStri(const char* pszMain, const char* pszSub);	// case-insensitive comparison
 
-	bool isSameStr(const wchar_t* psz1, const wchar_t* psz2); 			// same as strcmp, but returns true/false
+	bool isSameStr(const wchar_t* psz1, const wchar_t* psz2);			// same as strcmp, but returns true/false
 	bool isSameStri(const wchar_t* psz1, const wchar_t* psz2);			// case-insensitive comparison
 	bool isSameSubStr(const wchar_t* pszMain, const wchar_t* pszSub);		// true if sub string matches first part of main string
 	bool isSameSubStri(const wchar_t* pszMain, const wchar_t* pszSub);	// case-insensitive comparison
@@ -83,10 +83,10 @@ namespace tt {
 	inline char* strCopy(char* pszDst, const char* pszSrc) { strCopy_s(pszDst, tt::MAX_STRING_LEN, pszSrc); return pszDst; }
 	inline char* strCopy(char* pszDst, size_t maxDst, const char* pszSrc) { strCopy_s(pszDst, maxDst, pszSrc); return pszDst; }
 
-	inline void  strCat(wchar_t* pwszDst, const wchar_t* pwszSrc) { tt::strCat_s(pwszDst, tt::MAX_STRING_LEN, pwszSrc); }
-	inline void  strCat(wchar_t* pwszDst, size_t maxDst, const wchar_t* pwszSrc) { tt::strCat_s(pwszDst, maxDst, pwszSrc); }
-	inline void  strCopy(wchar_t* pwszDst, const wchar_t* pwszSrc) { tt::strCopy_s(pwszDst, tt::MAX_STRING_LEN, pwszSrc); }
-	inline void  strCopy(wchar_t* pwszDst, size_t maxDst, const wchar_t* pwszSrc) { tt::strCopy_s(pwszDst, maxDst, pwszSrc); }
+	inline void	 strCat(wchar_t* pwszDst, const wchar_t* pwszSrc) { tt::strCat_s(pwszDst, tt::MAX_STRING_LEN, pwszSrc); }
+	inline void	 strCat(wchar_t* pwszDst, size_t maxDst, const wchar_t* pwszSrc) { tt::strCat_s(pwszDst, maxDst, pwszSrc); }
+	inline void	 strCopy(wchar_t* pwszDst, const wchar_t* pwszSrc) { tt::strCopy_s(pwszDst, tt::MAX_STRING_LEN, pwszSrc); }
+	inline void	 strCopy(wchar_t* pwszDst, size_t maxDst, const wchar_t* pwszSrc) { tt::strCopy_s(pwszDst, maxDst, pwszSrc); }
 
 	// Use strLen() to get the number of characters without trailing zero, use strByteLen() to get the number of
 	// bytes including the terminating zero
@@ -113,7 +113,7 @@ namespace tt {
 	// printf/vprintf provides a sub-set of the standard sprintf format codes, with automatic allocation of sufficient memory to hold
 	// the result, along with some special format specifiers.
 	//
-	//		standard: c, C, d, i, u, x, X, s, S 	(no floating point, precision or padding)
+	//		standard: c, C, d, i, u, x, X, s, S		(no floating point, precision or padding)
 	//
 	//		%kd - formats an integer with commas. I.e., 54321 would be formatted as 54,321
 	//		%kq - outputs quotation marks around the string
@@ -132,23 +132,6 @@ namespace tt {
 
 	char* cdecl printf(char** ppszDst, const char* pszFormat, ...);		// CAUTION! The memory ppszDst points to will be modified by ttHeap functions
 	void vprintf(char** ppszDst, const char* pszFormat, va_list argList);
-
-#ifdef _WINDOWS_
-	extern HWND hwndMsgBoxParent;		// parent for MessageBox--if Abort is requested in ttASSERT, this window will receive a WM_CLOSE message prior to shut down
-	extern HINSTANCE hinstResources;	// handle to use to load resources
-	extern const char* pszMsgTitle;		// title for message boxes
-	extern size_t LanguageOffset;		// language offset used to load other languages from .rc file
-
-	// InitCaller is equivalent to calling setResInst(hinstRes), setMsgBoxParent(hwndParent) and setMsgBoxTitle(pszMsgTitle)
-	void		InitCaller(HINSTANCE hinstRes, HWND hwndParent, const char* pszMsgTitle);
-	inline void	InitCaller(const char* pszTitle) { InitCaller(GetModuleHandle(nullptr), nullptr, pszTitle); }	// use this for console apps
-
-	inline HINSTANCE getResInst() { return hinstResources; }
-	inline void		 setResInst(HINSTANCE hinst) { hinstResources = hinst; }
-	inline void		 setMsgBoxParent(HWND hwnd) { hwndMsgBoxParent = hwnd; }
-		   void		 setMsgBoxTitle(const char* pszMsgTitle);
-	inline const char* getMsgBoxTitle() { return pszMsgTitle; }
-#endif
 
 	void	ConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszResult);
 	bool	CreateDir(const char* pszDir);
@@ -173,7 +156,7 @@ namespace tt {
 
 	char*	 findExt(const char* pszPath, const char* pszExt);		// find a case-insensitive extension in a path string
 	wchar_t* findExt(const wchar_t* pszPath, const wchar_t* pszExt);
-	char* 	 findLastSlash(const char* pszPath);		// handles both forward and back slashes
+	char*	 findLastSlash(const char* pszPath);		// handles both forward and back slashes
 
 	size_t	HashFromSz(const char* psz);
 	size_t	HashFromSz(const wchar_t* psz);
@@ -184,17 +167,31 @@ namespace tt {
 	inline void	SetAssertHandlerW(TTASSERTHANDLERW pFunc) { pttAssertHandlerW = pFunc; }
 
 #ifdef _WINDOWS_
+	extern HWND hwndMsgBoxParent;		// parent for MessageBox--if Abort is requested in ttASSERT, this window will receive a WM_CLOSE message prior to shut down
+	extern HINSTANCE hinstResources;	// handle to use to load resources
+	extern const char* pszMsgTitle;		// title for message boxes
+	extern size_t LanguageOffset;		// language offset used to load other languages from .rc file
+
+	// InitCaller is equivalent to calling setResInst(hinstRes), setMsgBoxParent(hwndParent) and setMsgBoxTitle(pszMsgTitle)
+	void		InitCaller(HINSTANCE hinstRes, HWND hwndParent, const char* pszMsgTitle);
+	inline void	InitCaller(const char* pszTitle) { InitCaller(GetModuleHandle(nullptr), nullptr, pszTitle); }	// use this for console apps
+
+	inline HINSTANCE getResInst() { return hinstResources; }
+	inline void		 setResInst(HINSTANCE hinst) { hinstResources = hinst; }
+	inline void		 setMsgBoxParent(HWND hwnd) { hwndMsgBoxParent = hwnd; }
+		   void		 setMsgBoxTitle(const char* pszMsgTitle);
+	inline const char* getMsgBoxTitle() { return pszMsgTitle; }
+
 	const char* getResString(size_t idString);
 	const char* LoadTxtResource(int idRes, uint32_t* pcbFile = nullptr, HINSTANCE hinst = tt::hinstResources);
 
-	int 		MsgBox(UINT idResource, UINT uType = MB_OK | MB_ICONWARNING);
-	int 		MsgBox(const char* pszMsg, UINT uType = MB_OK | MB_ICONWARNING);
+	int			MsgBox(UINT idResource, UINT uType = MB_OK | MB_ICONWARNING);
+	int			MsgBox(const char* pszMsg, UINT uType = MB_OK | MB_ICONWARNING);
 	int cdecl	MsgBoxFmt(const char* pszFormat, UINT uType, ...);
 	int cdecl	MsgBoxFmt(int idResource, UINT uType, ...);
 
 	ptrdiff_t	CompareFileTime(FILETIME* pftSrc, FILETIME* pftDst);
 	HFONT		CreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold = false, bool fItalics = false);
-
 
 	inline int	RC_HEIGHT(const RECT* prc) { return prc->bottom - prc->top; };
 	inline int	RC_HEIGHT(const RECT rc) { return rc.bottom - rc.top; };
@@ -202,7 +199,6 @@ namespace tt {
 	inline int	RC_WIDTH(const RECT rc) { return rc.right - rc.left; };
 
 	inline bool isPosInRect(const RECT* prc, int xPos, int yPos) { return (xPos >= prc->left && xPos <= prc->right && yPos >= prc->top && yPos <= prc->bottom); }
-
 	inline bool	isValidWindow(HWND hwnd) { return (bool) (hwnd && IsWindow(hwnd)); };
 #endif	// _WINDOWS_
 
@@ -226,7 +222,7 @@ namespace tt {
 } // end of tt namespace
 
 namespace ttch {
-	const char CH_OPEN_PAREN =  '(';
+	const char CH_OPEN_PAREN =	'(';
 	const char CH_CLOSE_PAREN = ')';
 	const char CH_COLON =		':';
 	const char CH_SEMICOLON =	';';
