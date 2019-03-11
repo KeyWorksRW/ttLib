@@ -61,6 +61,7 @@ public:
 	// By default, the file must exist
 
 	void	SetFileMustExist(bool bMustExist = true) { if (bMustExist) m_pofn->Flags |= OFN_FILEMUSTEXIST; else m_pofn->Flags &= ~OFN_FILEMUSTEXIST; }
+	void	AddFlags(DWORD flags) { m_pofn->Flags |= flags; }	// Adds one or more of the OFN_ flags
 
 	OPENFILENAMEA* GetOF() { return m_pofn; }
 	operator OPENFILENAMEA*() const { return m_pofn; }
