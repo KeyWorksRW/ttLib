@@ -50,6 +50,14 @@ public:
 
 	size_t GetCount() const { return m_cItems; }
 
+	void Reset() {	// caller's responsibility to delete any allocated members first!
+		if (m_aData) {
+			tt::FreeAlloc(m_aData);
+			m_aData = nullptr;
+		}
+		m_cAllocated = m_cItems = 0;
+	}
+
 	void operator+=(T t) { Add(t); }
 	T operator[](size_t pos) const {
 		ttASSERT(pos < m_cItems);

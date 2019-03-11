@@ -21,19 +21,13 @@
 static HMONITOR ttKeyMonitorFromWindow(HWND hwnd, DWORD dwFlags);
 static BOOL 	ttKeyMonitorFromPoint(HMONITOR hMonitor, LPMONITORINFO lpmi);
 
-// Currently unused
-// static HMONITOR ttKeyMonitorFromPoint(POINT pt, DWORD dwFlags);
-
-ttCDlg::ttCDlg(UINT idTemplate, HWND hwnd)
+ttCDlg::ttCDlg(UINT idTemplate)
 {
 	m_hwnd = NULL;
-	m_hwndParent = hwnd;
 	m_bCenterWindow = true;
-	m_bCancelEnd = false;
 	m_fFade = false;
 	m_idTemplate = idTemplate;
 	m_bShadeBtns = false;	// default to non-shaded buttons
-	m_bInitializing = true;
 };
 
 INT_PTR ttCDlg::DoModal(HWND hwndParent)
@@ -46,6 +40,7 @@ INT_PTR ttCDlg::DoModal(HWND hwndParent)
 	tt::hwndMsgBoxParent = hwndSave;
 
 #ifdef _DEBUG
+	// If creation failed because there was no dialog resource, report that specific condition under _DEBUG
 	if (result == -1) {
 		HRSRC hrsrc = FindResource(tt::hinstResources, MAKEINTRESOURCE(m_idTemplate), RT_DIALOG);
 		ttASSERT_MSG(hrsrc, "Missing dialog template");
@@ -84,6 +79,7 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 			return lResult;
 
 		pThis->m_bInitializing = true;	// needed to make sure ttDDX_ macros work correctly
+		pThis->m_bCancelEnd = false;
 		pThis->OnBegin();
 		pThis->m_bInitializing = false;
 		return TRUE;
@@ -210,36 +206,14 @@ static BOOL (WINAPI* tt_pfnAnimateWindow)(HWND, DWORD, DWORD);
 
 void ttCDlg::FadeWindow()
 {
-
-#if (WINVER < 0x0500)
-
-// AnimateWindow() Commands
-#define AW_HOR_POSITIVE				0x00000001
-#define AW_HOR_NEGATIVE				0x00000002
-#define AW_VER_POSITIVE				0x00000004
-#define AW_VER_NEGATIVE				0x00000008
-#define AW_CENTER					0x00000010
-#define AW_HIDE						0x00010000
-#define AW_ACTIVATE					0x00020000
-#define AW_SLIDE					0x00040000
-#define AW_BLEND					0x00080000
-
-#endif
-
 	if (IsWindowsXPOrGreater()) {
 		if (!tt_pfnAnimateWindow) {
 			HMODULE hUser32 = GetModuleHandle(TEXT("USER32"));
-			if (hUser32 &&
-					(*(FARPROC*)&tt_pfnAnimateWindow = GetProcAddress(hUser32, "AnimateWindow")) != NULL)
+			if (hUser32 && (*(FARPROC*)&tt_pfnAnimateWindow = GetProcAddress(hUser32, "AnimateWindow")) != NULL)
 				tt_pfnAnimateWindow(m_hwnd, 200, AW_HIDE | AW_BLEND);
 		}
 		else
 			tt_pfnAnimateWindow(m_hwnd, 200, AW_HIDE | AW_BLEND);
-
-		// Theoretically, we may not have called AnimateWindow -- but only if an
-		// Operating System later then version 5 doesn't support it (or for some
-		// fluke, we couldn't get the proc address).
-
 		Sleep(200);
 	}
 }

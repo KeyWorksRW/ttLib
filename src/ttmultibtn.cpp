@@ -32,14 +32,19 @@ BOOL WINAPI ttpriv::EnumBtnProc(HWND hwnd, LPARAM lval)
 
 ttCMultiBtn::~ttCMultiBtn()
 {
-	for (size_t i = 0; i < m_aBtns.GetCount(); i++) {
+	for (size_t i = 0; i < m_aBtns.GetCount(); i++)
 		delete m_aBtns[i];
-	}
 }
 
 void ttCMultiBtn::Initialize(HWND hwndParent, ttCShadeBtn::BTN_SHADE shade)
 {
 	m_btnShade = shade;
+
+	// The dialog can be created more than once, which means we get Initialized more than once.
+	for (size_t i = 0; i < m_aBtns.GetCount(); i++)
+		delete m_aBtns[i];
+	m_aBtns.Reset();
+
 	EnumChildWindows(hwndParent, (WNDENUMPROC) ttpriv::EnumBtnProc, (LPARAM) this);
 }
 

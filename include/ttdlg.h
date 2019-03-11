@@ -47,9 +47,9 @@ namespace ttpriv {
 class ttCDlg
 {
 public:
-	ttCDlg(UINT idTemplate, HWND hwnd = NULL);
+	ttCDlg(UINT idTemplate);
 
-	INT_PTR DoModal(HWND hwndParent = NULL);
+	INT_PTR DoModal(HWND hwndParent);
 
 	// BEGIN_TTMSG_MAP in ttmsgmap.h will override this
 	virtual bool OnMsgMap(UINT /* uMsg */, WPARAM /* wParam */, LPARAM /* lParam */, LRESULT& lResult) { lResult = 0; return false; }
@@ -111,6 +111,7 @@ public:
 	void ttDDX_Check(int id, bool& bFlag) {   (m_bInitializing ? SetCheck(id, bFlag) : (void) (bFlag = GetCheck(id))); }
 	void ttDDX_Int(int id, ptrdiff_t* pVal) { (m_bInitializing ? SetControlInteger(id, *pVal) : (void) (*pVal = GetControlInteger(id))); }
 
+	HWND GetParent() { return m_hwndParent; }
 	operator HWND() const { return m_hwnd; }
 
 protected:
