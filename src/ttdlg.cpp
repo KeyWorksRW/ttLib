@@ -27,11 +27,13 @@ ttCDlg::ttCDlg(UINT idTemplate)
 	m_hwnd = NULL;
 	m_hwndParent = NULL;
 	m_bInitializing = false;
-	m_bShadeBtns = false;	// default to non-shaded buttons
+	m_bShadeBtns = false;
 	m_bCenterWindow = true;
 	m_bFade = false;
 	m_bModeless = false;
 };
+
+// Will not return until the dialog is dismissed
 
 INT_PTR ttCDlg::DoModal(HWND hwndParent)
 {
@@ -39,6 +41,7 @@ INT_PTR ttCDlg::DoModal(HWND hwndParent)
 		m_hwndParent = hwndParent;
 
 	HWND hwndSave = tt::hwndMsgBoxParent;
+	m_bModeless = false;
 	INT_PTR result = ::DialogBoxParam(tt::hinstResources, MAKEINTRESOURCE(m_idTemplate), m_hwndParent, (DLGPROC) ttpriv::DlgProc, (LPARAM) this);
 	tt::hwndMsgBoxParent = hwndSave;
 
@@ -53,6 +56,16 @@ INT_PTR ttCDlg::DoModal(HWND hwndParent)
 #endif
 	ttASSERT_MSG(result != -1, "Failed to create dialog box");
 	return result;
+}
+
+// Parent message loop must use returned handle in IsDialogMessage for keys to work in dialog
+
+HWND ttCDlg::DoModeless(HWND hwndParent)
+{
+	if (hwndParent)
+		m_hwndParent = hwndParent;
+	m_bModeless = true;
+	return ::CreateDialogParam(tt::hinstResources, MAKEINTRESOURCE(m_idTemplate), m_hwndParent, (DLGPROC) ttpriv::DlgProc, (LPARAM) this);
 }
 
 INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -167,7 +180,7 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 							if (pThis->m_bFade) {
 								pThis->FadeWindow();
 							}
-							EndDialog(hdlg, IDOK);
+							pThis->CloseDialog(IDOK);	// do NOT call EndDialog--it will fail if this is a modeless dialog
 						}
 						break;
 
@@ -177,7 +190,7 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 							pThis->m_bCancelEnd = false;
 						else {
 							// Note that if the dialog is cancelled, we don't fade, we just exit immediately
-							EndDialog(hdlg, IDCANCEL);
+							pThis->CloseDialog(IDCANCEL);
 						}
 						break;
 
@@ -188,7 +201,7 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 			break;
 	}
 
-	return FALSE;
+	return 0;
 }
 
 ptrdiff_t ttCDlg::GetControlInteger(ptrdiff_t id) const

@@ -27,7 +27,7 @@
 
 #include "ttdebug.h"	// ttASSERT macros
 #include "ttstr.h"		// ttCStr
-#include "ttwstr.h" 	// ttCWStr
+#include "ttwstr.h"		// ttCWStr
 #include "ttmultibtn.h" // ttCMultiBtn
 
 #ifndef __DLG_ID__
@@ -50,21 +50,21 @@ public:
 	ttCDlg(UINT idTemplate);
 
 	INT_PTR DoModal(HWND hwndParent);
+	HWND	DoModeless(HWND hwndParent);	// Must use returned handle in IsDialogMessage for keys to work in dialog
 
 	// BEGIN_TTMSG_MAP in ttmsgmap.h will override this
 	virtual bool OnMsgMap(UINT /* uMsg */, WPARAM /* wParam */, LPARAM /* lParam */, LRESULT& lResult) { lResult = 0; return false; }
 
 	virtual void OnBegin() { }	// called when dialog is initialized, override if you need to do something during dialog initialization
-	virtual void OnOK() { } 	// called when IDOK button is pressed--call CancelEnd() before return to prevent closing the dialog
+	virtual void OnOK() { }		// called when IDOK button is pressed--call CancelEnd() before return to prevent closing the dialog
 	virtual void OnCancel() { }	// called when IDCANCEL button is pressed--call CancelEnd() before return to prevent closing the dialog
-
-	[[deprecated]] virtual void OnEnd() { }	// apps need to call OnOK instead
 
 	void DontCenterWindow(void) { m_bCenterWindow = false; }
 	void EnableShadeBtns(bool bEnable = true) { m_bShadeBtns = bEnable; }
 	void FadeOnExit() { m_bFade = true; }
 
 	void CancelEnd() { m_bCancelEnd = true; } // call within OnEnd() to cancel ending the dialog
+	BOOL CloseDialog(int result = IDOK) { return (m_bModeless ? DestroyWindow(*this) : ::EndDialog(*this, result)); }
 
 	HWND GetDlgItem(ptrdiff_t id) const { return ::GetDlgItem(m_hwnd, (int) id); }
 	int	 GetControlTextLength(ptrdiff_t id) const { return ::GetWindowTextLength(GetDlgItem(id)); }
@@ -106,9 +106,9 @@ public:
 	void EndDialog(int nResult = IDCANCEL) const { ::EndDialog(m_hwnd, nResult); }
 	void FadeWindow();
 
-	void ttDDX_Text(int id, ttCStr& csz) {  (m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz)); }
+	void ttDDX_Text(int id, ttCStr& csz) {	(m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz)); }
 	void ttDDX_Text(int id, ttCWStr& csz) { (m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz)); }
-	void ttDDX_Check(int id, bool& bFlag) {   (m_bInitializing ? SetCheck(id, bFlag) : (void) (bFlag = GetCheck(id))); }
+	void ttDDX_Check(int id, bool& bFlag) {	  (m_bInitializing ? SetCheck(id, bFlag) : (void) (bFlag = GetCheck(id))); }
 	void ttDDX_Int(int id, ptrdiff_t* pVal) { (m_bInitializing ? SetControlInteger(id, *pVal) : (void) (*pVal = GetControlInteger(id))); }
 
 	HWND GetParent() { return m_hwndParent; }
