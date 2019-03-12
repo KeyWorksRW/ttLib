@@ -86,7 +86,7 @@
 // Use this for any WM_COMMAND messages not handled above. See TTCMD below for placing these in a switch statement
 #define TTMSG_COMMAND(id, func) \
 	if (uMsg == WM_COMMAND && LOWORD(wParam) == id) { \
-		func(); \
+		func((UINT) HIWORD(wParam), (UINT) LOWORD(wParam)); \
 		return true; \
 	}
 
