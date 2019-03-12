@@ -23,11 +23,14 @@ static BOOL 	ttKeyMonitorFromPoint(HMONITOR hMonitor, LPMONITORINFO lpmi);
 
 ttCDlg::ttCDlg(UINT idTemplate)
 {
-	m_hwnd = NULL;
-	m_bCenterWindow = true;
-	m_fFade = false;
 	m_idTemplate = idTemplate;
+	m_hwnd = NULL;
+	m_hwndParent = NULL;
+	m_bInitializing = false;
 	m_bShadeBtns = false;	// default to non-shaded buttons
+	m_bCenterWindow = true;
+	m_bFade = false;
+	m_bModeless = false;
 };
 
 INT_PTR ttCDlg::DoModal(HWND hwndParent)
@@ -161,7 +164,7 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 						if (pThis->m_bCancelEnd)
 							pThis->m_bCancelEnd = false;
 						else {
-							if (pThis->m_fFade) {
+							if (pThis->m_bFade) {
 								pThis->FadeWindow();
 							}
 							EndDialog(hdlg, IDOK);

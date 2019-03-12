@@ -62,7 +62,7 @@ public:
 
 	void DontCenterWindow(void) { m_bCenterWindow = false; }
 	void EnableShadeBtns(bool bEnable = true) { m_bShadeBtns = bEnable; }
-	void FadeOnExit() { m_fFade = true; }
+	void FadeOnExit() { m_bFade = true; }
 
 	void CancelEnd() { m_bCancelEnd = true; } // call within OnEnd() to cancel ending the dialog
 
@@ -124,7 +124,8 @@ protected:
 	bool m_bInitializing;
 	bool m_bShadeBtns;
 	bool m_bCenterWindow;
-	bool m_fFade;
+	bool m_bFade;
+	bool m_bModeless;
 
 	int m_idTemplate;
 
