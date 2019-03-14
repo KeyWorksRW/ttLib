@@ -11,9 +11,9 @@ Options:
 Files:
 	pch.cpp
 
-	filedir.cpp			# file and directory handling
-	misc.cpp			# miscellaneous functions
-	strfuncs.cpp		# string handling and ttStr class
+	ttfiledir.cpp		# file and directory handling
+	ttmisc.cpp			# miscellaneous functions
+	ttstrfuncs.cpp		# string handling and ttStr class
 	ttbasethread.cpp	# ttCBaseThread class
 	ttdebug.cpp			# debug and assertion handling
 	ttdirdlg.cpp		# dialog for selecting a directory
@@ -36,4 +36,4 @@ Files:
 	ttmultibtn.cpp
 	ttshadebtn.cpp
 	ttwin.cpp
-	winmisc.cpp
+	ttwinmisc.cpp
