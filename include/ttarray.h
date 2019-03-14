@@ -36,6 +36,14 @@ public:
 		m_aData[m_cItems++] = t;
 	}
 
+	size_t Add() {	// use this to add an emptry member which you can fill in using the returned array index
+		if (m_cItems >= m_cAllocated) {
+			m_cAllocated += 8;	// allocate room for 8 items at a time
+			m_aData = (T*) (m_aData ? tt::ReAlloc(m_aData, m_cAllocated * sizeof(T)) : tt::Malloc(m_cAllocated * sizeof(T)));
+		}
+		return m_cItems++;
+	}
+
 	bool Find(const T t, size_t* ppos = nullptr) const {
 		for (size_t pos = 0; pos < m_cItems; pos++) {
 			if (m_aData[pos] == t) {
@@ -52,14 +60,14 @@ public:
 
 	void Reset() {	// caller's responsibility to delete any allocated members first!
 		if (m_aData) {
-			tt::FreeAlloc(m_aData);
+			tt::Delete(m_aData);
 			m_aData = nullptr;
 		}
 		m_cAllocated = m_cItems = 0;
 	}
 
 	void operator+=(T t) { Add(t); }
-	T operator[](size_t pos) const {
+	T& operator[](size_t pos) const {
 		ttASSERT(pos < m_cItems);
 		if (pos >= m_cItems)
 			throw;
