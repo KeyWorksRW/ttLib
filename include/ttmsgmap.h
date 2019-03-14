@@ -13,8 +13,8 @@
 		// Insert a TTMSG macro for every message you want to process
 	END_TTMSG_MAP()
 
-	If the message handler needs to return a non-zero result to Windows, set the m_result value before your function ends. All
-	macros return true to indicate that you handled the message and that the default window/dialog procedure should not be called.
+	All macros return true to indicate that you handled the message and that the default window/dialog procedure should not be called.
+	If the message requires a non-zero return, the called function will have a return type of LRESULT. Otherwise, the return type is void.
 
 	For each macro you process you will need to declare a matching function. For example:
 
@@ -34,9 +34,8 @@
 		TTMSG_COMMAND(id, func) can be used to process any WM_COMMAND message. However, any of the other macros that handle
 		WM_COMMAND will not be called unless placed BEFORE you call this macro.
 
-
-	If you have a large number of menu commands to handle, you can use the following to convert them into a switch statement instead of multiple if statements which may result in
-	better compiler optimization.
+	If you have a large number of menu commands to handle, you can use the following to convert them into a switch statement instead
+	of multiple if statements which may result in better compiler optimization.
 
 	BEGIN_TTMSG_MAP()
 		BEGIN_TTCMD_SWITCH()
@@ -108,10 +107,17 @@
 		return true; \
 	}
 
- // LRESULT func(CREATESTRUCT* pcs)
+// LRESULT func(CREATESTRUCT* pcs)
 #define TTMSG_CREATE(func) \
 	if (uMsg == WM_CREATE) { \
 		lResult = func((CREATESTRUCT*) lParam); \
+		return true; \
+	}
+
+// LRESULT func(DRAWITEMSTRUCT* pdis)
+#define TTMSG_DRAWITEM(func) \
+	if (uMsg == WM_DRAWITEM) { \
+		lResult = func((DRAWITEMSTRUCT*) lParam); \
 		return true; \
 	}
 
