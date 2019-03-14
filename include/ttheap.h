@@ -60,6 +60,7 @@ public:
 	void* ttReCalloc(void* pv, size_t cb);
 
 	void  ttFree(void* pv) { if (pv) HeapFree(m_hHeap, 0, pv); }
+	void  ttDelete(void* pv) { if (pv) HeapFree(m_hHeap, 0, pv); }	// identical to ttFree
 
 	char*	 ttStrdup(const char* psz);
 	wchar_t* ttStrdup(const wchar_t* pwsz);
@@ -90,7 +91,7 @@ namespace tt {
 
 	inline void*	Calloc(size_t cb) { return tt::MainHeap.ttCalloc(cb); }
 	inline void*	Calloc(size_t num, size_t cb) { return tt::MainHeap.ttCalloc(num * cb); }	// for compatability with C++ standard library
-	inline void		FreeAlloc(void *pv) { tt::MainHeap.ttFree(pv); }
+	inline void		Delete(void* pv) { tt::MainHeap.ttFree(pv); }
 	inline void*	Malloc(size_t cb) { return tt::MainHeap.ttMalloc(cb); }
 	inline void*	ReAlloc(void* pv, size_t cbNew) { return tt::MainHeap.ttRealloc(pv, cbNew); }
 	inline void*	ReCalloc(void* pv, size_t cbNew) { return tt::MainHeap.ttReCalloc(pv, cbNew); }
@@ -99,6 +100,9 @@ namespace tt {
 	inline char*	StrDup(const char* psz, char** ppszDst) { return tt::MainHeap.ttStrdup(psz, ppszDst); }
 	inline size_t	SizeAlloc(const void* pv) { return tt::MainHeap.ttSize(pv); }
 	inline bool		ValidateAlloc(const void* pv) { return tt::MainHeap.ttValidate(pv); }
+
+	inline void		FreeAlloc(void *pv) { tt::MainHeap.ttFree(pv); }
+// [[deprecated]]	inline void		FreeAlloc(void *pv) { tt::MainHeap.ttFree(pv); }
 }	// end namespace tt
 
 #endif	// __TTLIB_TTHEAP_H__
