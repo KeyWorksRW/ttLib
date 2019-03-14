@@ -30,10 +30,10 @@ Files:
 
 # _WINDOWS_ only files
 
-	ttdib.cpp
-	ttdlg.cpp
-	ttfiledlg.cpp
-	ttmultibtn.cpp
-	ttshadebtn.cpp
-	ttwin.cpp
-	ttwinmisc.cpp
+	ttdib.cpp			# ttCDib class
+	ttdlg.cpp			# ttCDlg class
+	ttfiledlg.cpp		# ttCFileDlg class
+	ttmultibtn.cpp		# ttCMultiBtn class
+	ttshadebtn.cpp		# ttCShadeBtn class
+	ttwin.cpp			# ttCWin class
+	ttwinmisc.cpp		# Miscellaneous functions for use on Windows
