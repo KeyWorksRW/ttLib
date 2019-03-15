@@ -9,7 +9,7 @@
 #include "pch.h"
 
 #include "../include/ttdebug.h" 	// ttASSERT macros
-#include "../include/ttstr.h"	// ttCStr
+#include "../include/ttstr.h"		// ttCStr
 #include "../include/ttwin.h"		// ttCWin
 
 // This is the Window procedure used by all windows that ttCWin created or subclassed.
@@ -28,22 +28,15 @@ LRESULT WINAPI ttpriv::ttCWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPa
 		return DefWindowProc(hwnd, msg, wParam, lParam);
 
 	LRESULT lResult = 0;
+	if (msg == WM_COMMAND && pThis->OnCmdCaseMap(LOWORD(wParam), HIWORD(wParam), lResult))
+		return lResult;
 	if (pThis->OnMsgMap(msg, wParam, lParam, lResult))
 		return lResult;
 
 	if (pThis->m_SubClassProc)
 		return CallWindowProc(pThis->m_SubClassProc, hwnd, msg, wParam, lParam);
 
-	switch (msg) {
-		case WM_DESTROY:
-			PostQuitMessage(0);
-			break;
-
-		default:
-			return DefWindowProc(hwnd, msg, wParam, lParam);
-	}
-
-	return 0;
+	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
 ttCWin::ttCWin()
@@ -91,6 +84,7 @@ bool ttCWin::CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWN
 {
 	if (m_pwc) {	// means the class hasn't been registered yet
 		if (!m_pszClassName) {
+			// attempt to make a unique class name
 			ttCStr cszClass(32);
 			cszClass.strCopy("ttCWin");
 			tt::Hextoa(GetTickCount(), (char*) cszClass + cszClass.strLen(), true);
