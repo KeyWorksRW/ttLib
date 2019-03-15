@@ -14,6 +14,10 @@
 	#error This code will only work on Windows
 #endif
 
+#ifndef BEGIN_TTMSG_MAP
+	#include "ttcasemap.h"	// Macros for mapping Windows messages to functions
+#endif
+
 namespace ttpriv {
 	LRESULT WINAPI ttCWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 }
@@ -62,7 +66,10 @@ public:
 	operator WNDCLASSEX*() { return m_pwc; }
 
 protected:
-	// BEGIN_TTMSG_MAP in ttmsgs.h will override this
+	// BEGIN_TTCMD_MAP in ttcasemap.h will override this
+	virtual bool OnCmdCaseMap(UINT /* id */, UINT /* NotifyCode */, LRESULT& /* lResult */) { return false; }
+
+	// BEGIN_TTMSG_MAP in ttcasemap.h will override this
 	virtual bool OnMsgMap(UINT /* uMsg */, WPARAM /* wParam */, LPARAM /* lParam */, LRESULT& lResult) { lResult = 0; return false; }
 
 protected:

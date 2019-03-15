@@ -30,6 +30,10 @@
 #include "ttwstr.h"		// ttCWStr
 #include "ttmultibtn.h" // ttCMultiBtn
 
+#ifndef BEGIN_TTMSG_MAP
+	#include "ttcasemap.h"	// Macros for mapping Windows messages to functions
+#endif
+
 #ifndef __DLG_ID__
 	#ifdef _DEBUG
 		#define DLG_ID(id) tt::CheckItemID(*this, id, #id, __FILE__, __func__, __LINE__)
@@ -51,9 +55,6 @@ public:
 
 	INT_PTR DoModal(HWND hwndParent);
 	HWND	DoModeless(HWND hwndParent);	// Must use returned handle in IsDialogMessage for keys to work in dialog
-
-	// BEGIN_TTMSG_MAP in ttmsgmap.h will override this
-	virtual bool OnMsgMap(UINT /* uMsg */, WPARAM /* wParam */, LPARAM /* lParam */, LRESULT& lResult) { lResult = 0; return false; }
 
 	virtual void OnBegin() { }	// called when dialog is initialized, override if you need to do something during dialog initialization
 	virtual void OnOK() { }		// called when IDOK button is pressed--call CancelEnd() before return to prevent closing the dialog
@@ -115,6 +116,12 @@ public:
 	operator HWND() const { return m_hwnd; }
 
 protected:
+	// BEGIN_TTCMD_MAP in ttcasemap.h will override this
+	virtual bool OnCmdCaseMap(UINT /* id */, UINT /* NotifyCode */, LRESULT& /* lResult */) { return false; }
+
+	// BEGIN_TTMSG_MAP in ttcasemap.h will override this
+	virtual bool OnMsgMap(UINT /* uMsg */, WPARAM /* wParam */, LPARAM /* lParam */, LRESULT& lResult) { lResult = 0; return false; }
+
 	friend INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam);
 
 	// Class members

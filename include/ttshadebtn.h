@@ -66,22 +66,18 @@ protected:
 #include "ttmsgmap.h" // Macros for mapping Windows messages to functions
 
 	BEGIN_TTMSG_MAP()
-		TTMSG_PAINT(OnPaint)
+		TTMSG_WM_PAINT(OnPaint)
 
-		TTMSG(WM_ENABLE, OnEnable)
+		case WM_ENABLE:
+			InvalidateRect(*this, NULL, TRUE);	// REVIEW: [randalphwa - 1/26/2019] Can we get away with setting FALSE for bErase?
+			return true;
 
-		if (uMsg == BM_SETSTATE) {
+		case BM_SETSTATE:
 			InvalidateRect(*this, NULL, TRUE);
 			return false;	// let default process this
-		}
 	END_TTMSG_MAP()
 
 	void OnPaint();
-	LRESULT OnEnable(WPARAM /* wParam */, LPARAM /* lParam */) {
-		InvalidateRect(*this, NULL, TRUE);	// REVIEW: [randalphwa - 1/26/2019] Can we get away with setting FALSE for bErase?
-		return 0;
-		// UpdateWindow();	// [ralphw - 02-16-2010] I can't think of any reason why button needs to be redrawn immediately
-	}
 
 	// Class members
 
