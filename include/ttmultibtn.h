@@ -13,11 +13,12 @@
 #endif
 
 #include "ttarray.h"		// ttCArray
-#include "ttshadebtn.h" 	// ttCShadeBtn
 
 namespace ttpriv {
 	BOOL WINAPI EnumBtnProc(HWND hwnd, LPARAM lval);
 }
+
+class ttCShadeBtn;
 
 class ttCMultiBtn
 {
@@ -28,9 +29,21 @@ public:
 	void SetIcon(int idBtn, int idIcon, UINT nIconAlign = BS_LEFT);
 	ttCShadeBtn* FindShadeBtn(int id);
 
+	typedef enum {			// must be identical to ttCShadeBtn (ttshadebtn.h)
+		SHS_NOISE = 0,
+		SHS_DIAGSHADE = 1,
+		SHS_HSHADE = 2,
+		SHS_VSHADE = 3,
+		SHS_HBUMP = 4,
+		SHS_VBUMP = 5,
+		SHS_SOFTBUMP = 6,
+		SHS_HARDBUMP = 7,
+		SHS_METAL = 8,
+	} BTN_SHADE;
+
 	// Class functions
 
-	void Initialize(HWND hwndParent, ttCShadeBtn::BTN_SHADE shade = ttCShadeBtn::SHS_HARDBUMP);
+	void Initialize(HWND hwndParent, BTN_SHADE shade = SHS_HARDBUMP);
 
 private:
 	friend BOOL WINAPI ttpriv::EnumBtnProc(HWND hwnd, LPARAM lval);
@@ -38,5 +51,5 @@ private:
 	// Class members
 
 	ttCArray<ttCShadeBtn*> m_aBtns;
-	ttCShadeBtn::BTN_SHADE m_btnShade;
+	BTN_SHADE m_btnShade;
 };

@@ -13,6 +13,7 @@
 #endif
 
 #include "../include/ttmultibtn.h"	// ttCMultiBtn
+#include "../include/ttshadebtn.h" 	// ttCShadeBtn
 
 BOOL WINAPI ttpriv::EnumBtnProc(HWND hwnd, LPARAM lval)
 {
@@ -23,7 +24,7 @@ BOOL WINAPI ttpriv::EnumBtnProc(HWND hwnd, LPARAM lval)
 			ttCMultiBtn* pMultiBtn = (ttCMultiBtn*) lval;
 			ttCShadeBtn* pBtn = new ttCShadeBtn;
 			pBtn->SubClass(hwnd);
-			pBtn->SetShade(pMultiBtn->m_btnShade);
+			pBtn->SetShade((ttCShadeBtn::BTN_SHADE) pMultiBtn->m_btnShade);
 			pMultiBtn->m_aBtns.Add(pBtn);
 		}
 	}
@@ -36,7 +37,7 @@ ttCMultiBtn::~ttCMultiBtn()
 		delete m_aBtns[i];
 }
 
-void ttCMultiBtn::Initialize(HWND hwndParent, ttCShadeBtn::BTN_SHADE shade)
+void ttCMultiBtn::Initialize(HWND hwndParent, BTN_SHADE shade)
 {
 	m_btnShade = shade;
 
