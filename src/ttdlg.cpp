@@ -110,10 +110,10 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 		return FALSE;
 
 	LRESULT lResult = 0;
-	if (msg == WM_COMMAND && pThis->OnCmdCaseMap(LOWORD(wParam), HIWORD(wParam), lResult))
+	if (msg == WM_COMMAND && pThis->OnCmdCaseMap((size_t) LOWORD(wParam), (size_t) HIWORD(wParam), lResult))
 		return lResult;
 
-	if (pThis->OnMsgMap(msg, wParam, lParam, lResult))
+	if (pThis->OnMsgMap((size_t) msg, wParam, lParam, lResult))
 		return lResult;
 
 	switch (msg) {
