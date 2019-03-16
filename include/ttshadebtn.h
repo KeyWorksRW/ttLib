@@ -63,8 +63,6 @@ public:
 protected:
 	// Message handlers
 
-#include "ttmsgmap.h" // Macros for mapping Windows messages to functions
-
 	BEGIN_TTMSG_MAP()
 		TTMSG_WM_PAINT(OnPaint)
 
