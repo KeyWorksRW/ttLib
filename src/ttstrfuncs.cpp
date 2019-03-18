@@ -623,7 +623,10 @@ void tt::trimRight(char* psz)
 	while ((*pszEnd == ' ' || *pszEnd == '\t' || *pszEnd == '\r' || *pszEnd == '\n' || *pszEnd == '\f')) {
 		pszEnd--;
 		if (pszEnd == psz) {
-			*pszEnd = 0;
+			if ((*pszEnd == ' ' || *pszEnd == '\t' || *pszEnd == '\r' || *pszEnd == '\n' || *pszEnd == '\f'))
+				*pszEnd = 0;
+			else
+				pszEnd[1] = '\0';
 			return;
 		}
 	}
