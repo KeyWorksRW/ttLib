@@ -110,10 +110,10 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 		return FALSE;
 
 	LRESULT lResult = 0;
-	if (msg == WM_COMMAND && pThis->OnCmdCaseMap((size_t) LOWORD(wParam), (size_t) HIWORD(wParam), lResult))
+	if (msg == WM_COMMAND && pThis->OnCmdCaseMap((int) LOWORD(wParam), (int) HIWORD(wParam), lResult))
 		return lResult;
 
-	if (pThis->OnMsgMap((size_t) msg, wParam, lParam, lResult))
+	if (pThis->OnMsgMap(msg, wParam, lParam, lResult))
 		return lResult;
 
 	switch (msg) {
@@ -207,14 +207,14 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 	return 0;
 }
 
-ptrdiff_t ttCDlg::GetControlInteger(ptrdiff_t id) const
+ptrdiff_t ttCDlg::GetControlInteger(int id) const
 {
 	char szBuf[20];
 	GetControlText(id, szBuf, sizeof(szBuf) - 1);
 	return tt::Atoi(szBuf);
 }
 
-void ttCDlg::SetControlInteger(ptrdiff_t id, ptrdiff_t val) const
+void ttCDlg::SetControlInteger(int id, ptrdiff_t val) const
 {
 	char szBuf[20];
 	tt::Itoa(val, szBuf, sizeof(szBuf));

@@ -67,10 +67,10 @@ public:
 
 protected:
 	// BEGIN_TTCMD_MAP in ttcasemap.h will override this
-	virtual bool OnCmdCaseMap(size_t /* id */, size_t /* NotifyCode */, LRESULT& /* lResult */) { return false; }
+	virtual bool OnCmdCaseMap(int /* id */, int /* NotifyCode */, LRESULT& /* lResult */) { return false; }
 
 	// BEGIN_TTMSG_MAP in ttcasemap.h will override this
-	virtual bool OnMsgMap(size_t /* uMsg */, WPARAM /* wParam */, LPARAM /* lParam */, LRESULT& lResult) { lResult = 0; return false; }
+	virtual bool OnMsgMap(UINT /* msg */, WPARAM /* wParam */, LPARAM /* lParam */, LRESULT& lResult) { lResult = 0; return false; }
 
 protected:
 	friend LRESULT WINAPI ttpriv::ttCWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);

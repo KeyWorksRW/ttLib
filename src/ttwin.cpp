@@ -28,9 +28,9 @@ LRESULT WINAPI ttpriv::ttCWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPa
 		return DefWindowProc(hwnd, msg, wParam, lParam);
 
 	LRESULT lResult = 0;
-	if (msg == WM_COMMAND && pThis->OnCmdCaseMap((size_t) LOWORD(wParam), (size_t) HIWORD(wParam), lResult))
+	if (msg == WM_COMMAND && pThis->OnCmdCaseMap((int) LOWORD(wParam), (UINT) HIWORD(wParam), lResult))
 		return lResult;
-	if (pThis->OnMsgMap((size_t) msg, wParam, lParam, lResult))
+	if (pThis->OnMsgMap(msg, wParam, lParam, lResult))
 		return lResult;
 
 	if (pThis->m_SubClassProc)

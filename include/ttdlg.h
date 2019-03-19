@@ -65,24 +65,24 @@ public:
 	void FadeOnExit() { m_bFade = true; }
 
 	void CancelEnd() { m_bCancelEnd = true; } // call within OnEnd() to cancel ending the dialog
-	BOOL CloseDialog(int result = IDOK) { return (m_bModeless ? DestroyWindow(*this) : ::EndDialog(*this, result)); }
+	BOOL CloseDialog(size_t result = IDOK) { return (m_bModeless ? DestroyWindow(*this) : ::EndDialog(*this, (int) result)); }
 
-	HWND GetDlgItem(ptrdiff_t id) const { return ::GetDlgItem(m_hwnd, (int) id); }
-	int	 GetControlTextLength(ptrdiff_t id) const { return ::GetWindowTextLength(GetDlgItem(id)); }
-	BOOL GetControlRect(ptrdiff_t id, RECT* prc) const { return ::GetWindowRect(GetDlgItem(id), prc); }
+	HWND GetDlgItem(int id) const { return ::GetDlgItem(m_hwnd, (int) id); }
+	int	 GetControlTextLength(int id) const { return ::GetWindowTextLength(GetDlgItem(id)); }
+	BOOL GetControlRect(int id, RECT* prc) const { return ::GetWindowRect(GetDlgItem(id), prc); }
 
-	void GetControlText(ptrdiff_t id, char* pszText, int cchMax = MAX_PATH) const { (void) ::GetWindowTextA(GetDlgItem(id), pszText, cchMax); }
-	void GetControlText(ptrdiff_t id, ttCStr* pcsz) const { pcsz->getWindowText(GetDlgItem(id)); }
-	void SetControlText(ptrdiff_t id, const char* pszText) const { ttASSERT(pszText); (void) ::SetWindowTextA(GetDlgItem(id), pszText); }
+	void GetControlText(int id, char* pszText, int cchMax = MAX_PATH) const { (void) ::GetWindowTextA(GetDlgItem(id), pszText, cchMax); }
+	void GetControlText(int id, ttCStr* pcsz) const { pcsz->getWindowText(GetDlgItem(id)); }
+	void SetControlText(int id, const char* pszText) const { ttASSERT(pszText); (void) ::SetWindowTextA(GetDlgItem(id), pszText); }
 
-	void GetControlText(ptrdiff_t id, wchar_t* pwszText, int cchMax = MAX_PATH) const { (void) ::GetWindowTextW(GetDlgItem(id), pwszText, cchMax); }
-	void GetControlText(ptrdiff_t id, ttCWStr* pcsz) const { pcsz->getWindowText(GetDlgItem(id)); }
-	void SetControlText(ptrdiff_t id, const wchar_t* pwszText) const { ttASSERT(pwszText); (void) ::SetWindowTextW(GetDlgItem(id), pwszText); }
+	void GetControlText(int id, wchar_t* pwszText, int cchMax = MAX_PATH) const { (void) ::GetWindowTextW(GetDlgItem(id), pwszText, cchMax); }
+	void GetControlText(int id, ttCWStr* pcsz) const { pcsz->getWindowText(GetDlgItem(id)); }
+	void SetControlText(int id, const wchar_t* pwszText) const { ttASSERT(pwszText); (void) ::SetWindowTextW(GetDlgItem(id), pwszText); }
 
 	void SetTitle(const char* pszTitle) { ::SetWindowTextA(*this, pszTitle); }
 
-	ptrdiff_t GetControlInteger(ptrdiff_t id) const;
-	void SetControlInteger(ptrdiff_t id, ptrdiff_t val) const;
+	ptrdiff_t GetControlInteger(int id) const;
+	void SetControlInteger(int id, ptrdiff_t val) const;
 
 	void EnableControl(int id, BOOL fEnable = TRUE)	 const { (void) ::EnableWindow(GetDlgItem(id), fEnable); }
 	void DisableControl(int id) const { (void) ::EnableWindow(GetDlgItem(id), FALSE); }
@@ -117,10 +117,10 @@ public:
 
 protected:
 	// BEGIN_TTCMD_MAP in ttcasemap.h will override this
-	virtual bool OnCmdCaseMap(size_t /* id */, size_t /* NotifyCode */, LRESULT& /* lResult */) { return false; }
+	virtual bool OnCmdCaseMap(int /* id */, int /* NotifyCode */, LRESULT& /* lResult */) { return false; }
 
 	// BEGIN_TTMSG_MAP in ttcasemap.h will override this
-	virtual bool OnMsgMap(size_t /* uMsg */, WPARAM /* wParam */, LPARAM /* lParam */, LRESULT& lResult) { lResult = 0; return false; }
+	virtual bool OnMsgMap(UINT /* uMsg */, WPARAM /* wParam */, LPARAM /* lParam */, LRESULT& lResult) { lResult = 0; return false; }
 
 	friend INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam);
 
