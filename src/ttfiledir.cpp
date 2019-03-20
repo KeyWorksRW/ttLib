@@ -172,7 +172,7 @@ void tt::ConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& csz
 	ttCStr cszFile(pszFile);
 	cszFile.getFullPathName();
 
-	if (cszRoot[0] != cszFile[0]) {	// probably on a different drive, but clearly there's nothing relative about it
+	if (toupper(cszRoot[0]) != toupper(cszFile[0])) {	// probably on a different drive, but clearly there's nothing relative about it
 		cszResult = cszFile;
 		return;
 	}
@@ -192,7 +192,7 @@ void tt::ConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& csz
 	size_t pos;
 	char* pszLastSlash = nullptr;
 
-	for (pos = 0; cszRoot[pos] && cszRoot[pos] == cszFile[pos]; ++pos) {
+	for (pos = 0; cszRoot[pos] && tolower(cszRoot[pos]) == tolower(cszFile[pos]); ++pos) {
 		if (cszRoot[pos] == '/')
 			pszLastSlash = cszRoot.getPtr() + pos;
 	}
