@@ -73,7 +73,7 @@
 		func(); \
 		return true;
 
-// void func(size_t NotifyCode);	// use this to check the notification code
+// void func(int NotifyCode);	// use this to check the notification code
 #define TTCASE_CTRL(id, func) \
 	case id: \
 		func(NotifyCode); \
@@ -583,7 +583,7 @@
 		func((UINT) wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)); \
 		return true;
 
-// void OnLBtnDblClk(UINT flags, int xPos, int yPos);
+// void OnLBtnDblClk(UINT flagVKeys, int xPos, int yPos);	// flagVKeys indicates which virtual keys are pressed (Ctrl, Shift, etc.)
 #define TTMSG_WM_LBUTTONDBLCLK(func) \
 	case WM_LBUTTONDBLCLK: \
 		func((UINT) wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)); \
