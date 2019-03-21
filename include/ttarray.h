@@ -56,7 +56,17 @@ public:
 		return false;
 	}
 
+	size_t Find(const T t) const {	// returns -1 if not found
+		for (size_t pos = 0; pos < m_cItems; pos++) {
+			if (m_aData[pos] == t) {
+				return pos;
+			}
+		}
+		return (size_t) -1;
+	}
+
 	size_t GetCount() const { return m_cItems; }
+	bool   InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
 
 	void Reset() {	// caller's responsibility to delete any allocated members first!
 		if (m_aData) {
@@ -68,8 +78,8 @@ public:
 
 	void operator+=(T t) { Add(t); }
 	T& operator[](size_t pos) const {
-		ttASSERT(pos < m_cItems);
-		if (pos >= m_cItems)
+		ttASSERT(InRange(pos));
+		if (!InRange(pos))
 			throw;
 		return m_aData[pos];
 	}

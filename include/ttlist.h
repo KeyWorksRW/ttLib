@@ -47,6 +47,7 @@ public:
 
 	size_t	GetCount() const { return m_cItems; }
 	bool	IsEmpty() const { return m_cItems == 0; }
+	bool	InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
 	void	Delete();	// deletes all strings
 
 	char*	Get(size_t pos) const;	// zero-based index, will return nullptr if pos >= GetCount()
@@ -142,6 +143,7 @@ public:
 
 	size_t	GetCount() const { return m_cItems; }
 	bool	IsEmpty() const { return m_cItems == 0; }
+	bool	InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
 	void	Delete();	// deletes all strings
 
 	void SortKeys();
@@ -204,6 +206,7 @@ public:
 	bool	Add(size_t posKey, ptrdiff_t newVal);	// Add vals to an existing key
 	bool	FindKey(const char* pszKey, size_t* ppos = nullptr) const;
 	size_t	GetCount() const { return m_cItems; }	// returns the number of keys actually added (duplicates are not added)
+	bool	InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
 
 	void	Delete();	// deletes all strings
 

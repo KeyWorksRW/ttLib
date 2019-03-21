@@ -86,7 +86,7 @@ size_t ttCList::Add(const char* pszKey)
 	if (isNoDuplicates()) {
 		size_t hash = tt::HashFromSz(pszNormalized);
 		size_t pos = m_HashPair.GetVal(hash);
-		if (pos != (size_t) -1)
+		if (!m_HashPair.InRange(pos))
 			return pos;
 		else {
 			if (m_cItems + 1 >= m_cAllocated) {	// the +1 is paranoia -- it shouldn't really be necessary
@@ -147,16 +147,16 @@ size_t ttCList::GetPos(const char* pszKey) const
 
 char* ttCList::Get(size_t pos) const
 {
-	ttASSERT(pos < m_cItems);
-	if (pos >= m_cItems)
+	ttASSERT(InRange(pos));
+	if (!InRange(pos))
 		return nullptr;
 	return m_aptrs[pos];
 }
 
 void ttCList::Remove(size_t pos)
 {
-	ttASSERT(pos < m_cItems);
-	if (pos >= m_cItems)
+	ttASSERT(InRange(pos));
+	if (!InRange(pos))
 		return;
 
 	if (isNoDuplicates()) {
@@ -210,8 +210,8 @@ void ttCList::Delete()
 void ttCList::Replace(size_t pos, const char* pszKey)
 {
 	ttASSERT_NONEMPTY(pszKey);
-	ttASSERT(pos < m_cItems);
-	if (pos >= m_cItems || !pszKey || !*pszKey)
+	ttASSERT(InRange(pos));
+	if (!InRange(pos) || tt::isEmpty(pszKey))
 		return;
 
 	if (isNoDuplicates())
@@ -505,16 +505,16 @@ bool ttCDblList::FindVal(const char* pszVal, size_t* ppos) const
 
 char* ttCDblList::GetKeyAt(size_t pos) const
 {
-	ttASSERT(pos < m_cItems);
-	if (pos >= m_cItems)
+	ttASSERT(InRange(pos));
+	if (!InRange(pos))
 		return nullptr;
 	return m_aptrs[pos].pszKey;
 }
 
 char* ttCDblList::GetValAt(size_t pos) const
 {
-	ttASSERT(pos < m_cItems);
-	if (pos >= m_cItems)
+	ttASSERT(InRange(pos));
+	if (!InRange(pos))
 		return nullptr;
 	return m_aptrs[pos].pszVal;
 }
@@ -545,8 +545,8 @@ void ttCDblList::Replace(size_t pos, const char* pszKey, const char* pszVal)
 {
 	ttASSERT_NONEMPTY(pszKey);
 	ttASSERT_MSG(pszVal, "NULL pointer!");	// okay if pszVal is an empty string, just not a null pointer
-	ttASSERT(pos < m_cItems);
-	if (pos >= m_cItems || !pszKey || !*pszKey || *pszVal)
+	ttASSERT(InRange(pos));
+	if (!InRange(pos) || !pszKey || !*pszKey || *pszVal)
 		return;
 
 	ttFree((void*) m_aptrs[pos].pszKey);
@@ -689,22 +689,22 @@ void ttCStrIntList::Delete()
 	m_posEnumKey = (size_t) -1;
 }
 
-bool ttCStrIntList::Add(size_t posKey, ptrdiff_t newVal)
+bool ttCStrIntList::Add(size_t pos, ptrdiff_t newVal)
 {
-	ttASSERT(posKey < m_cItems);
-	if (posKey >= m_cItems)
+	ttASSERT(InRange(pos));
+	if (!InRange(pos))
 		return false;
 
-	ptrdiff_t cItems = m_aptrs[posKey].pVal[0];
+	ptrdiff_t cItems = m_aptrs[pos].pVal[0];
 	for (ptrdiff_t valPos = 1; valPos <= cItems; ++valPos) {
-		if (newVal == m_aptrs[posKey].pVal[valPos])
+		if (newVal == m_aptrs[pos].pVal[valPos])
 			return true;
 	}
 	// newVal not found, so add it
 	++cItems;
-	m_aptrs[posKey].pVal = (ptrdiff_t*) ttRealloc(m_aptrs[posKey].pVal, (cItems + 1) * sizeof(ptrdiff_t));
-	m_aptrs[posKey].pVal[0] = cItems;
-	m_aptrs[posKey].pVal[cItems] = newVal;
+	m_aptrs[pos].pVal = (ptrdiff_t*) ttRealloc(m_aptrs[pos].pVal, (cItems + 1) * sizeof(ptrdiff_t));
+	m_aptrs[pos].pVal[0] = cItems;
+	m_aptrs[pos].pVal[cItems] = newVal;
 	return true;
 }
 
@@ -739,12 +739,12 @@ bool ttCStrIntList::GetValCount(const char* pszKey, ptrdiff_t* pVal) const
 	return false;
 }
 
-ptrdiff_t ttCStrIntList::GetValCount(size_t posKey) const
+ptrdiff_t ttCStrIntList::GetValCount(size_t pos) const
 {
-	ttASSERT(posKey < m_cItems);
-	if (posKey >= m_cItems)
+	ttASSERT(InRange(pos));
+	if (!InRange(pos))
 		return 0;	// there isn't a way to indicate an error other then the ASSERT in _DEBUG builds
-	return m_aptrs[posKey].pVal[0];
+	return m_aptrs[pos].pVal[0];
 }
 
 bool ttCStrIntList::GetVal(const char* pszKey, ptrdiff_t* pVal, size_t posVal) const
@@ -765,15 +765,15 @@ bool ttCStrIntList::GetVal(const char* pszKey, ptrdiff_t* pVal, size_t posVal) c
 	return false;
 }
 
-bool ttCStrIntList::GetVal(size_t posKey, ptrdiff_t* pVal, size_t posVal) const
+bool ttCStrIntList::GetVal(size_t pos, ptrdiff_t* pVal, size_t posVal) const
 {
-	ttASSERT(posKey < m_cItems);
-	if (posKey >= m_cItems)
+	ttASSERT(InRange(pos));
+	if (!InRange(pos))
 		return false;
 
-	if ((ptrdiff_t) posVal > m_aptrs[posKey].pVal[0])
+	if ((ptrdiff_t) posVal > m_aptrs[pos].pVal[0])
 		return false;
-	*pVal = m_aptrs[posKey].pVal[posVal];
+	*pVal = m_aptrs[pos].pVal[posVal];
 	return true;
 }
 
@@ -797,11 +797,11 @@ bool ttCStrIntList::Enum(ptrdiff_t* pVal)
 	return true;
 }
 
-char* ttCStrIntList::GetKey(size_t posKey) const
+char* ttCStrIntList::GetKey(size_t pos) const
 {
-	ttASSERT(posKey < m_cItems);
-	if (posKey >= m_cItems)
+	ttASSERT(InRange(pos));
+	if (!InRange(pos))
 		return nullptr;
 
-	return m_aptrs[posKey].pszKey;
+	return m_aptrs[pos].pszKey;
 }

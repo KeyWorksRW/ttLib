@@ -42,6 +42,8 @@ public:
 
 	void	Delete();	// remove all hash/val pairs
 
+	bool	InRange(size_t pos) { return (pos < m_cItems && m_cItems > 0); }
+
 	// The URL variants are case-insensitive, and forward/back slashes are considered the same.
 	// E.g., foo\bar and Foo/bar will generate the same hash number
 
