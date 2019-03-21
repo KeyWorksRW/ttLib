@@ -16,14 +16,14 @@
 ttCHashPair::ttCHashPair(size_t EstimatedMembers)
 {
 	if (!EstimatedMembers) {
-		m_cMalloced = 0;
-		m_pahash = nullptr;
+		m_cAllocated = 0;
+		m_aData = nullptr;
 	}
 	else {
-		m_pahash = (HASH_PAIR*) tt::Malloc(EstimatedMembers * sizeof(HASH_PAIR));
-		m_cMalloced = EstimatedMembers;
+		m_aData = (HASH_PAIR*) tt::Malloc(EstimatedMembers * sizeof(HASH_PAIR));
+		m_cAllocated = EstimatedMembers;
 	}
-	m_cMembers = 0;
+	m_cItems = 0;
 }
 
 ttCHashPair::~ttCHashPair()
@@ -33,10 +33,10 @@ ttCHashPair::~ttCHashPair()
 
 void ttCHashPair::Delete()
 {
-	if (m_pahash) {
-		tt::FreeAlloc(m_pahash);
-		m_pahash = nullptr;
-		m_cMembers = m_cMalloced = 0;
+	if (m_aData) {
+		tt::FreeAlloc(m_aData);
+		m_aData = nullptr;
+		m_cItems = m_cAllocated = 0;
 	}
 }
 
@@ -44,15 +44,15 @@ void ttCHashPair::Add(size_t hash, size_t val)
 {
 	// Note that we are adding the full HASH_PAIR structure, not a pointer to the structure
 
-	if (m_cMembers + 1 > m_cMalloced) {
-		m_cMalloced += GROWTH_MALLOC;
-		m_pahash = (HASH_PAIR*) tt::ReAlloc(m_pahash, m_cMalloced * sizeof(HASH_PAIR));
+	if (m_cItems + 1 > m_cAllocated) {
+		m_cAllocated += GROWTH_MALLOC;
+		m_aData = (HASH_PAIR*) tt::ReAlloc(m_aData, m_cAllocated * sizeof(HASH_PAIR));
 	}
 
-	if (!m_cMembers) {
-		m_pahash[0].hash = hash;
-		m_pahash[0].val = val;
-		++m_cMembers;
+	if (!m_cItems) {
+		m_aData[0].hash = hash;
+		m_aData[0].val = val;
+		++m_cItems;
 		return;
 	}
 
@@ -65,12 +65,12 @@ void ttCHashPair::Add(size_t hash, size_t val)
 	// The array of pairs is larger then the actual number of members in use, so if the insertion point is at the end of the array,
 	// then all we have to do is set the hash/val pair.
 
-	size_t cbMove = (m_pahash + m_cMembers) - pInsert;
+	size_t cbMove = (m_aData + m_cItems) - pInsert;
 	if (cbMove)
 		memmove(pInsert + 1, pInsert, cbMove * sizeof(HASH_PAIR));
 	pInsert->hash = hash;
 	pInsert->val = val;
-	++m_cMembers;
+	++m_cItems;
 }
 
 void ttCHashPair::SetVal(size_t hash, size_t val)
@@ -82,15 +82,15 @@ void ttCHashPair::SetVal(size_t hash, size_t val)
 
 void ttCHashPair::Remove(size_t hashDel)
 {
-	for (size_t pos = 0; pos < m_cMembers; pos++) {
-		if (m_pahash[pos].hash == hashDel) {
-			if (pos == m_cMembers - 1) {
-				m_cMembers--;
+	for (size_t pos = 0; pos < m_cItems; pos++) {
+		if (m_aData[pos].hash == hashDel) {
+			if (pos == m_cItems - 1) {
+				m_cItems--;
 				return;
 			}
 
-			memmove(m_pahash + pos, m_pahash + pos + 1, ((m_cMembers - 1) - pos) * sizeof(HASH_PAIR));
-			m_cMembers--;
+			memmove(m_aData + pos, m_aData + pos + 1, ((m_cItems - 1) - pos) * sizeof(HASH_PAIR));
+			m_cItems--;
 			return;
 		}
 	}
@@ -98,13 +98,13 @@ void ttCHashPair::Remove(size_t hashDel)
 
 bool ttCHashPair::Find(size_t hash) const
 {
-	if (!m_pahash)
+	if (!m_aData)
 		return false;
 
-	HASH_PAIR* pLow = m_pahash;
-	HASH_PAIR* pHigh = m_pahash + (m_cMembers - 1);
+	HASH_PAIR* pLow = m_aData;
+	HASH_PAIR* pHigh = m_aData + (m_cItems - 1);
 
-	size_t num = m_cMembers;
+	size_t num = m_cItems;
 	while (pLow->hash <= pHigh->hash) {
 		size_t half = num / 2;
 		if (half) {
@@ -130,13 +130,13 @@ bool ttCHashPair::Find(size_t hash) const
 
 size_t ttCHashPair::GetVal(size_t hash) const
 {
-	if (!m_pahash)
+	if (!m_aData)
 		return (size_t) -1;
 
-	HASH_PAIR* pLow = m_pahash;
-	HASH_PAIR* pHigh = m_pahash + (m_cMembers - 1);
+	HASH_PAIR* pLow = m_aData;
+	HASH_PAIR* pHigh = m_aData + (m_cItems - 1);
 
-	size_t num = m_cMembers;
+	size_t num = m_cItems;
 	while (pLow->hash <= pHigh->hash) {
 		size_t half = num / 2;
 		if (half) {
@@ -162,17 +162,17 @@ size_t ttCHashPair::GetVal(size_t hash) const
 
 ttCHashPair::HASH_PAIR* ttCHashPair::FindInsertionPoint(size_t hash) const
 {
-	if (m_pahash[0].hash > hash)
-		return &m_pahash[0];	// insert at beginning
+	if (m_aData[0].hash > hash)
+		return &m_aData[0];	// insert at beginning
 
-	HASH_PAIR* pHigh = m_pahash + (m_cMembers - 1);
+	HASH_PAIR* pHigh = m_aData + (m_cItems - 1);
 	if (pHigh->hash < hash)
 		return pHigh + 1;	// insert at end
 
-	HASH_PAIR* pLow = m_pahash;
+	HASH_PAIR* pLow = m_aData;
 	HASH_PAIR* pMid;
 
-	size_t num = m_cMembers;
+	size_t num = m_cItems;
 	while (pLow <= pHigh) {
 		size_t half = num / 2;
 		if (half) {
@@ -198,13 +198,13 @@ ttCHashPair::HASH_PAIR* ttCHashPair::FindInsertionPoint(size_t hash) const
 
 ttCHashPair::HASH_PAIR* ttCHashPair::GetHashPair(size_t hash) const
 {
-	if (!m_pahash)
+	if (!m_aData)
 		return nullptr;
 
-	HASH_PAIR* pLow = m_pahash;
-	HASH_PAIR* pHigh = m_pahash + (m_cMembers - 1);
+	HASH_PAIR* pLow = m_aData;
+	HASH_PAIR* pHigh = m_aData + (m_cItems - 1);
 
-	size_t num = m_cMembers;
+	size_t num = m_cItems;
 	while (pLow->hash <= pHigh->hash) {
 		size_t half = num / 2;
 		if (half) {

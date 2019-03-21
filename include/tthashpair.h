@@ -52,13 +52,13 @@ public:
 
 #ifdef _DEBUG
 	void Verify() {	// make certain the hash numbers are in numerical order
-		for (size_t pos = 1; pos < m_cMembers; pos++)
-			ttASSERT(m_pahash[pos].hash > m_pahash[pos - 1].hash);
+		for (size_t pos = 1; pos < m_cItems; pos++)
+			ttASSERT(m_aData[pos].hash > m_aData[pos - 1].hash);
 	}
 #endif
 
-	size_t GetCount() const { return m_cMembers; }
-	HASH_PAIR* GetArray() { return m_pahash; }	// Use with caution!
+	size_t GetCount() const { return m_cItems; }
+	HASH_PAIR* GetArray() { return m_aData; }	// Use with caution!
 
 protected:
 
@@ -67,9 +67,9 @@ protected:
 
 	// Class members
 
-	size_t m_cMembers;
-	size_t m_cMalloced;
-	HASH_PAIR* m_pahash;
+	size_t m_cItems;
+	size_t m_cAllocated;
+	HASH_PAIR* m_aData;
 };
 
 #endif // __TTLIB_HASHPAIR_H__
