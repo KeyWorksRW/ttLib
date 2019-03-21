@@ -150,17 +150,19 @@ namespace tt {
 
 	void	AddTrailingSlash(char* pszPath);
 
-	// findExtPortion and findFilePortion properly handle directories and filenames that start with '.' -- i.e., tt::findExtPortion(".gitignore") will return nullptr
-	char*	findExtPortion(const char* pszPath);		// returns pointer to the '.' that begins a file name extension, or nullptr
-	char*	findFilePortion(const char* pszPath);		// returns pointer to the filename portion of a path
+	// findExtPortion and findFilePortion properly handle directories and filenames that start with '.' -- i.e.,
+	// tt::findExtPortion(".gitignore") will return nullptr
+
+	char*	findExtPortion(const char* pszPath);	// returns pointer to the '.' that begins a file name extension, or nullptr
+	char*	findFilePortion(const char* pszPath);	// returns pointer to the filename portion of a path
 
 	char*	 findExt(const char* pszPath, const char* pszExt);		// find a case-insensitive extension in a path string
 	wchar_t* findExt(const wchar_t* pszPath, const wchar_t* pszExt);
-	char*	 findLastSlash(const char* pszPath);		// handles both forward and back slashes
+	char*	 findLastSlash(const char* pszPath);	// handles both forward and back slashes
 
-	size_t	HashFromSz(const char* psz);
+	size_t	HashFromSz(const char* psz);			// creates a hash number from an string
 	size_t	HashFromSz(const wchar_t* psz);
-	size_t	HashFromURL(const char* pszURL);
+	size_t	HashFromURL(const char* pszURL);		// creates a hash number from a url or filename--'/' and '\' are considered the same, letter case doesn't matter
 	size_t	HashFromURL(const wchar_t* pszURL);
 
 	inline void	SetAssertHandlerA(TTASSERTHANDLERA pFunc) { pttAssertHandlerA = pFunc; }	// Replace the ttLib assertion handler with your own
