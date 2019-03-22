@@ -58,13 +58,10 @@ void ttCMultiBtn::SetIcon(int idBtn, int idIcon, UINT nIconAlign)
 			m_aBtns[i]->SetIcon(idIcon, nIconAlign);
 			return;
 		}
-#ifdef _DEBUG
-		if (IsWindow(*m_aBtns[i])) {
-			int id = GetDlgCtrlID(*m_aBtns[i]);
-			tt::Trace("ttCMultiBtn: Icon not set for button id:%d", id);
-		}
-#endif
 	}
+#ifdef _DEBUG
+	tt::Trace("ttCMultiBtn::SetIcon was unable to find the button id: %d", idBtn);
+#endif
 }
 
 ttCShadeBtn* ttCMultiBtn::FindShadeBtn(int id)
