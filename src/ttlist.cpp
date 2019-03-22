@@ -86,7 +86,7 @@ size_t ttCList::Add(const char* pszKey)
 	if (isNoDuplicates()) {
 		size_t hash = tt::HashFromSz(pszNormalized);
 		size_t pos = m_HashPair.GetVal(hash);
-		if (!m_HashPair.InRange(pos))
+		if (m_HashPair.InRange(pos))
 			return pos;
 		else {
 			if (m_cItems + 1 >= m_cAllocated) {	// the +1 is paranoia -- it shouldn't really be necessary
