@@ -80,50 +80,24 @@ size_t ttCList::Add(const char* pszKey)
 	if (!pszKey)
 		return (size_t) -1;
 
-	ttCStr cszKey;
-	char* pszNormalized = NormalizeString(pszKey, cszKey);
-
 	if (isNoDuplicates()) {
+		ttCStr cszKey;
+		char* pszNormalized = NormalizeString(pszKey, cszKey);	// return will point to either pszKey or cszKey
+
 		size_t hash = tt::HashFromSz(pszNormalized);
 		size_t pos = m_HashPair.GetVal(hash);
 		if (m_HashPair.InRange(pos))
 			return pos;
-		else {
-			if (m_cItems + 1 >= m_cAllocated) {	// the +1 is paranoia -- it shouldn't really be necessary
-				m_cAllocated += 32;	// add room for 32 strings at a time
-				m_aptrs = (char**) ttRealloc(m_aptrs, m_cAllocated * sizeof(char*));
-			}
-			m_aptrs[m_cItems] = ttStrdup(pszNormalized);
+		else
 			m_HashPair.Add(hash, m_cItems);
-			return m_cItems++;
-		}
 	}
 
 	if (m_cItems + 1 >= m_cAllocated) {	// the +1 is paranoia -- it shouldn't really be necessary
 		m_cAllocated += 32;	// add room for 32 strings at a time
 		m_aptrs = (char**) (m_aptrs ? ttRealloc(m_aptrs, m_cAllocated * sizeof(char*)) : ttMalloc(m_cAllocated * sizeof(char*)));
 	}
-	m_aptrs[m_cItems] = ttStrdup(pszNormalized);
+	m_aptrs[m_cItems] = ttStrdup(pszKey);
 	return m_cItems++;
-}
-
-bool ttCList::Find(const char* pszKey) const
-{
-	ttASSERT_NONEMPTY(pszKey);
-	if (!pszKey || !*pszKey)
-		return false;
-
-	ttCStr cszKey;
-	char* pszNormalized = NormalizeString(pszKey, cszKey);
-
-	if (isNoDuplicates())
-		return m_HashPair.Find(pszNormalized);
-
-	for (size_t i = 0; i < m_cItems; i++)	{
-		if (tt::isSameStr(m_aptrs[i], pszNormalized))
-			return true;
-	}
-	return false;
 }
 
 size_t ttCList::GetPos(const char* pszKey) const
@@ -132,14 +106,27 @@ size_t ttCList::GetPos(const char* pszKey) const
 	if (!pszKey || !*pszKey)
 		return (size_t) -1;
 
-	ttCStr cszKey;
-	char* pszNormalized = NormalizeString(pszKey, cszKey);
-
-	if (isNoDuplicates())
+	if (isNoDuplicates()) {
+		ttCStr cszKey;
+		char* pszNormalized = NormalizeString(pszKey, cszKey);	// return will point to either pszKey or cszKey
 		return m_HashPair.GetVal(pszNormalized);
+	}
+
+	if (m_flags & FLG_IGNORE_CASE || m_flags & FLG_URL_STRINGS) {
+		ttCStr cszKey;
+		char* pszNormalized = NormalizeString(pszKey, cszKey);	// return will point to either pszKey or cszKey
+
+		ttCStr cszList;
+		for (size_t pos = 0; pos < m_cItems; ++pos) {
+			char* pszList = NormalizeString(m_aptrs[pos], cszList);
+			if (tt::isSameStr(pszList, pszNormalized))
+				return pos;
+		}
+		return (size_t) -1;
+	}
 
 	for (size_t pos = 0; pos < m_cItems; ++pos)	{
-		if (tt::isSameStr(m_aptrs[pos], pszNormalized))
+		if (tt::isSameStr(m_aptrs[pos], pszKey))
 			return pos;
 	}
 	return (size_t) -1;
@@ -176,10 +163,6 @@ void ttCList::Remove(size_t pos)
 
 void ttCList::Remove(const char* psz)
 {
-	ttASSERT_NONEMPTY(psz);
-	if (!psz || !*psz)
-		return;
-
 	size_t pos = GetPos(psz);
 	if (pos != (size_t) -1)
 		Remove(pos);
@@ -219,13 +202,13 @@ void ttCList::Replace(size_t pos, const char* pszKey)
 
 	ttFree((void*) m_aptrs[pos]);
 
-	ttCStr cszKey;
-	char* pszNormalized = NormalizeString(pszKey, cszKey);
+	m_aptrs[pos] = ttStrdup(pszKey);
 
-	m_aptrs[pos] = ttStrdup(pszNormalized);
-
-	if (isNoDuplicates())
+	if (isNoDuplicates()) {
+		ttCStr cszKey;
+		char* pszNormalized = NormalizeString(pszKey, cszKey);
 		m_HashPair.Add(pszNormalized, pos);
+	}
 }
 
 void ttCList::Swap(size_t posA, size_t posB)
@@ -259,16 +242,14 @@ void ttCList::InsertAt(size_t pos, const char* pszKey)
 			if (pHashPair[posHash].val >= pos)
 				pHashPair[posHash].val++;
 		}
+
+		ttCStr cszKey;
+		char* pszNormalized = NormalizeString(pszKey, cszKey);
+		m_HashPair.Add(pszNormalized, pos);
 	}
 
-	ttCStr cszKey;
-	char* pszNormalized = NormalizeString(pszKey, cszKey);
-
-	m_aptrs[pos] = ttStrdup(pszNormalized);
+	m_aptrs[pos] = ttStrdup(pszKey);
 	m_cItems++;
-
-	if (isNoDuplicates())
-		m_HashPair.Add(pszNormalized);
 }
 
 void ttCList::Sort()
@@ -294,16 +275,14 @@ void ttCList::Sort(size_t iColumn)
 
 char* ttCList::NormalizeString(const char* pszString, ttCStr& cszKey) const
 {
-	// BUGBUG: [randalphwa - 9/20/2018] This is not thread safe, which means ttCList is not thread safe
-
 	if (m_flags & FLG_IGNORE_CASE || m_flags & FLG_URL_STRINGS)	{
 		cszKey = pszString;
-		cszKey.MakeLower();
+		if (m_flags & FLG_IGNORE_CASE)
+			cszKey.MakeLower();
 		if (m_flags & FLG_URL_STRINGS)
 			tt::BackslashToForwardslash(cszKey);
 		return cszKey;
 	}
-	cszKey.Delete();
 	return (char*) pszString;
 }
 

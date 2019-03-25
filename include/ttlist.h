@@ -37,7 +37,7 @@ public:
 	void AllowDuplicates() { SetFlags(FLG_ADD_DUPLICATES); }
 
 	size_t	Add(const char* psz);
-	bool	Find(const char* psz) const;
+	bool	Find(const char* psz) const { return InRange(GetPos(psz)); }
 	size_t	GetPos(const char* psz) const;	// returns -1 if not found
 	void	InsertAt(size_t pos, const char* psz);
 	void	Remove(const char* psz);
