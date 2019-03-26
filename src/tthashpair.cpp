@@ -96,38 +96,6 @@ void ttCHashPair::Remove(size_t hashDel)
 	}
 }
 
-bool ttCHashPair::Find(size_t hash) const
-{
-	if (!m_aData)
-		return false;
-
-	HASH_PAIR* pLow = m_aData;
-	HASH_PAIR* pHigh = m_aData + (m_cItems - 1);
-
-	size_t num = m_cItems;
-	while (pLow->hash <= pHigh->hash) {
-		size_t half = num / 2;
-		if (half) {
-			HASH_PAIR* pMid = pLow + (num & 1 ? half : (half - 1));
-			if (pMid->hash == hash)
-				return true;
-			else if (pMid->hash > hash) {
-				pHigh = pMid - 1;
-				num = num & 1 ? half : half - 1;
-			}
-			else {
-				pLow = pMid + 1;
-				num = half;
-			}
-		}
-		else if (num)
-			return (pLow->hash == hash);
-		else
-			return false;
-	}
-	return false;
-}
-
 size_t ttCHashPair::GetVal(size_t hash) const
 {
 	if (!m_aData)

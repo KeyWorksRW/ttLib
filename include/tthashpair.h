@@ -31,8 +31,8 @@ public:
 
 	void	Add(size_t hash, size_t val = 0);
 	void	Add(const char* psz, size_t val = 0) { Add(tt::HashFromSz(psz), val); }
-	bool	Find(size_t hash) const;
-	bool	Find(const char* psz) const { return Find(tt::HashFromSz(psz)); }
+	bool	Find(size_t hash) const { return InRange(GetVal(hash)); }
+	bool	Find(const char* psz) const { return InRange(GetVal(tt::HashFromSz(psz))); }
 	size_t	GetVal(size_t hash) const;		// returns -1 if not found
 	size_t	GetVal(const char* psz) const { return GetVal(tt::HashFromSz(psz)); }
 	void	Remove(size_t hash);
@@ -42,7 +42,7 @@ public:
 
 	void	Delete();	// remove all hash/val pairs
 
-	bool	InRange(size_t pos) { return (pos < m_cItems && m_cItems > 0); }
+	bool	InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
 
 	// The URL variants are case-insensitive, and forward/back slashes are considered the same.
 	// E.g., foo\bar and Foo/bar will generate the same hash number
