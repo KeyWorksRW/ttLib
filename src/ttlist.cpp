@@ -153,7 +153,9 @@ void ttCList::Remove(size_t pos)
 			if (phshPair[posHsh].val > pos)
 				--phshPair[posHsh].val;
 		}
-		m_HashPair.Remove(m_aptrs[pos]);
+		ttCStr cszKey;
+		char* pszNormalized = NormalizeString(m_aptrs[pos], cszKey);	// return will point to either pszKey or cszKey
+		m_HashPair.Remove(pszNormalized);
 	}
 
 	ttFree((void*) m_aptrs[pos]);
