@@ -286,8 +286,7 @@ char* ttCList::NormalizeString(const char* pszString, ttCStr& cszKey) const
 {
 	if (m_flags & FLG_IGNORE_CASE || m_flags & FLG_URL_STRINGS)	{
 		cszKey = pszString;
-		if (m_flags & FLG_IGNORE_CASE)
-			cszKey.MakeLower();
+		cszKey.MakeLower();	// FLG_URL_STRINGS are always case-insensitive
 		if (m_flags & FLG_URL_STRINGS)
 			tt::BackslashToForwardslash(cszKey);
 		return cszKey;
