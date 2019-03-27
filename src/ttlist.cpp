@@ -221,8 +221,15 @@ void ttCList::Swap(size_t posA, size_t posB)
 	m_aptrs[posA] = m_aptrs[posB];
 	m_aptrs[posB] = pszA;
 
-	m_HashPair.SetVal(m_aptrs[posA], posA);
-	m_HashPair.SetVal(m_aptrs[posB], posB);
+	if (isNoDuplicates()) {
+		// We have to "normalize" the strings (deal with case-insensitive, forward/back slash conversion) before CHashPair can find them
+		ttCStr cszA, cszB;
+		char* pszNormalizedA = NormalizeString(m_aptrs[posA], cszA);
+		char* pszNormalizedB = NormalizeString(m_aptrs[posB], cszB);
+
+		m_HashPair.SetVal(pszNormalizedA, posA);
+		m_HashPair.SetVal(pszNormalizedB, posB);
+	}
 }
 
 void ttCList::InsertAt(size_t pos, const char* pszKey)
