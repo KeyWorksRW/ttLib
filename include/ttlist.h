@@ -73,10 +73,10 @@ public:
 				cout << lst.EnumValue();
 	 */
 
-	void BeginEnum() { m_enum = 0; }
-	bool Enum();
+	void  BeginEnum() { m_enum = 0; }
+	bool  Enum();
 	char* EnumValue();	// returns pointer to last enumerated string, or nullptr if no string found
-	bool Enum(const char** ppszResult);	// use this if you want to receive a pointer to the string
+	bool  Enum(const char** ppszResult);	// use this if you want to receive a pointer to the string
 
 	void Sort();				// sort strings into alphabetical order
 
@@ -84,11 +84,13 @@ public:
 
 	void Sort(size_t iColumn);	// sort strings using the offset (equivalent to strcmp(str1 + iColumn, str2 + iColumn)
 
-	void operator+=(const char* psz) { Add(psz); }
+	void  operator+=(const char* psz) { Add(psz); }
 	char* operator[](size_t pos) const { return Get(pos); }
 
+	char** GetArray() { return m_aptrs; }	// use with EXTREME caution, provided primarily for testing
+
 protected:
-	void inline swap(ptrdiff_t pos1, ptrdiff_t pos2)
+	inline void swap(ptrdiff_t pos1, ptrdiff_t pos2)
 	{
 		char* pszTmp = m_aptrs[pos1];
 		m_aptrs[pos1] = m_aptrs[pos2];
