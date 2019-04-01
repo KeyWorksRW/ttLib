@@ -328,14 +328,15 @@ public:
 
 	LRESULT	GetCurSel() { return SendMessage(m_hwnd, LVM_GETNEXTITEM, (WPARAM) -1, MAKELPARAM(LVNI_SELECTED, 0)); }
 
-	bool	GetItem(LV_ITEM* pItem) { return SendMessage(m_hwnd, LVM_GETITEM, 0, (LPARAM) pItem) ? true : false; }
-	bool	SetItem(LV_ITEMA* pItem) { return SendMessage(m_hwnd, LVM_SETITEMA, 0, (LPARAM) pItem) ? true : false; }
-	bool	SetItem(LV_ITEMW* pItem) { return SendMessage(m_hwnd, LVM_SETITEMW, 0, (LPARAM) pItem) ? true : false; }
+	bool	GetItem(LVITEM* pItem) { return SendMessage(m_hwnd, LVM_GETITEM, 0, (LPARAM) pItem) ? true : false; }
+	bool	SetItem(LVITEMA* pItem) { return SendMessage(m_hwnd, LVM_SETITEMA, 0, (LPARAM) pItem) ? true : false; }
+	bool	SetItem(LVITEMW* pItem) { return SendMessage(m_hwnd, LVM_SETITEMW, 0, (LPARAM) pItem) ? true : false; }
 
-	LRESULT InsertItem(LV_ITEMA* pitem) { return (LRESULT)	::SendMessage(m_hwnd, LVM_INSERTITEMA, 0, (LPARAM) pitem); }
-	LRESULT InsertItemW(LV_ITEMW* pitem) { return (LRESULT) ::SendMessage(m_hwnd, LVM_INSERTITEMW, 0, (LPARAM) pitem); }
+	LRESULT InsertItem(LVITEMA* pitem) { return (LRESULT)	::SendMessage(m_hwnd, LVM_INSERTITEMA, 0, (LPARAM) pitem); }
+	LRESULT InsertItemW(LVITEMW* pitem) { return (LRESULT) ::SendMessage(m_hwnd, LVM_INSERTITEMW, 0, (LPARAM) pitem); }
 	BOOL	DeleteItem(int index) { return (BOOL) ListView_DeleteItem(m_hwnd, index); }
 	void	Reset() const { ListView_DeleteAllItems(m_hwnd); }
+
 	LRESULT AddString(const char* psz, LPARAM lParam = -1);
 	LRESULT AddString(const wchar_t* pwsz, LPARAM lParam = -1);
 

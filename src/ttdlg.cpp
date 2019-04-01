@@ -274,7 +274,7 @@ BOOL ttCListView::AddSubString(int iItem, int iSubItem, const char* psz)
 	ttASSERT(psz);
 	if (!psz)
 		return -1;
-	LV_ITEMA lvi;
+	LVITEMA lvi;
 	ZeroMemory(&lvi, sizeof(lvi));
 	lvi.mask = LVIF_TEXT;
 	lvi.pszText = (char*) psz;
@@ -288,7 +288,7 @@ BOOL ttCListView::AddSubString(int iItem, int iSubItem, const wchar_t* pwsz)
 	ttASSERT(pwsz);
 	if (!pwsz)
 		return -1;
-	LV_ITEMW lvi;
+	LVITEMW lvi;
 	ZeroMemory(&lvi, sizeof(lvi));
 	lvi.mask = LVIF_TEXT;
 	lvi.pszText = (wchar_t*) pwsz;
