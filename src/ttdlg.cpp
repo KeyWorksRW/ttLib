@@ -246,6 +246,7 @@ LRESULT ttCListView::AddString(const char* psz, LPARAM lParam)
 	ZeroMemory(&lvi, sizeof(lvi));
 	lvi.mask = LVIF_TEXT;
 	lvi.pszText = (char*) psz;
+	lvi.iItem = 0x7fffffff;		// ensure the item is appended
 	if (lParam != -1) {
 		lvi.mask |= LVIF_PARAM;
 		lvi.lParam = lParam;
@@ -262,6 +263,7 @@ LRESULT ttCListView::AddString(const wchar_t* pwsz, LPARAM lParam)
 	ZeroMemory(&lvi, sizeof(lvi));
 	lvi.mask = LVIF_TEXT;
 	lvi.pszText = (wchar_t*) pwsz;
+	lvi.iItem = 0x7fffffff;
 	if (lParam != -1) {
 		lvi.mask |= LVIF_PARAM;
 		lvi.lParam = lParam;
