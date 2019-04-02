@@ -353,7 +353,6 @@ public:
 	operator HWND() const { return m_hwnd; }
 
 	HWND m_hwnd;
-	LVCOLUMN m_lvColumn;
 };
 
 #endif	// __TTLIB_TTCDLG_H__
