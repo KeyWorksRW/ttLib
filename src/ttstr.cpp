@@ -502,6 +502,13 @@ char* ttCStr::Utoa(uint64_t val)
 	return tt::StrDup(szNum, &m_psz);
 }
 
+char* ttCStr::Hextoa(size_t val, bool bUpperCase)
+{
+	char szNum[32];
+	tt::Hextoa(val, szNum, sizeof(szNum));
+	return tt::StrDup(szNum, &m_psz);
+}
+
 char* ttCStr::getString(const char* pszString, char chBegin, char chEnd)
 {
 	ttASSERT_NONEMPTY(pszString);

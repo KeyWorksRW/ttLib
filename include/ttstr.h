@@ -81,6 +81,7 @@ public:
 	char*	Itoa(int64_t val);
 	char*	Utoa(uint32_t val);
 	char*	Utoa(uint64_t val);
+	char*	Hextoa(size_t val, bool bUpperCase = false);
 
 	void	trimRight() { tt::trimRight(m_psz); }
 
