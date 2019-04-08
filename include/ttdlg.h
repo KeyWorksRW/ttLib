@@ -60,8 +60,8 @@ public:
 	virtual void OnOK() { }		// called when IDOK button is pressed--call CancelEnd() before return to prevent closing the dialog
 	virtual void OnCancel() { }	// called when IDCANCEL button is pressed--call CancelEnd() before return to prevent closing the dialog
 
-	void DontCenterWindow(void) { m_bCenterWindow = false; }
-	void EnableShadeBtns();	// call this in OnBegin to convert all buttons in the dialog to 3D shaded buttons
+	void CenterWindow(bool bCenterOnDesktop = false);	// Call this in OnBegin to center dialog in owner window or desktop
+	void EnableShadeBtns(); 							// call this in OnBegin to convert all buttons in the dialog to 3D shaded buttons
 	void SetBtnIcon(int idBtn, int idIcon, UINT nIconAlign = BS_LEFT);	// call this in OnBegin to add an Icon to a 3D shaded button
 
 	void CancelEnd() { m_bCancelEnd = true; } // call within OnEnd() to cancel ending the dialog
@@ -129,8 +129,6 @@ protected:
 	bool m_bCancelEnd;
 
 	bool m_bInitializing;
-	bool m_bShadeBtns;
-	bool m_bCenterWindow;
 	bool m_bModeless;
 
 	int m_idTemplate;

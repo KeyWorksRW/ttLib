@@ -16,8 +16,6 @@
 
 #include "../include/ttdlg.h"
 
-#define WMP_CENTER_WINDOW WM_USER + 0x7000
-
 static HMONITOR ttKeyMonitorFromWindow(HWND hwnd, DWORD dwFlags);
 static BOOL 	ttKeyMonitorFromPoint(HMONITOR hMonitor, LPMONITORINFO lpmi);
 
@@ -27,8 +25,6 @@ ttCDlg::ttCDlg(UINT idTemplate)
 	m_hwnd = NULL;
 	m_hwndParent = NULL;
 	m_bInitializing = false;
-	m_bShadeBtns = false;
-	m_bCenterWindow = true;
 	m_bModeless = false;
 	m_pShadedBtns = nullptr;
 };
@@ -82,11 +78,6 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 		if (!tt::isValidWindow(pThis->m_hwndParent))
 			pThis->m_hwndParent = GetActiveWindow();
 
-		if (pThis->m_bCenterWindow) {
-			PostMessage(hdlg, WMP_CENTER_WINDOW, 0, 0);
-			ShowWindow(hdlg, SW_HIDE);	// Don't show window until we are centered
-		}
-
 		LRESULT lResult = 0;
 		if (pThis->OnMsgMap(msg, wParam, lParam, lResult))
 			return lResult;
@@ -119,60 +110,6 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 		return lResult;
 
 	switch (msg) {
-		case WMP_CENTER_WINDOW:
-			{
-				RECT rc;
-				GetWindowRect(hdlg, &rc);
-
-				int cx = tt::RC_WIDTH(rc);
-				int cy = tt::RC_HEIGHT(rc);
-
-#if 0	// [randalphwa - 3/2/2019] This centers the window based on the owner.
-				if (pThis->m_hwndParent) {
-					GetWindowRect(pThis->m_hwndParent, &rc);
-				}
-				else {
-					SystemParametersInfo(SPI_GETWORKAREA, 0, &rc, 0);
-				}
-#else	// [randalphwa - 3/2/2019] This centers the window based on the working area of the desktop.
-				SystemParametersInfo(SPI_GETWORKAREA, 0, &rc, 0);
-#endif
-				int left = rc.left + (tt::RC_WIDTH(rc) - cx) / 2;
-				int top	 = rc.top + (tt::RC_HEIGHT(rc) - cy) / 2;
-
-				// Make certain the dialog doesn't spawn between two monitors
-
-				RECT rcDesktop;
-				HMONITOR hmon = ttKeyMonitorFromWindow(hdlg, MONITOR_DEFAULTTOPRIMARY);
-				if (hmon) {
-					MONITORINFO mi;
-					mi.cbSize = sizeof(mi);
-					if (ttKeyMonitorFromPoint(hmon, &mi)) {
-						CopyRect(&rcDesktop, &mi.rcWork);
-					}
-					else {
-						SystemParametersInfo(SPI_GETWORKAREA, 0, &rcDesktop, 0);
-					}
-				}
-				else {
-					SystemParametersInfo(SPI_GETWORKAREA, 0, &rcDesktop, 0);
-				}
-
-				if (left < rcDesktop.left)
-					left = rcDesktop.left;
-				if (left + cx > rcDesktop.right)
-					left -= (left + cx - rcDesktop.right);
-
-				if (top < rcDesktop.top)
-					top = rcDesktop.top;
-				if (top + cy > rcDesktop.bottom)
-					top -= (top + cy - rcDesktop.bottom);
-
-				::MoveWindow(hdlg, left, top, cx, cy, TRUE);
-				ShowWindow(hdlg, SW_SHOW);	// We're centered, so now show the window
-			}
-			break;
-
 		case WM_COMMAND:
 			{
 				switch (LOWORD(wParam)) {
@@ -236,6 +173,52 @@ void ttCDlg::SetBtnIcon(int idBtn, int idIcon, UINT nIconAlign)
 			return;
 	}
 	m_pShadedBtns->SetIcon(idBtn, idIcon, nIconAlign);
+}
+
+void ttCDlg::CenterWindow(bool bCenterOnDesktop)
+{
+	RECT rc;
+	GetWindowRect(*this, &rc);
+
+	int cx = tt::RC_WIDTH(rc);
+	int cy = tt::RC_HEIGHT(rc);
+
+	if (!bCenterOnDesktop && m_hwndParent)
+		GetWindowRect(m_hwndParent, &rc);
+	else
+		SystemParametersInfo(SPI_GETWORKAREA, 0, &rc, 0);
+
+	int left = rc.left + (tt::RC_WIDTH(rc) - cx) / 2;
+	int top	 = rc.top + (tt::RC_HEIGHT(rc) - cy) / 2;
+
+	// Make certain the dialog doesn't spawn between two monitors
+
+	RECT rcDesktop;
+	HMONITOR hmon = ttKeyMonitorFromWindow(*this, MONITOR_DEFAULTTOPRIMARY);
+	if (hmon) {
+		MONITORINFO mi;
+		mi.cbSize = sizeof(mi);
+		if (ttKeyMonitorFromPoint(hmon, &mi)) {
+			CopyRect(&rcDesktop, &mi.rcWork);
+		}
+		else {
+			SystemParametersInfo(SPI_GETWORKAREA, 0, &rcDesktop, 0);
+		}
+	}
+	else {
+		SystemParametersInfo(SPI_GETWORKAREA, 0, &rcDesktop, 0);
+	}
+
+	if (left < rcDesktop.left)
+		left = rcDesktop.left;
+	if (left + cx > rcDesktop.right)
+		left -= (left + cx - rcDesktop.right);
+
+	if (top < rcDesktop.top)
+		top = rcDesktop.top;
+	if (top + cy > rcDesktop.bottom)
+		top -= (top + cy - rcDesktop.bottom);
+	::MoveWindow(*this, left, top, cx, cy, FALSE);
 }
 
 LRESULT ttCListView::AddString(const char* psz, LPARAM lParam)
