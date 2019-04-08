@@ -31,6 +31,7 @@ ttCDlg::ttCDlg(UINT idTemplate)
 	m_bCenterWindow = true;
 	m_bFade = false;
 	m_bModeless = false;
+	m_pShadedBtns = nullptr;
 };
 
 // Will not return until the dialog is dismissed
@@ -87,9 +88,6 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 			ShowWindow(hdlg, SW_HIDE);	// Don't show window until we are centered
 		}
 
-		if (pThis->m_bShadeBtns)
-			pThis->m_ShadedBtns.Initialize(hdlg);
-
 		LRESULT lResult = 0;
 		if (pThis->OnMsgMap(msg, wParam, lParam, lResult))
 			return lResult;
@@ -108,6 +106,11 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 #endif
 	if (!pThis)
 		return FALSE;
+
+	if (msg == WM_DESTROY && pThis->m_pShadedBtns) {
+		delete pThis->m_pShadedBtns;
+		pThis->m_pShadedBtns = nullptr;
+	}
 
 	LRESULT lResult = 0;
 	if (msg == WM_COMMAND && pThis->OnCmdCaseMap((int) LOWORD(wParam), (int) HIWORD(wParam), lResult))
@@ -219,6 +222,25 @@ void ttCDlg::SetControlInteger(int id, ptrdiff_t val) const
 	char szBuf[20];
 	tt::Itoa(val, szBuf, sizeof(szBuf));
 	SetControlText(id, szBuf);
+}
+
+void ttCDlg::EnableShadeBtns()
+{
+	if (!m_pShadedBtns) {
+		m_pShadedBtns = new ttCMultiBtn;
+		if (m_pShadedBtns)
+			m_pShadedBtns->Initialize(*this);
+	}
+}
+
+void ttCDlg::SetBtnIcon(int idBtn, int idIcon, UINT nIconAlign)
+{
+	if (!m_pShadedBtns) {
+		EnableShadeBtns();
+		if (!m_pShadedBtns)
+			return;
+	}
+	m_pShadedBtns->SetIcon(idBtn, idIcon, nIconAlign);
 }
 
 static BOOL (WINAPI* tt_pfnAnimateWindow)(HWND, DWORD, DWORD);

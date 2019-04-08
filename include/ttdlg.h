@@ -61,7 +61,8 @@ public:
 	virtual void OnCancel() { }	// called when IDCANCEL button is pressed--call CancelEnd() before return to prevent closing the dialog
 
 	void DontCenterWindow(void) { m_bCenterWindow = false; }
-	void EnableShadeBtns(bool bEnable = true) { m_bShadeBtns = bEnable; }
+	void EnableShadeBtns();	// call this in OnBegin to convert all buttons in the dialog to 3D shaded buttons
+	void SetBtnIcon(int idBtn, int idIcon, UINT nIconAlign = BS_LEFT);	// call this in OnBegin to add an Icon to a 3D shaded button
 	void FadeOnExit() { m_bFade = true; }
 
 	void CancelEnd() { m_bCancelEnd = true; } // call within OnEnd() to cancel ending the dialog
@@ -139,7 +140,7 @@ protected:
 	HWND m_hwnd;			// m_hwnd vs m_hWnd -- SDK/include, ATL and WTL use both variants. We're sticking with all lowercase.
 	HWND m_hwndParent;
 
-	ttCMultiBtn m_ShadedBtns;
+	ttCMultiBtn* m_pShadedBtns;
 
 	LRESULT m_result;
 }; // end of ttCDlg
