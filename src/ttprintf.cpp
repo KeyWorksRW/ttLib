@@ -58,7 +58,7 @@ void ttPrintfPtr::Need(size_t cb)
 }
 
 namespace ttpriv {
-	char*	ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargList);
+	char*	ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargList, bool* pbPlural);
 	void	AddCommasToNumber(char* pszNum, char* pszDst, size_t cbDst);
 }
 
@@ -94,6 +94,7 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 	const char* pszEnd = pszFormat;
 	char szNumBuf[50];	// buffer used for converting numbers including plenty of room for commas
 
+	bool bPlural = true;
 	while (*pszEnd) {
 		if (*pszEnd != '%') {
 			const char* pszBegin = pszEnd++;
@@ -119,7 +120,7 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 		}
 		pszEnd++;
 		if (*pszEnd == 'k') {	// special formatting
-			pszEnd = ttpriv::ProcessKFmt(sptr, pszEnd + 1, &argList);
+			pszEnd = ttpriv::ProcessKFmt(sptr, pszEnd + 1, &argList, &bPlural);
 			continue;
 		}
 
@@ -196,6 +197,7 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 					sptr.strCat(szTmp);
 				}
 			}
+			bPlural = szNumBuf[0] != '1' ? true : false;
 			sptr.strCat(szNumBuf);
 			pszEnd++;
 			continue;
@@ -212,6 +214,7 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 					sptr.strCat(szTmp);
 				}
 			}
+			bPlural = szNumBuf[0] != '1' ? true : false;
 			sptr.strCat(szNumBuf);
 			pszEnd++;
 			continue;
@@ -228,6 +231,7 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 					sptr.strCat(szTmp);
 				}
 			}
+			bPlural = szNumBuf[0] != '1' ? true : false;
 			sptr.strCat(szNumBuf);
 			pszEnd++;
 			continue;
@@ -245,6 +249,7 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 					sptr.strCat(szTmp);
 				}
 			}
+			bPlural = szNumBuf[0] != '1' ? true : false;
 			sptr.strCat(szNumBuf);
 			pszEnd++;
 			continue;
@@ -311,7 +316,7 @@ WideChar:
 	sptr.ReAlloc(tt::strByteLen(sptr));
 }
 
-char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargList)
+char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargList, bool* pbPlural)
 {
 	char szBuf[64];
 	szBuf[0] = '\0';
@@ -319,6 +324,7 @@ char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargLi
 		case 'n':	// 'n' is deprecated, 'd' should be used instead
 		case 'd':
 			tt::Itoa((int) va_arg(*pargList, int), szBuf, sizeof(szBuf));
+			*pbPlural = szBuf[0] != '1' ? true : false;
 			ttpriv::AddCommasToNumber(szBuf, szBuf, sizeof(szBuf));
 			break;
 
@@ -327,17 +333,20 @@ char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargLi
 				tt::Itoa(va_arg(*pargList, int64_t), szBuf, sizeof(szBuf));
 			else if (tt::isSameSubStri(pszEnd, "I64u"))
 				tt::Utoa(va_arg(*pargList, uint64_t), szBuf, sizeof(szBuf));
+			*pbPlural = szBuf[0] != '1' ? true : false;
 			ttpriv::AddCommasToNumber(szBuf, szBuf, sizeof(szBuf));
 			pszEnd += 3;	// skip over I64 portion, then count normally
 			break;
 
 		case 't':	// use for size_t parameters, this will handle both 32 and 64 bit compilations
 			tt::Utoa(va_arg(*pargList, size_t), szBuf, sizeof(szBuf));
+			*pbPlural = szBuf[0] != '1' ? true : false;
 			ttpriv::AddCommasToNumber(szBuf, szBuf, sizeof(szBuf));
 			break;
 
 		case 'u':
 			tt::Utoa(va_arg(*pargList, unsigned int), szBuf, sizeof(szBuf));
+			*pbPlural = szBuf[0] != '1' ? true : false;
 			ttpriv::AddCommasToNumber(szBuf, szBuf, sizeof(szBuf));
 			break;
 
@@ -352,6 +361,17 @@ char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargLi
 			if (va_arg(*pargList, _int64) != 1) {
 				szBuf[0] = 's';
 				szBuf[1] = '\0';
+			}
+			break;
+
+		case 'l':
+			if (pszEnd[1] == 's') {
+				if (*pbPlural) {
+					szBuf[0] = 's';
+					szBuf[1] = '\0';
+					sptr.strCat(szBuf);
+				}
+				return (char*) (pszEnd + 2);
 			}
 			break;
 

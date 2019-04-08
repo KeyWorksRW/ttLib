@@ -21,6 +21,7 @@
 //		%kq - outputs quotation marks around the string
 //		%ks - adds a 's' to the current buffer if the integer is zero or greater then 1, e.g., printf("item%ks", cItems);
 //		%kS - adds a 's' to the current buffer if the __int64 is zero or greater then 1
+//		%kls - adds a 's' to the current buffer if the last numeric argument is zero or greater then 1 (printf("%d item%kls", cItems);
 //		%kt - formats a size_t value with commas
 //		%ku - formats an unsigned integer with commas
 
