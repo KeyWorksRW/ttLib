@@ -63,7 +63,6 @@ public:
 	void DontCenterWindow(void) { m_bCenterWindow = false; }
 	void EnableShadeBtns();	// call this in OnBegin to convert all buttons in the dialog to 3D shaded buttons
 	void SetBtnIcon(int idBtn, int idIcon, UINT nIconAlign = BS_LEFT);	// call this in OnBegin to add an Icon to a 3D shaded button
-	void FadeOnExit() { m_bFade = true; }
 
 	void CancelEnd() { m_bCancelEnd = true; } // call within OnEnd() to cancel ending the dialog
 	BOOL CloseDialog(size_t result = IDOK) { return (m_bModeless ? DestroyWindow(*this) : ::EndDialog(*this, (int) result)); }
@@ -132,7 +131,6 @@ protected:
 	bool m_bInitializing;
 	bool m_bShadeBtns;
 	bool m_bCenterWindow;
-	bool m_bFade;
 	bool m_bModeless;
 
 	int m_idTemplate;

@@ -29,7 +29,6 @@ ttCDlg::ttCDlg(UINT idTemplate)
 	m_bInitializing = false;
 	m_bShadeBtns = false;
 	m_bCenterWindow = true;
-	m_bFade = false;
 	m_bModeless = false;
 	m_pShadedBtns = nullptr;
 };
@@ -182,12 +181,8 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 						pThis->OnOK();
 						if (pThis->m_bCancelEnd)
 							pThis->m_bCancelEnd = false;
-						else {
-							if (pThis->m_bFade) {
-								pThis->FadeWindow();
-							}
+						else
 							pThis->CloseDialog(IDOK);	// do NOT call EndDialog--it will fail if this is a modeless dialog
-						}
 						break;
 
 					case IDCANCEL:
@@ -241,22 +236,6 @@ void ttCDlg::SetBtnIcon(int idBtn, int idIcon, UINT nIconAlign)
 			return;
 	}
 	m_pShadedBtns->SetIcon(idBtn, idIcon, nIconAlign);
-}
-
-static BOOL (WINAPI* tt_pfnAnimateWindow)(HWND, DWORD, DWORD);
-
-void ttCDlg::FadeWindow()
-{
-	if (IsWindowsXPOrGreater()) {
-		if (!tt_pfnAnimateWindow) {
-			HMODULE hUser32 = GetModuleHandle(TEXT("USER32"));
-			if (hUser32 && (*(FARPROC*)&tt_pfnAnimateWindow = GetProcAddress(hUser32, "AnimateWindow")) != NULL)
-				tt_pfnAnimateWindow(m_hwnd, 200, AW_HIDE | AW_BLEND);
-		}
-		else
-			tt_pfnAnimateWindow(m_hwnd, 200, AW_HIDE | AW_BLEND);
-		Sleep(200);
-	}
 }
 
 LRESULT ttCListView::AddString(const char* psz, LPARAM lParam)
