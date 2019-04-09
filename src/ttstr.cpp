@@ -505,7 +505,7 @@ char* ttCStr::Utoa(uint64_t val)
 char* ttCStr::Hextoa(size_t val, bool bUpperCase)
 {
 	char szNum[32];
-	tt::Hextoa(val, szNum, sizeof(szNum));
+	tt::Hextoa(val, szNum, bUpperCase);
 	return tt::StrDup(szNum, &m_psz);
 }
 
