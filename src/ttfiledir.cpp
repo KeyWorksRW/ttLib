@@ -140,12 +140,33 @@ bool tt::CreateDir(const wchar_t* pszDir)
 #endif
 }
 
-// A copy of pszFile is made, so okay if pszFile points to cszPath
+/*
+	This function serves two purposes. It converts a full path into a relative path, and it fixes a path to a file that is
+	supposed to be relative to a root location.
+
+	ConvertToRelative("c:/myProject/foo.cpp", "c:/myProject/foo.h")
+
+		The above will set cszResult to "foo.h"
+
+	ConvertToRelative("c:/myProject/src/foo.cpp", "c:/myProject/include/foo.h")
+
+		The above will set cszResult to "../include/foo.h"
+
+	ConvertToRelative("../res/foo.rc", "lang/en.rc")
+
+		The above will set cszResult to "../res/lang/en.rc"
+
+*/
 
 void tt::ConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszResult)
 {
 	ttASSERT_NONEMPTY(pszRoot);
 	ttASSERT_NONEMPTY(pszFile);
+	if (!pszFile || !*pszFile) {
+		// REVIEW: [randalphwa - 4/15/2019] it might make more sense to just throw -- the calling program will not correctly no matter what
+		cszResult = "internal error";
+		return;
+	}
 
 	if (!pszRoot) {
 		cszResult = pszFile ? pszFile : "";
@@ -153,7 +174,7 @@ void tt::ConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& csz
 	}
 
 	ttCStr cszRoot(pszRoot);
-	if (pszFile == tt::findFilePortion(pszFile)) {	// this would mean we were only passed a filename
+	if (tt::isValidFileChar(pszFile, 0) && tt::isValidFileChar(pszFile, 1)) {	// this would mean we were only passed a filename
 		if (tt::FileExists(cszRoot)) {	// if the root included a filename, then remove it now
 			char* pszFilePortion = (char*) tt::findFilePortion(cszRoot);
 			if (pszFilePortion)
