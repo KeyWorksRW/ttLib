@@ -2,7 +2,7 @@
 // Name:		ttstr.cpp
 // Purpose:		various functions dealing with strings
 // Author:		Ralph Walden
-// Copyright:	Copyright (c) 1998-2018 KeyWorks Software (Ralph Walden)
+// Copyright:	Copyright (c) 1998-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
@@ -16,7 +16,7 @@
 // the "right" thing that will allow the program to continue, but without a buffer overun, or GPF caused by
 // a NULL pointer. Note also that we have a significantly smaller max string length (16 megs versus 2 gigs).
 
-size_t tt::strLen(const char* psz)
+size_t tt::StrLen(const char* psz)
 {
 	if (psz) {
 		size_t cch = ::strlen(psz);	// now that we know it's not a null pointer, call the standard version of strLen
@@ -28,7 +28,7 @@ size_t tt::strLen(const char* psz)
 	return 0;
 }
 
-size_t tt::strLen(const wchar_t* pwsz)
+size_t tt::StrLen(const wchar_t* pwsz)
 {
 	if (pwsz) {
 		size_t cch = wcslen(pwsz);
@@ -41,7 +41,7 @@ size_t tt::strLen(const wchar_t* pwsz)
 	return 0;
 }
 
-int tt::strCopy_s(char* pszDst, size_t cbDest, const char* pszSrc)
+int tt::StrCopy(char* pszDst, size_t cbDest, const char* pszSrc)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");
 	ttASSERT_MSG(pszSrc, "NULL pointer!");
@@ -55,9 +55,9 @@ int tt::strCopy_s(char* pszDst, size_t cbDest, const char* pszSrc)
 	}
 
 #ifdef _DEBUG
-	if (tt::strByteLen(pszSrc) > cbDest) {
+	if (tt::StrByteLen(pszSrc) > cbDest) {
 		ttCStr cszMsg;
-		cszMsg.printf("Buffer overflow in strCopy_s:\n\tcbDest = %ku, pszSrc = %ku", cbDest, tt::strByteLen(pszSrc));
+		cszMsg.printf("Buffer overflow in strCopy_s:\n\tcbDest = %ku, pszSrc = %ku", cbDest, tt::StrByteLen(pszSrc));
 		ttFAIL(cszMsg);
 	}
 #endif
@@ -79,7 +79,7 @@ int tt::strCopy_s(char* pszDst, size_t cbDest, const char* pszSrc)
 	return (*pszSrc ? EOVERFLOW : result);
 }
 
-int tt::strCopy_s(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
+int tt::StrCopy(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");
 	ttASSERT_MSG(pszSrc, "NULL pointer!");
@@ -92,7 +92,7 @@ int tt::strCopy_s(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
 		return EINVAL;
 	}
 
-	ttASSERT_MSG(tt::strByteLen(pszSrc) <= cbDest, "buffer overflow");
+	ttASSERT_MSG(tt::StrByteLen(pszSrc) <= cbDest, "buffer overflow");
 
 	int result = 0;
 
@@ -111,7 +111,7 @@ int tt::strCopy_s(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
 	return (*pszSrc ? EOVERFLOW : result);
 }
 
-int tt::strCat_s(char* pszDst, size_t cbDest, const char* pszSrc)
+int tt::StrCat(char* pszDst, size_t cbDest, const char* pszSrc)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");		// We leave this assert because this is a serious problem for the caller
 	// ttASSERT_MSG(pszSrc, "NULL pointer!");	// Issue #45--limit asserts when we handle a nullptr correctly
@@ -123,7 +123,7 @@ int tt::strCat_s(char* pszDst, size_t cbDest, const char* pszSrc)
 
 	int result = 0;
 
-	size_t cbInUse = strByteLen(pszDst);
+	size_t cbInUse = StrByteLen(pszDst);
 	ttASSERT_MSG(cbInUse <= tt::MAX_STRING_LEN, "String is too long!");
 
 	if (cbInUse > tt::MAX_STRING_LEN) {
@@ -146,7 +146,7 @@ int tt::strCat_s(char* pszDst, size_t cbDest, const char* pszSrc)
 	return (*pszSrc ? EOVERFLOW : result);
 }
 
-int tt::strCat_s(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
+int tt::StrCat(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");
 
@@ -157,7 +157,7 @@ int tt::strCat_s(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
 
 	int result = 0;
 
-	size_t cbInUse = strByteLen(pszDst);
+	size_t cbInUse = StrByteLen(pszDst);
 	ttASSERT_MSG(cbInUse <= tt::MAX_STRING_LEN / sizeof(wchar_t), "String is too long!");
 
 	if (cbInUse > tt::MAX_STRING_LEN / sizeof(wchar_t)) {
@@ -271,7 +271,7 @@ bool tt::isSameStri(const char* psz1, const char* psz2)
 	if (!psz1 || !psz2)
 		return false;
 
-	if (tt::strLen(psz1) != tt::strLen(psz2))
+	if (tt::StrLen(psz1) != tt::StrLen(psz2))
 		return false;
 	for (;;) {
 		if (*psz1 != *psz2)	{
@@ -290,7 +290,7 @@ bool tt::isSameStri(const wchar_t* psz1, const wchar_t* psz2)
 	if (!psz1 || !psz2)
 		return false;
 
-	if (tt::strLen(psz1) != tt::strLen(psz2))
+	if (tt::StrLen(psz1) != tt::StrLen(psz2))
 		return false;
 	for (;;) {
 		if (*psz1 != *psz2)	{
@@ -619,7 +619,7 @@ void tt::trimRight(char* psz)
 	if (!psz || !*psz)
 		return;
 
-	char* pszEnd = psz + tt::strLen(psz) - 1;
+	char* pszEnd = psz + tt::StrLen(psz) - 1;
 	while ((*pszEnd == ' ' || *pszEnd == '\t' || *pszEnd == '\r' || *pszEnd == '\n' || *pszEnd == '\f')) {
 		pszEnd--;
 		if (pszEnd == psz) {
@@ -1009,5 +1009,5 @@ void tt::AddTrailingSlash(char* psz)
 		return;
 	char* pszLastSlash = tt::findLastSlash(psz);
 	if (!pszLastSlash || pszLastSlash[1])	// only add if there was no slash or there was something after the slash
-		tt::strCat(psz, "/");
+		tt::StrCat(psz, "/");
 }

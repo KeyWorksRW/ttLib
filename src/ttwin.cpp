@@ -69,7 +69,7 @@ bool ttCWin::SetClassName(const char* pszClassName)
 {
 	ttASSERT_NONEMPTY(pszClassName);
 
-	if (!pszClassName || !*pszClassName || tt::strLen(pszClassName) > 256)	// Windows limits class names to 256 characters
+	if (!pszClassName || !*pszClassName || tt::StrLen(pszClassName) > 256)	// Windows limits class names to 256 characters
 		return false;
 
 	if (m_pszClassName)
@@ -86,8 +86,8 @@ bool ttCWin::CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWN
 		if (!m_pszClassName) {
 			// attempt to make a unique class name
 			ttCStr cszClass(32);
-			cszClass.strCopy("ttCWin");
-			tt::Hextoa(GetTickCount(), (char*) cszClass + cszClass.strLen(), true);
+			cszClass.StrCopy("ttCWin");
+			tt::Hextoa(GetTickCount(), (char*) cszClass + cszClass.StrLen(), true);
 			m_pszClassName = _strdup(cszClass);
 			m_pwc->lpszClassName = m_pszClassName;
 		}

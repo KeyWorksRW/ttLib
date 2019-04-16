@@ -62,10 +62,10 @@ public:
 	char*	findChar(char ch) { return tt::findChar(m_psz, ch); }
 	char*	findLastChar(char ch) { return tt::findLastChar(m_psz, ch); }
 
-	size_t	strByteLen() { return m_psz ? tt::strByteLen(m_psz) : 0; }	// length of string in bytes including 0 terminator
-	int		strCat(const char* psz);
-	int		strCopy(const char* psz);
-	size_t	strLen() { return m_psz ? tt::strLen(m_psz) : 0; }		// number of characters (use strByteLen() for buffer size calculations)
+	size_t	StrByteLen() { return m_psz ? tt::StrByteLen(m_psz) : 0; }	// length of string in bytes including 0 terminator
+	int		StrCat(const char* psz);
+	int		StrCopy(const char* psz);
+	size_t	StrLen() { return m_psz ? tt::StrLen(m_psz) : 0; }		// number of characters (use strByteLen() for buffer size calculations)
 
 	bool	isSameStr(const char* psz) { return tt::isSameStr(m_psz, psz); }
 	bool	isSameStri(const char* psz) { return tt::isSameStri(m_psz, psz); }

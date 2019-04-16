@@ -104,7 +104,7 @@ char* ttCHeap::ttStrdup(const char* psz)
 	if (!psz || !*psz)
 		psz = "";
 
-	size_t cb = tt::strByteLen(psz);
+	size_t cb = tt::StrByteLen(psz);
 	char* pszDst = (char*) ttMalloc(cb);
 	memcpy(pszDst, psz, cb);
 	return pszDst;
@@ -117,7 +117,7 @@ wchar_t* ttCHeap::ttStrdup(const wchar_t* pwsz)
 	if (!pwsz || !*pwsz)
 		pwsz = L"";
 
-	size_t cb = tt::strByteLen(pwsz);
+	size_t cb = tt::StrByteLen(pwsz);
 	wchar_t* pwszDst = (wchar_t*) ttMalloc(cb);
 	memcpy(pwszDst, pwsz, cb);
 	return pwszDst;
@@ -129,7 +129,7 @@ char* ttCHeap::ttStrdup(const char* pszSrc, char** pszDst)
 
 	if (!pszSrc || !*pszSrc)
 		pszSrc = "";
-	size_t cb = tt::strByteLen(pszSrc);
+	size_t cb = tt::StrByteLen(pszSrc);
 	*pszDst = *pszDst ? (char*) HeapReAlloc(m_hHeap, 0, *pszDst, cb) : (char*) HeapAlloc(m_hHeap, 0, cb);
 	memcpy(*pszDst, pszSrc, cb);
 	return *pszDst;

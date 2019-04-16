@@ -96,7 +96,7 @@ HFONT tt::CreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold, bool fI
 	lf.lfItalic = (BYTE) fItalics;
 	if (fBold)
 		lf.lfWeight = FW_BOLD;
-	tt::strCopy_s(lf.lfFaceName, LF_FACESIZE, pszTypeFace);
+	tt::StrCopy(lf.lfFaceName, LF_FACESIZE, pszTypeFace);
 
 	HFONT hfont = CreateFontIndirectA(&lf);
 	DeleteDC(hdc);
@@ -253,12 +253,12 @@ void __cdecl tt::KeyTrace(const char* pszFormat, ...)
 		}
 	}
 
-	ttASSERT(tt::strLen(csz) < 4094);
+	ttASSERT(tt::StrLen(csz) < 4094);
 
-	if (tt::strLen(csz) >= 4094)
+	if (tt::StrLen(csz) >= 4094)
 		csz.getPtr()[4093] = 0;	// truncate to size KeyView can handle
 
-	tt::strCopy_s(g_pszKeyViewMap, 4093, csz);
+	tt::StrCopy(g_pszKeyViewMap, 4093, csz);
 
 	SendMessage(hwndKeyView, WMP_KEY_TRACE_MSG, 0, 0);
 }

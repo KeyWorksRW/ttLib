@@ -34,8 +34,8 @@ public:
 	void ReAlloc(size_t cb) { m_psz = (char*) tt::ReAlloc(m_psz, cb); m_cAvail = cb;}
 	void Need(size_t cb);
 	void strCat(const char* psz) {
-		Need(tt::strByteLen(m_psz) + tt::strByteLen(psz));
-		tt::strCat_s(m_psz, m_cAvail, psz);
+		Need(tt::StrByteLen(m_psz) + tt::StrByteLen(psz));
+		tt::StrCat(m_psz, m_cAvail, psz);
 	}
 
 	operator char*()  { return (char*) m_psz; };
@@ -103,13 +103,13 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 			size_t cb = (pszEnd - pszBegin);
 			if (!cb)
 				return;	// empty format string
-			cb += tt::strByteLen(sptr);
+			cb += tt::StrByteLen(sptr);
 			ttASSERT(cb <= MAX_STRING);
 			if (cb > MAX_STRING) // empty or invalid string
 				return;
 			sptr.Need(cb);
 
-			char* pszTmp = sptr + tt::strLen(sptr);
+			char* pszTmp = sptr + tt::StrLen(sptr);
 			while (pszBegin < pszEnd) {
 				*pszTmp++ = *pszBegin++;
 			}
@@ -189,7 +189,7 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 #endif	// defined(_WIN64) || defined(__x86_64__) || defined(__ppc64__)
 			if (cbMin >= 0) {
 				char szTmp[CB_MAX_FMT_WIDTH + 1];
-				size_t diff = cbMin - tt::strLen(szNumBuf);
+				size_t diff = cbMin - tt::StrLen(szNumBuf);
 				if (diff > 0) {
 					szTmp[diff--] = 0;
 					while (diff >= 0)
@@ -206,7 +206,7 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 			tt::Utoa(va_arg(argList, unsigned int), szNumBuf, sizeof(szNumBuf));
 			if (cbMin >= 0) {
 				char szTmp[CB_MAX_FMT_WIDTH + 1];
-				size_t diff = cbMin - tt::strLen(szNumBuf);
+				size_t diff = cbMin - tt::StrLen(szNumBuf);
 				if (diff > 0) {
 					szTmp[diff--] = 0;
 					while (diff >= 0)
@@ -223,7 +223,7 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 			tt::Hextoa(va_arg(argList, int), szNumBuf, false);
 			if (cbMin >= 0) {
 				char szTmp[CB_MAX_FMT_WIDTH + 1];
-				size_t diff = cbMin - tt::strLen(szNumBuf);
+				size_t diff = cbMin - tt::StrLen(szNumBuf);
 				if (diff > 0) {
 					szTmp[diff--] = 0;
 					while (diff >= 0)
@@ -241,7 +241,7 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 			tt::Hextoa(va_arg(argList, int), szNumBuf, true);
 			if (cbMin >= 0) {
 				char szTmp[CB_MAX_FMT_WIDTH + 1];
-				size_t diff = cbMin - tt::strLen(szNumBuf);
+				size_t diff = cbMin - tt::StrLen(szNumBuf);
 				if (diff > 0) {
 					szTmp[diff--] = 0;
 					while (diff >= 0)
@@ -277,7 +277,7 @@ WideChar:
 			if (!pwsz)
 				pwsz = L"(null)";
 
-			size_t cb = tt::strLen(pwsz) * sizeof(wchar_t);
+			size_t cb = tt::StrLen(pwsz) * sizeof(wchar_t);
 			ttASSERT(cb < MAX_STRING);
 			if (cb <= 0 || cb > MAX_STRING) // empty or invalid string
 				return;
@@ -313,7 +313,7 @@ WideChar:
 
 	// Now readjust the allocation to the actual size
 
-	sptr.ReAlloc(tt::strByteLen(sptr));
+	sptr.ReAlloc(tt::StrByteLen(sptr));
 }
 
 char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargList, bool* pbPlural)
@@ -421,9 +421,9 @@ char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargLi
 void ttpriv::AddCommasToNumber(char* pszNum, char* pszDst, size_t cbDst)
 {
 	if (pszDst != pszNum)
-		tt::strCopy_s(pszDst, cbDst, pszNum);	// copy the number, performa all additional work in-place in the destination buffer
+		tt::StrCopy(pszDst, cbDst, pszNum);	// copy the number, performa all additional work in-place in the destination buffer
 
-	ptrdiff_t cbNum = tt::strLen(pszDst);	// needs to be signed because it can go negative
+	ptrdiff_t cbNum = tt::StrLen(pszDst);	// needs to be signed because it can go negative
 	if (cbNum < 4) {
 		ttASSERT(cbNum < (ptrdiff_t) cbDst);
 		return;
@@ -442,7 +442,7 @@ void ttpriv::AddCommasToNumber(char* pszNum, char* pszDst, size_t cbDst)
 	if (cbStart == 0)
 		cbStart += 3;
 	while (cbStart < cbNum) {
-		memmove(pszDst + cbStart + 1, pszDst + cbStart, tt::strByteLen(pszDst + cbStart));	// make space for a comma
+		memmove(pszDst + cbStart + 1, pszDst + cbStart, tt::StrByteLen(pszDst + cbStart));	// make space for a comma
 		pszDst[cbStart] = ',';
 		++cbNum;		// track that we added a comma for loop comparison
 		cbStart += 4;	// 3 numbers plus the comma

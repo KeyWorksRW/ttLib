@@ -68,31 +68,27 @@ namespace tt {
 	inline	bool isPunct(wchar_t ch) { return (ch == L'.' || ch == L',' || ch == L';' || ch == L':' || ch == L'?' || ch == L'!'); }
 	inline	bool isWhitespace(wchar_t ch) { return (ch == L' ' || ch == L'\t' || ch == L'\r' || ch == L'\n' || ch == L'\f') ? true : false; }
 
-	int			strCat_s(char* pszDst, size_t cbDest, const char* pszSrc);	// always zero-terminates, returns EOVERFLOW if truncated
-	int			strCopy_s(char* pszDst, size_t cbDest, const char* pszSrc);	// always zero-terminates, returns EOVERFLOW if truncated
-	size_t		strLen(const char* psz);
+	int			StrCat(char* pszDst, size_t cbDest, const char* pszSrc);	// always zero-terminates, returns EOVERFLOW if truncated
+	int			StrCopy(char* pszDst, size_t cbDest, const char* pszSrc);	// always zero-terminates, returns EOVERFLOW if truncated
+	size_t		StrLen(const char* psz);
 
-	int			strCat_s(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc);
-	int			strCopy_s(wchar_t* pwszDst, size_t cbDest, const wchar_t* pwszSrc);
-	size_t		strLen(const wchar_t* pwsz);
+	int			StrCat(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc);
+	int			StrCopy(wchar_t* pwszDst, size_t cbDest, const wchar_t* pwszSrc);
+	size_t		StrLen(const wchar_t* pwsz);
 
 	// force "normal" calls to secure version -- possible buffer overflow if destination isn't large enough
 
-	inline char* strCat(char* pszDst, const char* pszSrc) { strCat_s(pszDst, tt::MAX_STRING_LEN, pszSrc); return pszDst; }
-	inline char* strCat(char* pszDst, size_t maxDst, const char* pszSrc) { strCat_s(pszDst, maxDst, pszSrc); return pszDst; }
-	inline char* strCopy(char* pszDst, const char* pszSrc) { strCopy_s(pszDst, tt::MAX_STRING_LEN, pszSrc); return pszDst; }
-	inline char* strCopy(char* pszDst, size_t maxDst, const char* pszSrc) { strCopy_s(pszDst, maxDst, pszSrc); return pszDst; }
+	inline int	StrCat(char* pszDst, const char* pszSrc) { return tt::StrCat(pszDst, tt::MAX_STRING_LEN, pszSrc); }
+	inline int	StrCopy(char* pszDst, const char* pszSrc) { return tt::StrCopy(pszDst, tt::MAX_STRING_LEN, pszSrc); }
 
-	inline void	 strCat(wchar_t* pwszDst, const wchar_t* pwszSrc) { tt::strCat_s(pwszDst, tt::MAX_STRING_LEN, pwszSrc); }
-	inline void	 strCat(wchar_t* pwszDst, size_t maxDst, const wchar_t* pwszSrc) { tt::strCat_s(pwszDst, maxDst, pwszSrc); }
-	inline void	 strCopy(wchar_t* pwszDst, const wchar_t* pwszSrc) { tt::strCopy_s(pwszDst, tt::MAX_STRING_LEN, pwszSrc); }
-	inline void	 strCopy(wchar_t* pwszDst, size_t maxDst, const wchar_t* pwszSrc) { tt::strCopy_s(pwszDst, maxDst, pwszSrc); }
+	inline int	StrCat(wchar_t* pwszDst, const wchar_t* pwszSrc) { return tt::StrCat(pwszDst, tt::MAX_STRING_LEN, pwszSrc); }
+	inline int	StrCopy(wchar_t* pwszDst, const wchar_t* pwszSrc) { return tt::StrCopy(pwszDst, tt::MAX_STRING_LEN, pwszSrc); }
 
 	// Use strLen() to get the number of characters without trailing zero, use strByteLen() to get the number of
 	// bytes including the terminating zero
 
-	inline size_t	strByteLen(const char* psz) { return tt::strLen(psz) * sizeof(char) + sizeof(char); }	// char is 1 in SBCS builds, 2 in UNICODE builds
-	inline size_t	strByteLen(const wchar_t* pwsz) { return tt::strLen(pwsz) * sizeof(wchar_t) + sizeof(wchar_t); }
+	inline size_t	StrByteLen(const char* psz) { return tt::StrLen(psz) * sizeof(char) + sizeof(char); }	// char is 1 in SBCS builds, 2 in UNICODE builds
+	inline size_t	StrByteLen(const wchar_t* pwsz) { return tt::StrLen(pwsz) * sizeof(wchar_t) + sizeof(wchar_t); }
 
 	void trimRight(char* psz);
 

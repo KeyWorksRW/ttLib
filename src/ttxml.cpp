@@ -177,10 +177,10 @@ HTML_ELEMENT ttCParseXML::ParseElementTag(const char* pszName, const char* pszCu
 
 	// The tag name is unknown. We look for a close tag with the same name, and if found, we assume this is an XML tag.
 
-	if (pszCurLoc && tt::strLen(pszName) < 254) {
+	if (pszCurLoc && tt::StrLen(pszName) < 254) {
 		char szClose[256];
 		szClose[0] = '\\';
-		tt::strCopy(szClose, pszName);
+		tt::StrCopy(szClose, sizeof(szClose), pszName);
 		if (tt::findStri(pszCurLoc, szClose)) {
 			if (!m_lstXmlTags.Find(pszName)) {
 				m_lstXmlTags.Add(pszName);
@@ -206,7 +206,7 @@ bool StrWtrim(char** s)
 	while(**s > 0 && **s < '!') // skip over leading whitespace
 		++(*s);
 
-	char* pszEnd = *s + (tt::strLen(*s) - 1);
+	char* pszEnd = *s + (tt::StrLen(*s) - 1);
 	while (isSpace(*pszEnd) && pszEnd > *s)
 		pszEnd--;
 	pszEnd++;
@@ -226,7 +226,7 @@ void _StrWnorm(char** s)
 
 	// Now we "normalize" by combining multiple spaces into a single space
 
-	size_t n = tt::strByteLen(*s);
+	size_t n = tt::StrByteLen(*s);
 	ttCTMem<char*> pszNorm(sizeof(char) * n);
 	size_t j = 1;
 	pszNorm[0] = (*s)[0];
@@ -243,7 +243,7 @@ void _StrWnorm(char** s)
 	}
 	if (j < n) {	// Normalization buffer is actually different then input.
 		pszNorm[j] = 0;
-		tt::strCopy(*s, pszNorm); // Copy it back to input.
+		tt::StrCopy(*s, pszNorm); // Copy it back to input.
 	}
 }
 
@@ -418,9 +418,9 @@ HRESULT ttCParseXML::WriteBranch(ttCXMLBranch* pBranch, ttCFile& kf, size_t iInd
 				for (size_t iAttribute = 0; iAttribute < pBranch->GetAttributesCount(); iAttribute++) {
 					XMLATTR* pAttr = pBranch->GetAttributeAt(iAttribute);
 					if (pAttr->pszName) {
-						cbAttrs += tt::strLen(pAttr->pszName);
+						cbAttrs += tt::StrLen(pAttr->pszName);
 						if (pAttr->pszValue)
-							cbAttrs += tt::strLen(pAttr->pszValue);
+							cbAttrs += tt::StrLen(pAttr->pszValue);
 						cbAttrs += 2;	// include room for spacing
 					}
 				}

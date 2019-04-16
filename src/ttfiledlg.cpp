@@ -89,10 +89,10 @@ void ttCFileDlg::FixExtension()
 
 	const char* psz = m_pofn->lpstrFilter;
 	for (DWORD i = 1; i < m_pofn->nFilterIndex; i++) {
-		psz = psz + tt::strByteLen(psz);
-		psz = psz + tt::strByteLen(psz);
+		psz = psz + tt::StrByteLen(psz);
+		psz = psz + tt::StrByteLen(psz);
 	}
-	psz = psz + tt::strLen(psz) + 1;
+	psz = psz + tt::StrLen(psz) + 1;
 	ttASSERT(psz);
 	char* pszTmp = tt::findChar(psz, ';');
 	if (pszTmp)

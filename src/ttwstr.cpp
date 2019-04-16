@@ -2,7 +2,7 @@
 // Name:		ttCWStr
 // Purpose:		SBCS string class
 // Author:		Ralph Walden
-// Copyright:	Copyright (c) 2004-2018 KeyWorks Software (Ralph Walden)
+// Copyright:	Copyright (c) 2004-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
@@ -211,7 +211,7 @@ wchar_t* ttCWStr::GetQuotedString(wchar_t* pszQuote)
 		return nullptr;
 	}
 
-	size_t cb = tt::strByteLen(pszQuote);
+	size_t cb = tt::StrByteLen(pszQuote);
 	ttASSERT_MSG(cb <= MAX_STRING, "String is over 64k in size!");
 
 	if (m_psz)
@@ -245,14 +245,14 @@ wchar_t* ttCWStr::GetQuotedString(wchar_t* pszQuote)
 		m_psz[pszQuote - pszStart] = 0;
 	}
 	else {
-		tt::strCopy_s(m_psz, DEST_SIZE, pszQuote);
+		tt::StrCopy(m_psz, DEST_SIZE, pszQuote);
 		pszQuote += cb;
 	}
 
 	// If there is a significant size difference, then ReAllocate the memory
 
 	if (cb > 32) {	// don't bother if total allocation is 32 bytes or less
-		size_t cbNew = tt::strByteLen(m_psz);
+		size_t cbNew = tt::StrByteLen(m_psz);
 		if (cbNew < cb - 32)
 			m_psz = (wchar_t*) tt::ReAlloc(m_psz, cbNew);
 	}
@@ -300,7 +300,7 @@ bool ttCWStr::CopyNarrow(const char* psz)	// convert UTF8 to UNICODE and store i
 		return false;
 	}
 
-	size_t cch = tt::strLen(psz);
+	size_t cch = tt::StrLen(psz);
 	ttASSERT_MSG(cch <= MAX_STRING, "String is over 64k in size!");
 
 	// BUGBUG: [randalphwa - 09-09-2018]	MultiByteToWideChar() only works on Windows -- need a portable way to convert
@@ -371,8 +371,8 @@ void ttCWStr::operator+=(const wchar_t* psz)
 	else if (!psz || !*psz)
 		m_psz = tt::StrDup(L"");
 	else {
-		size_t cbNew = tt::strByteLen(psz);
-		size_t cbOld = tt::strByteLen(m_psz);
+		size_t cbNew = tt::StrByteLen(psz);
+		size_t cbOld = tt::StrByteLen(m_psz);
 		ttASSERT_MSG(cbNew + cbOld <= MAX_STRING, "String is over 64k in size!");
 		if (cbNew + cbOld > MAX_STRING)
 			return;		// ignore it if it's too large
@@ -389,8 +389,8 @@ void ttCWStr::operator+=(wchar_t ch)
 	if (!m_psz)
 		m_psz = tt::StrDup(szTmp);
 	else {
-		m_psz = (wchar_t*) tt::ReAlloc(m_psz, tt::strByteLen(m_psz));
-		tt::strCat_s(m_psz, DEST_SIZE, szTmp);
+		m_psz = (wchar_t*) tt::ReAlloc(m_psz, tt::StrByteLen(m_psz));
+		tt::StrCat(m_psz, DEST_SIZE, szTmp);
 	}
 }
 
@@ -409,7 +409,7 @@ void ttCWStr::operator+=(ttCWStr csz)
 
 wchar_t ttCWStr::operator[](int pos)
 {
-	if (!m_psz || pos > (int) tt::strLen(m_psz))
+	if (!m_psz || pos > (int) tt::StrLen(m_psz))
 		return 0;
 	else
 		return m_psz[pos];
@@ -437,7 +437,7 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 	size_t cAvail;
 
 	if (m_psz) {
-		cAvail = tt::strByteLen(m_psz);
+		cAvail = tt::StrByteLen(m_psz);
 		cAvail >>=8;	// remove lower bits
 		cAvail <<=8;
 		cAvail += 0x100;	// allocate 256 byte blocks at a time
@@ -462,7 +462,7 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 			size_t cb = (pszEnd - pszBegin);
 			if (!cb)
 				return;	// empty format string
-			cb += tt::strByteLen(m_psz);
+			cb += tt::StrByteLen(m_psz);
 			ttASSERT(cb <= MAX_STRING);
 			if (cb > MAX_STRING) // empty or invalid string
 				return;
@@ -476,7 +476,7 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 				ttASSERT(cAvail < 4096);
 			}
 
-			wchar_t* pszTmp = m_psz + tt::strByteLen(m_psz);
+			wchar_t* pszTmp = m_psz + tt::StrByteLen(m_psz);
 			while (pszBegin < pszEnd) {
 				*pszTmp++ = *pszBegin++;
 			}
@@ -524,7 +524,7 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 			char szBuf[2];
 			szBuf[0] = (uint8_t) (va_arg (argList, int) & 0xFF);
 			szBuf[1] = '\0';
-			size_t cb = tt::strByteLen(m_psz);
+			size_t cb = tt::StrByteLen(m_psz);
 			if (cb > cAvail) {
 				cb >>= 7;
 				cb <<= 7;
@@ -534,7 +534,7 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 				ttASSERT(cAvail < 4096);
 			}
 			ttCWStr cwsz(szBuf);
-			tt::strCat_s(m_psz, DEST_SIZE, cwsz);
+			tt::StrCat(m_psz, DEST_SIZE, cwsz);
 			pszEnd++;
 			continue;
 		}
@@ -547,7 +547,7 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 			size_t cb = WideCharToMultiByte(CP_ACP, 0, szwBuf, sizeof(szwBuf), szBuf, sizeof(szBuf), NULL, NULL);
 			ttASSERT(cb < sizeof(szBuf));
 			szBuf[cb] = '\0';
-			cb = tt::strByteLen(m_psz) + tt::strByteLen(szwBuf);
+			cb = tt::StrByteLen(m_psz) + tt::StrByteLen(szwBuf);
 			if (cb > cAvail) {
 				cb >>= 7;
 				cb <<= 7;
@@ -556,7 +556,7 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 				cAvail = cb - 1;
 				ttASSERT(cAvail < 4096);
 			}
-			tt::strCat_s(m_psz, DEST_SIZE, szwBuf);
+			tt::StrCat(m_psz, DEST_SIZE, szwBuf);
 			pszEnd++;
 			continue;
 		}
@@ -573,7 +573,7 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 #else	// not defined(_WIN64) || defined(__x86_64__) || defined(__ppc64__)
 			tt::Itoa(va_arg(argList, int), szNumBuf, sizeof(szNumBuf) - 1);
 #endif	// defined(_WIN64) || defined(__x86_64__) || defined(__ppc64__)
-			size_t cb = tt::strByteLen(m_psz) + tt::strByteLen(szNumBuf);
+			size_t cb = tt::StrByteLen(m_psz) + tt::StrByteLen(szNumBuf);
 			if (cb > cAvail) {
 				cb >>= 7;
 				cb <<= 7;
@@ -584,12 +584,12 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 			}
 			if (cbMin >= 0) {
 				char szTmp[CB_MAX_FMT_WIDTH + 1];
-				size_t diff = cbMin - tt::strLen(szNumBuf);
+				size_t diff = cbMin - tt::StrLen(szNumBuf);
 				if (diff > 0) {
 					szTmp[diff--] = 0;
 					while (diff >= 0)
 						szTmp[diff--] = chPad;
-					cb = tt::strByteLen(szTmp);
+					cb = tt::StrByteLen(szTmp);
 					if (cb > cAvail) {
 						cb >>= 7;
 						cb <<= 7;
@@ -599,17 +599,17 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 						ttASSERT(cAvail < 4096);
 					}
 					ttCWStr cwsz(szTmp);
-					tt::strCat_s(m_psz, DEST_SIZE, cwsz);
+					tt::StrCat(m_psz, DEST_SIZE, cwsz);
 				}
 			}
 			ttCWStr cwszNum(szNumBuf);
-			tt::strCat_s(m_psz, DEST_SIZE, cwszNum);
+			tt::StrCat(m_psz, DEST_SIZE, cwszNum);
 			pszEnd++;
 			continue;
 		}
 		else if (*pszEnd == 'u') {
 			tt::Utoa(va_arg(argList, unsigned int), szNumBuf, sizeof(szNumBuf));
-			size_t cb = tt::strLen(m_psz) * sizeof(wchar_t) + tt::strLen(szNumBuf) * sizeof(wchar_t) + sizeof(wchar_t);
+			size_t cb = tt::StrLen(m_psz) * sizeof(wchar_t) + tt::StrLen(szNumBuf) * sizeof(wchar_t) + sizeof(wchar_t);
 			if (cb > cAvail) {
 				cb >>= 7;
 				cb <<= 7;
@@ -620,12 +620,12 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 			}
 			if (cbMin >= 0) {
 				char szTmp[CB_MAX_FMT_WIDTH + 1];
-				size_t diff = cbMin - tt::strLen(szNumBuf) * sizeof(wchar_t);
+				size_t diff = cbMin - tt::StrLen(szNumBuf) * sizeof(wchar_t);
 				if (diff > 0) {
 					szTmp[diff--] = 0;
 					while (diff >= 0)
 						szTmp[diff--] = chPad;
-					cb = tt::strByteLen(szTmp);
+					cb = tt::StrByteLen(szTmp);
 					if (cb > cAvail) {
 						cb >>= 7;
 						cb <<= 7;
@@ -635,17 +635,17 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 						ttASSERT(cAvail < 4096);
 					}
 					ttCWStr cwsz(szTmp);
-					tt::strCat_s(m_psz, DEST_SIZE, cwsz);
+					tt::StrCat(m_psz, DEST_SIZE, cwsz);
 				}
 			}
 			ttCWStr cwszNum(szNumBuf);
-			tt::strCat_s(m_psz, DEST_SIZE, cwszNum);
+			tt::StrCat(m_psz, DEST_SIZE, cwszNum);
 			pszEnd++;
 			continue;
 		}
 		else if (*pszEnd == 'x') {
 			tt::Hextoa(va_arg(argList, int), szNumBuf, false);
-			size_t cb = tt::strByteLen(m_psz) + tt::strByteLen(szNumBuf);
+			size_t cb = tt::StrByteLen(m_psz) + tt::StrByteLen(szNumBuf);
 			if (cb > cAvail) {
 				cb >>= 7;
 				cb <<= 7;
@@ -656,12 +656,12 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 			}
 			if (cbMin >= 0) {
 				char szTmp[CB_MAX_FMT_WIDTH + 1];
-				size_t diff = cbMin - tt::strLen(szNumBuf) * sizeof(wchar_t);
+				size_t diff = cbMin - tt::StrLen(szNumBuf) * sizeof(wchar_t);
 				if (diff > 0) {
 					szTmp[diff--] = 0;
 					while (diff >= 0)
 						szTmp[diff--] = chPad;
-					cb = tt::strLen(szTmp);
+					cb = tt::StrLen(szTmp);
 					if (cb > cAvail) {
 						cb >>= 7;
 						cb <<= 7;
@@ -671,18 +671,18 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 						ttASSERT(cAvail < 4096);
 					}
 					ttCWStr cwsz(szTmp);
-					tt::strCat_s(m_psz, DEST_SIZE, cwsz);
+					tt::StrCat(m_psz, DEST_SIZE, cwsz);
 				}
 			}
 			ttCWStr cwszNum(szNumBuf);
-			tt::strCat_s(m_psz, DEST_SIZE, cwszNum);
+			tt::StrCat(m_psz, DEST_SIZE, cwszNum);
 			pszEnd++;
 			continue;
 		}
 		else if (*pszEnd == 'X') {
 			ttASSERT_MSG(!bSize_t, "zX and IX not supported");
 			tt::Hextoa(va_arg(argList, int), szNumBuf, true);
-			size_t cb = tt::strLen(m_psz) + tt::strLen(szNumBuf) + 1;
+			size_t cb = tt::StrLen(m_psz) + tt::StrLen(szNumBuf) + 1;
 			if (cb > cAvail) {
 				cb >>= 7;
 				cb <<= 7;
@@ -693,12 +693,12 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 			}
 			if (cbMin >= 0) {
 				char szTmp[CB_MAX_FMT_WIDTH + 1];
-				size_t diff = cbMin - tt::strLen(szNumBuf);
+				size_t diff = cbMin - tt::StrLen(szNumBuf);
 				if (diff > 0) {
 					szTmp[diff--] = 0;
 					while (diff >= 0)
 						szTmp[diff--] = chPad;
-					cb = tt::strLen(szTmp);
+					cb = tt::StrLen(szTmp);
 					if (cb > cAvail) {
 						cb >>= 7;
 						cb <<= 7;
@@ -708,11 +708,11 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 						ttASSERT(cAvail < 4096);
 					}
 					ttCWStr cwsz(szTmp);
-					tt::strCat_s(m_psz, DEST_SIZE, cwsz);
+					tt::StrCat(m_psz, DEST_SIZE, cwsz);
 				}
 			}
 			ttCWStr cwszNum(szNumBuf);
-			tt::strCat_s(m_psz, DEST_SIZE, cwszNum);
+			tt::StrCat(m_psz, DEST_SIZE, cwszNum);
 			pszEnd++;
 			continue;
 		}
@@ -728,7 +728,7 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 					)
 				psz = "(missing argument for %s)";
 
-			size_t cb = tt::strLen(m_psz) + tt::strLen(psz) + 1;
+			size_t cb = tt::StrLen(m_psz) + tt::StrLen(psz) + 1;
 			if (cb > cAvail) {
 				cb >>= 7;
 				cb <<= 7;
@@ -738,7 +738,7 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 				ttASSERT(cAvail < 4096);
 			}
 			ttCWStr cwsz(psz);
-			tt::strCat_s(m_psz, DEST_SIZE, cwsz);
+			tt::StrCat(m_psz, DEST_SIZE, cwsz);
 			pszEnd++;
 			continue;
 		}
@@ -748,12 +748,12 @@ WideChar:
 			if (!pwsz)
 				pwsz = L"(null)";
 
-			size_t cb = tt::strLen(pwsz) * sizeof(wchar_t);
+			size_t cb = tt::StrLen(pwsz) * sizeof(wchar_t);
 			ttASSERT(cb < MAX_STRING);
 			if (cb <= 0 || cb > MAX_STRING) // empty or invalid string
 				return;
 
-			cb = tt::strLen(m_psz) + tt::strLen(pwsz) + 1;	// we use kstrLen(psz) in case it is a DBCS character (which could be 2 bytes)
+			cb = tt::StrLen(m_psz) + tt::StrLen(pwsz) + 1;	// we use kstrLen(psz) in case it is a DBCS character (which could be 2 bytes)
 			if (cb > cAvail) {
 				cb >>= 7;
 				cb <<= 7;
@@ -762,12 +762,12 @@ WideChar:
 				cAvail = cb - 1;
 				ttASSERT(cAvail < 4096);
 			}
-			tt::strCat_s(m_psz, DEST_SIZE, pwsz);
+			tt::StrCat(m_psz, DEST_SIZE, pwsz);
 			pszEnd++;
 			continue;
 		}
 		else if (*pszEnd == '%') {
-			size_t cb = tt::strLen(m_psz) + 2;
+			size_t cb = tt::StrLen(m_psz) + 2;
 			if (cb > cAvail) {
 				cb >>= 7;
 				cb <<= 7;
@@ -776,7 +776,7 @@ WideChar:
 				cAvail = cb - 1;
 				ttASSERT(cAvail < 4096);
 			}
-			tt::strCat_s(m_psz, DEST_SIZE, L"%");
+			tt::StrCat(m_psz, DEST_SIZE, L"%");
 			pszEnd++;
 			continue;
 		}
@@ -787,7 +787,7 @@ WideChar:
 			ttFAIL("Invalid format string for printf");
 			size_t cb;
 #ifdef _DEBUG
-			cb = tt::strLen(m_psz) + tt::strLen(L"Invalid format string: ") + 1;
+			cb = tt::StrLen(m_psz) + tt::StrLen(L"Invalid format string: ") + 1;
 			if (cb > cAvail) {
 				cb >>= 7;
 				cb <<= 7;
@@ -796,9 +796,9 @@ WideChar:
 				cAvail = cb - 1;
 				ttASSERT(cAvail < 4096);
 			}
-			tt::strCat_s(m_psz, DEST_SIZE, L"Invalid format string: ");
+			tt::StrCat(m_psz, DEST_SIZE, L"Invalid format string: ");
 #endif // _DEBUG
-			cb = tt::strLen(m_psz) + tt::strLen(pszEnd) + 2;	// make room for leading % character
+			cb = tt::StrLen(m_psz) + tt::StrLen(pszEnd) + 2;	// make room for leading % character
 			if (cb > cAvail) {
 				cb >>= 7;
 				cb <<= 7;
@@ -807,15 +807,15 @@ WideChar:
 				cAvail = cb - 1;
 				ttASSERT(cAvail < 4096);
 			}
-			tt::strCat_s(m_psz, DEST_SIZE, L"%");
-			tt::strCat_s(m_psz, DEST_SIZE, pszEnd);
+			tt::StrCat(m_psz, DEST_SIZE, L"%");
+			tt::StrCat(m_psz, DEST_SIZE, pszEnd);
 			break;
 		}
 	}
 
 	// Now readjust the allocation to the actual size
 
-	m_psz = (wchar_t*) tt::ReAlloc(m_psz, tt::strByteLen(m_psz));
+	m_psz = (wchar_t*) tt::ReAlloc(m_psz, tt::StrByteLen(m_psz));
 }
 
 const wchar_t* ttCWStr::ProcessKFmt(const wchar_t* pszEnd, va_list* pargList)
@@ -867,7 +867,7 @@ const wchar_t* ttCWStr::ProcessKFmt(const wchar_t* pszEnd, va_list* pargList)
 			{
 				ttCWStr cszRes;
 				cszRes.getResString(va_arg(*pargList, int));
-				tt::strCopy_s(szwBuf, sizeof(szwBuf), cszRes);
+				tt::StrCopy(szwBuf, sizeof(szwBuf), cszRes);
 			}
 			break;
 
@@ -879,7 +879,7 @@ const wchar_t* ttCWStr::ProcessKFmt(const wchar_t* pszEnd, va_list* pargList)
 				FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
 					NULL, va_arg(*pargList, int), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 					(wchar_t*) &pszMsg, 0, NULL);
-				tt::strCopy_s(szwBuf, sizeof(szwBuf), pszMsg);
+				tt::StrCopy(szwBuf, sizeof(szwBuf), pszMsg);
 				LocalFree((HLOCAL) pszMsg);
 			}
 			break;
@@ -888,16 +888,16 @@ const wchar_t* ttCWStr::ProcessKFmt(const wchar_t* pszEnd, va_list* pargList)
 		case 'q':
 			try {
 				const wchar_t* psz = va_arg(*pargList, const wchar_t*);
-				size_t cb = tt::strLen(m_psz) + tt::strLen(psz) + (3 * sizeof(wchar_t));
+				size_t cb = tt::StrLen(m_psz) + tt::StrLen(psz) + (3 * sizeof(wchar_t));
 				if (cb > tt::SizeAlloc(m_psz)) {
 					cb >>= 7;
 					cb <<= 7;
 					cb += 0x80;	// round up to 128
 					m_psz = (wchar_t*) tt::ReAlloc(m_psz, cb);
 				}
-				tt::strCat(m_psz, L"\042");
-				tt::strCat(m_psz, psz);
-				tt::strCat(m_psz, L"\042");
+				tt::StrCat(m_psz, L"\042");
+				tt::StrCat(m_psz, psz);
+				tt::StrCat(m_psz, L"\042");
 			}
 			catch (...) {
 				ttFAIL("Exception in printf -- bad %%kq pointer");
@@ -905,15 +905,15 @@ const wchar_t* ttCWStr::ProcessKFmt(const wchar_t* pszEnd, va_list* pargList)
 			break;
 	}
 	if (szwBuf[0]) {
-		size_t cbCur = tt::strByteLen(m_psz);
-		size_t cb = cbCur + tt::strByteLen(szwBuf);
+		size_t cbCur = tt::StrByteLen(m_psz);
+		size_t cb = cbCur + tt::StrByteLen(szwBuf);
 		if (cb > tt::SizeAlloc(m_psz)) {
 			cb >>= 7;
 			cb <<= 7;
 			cb += 0x80;	// round up to 128
 			m_psz = (wchar_t*) tt::ReAlloc(m_psz, cb);
 		}
-		tt::strCat_s(m_psz, DEST_SIZE - cbCur, szwBuf);
+		tt::StrCat(m_psz, DEST_SIZE - cbCur, szwBuf);
 	}
 	return pszEnd + 1;
 }
@@ -925,9 +925,9 @@ void ttpriv::AddCommasToNumber(wchar_t* pszNum, wchar_t* pszDst, size_t cbDst)
 {
 	size_t cchDst = cbDst / sizeof(wchar_t);
 	if (pszDst != pszNum)
-		tt::strCopy_s(pszDst, cbDst, pszNum);	// copy the number, performa all additional work in-place in the destination buffer
+		tt::StrCopy(pszDst, cbDst, pszNum);	// copy the number, performa all additional work in-place in the destination buffer
 
-	size_t cchNum = tt::strLen(pszDst);	// needs to be signed because it can go negative
+	size_t cchNum = tt::StrLen(pszDst);	// needs to be signed because it can go negative
 	if (cchNum < 4) {
 		ttASSERT(cchNum * sizeof(wchar_t) < cbDst);
 		return;
@@ -946,7 +946,7 @@ void ttpriv::AddCommasToNumber(wchar_t* pszNum, wchar_t* pszDst, size_t cbDst)
 	if (cchStart == 0)
 		cchStart += 3;
 	while (cchStart < cchNum) {
-		memmove(pszDst + cchStart + 1, pszDst + cchStart, tt::strByteLen(pszDst + cchStart) + sizeof(wchar_t));	// make space for a comma
+		memmove(pszDst + cchStart + 1, pszDst + cchStart, tt::StrByteLen(pszDst + cchStart) + sizeof(wchar_t));	// make space for a comma
 		pszDst[cchStart] = ',';
 		++cchNum;		// track that we added a comma for loop comparison
 		cchStart += 4;	// 3 numbers plus the comma

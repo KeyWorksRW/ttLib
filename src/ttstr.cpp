@@ -298,14 +298,14 @@ bool ttCStr::ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCa
 	if (!pszPos)
 		return false;
 
-	size_t cbOld = tt::strLen(pszOldText);
-	size_t cbNew = tt::strLen(pszNewText);
+	size_t cbOld = tt::StrLen(pszOldText);
+	size_t cbNew = tt::StrLen(pszNewText);
 
 	if (cbNew == 0) {	// delete the old text since new text is empty
-		char* pszEnd = m_psz + tt::strByteLen(m_psz);
+		char* pszEnd = m_psz + tt::StrByteLen(m_psz);
 		ptrdiff_t cb = pszEnd - pszPos;
 		memmove(pszPos, pszPos + cbOld, cb);
-		m_psz = (char*) tt::ReAlloc(m_psz, tt::strByteLen(m_psz));
+		m_psz = (char*) tt::ReAlloc(m_psz, tt::StrByteLen(m_psz));
 	}
 	else if (cbNew == cbOld) {
 		while (*pszNewText) {	// copy and return
@@ -318,7 +318,7 @@ bool ttCStr::ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCa
 		}
 		ttCStr cszTrail(pszPos);
 		*pszPos = 0;
-		m_psz = (char*) tt::ReAlloc(m_psz, tt::strByteLen(m_psz));
+		m_psz = (char*) tt::ReAlloc(m_psz, tt::StrByteLen(m_psz));
 		*this += pszNewText;
 		*this += (char*) cszTrail;
 	}
@@ -327,10 +327,10 @@ bool ttCStr::ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCa
 		while (cbNew--) {
 			*pszPos++ = *pszNewText++;
 		}
-		char* pszEnd = m_psz + tt::strByteLen(m_psz);
+		char* pszEnd = m_psz + tt::StrByteLen(m_psz);
 		ptrdiff_t cb = pszEnd - pszPos;
 		memmove(pszPos, pszPos + cbOld, cb);
-		m_psz = (char*) tt::ReAlloc(m_psz, tt::strByteLen(m_psz));
+		m_psz = (char*) tt::ReAlloc(m_psz, tt::StrByteLen(m_psz));
 	}
 	return true;
 }
@@ -353,13 +353,13 @@ void ttCStr::operator+=(const char* psz)
 	else if (!psz || !*psz)
 		return;		// nothing to add
 	else {
-		size_t cbNew = tt::strByteLen(psz);
-		size_t cbOld = tt::strByteLen(m_psz);
+		size_t cbNew = tt::StrByteLen(psz);
+		size_t cbOld = tt::StrByteLen(m_psz);
 		ttASSERT_MSG(cbNew + cbOld <= MAX_STRING, "String is over 64k in size!");
 		if (cbNew + cbOld > MAX_STRING)
 			return;		// ignore it if it's too large
 		m_psz = (char*) tt::ReAlloc(m_psz, cbNew + cbOld);
-		tt::strCat(m_psz, psz);
+		tt::StrCat(m_psz, psz);
 	}
 }
 
@@ -371,8 +371,8 @@ void ttCStr::operator+=(char ch)
 	if (!m_psz)
 		m_psz = tt::StrDup(szTmp);
 	else {
-		m_psz = (char*) tt::ReAlloc(m_psz, tt::strByteLen(m_psz) + sizeof(char));	// include room for ch
-		tt::strCat_s(m_psz, DEST_SIZE, szTmp);
+		m_psz = (char*) tt::ReAlloc(m_psz, tt::StrByteLen(m_psz) + sizeof(char));	// include room for ch
+		tt::StrCat(m_psz, DEST_SIZE, szTmp);
 	}
 }
 
@@ -385,7 +385,7 @@ void ttCStr::operator+=(ptrdiff_t val)
 
 char ttCStr::operator[](int pos)
 {
-	if (!m_psz || pos > (int) tt::strLen(m_psz))
+	if (!m_psz || pos > (int) tt::StrLen(m_psz))
 		return 0;
 	else
 		return m_psz[pos];
@@ -393,7 +393,7 @@ char ttCStr::operator[](int pos)
 
 char ttCStr::operator[](size_t pos)
 {
-	if (!m_psz || pos > tt::strLen(m_psz))
+	if (!m_psz || pos > tt::StrLen(m_psz))
 		return 0;
 	else
 		return m_psz[pos];
@@ -433,7 +433,7 @@ char* cdecl ttCStr::printf(size_t idFmtString, ...)
 	return m_psz;
 }
 
-int ttCStr::strCat(const char* psz)
+int ttCStr::StrCat(const char* psz)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 
@@ -443,8 +443,8 @@ int ttCStr::strCat(const char* psz)
 	if (!m_psz)
 		m_psz = tt::StrDup(psz);
 	else {
-		size_t cbNew = tt::strByteLen(psz);
-		size_t cbOld = tt::strByteLen(m_psz);
+		size_t cbNew = tt::StrByteLen(psz);
+		size_t cbOld = tt::StrByteLen(m_psz);
 		ttASSERT_MSG(cbNew + cbOld <= MAX_STRING, "String is over 64k in size!");
 		if (cbNew + cbOld > MAX_STRING)
 			return EOVERFLOW;		// ignore it if it's too large
@@ -454,7 +454,7 @@ int ttCStr::strCat(const char* psz)
 	return 0;
 }
 
-int ttCStr::strCopy(const char* psz)
+int ttCStr::StrCopy(const char* psz)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 
@@ -464,7 +464,7 @@ int ttCStr::strCopy(const char* psz)
 	if (!m_psz)
 		m_psz = tt::StrDup(psz);
 	else {
-		size_t cbNew = tt::strByteLen(psz);
+		size_t cbNew = tt::StrByteLen(psz);
 		size_t cbOld = tt::SizeAlloc(m_psz);
 		ttASSERT_MSG(cbNew + cbOld <= MAX_STRING, "String is over 64k in size!");
 		if (cbNew + cbOld > MAX_STRING)
@@ -518,7 +518,7 @@ char* ttCStr::getString(const char* pszString, char chBegin, char chEnd)
 	if (!pszString || !*pszString)
 		return nullptr;
 
-	size_t cb = tt::strByteLen(pszString);
+	size_t cb = tt::StrByteLen(pszString);
 	ttASSERT_MSG(cb <= MAX_STRING, "String is over 64k in size!");
 
 	if (cb == 0 || cb > MAX_STRING)
@@ -541,14 +541,14 @@ char* ttCStr::getString(const char* pszString, char chBegin, char chEnd)
 		m_psz[pszString - pszStart] = 0;	// make certain it is null terminated
 	}
 	else {	// if the string didn't start with chBegin, so just copy the string
-		tt::strCopy_s(m_psz, tt::SizeAlloc(m_psz), pszString);
+		tt::StrCopy(m_psz, tt::SizeAlloc(m_psz), pszString);
 		pszString += cb;
 	}
 
 	// If there is a significant size difference, then ReAllocate the memory
 
 	if (cb > 32)	// don't bother ReAllocating if total allocation is 32 bytes or less
-		m_psz = (char*) tt::ReAlloc(m_psz, tt::strByteLen(m_psz));
+		m_psz = (char*) tt::ReAlloc(m_psz, tt::StrByteLen(m_psz));
 	return m_psz;
 }
 
