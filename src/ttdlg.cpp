@@ -67,11 +67,7 @@ HWND ttCDlg::DoModeless(HWND hwndParent)
 INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	if (msg == WM_INITDIALOG) {	// this is the only time that pThis will be NULL
-#ifdef _WIN64
-		SetWindowLongPtr(hdlg, GWLP_USERDATA, (LONG_PTR) lParam);
-#else
-		SetWindowLongPtr(hdlg, GWL_USERDATA, lParam);
-#endif
+		SetWindowLongPtr(hdlg, DWLP_USER, (LONG_PTR) lParam);
 		ttCDlg* pThis = (ttCDlg*) lParam;
 		pThis->m_hwnd = hdlg;
 		tt::hwndMsgBoxParent = hdlg;
@@ -89,11 +85,7 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 		return TRUE;
 	}
 
-#ifdef _WIN64
-	ttCDlg* pThis = (ttCDlg*) GetWindowLongPtr(hdlg, GWLP_USERDATA);
-#else
-	ttCDlg* pThis = (ttCDlg*) GetWindowLongPtr(hdlg, GWL_USERDATA);
-#endif
+	ttCDlg* pThis = (ttCDlg*) GetWindowLongPtr(hdlg, DWLP_USER);
 	if (!pThis)
 		return FALSE;
 
