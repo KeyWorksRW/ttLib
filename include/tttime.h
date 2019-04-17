@@ -15,7 +15,8 @@
 	#error ttCTime can only be used when building for Windows. Use wxWidgets file-io for cross-platform functionality
 #endif
 
-#include "ttstr.h"	// ttCStr
+#include "ttstr.h"		// ttCStr
+#include "ttdebug.h"	// ttASSERT macros
 
 // This is a header-only class.
 
