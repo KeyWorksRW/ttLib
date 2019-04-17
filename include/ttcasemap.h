@@ -547,12 +547,6 @@
 		lResult = func((char) LOWORD(wParam), (UINT) HIWORD(wParam), (HMENU) lParam); \
 		return true;
 
-// LRESULT OnNotify(int idCtrl, NMHDR* pnmh);
-#define TTMSG_WM_NOTIFY(func) \
-	case WM_NOTIFY: \
-		lResult = func((int) wParam, (NMHDR*) lParam); \
-		return true;
-
 // void OnEnterIdle(UINT flag, HWND hwnd);
 #define TTMSG_WM_ENTERIDLE(func) \
 	case WM_ENTERIDLE: \
