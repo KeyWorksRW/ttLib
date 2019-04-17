@@ -110,7 +110,7 @@ bool ttCWin::CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWN
 			CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 			hwndParent, hmenu, m_hinst, (void*) this);
 
-	return tt::isValidWindow(m_hwnd);
+	return tt::IsValidWindow(m_hwnd);
 }
 
 bool ttCWin::SubClass(HWND hwnd)
@@ -140,7 +140,7 @@ bool ttCWin::AttachWnd(HWND hwnd)
 	// of the same type that we attached to.
 
 	ttCStr cszClassName(256);
-	if (::GetClassNameA(hwnd, cszClassName, (int) cszClassName.sizeBuffer()) != 0) {
+	if (::GetClassNameA(hwnd, cszClassName, (int) cszClassName.SizeBuffer()) != 0) {
 		if (m_pwc) {
 			delete m_pwc;
 			m_pwc = nullptr;

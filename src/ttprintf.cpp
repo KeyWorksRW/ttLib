@@ -145,11 +145,11 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 			chPad = 0;
 			pszEnd++;
 		}
-		if (tt::isDigit(*pszEnd)) {
+		if (tt::IsDigit(*pszEnd)) {
 			cbMin = tt::Atoi(pszEnd++);
 			if (cbMin > CB_MAX_FMT_WIDTH)
 				cbMin = CB_MAX_FMT_WIDTH;
-			while (tt::isDigit(*pszEnd))
+			while (tt::IsDigit(*pszEnd))
 				pszEnd++;
 		}
 
@@ -329,9 +329,9 @@ char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargLi
 			break;
 
 		case 'I':	// 64-bit version of 'd' and 'u' that works in 32-bit builds
-			if (tt::isSameSubStri(pszEnd, "I64d"))
+			if (tt::IsSameSubStrI(pszEnd, "I64d"))
 				tt::Itoa(va_arg(*pargList, int64_t), szBuf, sizeof(szBuf));
-			else if (tt::isSameSubStri(pszEnd, "I64u"))
+			else if (tt::IsSameSubStrI(pszEnd, "I64u"))
 				tt::Utoa(va_arg(*pargList, uint64_t), szBuf, sizeof(szBuf));
 			*pbPlural = szBuf[0] != '1' ? true : false;
 			ttpriv::AddCommasToNumber(szBuf, szBuf, sizeof(szBuf));
@@ -379,7 +379,7 @@ char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargLi
 		case 'r':
 			{
 				ttCStr cszRes;
-				cszRes.getResString(va_arg(*pargList, int));
+				cszRes.GetResString(va_arg(*pargList, int));
 				sptr.strCat(cszRes);
 			}
 			break;

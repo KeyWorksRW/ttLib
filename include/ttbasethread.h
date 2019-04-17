@@ -31,9 +31,9 @@ public:
 	void InitializeThreadForOle();	// Call this in doThreadWork() if you need Ole support
 	void WaitForThreadToComplete();
 
-	virtual void doThreadWork() = NULL;		// Derived class MUST supply this!
+	virtual void DoThreadWork() = NULL;		// Derived class MUST supply this!
 	virtual void SetCancelThreadPending() { m_bCancelThread = true; }
-	virtual bool isCancelThreadPending() { return m_bCancelThread; }
+	virtual bool IsCancelThreadPending() { return m_bCancelThread; }
 
 	bool	m_bCancelThread;
 

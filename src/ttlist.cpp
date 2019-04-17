@@ -94,7 +94,7 @@ size_t ttCList::Add(const char* pszKey)
 
 	if (m_cItems + 1 >= m_cAllocated) {	// the +1 is paranoia -- it shouldn't really be necessary
 		m_cAllocated += 32;	// add room for 32 strings at a time
-		m_aptrs = (char**) (m_aptrs ? ttRealloc(m_aptrs, m_cAllocated * sizeof(char*)) : ttMalloc(m_cAllocated * sizeof(char*)));
+		m_aptrs = (char**) (m_aptrs ? ttReAlloc(m_aptrs, m_cAllocated * sizeof(char*)) : ttMalloc(m_cAllocated * sizeof(char*)));
 	}
 	m_aptrs[m_cItems] = ttStrdup(pszKey);
 	return m_cItems++;
@@ -119,14 +119,14 @@ size_t ttCList::GetPos(const char* pszKey) const
 		ttCStr cszList;
 		for (size_t pos = 0; pos < m_cItems; ++pos) {
 			char* pszList = NormalizeString(m_aptrs[pos], cszList);
-			if (tt::isSameStr(pszList, pszNormalized))
+			if (tt::IsSameStr(pszList, pszNormalized))
 				return pos;
 		}
 		return (size_t) -1;
 	}
 
 	for (size_t pos = 0; pos < m_cItems; ++pos)	{
-		if (tt::isSameStr(m_aptrs[pos], pszKey))
+		if (tt::IsSameStr(m_aptrs[pos], pszKey))
 			return pos;
 	}
 	return (size_t) -1;
@@ -196,7 +196,7 @@ void ttCList::Replace(size_t pos, const char* pszKey)
 {
 	ttASSERT_NONEMPTY(pszKey);
 	ttASSERT(InRange(pos));
-	if (!InRange(pos) || tt::isEmpty(pszKey))
+	if (!InRange(pos) || tt::IsEmpty(pszKey))
 		return;
 
 	if (isNoDuplicates())
@@ -241,7 +241,7 @@ void ttCList::InsertAt(size_t pos, const char* pszKey)
 
 	if (m_cItems + 1 >= m_cAllocated) {		// the +1 is paranoia -- it shouldn't really be necessary
 		m_cAllocated += 32;	// add room for 32 strings at a time
-		m_aptrs = (char**) (m_aptrs ? ttRealloc(m_aptrs, m_cAllocated * sizeof(char*)) : ttMalloc(m_cAllocated * sizeof(char*)));
+		m_aptrs = (char**) (m_aptrs ? ttReAlloc(m_aptrs, m_cAllocated * sizeof(char*)) : ttMalloc(m_cAllocated * sizeof(char*)));
 	}
 	memmove((void*) (m_aptrs + pos + 1), (void*) (m_aptrs + pos), (m_cItems - pos + 1) * sizeof(char*));
 
@@ -432,7 +432,7 @@ void ttCDblList::Add(const char* pszKey, const char* pszVal)
 
 	if (m_cItems >= m_cAllocated) {
 		m_cAllocated += 32;	// add room for 32 strings at a time
-		m_aptrs = (DBLPTRS*) (m_aptrs ? ttRealloc(m_aptrs, m_cAllocated * sizeof(DBLPTRS)) : ttMalloc(m_cAllocated * sizeof(DBLPTRS)));
+		m_aptrs = (DBLPTRS*) (m_aptrs ? ttReAlloc(m_aptrs, m_cAllocated * sizeof(DBLPTRS)) : ttMalloc(m_cAllocated * sizeof(DBLPTRS)));
 	}
 	m_aptrs[m_cItems].pszKey = ttStrdup(pszKey);
 	m_aptrs[m_cItems++].pszVal = ttStrdup(pszVal);
@@ -445,7 +445,7 @@ bool ttCDblList::FindKey(const char* pszKey, size_t* ppos) const
 		return false;
 	if (m_bIgnoreCase) {
 		for (size_t i = 0; i < m_cItems; i++)	{
-			if (tt::isSameStri(m_aptrs[i].pszKey, pszKey)) {
+			if (tt::IsSameStrI(m_aptrs[i].pszKey, pszKey)) {
 				if (ppos)
 					*ppos = i;
 				return true;
@@ -454,7 +454,7 @@ bool ttCDblList::FindKey(const char* pszKey, size_t* ppos) const
 	}
 	else {
 		for (size_t i = 0; i < m_cItems; i++)	{
-			if (tt::isSameStr(m_aptrs[i].pszKey, pszKey))	{
+			if (tt::IsSameStr(m_aptrs[i].pszKey, pszKey))	{
 				if (ppos)
 					*ppos = i;
 				return true;
@@ -471,7 +471,7 @@ bool ttCDblList::FindVal(const char* pszVal, size_t* ppos) const
 		return false;
 	if (m_bIgnoreCase) {
 		for (size_t i = 0; i < m_cItems; i++)	{
-			if (tt::isSameStri(m_aptrs[i].pszVal, pszVal)) {
+			if (tt::IsSameStrI(m_aptrs[i].pszVal, pszVal)) {
 				if (ppos)
 					*ppos = i;
 				return true;
@@ -480,7 +480,7 @@ bool ttCDblList::FindVal(const char* pszVal, size_t* ppos) const
 	}
 	else {
 		for (size_t i = 0; i < m_cItems; i++)	{
-			if (tt::isSameStr(m_aptrs[i].pszVal, pszVal)) {
+			if (tt::IsSameStr(m_aptrs[i].pszVal, pszVal)) {
 				if (ppos)
 					*ppos = i;
 				return true;
@@ -513,14 +513,14 @@ char* ttCDblList::GetMatchingVal(const char* pszKey) const
 		return nullptr;
 	if (m_bIgnoreCase) {
 		for (size_t pos = 0; pos < m_cItems; ++pos)	{
-			if (tt::isSameStri(m_aptrs[pos].pszKey, pszKey)) {
+			if (tt::IsSameStrI(m_aptrs[pos].pszKey, pszKey)) {
 				return m_aptrs[pos].pszVal;
 			}
 		}
 	}
 	else {
 		for (size_t pos = 0; pos < m_cItems; ++pos)	{
-			if (tt::isSameStr(m_aptrs[pos].pszKey, pszKey)) {
+			if (tt::IsSameStr(m_aptrs[pos].pszKey, pszKey)) {
 				return m_aptrs[pos].pszVal;
 			}
 		}
@@ -625,7 +625,7 @@ void ttCStrIntList::Add(const char* pszKey, ptrdiff_t newVal)
 		return;
 
 	for (size_t pos = 0; pos < m_cItems; ++pos)	{
-		if (m_bIgnoreCase ? tt::isSameStri(m_aptrs[pos].pszKey, pszKey) : tt::isSameStr(m_aptrs[pos].pszKey, pszKey)) {
+		if (m_bIgnoreCase ? tt::IsSameStrI(m_aptrs[pos].pszKey, pszKey) : tt::IsSameStr(m_aptrs[pos].pszKey, pszKey)) {
 			ptrdiff_t cItems = m_aptrs[pos].pVal[0];
 			for (ptrdiff_t valPos = 1; valPos <= cItems; ++valPos) {
 				if (newVal == m_aptrs[pos].pVal[valPos])
@@ -633,7 +633,7 @@ void ttCStrIntList::Add(const char* pszKey, ptrdiff_t newVal)
 			}
 			// newVal not found, so add it
 			++cItems;
-			m_aptrs[pos].pVal = (ptrdiff_t*) ttRealloc(m_aptrs[pos].pVal, (cItems + 1) * sizeof(ptrdiff_t));
+			m_aptrs[pos].pVal = (ptrdiff_t*) ttReAlloc(m_aptrs[pos].pVal, (cItems + 1) * sizeof(ptrdiff_t));
 			m_aptrs[pos].pVal[0] = cItems;
 			m_aptrs[pos].pVal[cItems] = newVal;
 			return;
@@ -644,7 +644,7 @@ void ttCStrIntList::Add(const char* pszKey, ptrdiff_t newVal)
 
 	if (m_cItems >= m_cAllocated) {
 		m_cAllocated += 32;	// add room for 32 strings at a time
-		m_aptrs = (DBLPTRS*) (m_aptrs ? ttRealloc(m_aptrs, m_cAllocated * sizeof(DBLPTRS)) : ttMalloc(m_cAllocated * sizeof(DBLPTRS)));
+		m_aptrs = (DBLPTRS*) (m_aptrs ? ttReAlloc(m_aptrs, m_cAllocated * sizeof(DBLPTRS)) : ttMalloc(m_cAllocated * sizeof(DBLPTRS)));
 	}
 	m_aptrs[m_cItems].pszKey = ttStrdup(pszKey);
 	m_aptrs[m_cItems].pVal = (ptrdiff_t*) ttMalloc(2 * sizeof(ptrdiff_t));
@@ -689,7 +689,7 @@ bool ttCStrIntList::Add(size_t pos, ptrdiff_t newVal)
 	}
 	// newVal not found, so add it
 	++cItems;
-	m_aptrs[pos].pVal = (ptrdiff_t*) ttRealloc(m_aptrs[pos].pVal, (cItems + 1) * sizeof(ptrdiff_t));
+	m_aptrs[pos].pVal = (ptrdiff_t*) ttReAlloc(m_aptrs[pos].pVal, (cItems + 1) * sizeof(ptrdiff_t));
 	m_aptrs[pos].pVal[0] = cItems;
 	m_aptrs[pos].pVal[cItems] = newVal;
 	return true;
@@ -701,7 +701,7 @@ bool ttCStrIntList::FindKey(const char* pszKey, size_t* ppos) const
 	if (!pszKey || !*pszKey)
 		return false;
 	for (size_t pos = 0; pos < m_cItems; ++pos)	{
-		if (m_bIgnoreCase ? tt::isSameStri(m_aptrs[pos].pszKey, pszKey) : tt::isSameStr(m_aptrs[pos].pszKey, pszKey)) {
+		if (m_bIgnoreCase ? tt::IsSameStrI(m_aptrs[pos].pszKey, pszKey) : tt::IsSameStr(m_aptrs[pos].pszKey, pszKey)) {
 			if (ppos)
 				*ppos = pos;
 			return true;
@@ -718,7 +718,7 @@ bool ttCStrIntList::GetValCount(const char* pszKey, ptrdiff_t* pVal) const
 	if (!pszKey || !*pszKey || !pVal)
 		return false;
 	for (size_t pos = 0; pos < m_cItems; ++pos)	{
-		if (m_bIgnoreCase ? tt::isSameStri(m_aptrs[pos].pszKey, pszKey) : tt::isSameStr(m_aptrs[pos].pszKey, pszKey)) {
+		if (m_bIgnoreCase ? tt::IsSameStrI(m_aptrs[pos].pszKey, pszKey) : tt::IsSameStr(m_aptrs[pos].pszKey, pszKey)) {
 			*pVal = m_aptrs[pos].pVal[0];
 			return true;
 		}
@@ -742,7 +742,7 @@ bool ttCStrIntList::GetVal(const char* pszKey, ptrdiff_t* pVal, size_t posVal) c
 	if (!pszKey || !*pszKey || !pVal)
 		return false;
 	for (size_t posKey = 0; posKey < m_cItems; ++posKey)	{
-		if (m_bIgnoreCase ? tt::isSameStri(m_aptrs[posKey].pszKey, pszKey) : tt::isSameStr(m_aptrs[posKey].pszKey, pszKey)) {
+		if (m_bIgnoreCase ? tt::IsSameStrI(m_aptrs[posKey].pszKey, pszKey) : tt::IsSameStr(m_aptrs[posKey].pszKey, pszKey)) {
 			if ((ptrdiff_t) posVal > m_aptrs[posKey].pVal[0])
 				return false;
 			*pVal = m_aptrs[posKey].pVal[posVal];

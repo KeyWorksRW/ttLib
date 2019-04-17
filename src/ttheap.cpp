@@ -77,7 +77,7 @@ void* ttCHeap::ttCalloc(size_t cb)
 	return pv;
 }
 
-void* ttCHeap::ttRealloc(void* pv, size_t cb)
+void* ttCHeap::ttReAlloc(void* pv, size_t cb)
 {
 	if (!pv)
 		return ttMalloc(cb);

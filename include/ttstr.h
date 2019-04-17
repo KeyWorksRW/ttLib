@@ -47,33 +47,33 @@ public:
 	ttCStr(size_t cb) { m_psz = (char*) tt::Malloc(cb); }
 	ttCStr(const char* psz) { m_psz = psz ? tt::StrDup(psz) : nullptr; }
 	ttCStr(const wchar_t* pwsz) { m_psz = nullptr; if (pwsz) CopyWide(pwsz); }
-	ttCStr(ttCStr& csz) { m_psz = csz.getPtr() ? tt::StrDup(csz) : nullptr; }
+	ttCStr(ttCStr& csz) { m_psz = csz.GetPtr() ? tt::StrDup(csz) : nullptr; }
 #ifdef _WINDOWS_
-	ttCStr(HWND hwnd) { m_psz = nullptr; getWindowText(hwnd); }
+	ttCStr(HWND hwnd) { m_psz = nullptr; GetWindowText(hwnd); }
 #endif // _WINDOWS_
 
 	~ttCStr() { if (m_psz) tt::FreeAlloc(m_psz); }
 
 	// Method naming conventions are lower camel case when matching tt:: namespace functions
 
-	char*	findExt(const char* pszExt) { return (char*) tt::findExt(m_psz, pszExt); }	// find filename extension
-	char*	findStr(const char* psz) { return tt::findStr(m_psz, psz); }
-	char*	findStri(const char* psz) { return tt::findStri(m_psz, psz); }
-	char*	findChar(char ch) { return tt::findChar(m_psz, ch); }
-	char*	findLastChar(char ch) { return tt::findLastChar(m_psz, ch); }
+	char*	FindExt(const char* pszExt) { return (char*) tt::FindExt(m_psz, pszExt); }	// find filename extension
+	char*	FindStr(const char* psz) { return tt::FindStr(m_psz, psz); }
+	char*	FindStrI(const char* psz) { return tt::FindStrI(m_psz, psz); }
+	char*	FindChar(char ch) { return tt::FindChar(m_psz, ch); }
+	char*	FindLastChar(char ch) { return tt::FindLastChar(m_psz, ch); }
 
 	size_t	StrByteLen() { return m_psz ? tt::StrByteLen(m_psz) : 0; }	// length of string in bytes including 0 terminator
 	int		StrCat(const char* psz);
 	int		StrCopy(const char* psz);
 	size_t	StrLen() { return m_psz ? tt::StrLen(m_psz) : 0; }		// number of characters (use strByteLen() for buffer size calculations)
 
-	bool	isSameStr(const char* psz) { return tt::isSameStr(m_psz, psz); }
-	bool	isSameStri(const char* psz) { return tt::isSameStri(m_psz, psz); }
-	bool	isSameSubStr(const char* psz) { return tt::isSameSubStr(m_psz, psz); }
-	bool	isSameSubStri(const char* psz) { return tt::isSameSubStri(m_psz, psz); }
+	bool	IsSameStr(const char* psz) { return tt::IsSameStr(m_psz, psz); }
+	bool	IsSameStrI(const char* psz) { return tt::IsSameStrI(m_psz, psz); }
+	bool	IsSameSubStr(const char* psz) { return tt::IsSameSubStr(m_psz, psz); }
+	bool	IsSameSubStrI(const char* psz) { return tt::IsSameSubStrI(m_psz, psz); }
 
-	char*	findExt() { return (char*) tt::findNonSpace(m_psz); }
-	char*	findSpace() { return (char*) tt::findSpace(m_psz); }
+	char*	FindExt() { return (char*) tt::FindNonSpace(m_psz); }
+	char*	FindSpace() { return (char*) tt::FindSpace(m_psz); }
 
 	ptrdiff_t Atoi() { return tt::Atoi(m_psz); }
 
@@ -83,11 +83,11 @@ public:
 	char*	Utoa(uint64_t val);
 	char*	Hextoa(size_t val, bool bUpperCase = false);
 
-	void	trimRight() { tt::trimRight(m_psz); }
+	void	TrimRight() { tt::TrimRight(m_psz); }
 
-	bool	isEmpty() const { return (!m_psz || !*m_psz)  ? true : false; }
-	bool	isNonEmpty() const { return (m_psz && *m_psz) ? true : false; }
-	bool	isnull() const { return (m_psz == nullptr); }
+	bool	IsEmpty() const { return (!m_psz || !*m_psz)  ? true : false; }
+	bool	IsNonEmpty() const { return (m_psz && *m_psz) ? true : false; }
+	bool	IsNull() const { return (m_psz == nullptr); }
 
 	char* cdecl printf(size_t idFmtString, ...);	// retrieves the format string from the specified resource
 
@@ -98,26 +98,26 @@ public:
 	void	AppendFileName(const char* pszFile);
 	void	AddTrailingSlash();	// adds a trailing forward slash if string doesn't already end with '/' or '\'
 	void	ChangeExtension(const char* pszExtension);
-	char*	getCWD();			// Caution: this will replace any current string
+	char*	GetCWD();			// Caution: this will replace any current string
 	void	RemoveExtension();
 	bool	ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCaseSensitive = false);
 
-	char* findLastSlash();	// Handles any mix of '\' and '/' in the filename
-	char* findExt() const;	// will return nullptr if no extension
+	char*	FindLastSlash();	// Handles any mix of '\' and '/' in the filename
+	char*	FindExt() const;	// will return nullptr if no extension
 
 #ifdef _WINDOWS_
-	void getFullPathName();
+	void GetFullPathName();
 #endif
 
 	// UI retrieving methods
 
 #ifdef _WINDOWS_
-	char* getResString(size_t idString);
-	bool  getWindowText(HWND hwnd);
+	char* GetResString(size_t idString);
+	bool  GetWindowText(HWND hwnd);
 
 	// The following will always return a pointer, but if an error occurred, it will point to an empty string
-	char* getListBoxText(HWND hwnd) { return getListBoxText(hwnd, ::SendMessage(hwnd, LB_GETCURSEL, 0, 0)); }
-	char* getListBoxText(HWND hwnd, size_t sel);
+	char* GetListBoxText(HWND hwnd) { return GetListBoxText(hwnd, ::SendMessage(hwnd, LB_GETCURSEL, 0, 0)); }
+	char* GetListBoxText(HWND hwnd, size_t sel);
 #endif	// _WINDOWS_
 
 	void	MakeLower();
@@ -125,23 +125,23 @@ public:
 
 	// if the first non whitespace character in pszString == chBegin, get everthing between chBegin and chEnd, otherwise get everything after the whitespace
 
-	char*	getString(const char* pszString, char chBegin, char chEnd);
+	char*	GetString(const char* pszString, char chBegin, char chEnd);
 
-	char*	getAngleString(const char* pszString) { return getString(pszString,    '<', '>'); }
-	char*	getBracketsString(const char* pszString) { return getString(pszString, '[', ']'); }
-	char*	getParenthString(const char* pszString) { return getString(pszString,  '(', ')'); }
+	char*	GetAngleString(const char* pszString) { return GetString(pszString,	   '<', '>'); }
+	char*	GetBracketsString(const char* pszString) { return GetString(pszString, '[', ']'); }
+	char*	GetParenthString(const char* pszString) { return GetString(pszString,  '(', ')'); }
 
-	char*	getQuotedString(const char* pszQuote);	// Handles single and double quote strings
+	char*	GetQuotedString(const char* pszQuote);	// Handles single and double quote strings
 
 	char* cdecl printf(const char* pszFormat, ...);			// Deletes any current string before printing
 	char* cdecl printfAppend(const char* pszFormat, ...);	// Appends to the end of any current string
 
-	void	resize(size_t cb);
-	size_t	sizeBuffer() { return tt::SizeAlloc(m_psz); }	// returns 0 if m_psz is null
+	void	ReSize(size_t cb);
+	size_t	SizeBuffer() { return tt::SizeAlloc(m_psz); }	// returns 0 if m_psz is null
 	void	Delete() { if (m_psz) { tt::FreeAlloc(m_psz); m_psz = nullptr; } }
 
-	char*	getPtr() { return m_psz; }		// for when casting to char* is problematic
-	char**	getPPtr() { return &m_psz; }	// use with extreme caution!
+	char*	GetPtr() { return m_psz; }		// for when casting to char* is problematic
+	char**	GetPPtr() { return &m_psz; }	// use with extreme caution!
 
 	operator char*() const { return (char*) m_psz; }
 	operator void*() const { return (void*) m_psz; }
@@ -157,10 +157,10 @@ public:
 	char operator [] (int pos);
 	char operator [] (size_t pos);
 
-	bool operator == (const char* psz)	{ return (isEmpty() || !psz) ? false : tt::isSameStr(m_psz, psz); }
-	bool operator == (char* psz)		{ return (isEmpty() || !psz) ? false : tt::isSameStr(m_psz, psz); }
-	bool operator != (const char* psz)	{ return (isEmpty() || !psz) ? true  : !tt::isSameStr(m_psz, psz); }
-	bool operator != (char* psz)		{ return (isEmpty() || !psz) ? true  : !tt::isSameStr(m_psz, psz); }
+	bool operator == (const char* psz)	{ return (IsEmpty() || !psz) ? false : tt::IsSameStr(m_psz, psz); }
+	bool operator == (char* psz)		{ return (IsEmpty() || !psz) ? false : tt::IsSameStr(m_psz, psz); }
+	bool operator != (const char* psz)	{ return (IsEmpty() || !psz) ? true	 : !tt::IsSameStr(m_psz, psz); }
+	bool operator != (char* psz)		{ return (IsEmpty() || !psz) ? true	 : !tt::IsSameStr(m_psz, psz); }
 
 	// Use extreme caution about calling the Transfer functions!
 

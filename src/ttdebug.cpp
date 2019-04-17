@@ -191,7 +191,7 @@ void __cdecl tt::Trace(const char* pszFormat, ...)
 	if (!pszFormat || !*pszFormat)
 		return;
 
-	if (!tt::isValidWindow(tt::hwndTrace)) {
+	if (!tt::IsValidWindow(tt::hwndTrace)) {
 		// Trace could be called a lot, and we don't really want to be searching for the window constantly.
 
 		DWORD cCurTick = GetTickCount();
@@ -209,7 +209,7 @@ void __cdecl tt::Trace(const char* pszFormat, ...)
 	ttCStr csz;
 	va_list argList;
 	va_start(argList, pszFormat);
-	tt::vprintf(csz.getPPtr(), pszFormat, argList);
+	tt::vprintf(csz.GetPPtr(), pszFormat, argList);
 	va_end(argList);
 
 	if (!hTraceMapping) {
@@ -239,7 +239,7 @@ void __cdecl tt::Trace(const char* pszFormat, ...)
 void tt::TraceClear()
 {
 	ttCCritLock lock(&g_csTrace);
-	if (!tt::isValidWindow(tt::hwndTrace))
+	if (!tt::IsValidWindow(tt::hwndTrace))
 		return;
 	SendMessage(tt::hwndTrace, tt::WMP_CLEAR_TRACE, 0, 0);
 }

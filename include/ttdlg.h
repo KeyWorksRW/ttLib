@@ -61,7 +61,7 @@ public:
 	virtual void OnCancel() { }	// called when IDCANCEL button is pressed--call CancelEnd() before return to prevent closing the dialog
 
 	void CenterWindow(bool bCenterOnDesktop = false);	// Call this in OnBegin to center dialog in owner window or desktop
-	void EnableShadeBtns(); 							// call this in OnBegin to convert all buttons in the dialog to 3D shaded buttons
+	void EnableShadeBtns();								// call this in OnBegin to convert all buttons in the dialog to 3D shaded buttons
 	void SetBtnIcon(int idBtn, int idIcon, UINT nIconAlign = BS_LEFT);	// call this in OnBegin to add an Icon to a 3D shaded button
 
 	void CancelEnd() { m_bCancelEnd = true; } // call within OnEnd() to cancel ending the dialog
@@ -72,11 +72,11 @@ public:
 	BOOL GetControlRect(int id, RECT* prc) const { return ::GetWindowRect(GetDlgItem(id), prc); }
 
 	void GetControlText(int id, char* pszText, int cchMax = MAX_PATH) const { (void) ::GetWindowTextA(GetDlgItem(id), pszText, cchMax); }
-	void GetControlText(int id, ttCStr* pcsz) const { pcsz->getWindowText(GetDlgItem(id)); }
+	void GetControlText(int id, ttCStr* pcsz) const { pcsz->GetWindowText(GetDlgItem(id)); }
 	void SetControlText(int id, const char* pszText) const { ttASSERT(pszText); (void) ::SetWindowTextA(GetDlgItem(id), pszText); }
 
 	void GetControlText(int id, wchar_t* pwszText, int cchMax = MAX_PATH) const { (void) ::GetWindowTextW(GetDlgItem(id), pwszText, cchMax); }
-	void GetControlText(int id, ttCWStr* pcsz) const { pcsz->getWindowText(GetDlgItem(id)); }
+	void GetControlText(int id, ttCWStr* pcsz) const { pcsz->GetWindowText(GetDlgItem(id)); }
 	void SetControlText(int id, const wchar_t* pwszText) const { ttASSERT(pwszText); (void) ::SetWindowTextW(GetDlgItem(id), pwszText); }
 
 	void SetTitle(const char* pszTitle) { ::SetWindowTextA(*this, pszTitle); }
@@ -91,7 +91,7 @@ public:
 	void HideControl(int id) const { ::ShowWindow(GetDlgItem(id), SW_HIDE); }
 
 	bool GetCheck(int id) const { return (SendMessage(id, BM_GETCHECK) == BST_CHECKED); }
-	bool isChecked(int id) const { return GetCheck(id); }
+	bool IsChecked(int id) const { return GetCheck(id); }
 	void SetCheck(int id, BOOL bCheck = TRUE) const { (void) SendMessage(id, BM_SETCHECK, bCheck); }
 	void UnCheck(int id) const { (void) SendMessage(id, BM_SETCHECK, FALSE); }
 
@@ -230,8 +230,8 @@ public:
 
 	LRESULT	GetText(char* psz, int index = -1) const { return SendMessageA(LB_GETTEXT, (index == -1) ? GetCurSel() : index, (LPARAM) psz); }
 	LRESULT	GetText(wchar_t* pwsz, int index = -1) const { return SendMessageW(LB_GETTEXT, (index == -1) ? GetCurSel() : index, (LPARAM) pwsz); }	// wide char version
-	void	GetText(ttCStr* pcsz, int index = -1) const { pcsz->getListBoxText(*this, (index == -1) ? GetCurSel() : index); }
-	void	GetText(ttCWStr* pcsz, int index = -1) const { pcsz->getListBoxText(*this, (index == -1) ? GetCurSel() : index); }						// wide char version
+	void	GetText(ttCStr* pcsz, int index = -1) const { pcsz->GetListBoxText(*this, (index == -1) ? GetCurSel() : index); }
+	void	GetText(ttCWStr* pcsz, int index = -1) const { pcsz->GetListBoxText(*this, (index == -1) ? GetCurSel() : index); }						// wide char version
 
 	LRESULT	GetCount() const { return SendMessage(LB_GETCOUNT); }
 	LRESULT	GetSelCount() const { ttASSERT((GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL))); return SendMessage(LB_GETSELCOUNT); }
@@ -272,7 +272,7 @@ public:
 	LRESULT	 GetItemData(WPARAM index) const {	 return SendMessage(LB_GETITEMDATA, index); }
 	LRESULT	 SetItemData(WPARAM index, int data) const {  return SendMessage(LB_SETITEMDATA, index, data); }
 
-	LRESULT GetItemRect(RECT* prc, WPARAM index = (WPARAM) -1)	const { return SendMessage(LB_GETITEMRECT, ((index == (WPARAM) -1) ? GetCurSel() : index), (LPARAM) prc); }
+	LRESULT	 GetItemRect(RECT* prc, WPARAM index = (WPARAM) -1)	const { return SendMessage(LB_GETITEMRECT, ((index == (WPARAM) -1) ? GetCurSel() : index), (LPARAM) prc); }
 
 
 	LRESULT	GetCurSel() const { // works on single selection listbox only

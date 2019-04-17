@@ -180,26 +180,26 @@ int tt::StrCat(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
 	return (*pszSrc ? EOVERFLOW : result);
 }
 
-char* tt::findChar(const char* psz, char ch)
+char* tt::FindChar(const char* psz, char ch)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 	if (!psz)
 		return nullptr;
 	while (*psz && *psz != ch)
-		psz = tt::nextChar(psz);
+		psz = tt::NextChar(psz);
 	return (*psz ? (char*) psz : nullptr);
 }
 
-char* tt::findLastChar(const char* psz, char ch)
+char* tt::FindLastChar(const char* psz, char ch)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 	if (!psz)
 		return nullptr;
 
-	const char* pszLastFound = tt::findChar(psz, ch);
+	const char* pszLastFound = tt::FindChar(psz, ch);
 	if (pszLastFound) {
 		for (;;) {
-			psz = tt::findChar(tt::nextChar(pszLastFound), ch);
+			psz = tt::FindChar(tt::NextChar(pszLastFound), ch);
 			if (psz)
 				pszLastFound = psz;
 			else
@@ -209,7 +209,7 @@ char* tt::findLastChar(const char* psz, char ch)
 	return (char*) pszLastFound;
 }
 
-wchar_t* tt::findChar(const wchar_t* psz, wchar_t ch)
+wchar_t* tt::FindChar(const wchar_t* psz, wchar_t ch)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 	if (!psz)
@@ -219,16 +219,16 @@ wchar_t* tt::findChar(const wchar_t* psz, wchar_t ch)
 	return (*psz ? (wchar_t*) psz : nullptr);
 }
 
-wchar_t* tt::findLastChar(const wchar_t* psz, wchar_t ch)
+wchar_t* tt::FindLastChar(const wchar_t* psz, wchar_t ch)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 	if (!psz)
 		return nullptr;
 
-	wchar_t* pszLastFound = tt::findChar(psz, ch);
+	wchar_t* pszLastFound = tt::FindChar(psz, ch);
 	if (pszLastFound) {
 		for (;;) {
-			psz = tt::findChar(pszLastFound + 1, ch);
+			psz = tt::FindChar(pszLastFound + 1, ch);
 			if (psz)
 				pszLastFound = (wchar_t*) psz;
 			else
@@ -238,7 +238,7 @@ wchar_t* tt::findLastChar(const wchar_t* psz, wchar_t ch)
 	return (wchar_t*) pszLastFound;
 }
 
-bool tt::isSameStr(const char* psz1, const char* psz2)
+bool tt::IsSameStr(const char* psz1, const char* psz2)
 {
 	if (!psz1 || !psz2)		// note that we return false even if both strings are a null pointer
 		return false;
@@ -252,7 +252,7 @@ bool tt::isSameStr(const char* psz1, const char* psz2)
 	return false;
 }
 
-bool tt::isSameStr(const wchar_t* psz1, const wchar_t* psz2)
+bool tt::IsSameStr(const wchar_t* psz1, const wchar_t* psz2)
 {
 	if (!psz1 || !psz2)
 		return false;
@@ -266,7 +266,7 @@ bool tt::isSameStr(const wchar_t* psz1, const wchar_t* psz2)
 	return false;
 }
 
-bool tt::isSameStri(const char* psz1, const char* psz2)
+bool tt::IsSameStrI(const char* psz1, const char* psz2)
 {
 	if (!psz1 || !psz2)
 		return false;
@@ -280,12 +280,12 @@ bool tt::isSameStri(const char* psz1, const char* psz2)
 		}
 		if (!*psz1)
 			return true;
-		psz1 = tt::nextChar(psz1);
-		psz2 = tt::nextChar(psz2);
+		psz1 = tt::NextChar(psz1);
+		psz2 = tt::NextChar(psz2);
 	}
 }
 
-bool tt::isSameStri(const wchar_t* psz1, const wchar_t* psz2)
+bool tt::IsSameStrI(const wchar_t* psz1, const wchar_t* psz2)
 {
 	if (!psz1 || !psz2)
 		return false;
@@ -304,7 +304,7 @@ bool tt::isSameStri(const wchar_t* psz1, const wchar_t* psz2)
 	}
 }
 
-bool tt::isSameSubStr(const char* pszMain, const char* pszSub)
+bool tt::IsSameSubStr(const char* pszMain, const char* pszSub)
 {
 	if (!pszMain || !pszSub)
 		return false;
@@ -312,13 +312,13 @@ bool tt::isSameSubStr(const char* pszMain, const char* pszSub)
 	while (*pszSub) {
 		if (*pszMain != *pszSub)
 			return false;	// doesn't match even when case is made the same
-		pszMain = tt::nextChar(pszMain);
-		pszSub	= tt::nextChar(pszSub);
+		pszMain = tt::NextChar(pszMain);
+		pszSub	= tt::NextChar(pszSub);
 	}
 	return true;
 }
 
-bool tt::isSameSubStr(const wchar_t* pszMain, const wchar_t* pszSub)
+bool tt::IsSameSubStr(const wchar_t* pszMain, const wchar_t* pszSub)
 {
 	if (!pszMain || !pszSub)
 		return false;
@@ -332,7 +332,7 @@ bool tt::isSameSubStr(const wchar_t* pszMain, const wchar_t* pszSub)
 	return true;
 }
 
-bool tt::isSameSubStri(const char* pszMain, const char* pszSub)
+bool tt::IsSameSubStrI(const char* pszMain, const char* pszSub)
 {
 	if (!pszMain || !pszSub)
 		return false;
@@ -342,13 +342,13 @@ bool tt::isSameSubStri(const char* pszMain, const char* pszSub)
 			if (tolower(*pszMain) != tolower(*pszSub))
 				return false;	// doesn't match even when case is made the same
 		}
-		pszMain = tt::nextChar(pszMain);
-		pszSub	= tt::nextChar(pszSub);
+		pszMain = tt::NextChar(pszMain);
+		pszSub	= tt::NextChar(pszSub);
 	}
 	return true;
 }
 
-bool tt::isSameSubStri(const wchar_t* pszMain, const wchar_t* pszSub)
+bool tt::IsSameSubStrI(const wchar_t* pszMain, const wchar_t* pszSub)
 {
 	if (!pszMain || !pszSub)
 		return false;
@@ -366,25 +366,25 @@ bool tt::isSameSubStri(const wchar_t* pszMain, const wchar_t* pszSub)
 
 // find a case-insensitive extension in a path string
 
-char* tt::findExt(const char* pszPath, const char* pszExt)
+char* tt::FindExt(const char* pszPath, const char* pszExt)
 {
 	if (!pszPath || !pszExt)
 		return nullptr;
 
-	char* psz = tt::findLastChar(pszPath, '.');
-	return (psz && tt::isSameStri(psz, pszExt)) ? psz : nullptr;
+	char* psz = tt::FindLastChar(pszPath, '.');
+	return (psz && tt::IsSameStrI(psz, pszExt)) ? psz : nullptr;
 }
 
-wchar_t* tt::findExt(const wchar_t* pszPath, const wchar_t* pszExt)
+wchar_t* tt::FindExt(const wchar_t* pszPath, const wchar_t* pszExt)
 {
 	if (!pszPath || !pszExt)
 		return nullptr;
 
-	wchar_t* psz = tt::findLastChar(pszPath, '.');
-	return (psz && tt::isSameStri(psz, pszExt)) ? psz : nullptr;
+	wchar_t* psz = tt::FindLastChar(pszPath, '.');
+	return (psz && tt::IsSameStrI(psz, pszExt)) ? psz : nullptr;
 }
 
-char* tt::findStri(const char* pszMain, const char* pszSub)
+char* tt::FindStrI(const char* pszMain, const char* pszSub)
 {
 	if (!pszMain || !pszSub)
 		return nullptr;
@@ -438,7 +438,7 @@ char* tt::findStri(const char* pszMain, const char* pszSub)
 
 // Similar as C runtime strstr, only this one checks for NULL pointers and an empty sub string
 
-char* tt::findStr(const char* pszMain, const char* pszSub)
+char* tt::FindStr(const char* pszMain, const char* pszSub)
 {
 	if (!pszMain || !pszSub)
 		return nullptr;
@@ -481,7 +481,7 @@ char* tt::findStr(const char* pszMain, const char* pszSub)
 	return nullptr;	// end of main string
 }
 
-wchar_t* tt::findStr(const wchar_t* pszMain, const wchar_t* pszSub)
+wchar_t* tt::FindStr(const wchar_t* pszMain, const wchar_t* pszSub)
 {
 	if (!pszMain || !pszSub)
 		return nullptr;
@@ -524,7 +524,7 @@ wchar_t* tt::findStr(const wchar_t* pszMain, const wchar_t* pszSub)
 
 #ifdef _WX_WX_H_
 
-wchar_t* tt::findStri(const wchar_t* pszMain, const wchar_t* pszSub)
+wchar_t* tt::FindStrI(const wchar_t* pszMain, const wchar_t* pszSub)
 {
 	if (!pszMain || !pszSub)
 		return nullptr;
@@ -543,7 +543,7 @@ wchar_t* tt::findStri(const wchar_t* pszMain, const wchar_t* pszSub)
 
 #endif //  _WX_WX_H_
 
-char* tt::nextChar(const char*psz)
+char* tt::NextChar(const char*psz)
 {
 	ttASSERT_NONEMPTY(psz);		// This is a serious problem for the caller so we assert (see Issue #45 for discussion)
 	if (!psz)
@@ -551,48 +551,48 @@ char* tt::nextChar(const char*psz)
 	if (!*psz)
 		return (char*) psz;
 	size_t i = 0;
-	(void) (tt::isUTF8(psz[++i]) || tt::isUTF8(psz[++i]) || tt::isUTF8(psz[++i]));
+	(void) (tt::IsUTF8(psz[++i]) || tt::IsUTF8(psz[++i]) || tt::IsUTF8(psz[++i]));
 
 	return (char*) psz + i;
 }
 
-char* tt::findNonSpace(const char* psz)
+char* tt::FindNonSpace(const char* psz)
 {
 	if (!psz)
 		return nullptr;
-	while (tt::isWhitespace(*psz))
+	while (tt::IsWhitespace(*psz))
 		psz++;
 	return (char*) psz;
 }
 
-char* tt::findSpace(const char* psz)
+char* tt::FindSpace(const char* psz)
 {
 	if (!psz)
 		return nullptr;
-	while (*psz && !tt::isWhitespace(*psz))
+	while (*psz && !tt::IsWhitespace(*psz))
 		psz++;
 	return (char*) psz;
 }
 
-wchar_t* tt::findNonSpace(const wchar_t* psz)
+wchar_t* tt::FindNonSpace(const wchar_t* psz)
 {
 	if (!psz)
 		return nullptr;
-	while (tt::isWhitespace(*psz))
+	while (tt::IsWhitespace(*psz))
 		psz++;
 	return (wchar_t*) psz;
 }
 
-wchar_t* tt::findSpace(const wchar_t* psz)
+wchar_t* tt::FindSpace(const wchar_t* psz)
 {
 	if (!psz)
 		return nullptr;
-	while (*psz && !tt::isWhitespace(*psz))
+	while (*psz && !tt::IsWhitespace(*psz))
 		psz++;
 	return (wchar_t*) psz;
 }
 
-char* tt::stepOver(const char* psz)
+char* tt::StepOver(const char* psz)
 {
 	if (!psz)
 		return nullptr;
@@ -603,7 +603,7 @@ char* tt::stepOver(const char* psz)
 	return (char*) psz;
 }
 
-wchar_t* tt::stepOver(const wchar_t* psz)
+wchar_t* tt::StepOver(const wchar_t* psz)
 {
 	if (!psz)
 		return nullptr;
@@ -614,7 +614,7 @@ wchar_t* tt::stepOver(const wchar_t* psz)
 	return (wchar_t*) psz;
 }
 
-void tt::trimRight(char* psz)
+void tt::TrimRight(char* psz)
 {
 	if (!psz || !*psz)
 		return;
@@ -985,15 +985,15 @@ wchar_t* tt::Utoa(uint64_t val, wchar_t* pszDst, size_t cbDst)
 	return pszRet;
 }
 
-char* tt::findLastSlash(const char* psz)
+char* tt::FindLastSlash(const char* psz)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 
 	if (!psz || !*psz)
 		return nullptr;
 
-	char* pszLastBackSlash = tt::findLastChar(psz, '\\');
-	char* pszLastFwdSlash	 = tt::findLastChar(psz, '/');
+	char* pszLastBackSlash = tt::FindLastChar(psz, '\\');
+	char* pszLastFwdSlash	 = tt::FindLastChar(psz, '/');
 	if (!pszLastBackSlash)
 		return pszLastFwdSlash ? pszLastFwdSlash : nullptr;
 	else if (!pszLastFwdSlash)
@@ -1007,7 +1007,7 @@ void tt::AddTrailingSlash(char* psz)
 	ttASSERT_MSG(psz, "NULL pointer!");
 	if (!psz)
 		return;
-	char* pszLastSlash = tt::findLastSlash(psz);
+	char* pszLastSlash = tt::FindLastSlash(psz);
 	if (!pszLastSlash || pszLastSlash[1])	// only add if there was no slash or there was something after the slash
 		tt::StrCat(psz, "/");
 }

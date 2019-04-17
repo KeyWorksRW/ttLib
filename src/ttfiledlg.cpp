@@ -31,7 +31,7 @@ ttCFileDlg::ttCFileDlg(HWND hwndParent)
 #endif
 	m_pofn = (OPENFILENAMEA*) tt::Calloc(cbStruct);
 
-	m_cszFileName.resize(MAX_PATH);
+	m_cszFileName.ReSize(MAX_PATH);
 
 	m_pofn->lStructSize = cbStruct;
 	m_pofn->hwndOwner = hwndParent ? hwndParent : GetActiveWindow();
@@ -84,7 +84,7 @@ bool ttCFileDlg::GetSaveFileName()
 
 void ttCFileDlg::FixExtension()
 {
-	if (tt::findChar(m_cszFileName, '.'))
+	if (tt::FindChar(m_cszFileName, '.'))
 		return;	// we have an extension, return
 
 	const char* psz = m_pofn->lpstrFilter;
@@ -94,7 +94,7 @@ void ttCFileDlg::FixExtension()
 	}
 	psz = psz + tt::StrLen(psz) + 1;
 	ttASSERT(psz);
-	char* pszTmp = tt::findChar(psz, ';');
+	char* pszTmp = tt::FindChar(psz, ';');
 	if (pszTmp)
 		*pszTmp = '\0';
 	m_cszFileName.ChangeExtension(psz + 1);
@@ -107,23 +107,23 @@ void ttCFileDlg::SetFilter(const char* pszFilters)
 		return;
 
 	m_cszFilter = pszFilters;
-	char* psz = tt::findChar(m_cszFilter, '|');
+	char* psz = tt::FindChar(m_cszFilter, '|');
 	while (psz) {
 		*psz = '\0';
-		psz = tt::findChar(psz + 1, '|');
+		psz = tt::FindChar(psz + 1, '|');
 	}
-	m_pofn->lpstrFilter = m_cszFilter.getPtr();
+	m_pofn->lpstrFilter = m_cszFilter.GetPtr();
 }
 
 void ttCFileDlg::SetFilter(int idResource)
 {
-	m_cszFilter.getResString(idResource);
-	char* psz = tt::findChar(m_cszFilter, '|');
+	m_cszFilter.GetResString(idResource);
+	char* psz = tt::FindChar(m_cszFilter, '|');
 	while (psz) {
 		*psz = '\0';
-		psz = tt::findChar(psz + 1, '|');
+		psz = tt::FindChar(psz + 1, '|');
 	}
-	m_pofn->lpstrFilter = m_cszFilter.getPtr();
+	m_pofn->lpstrFilter = m_cszFilter.GetPtr();
 }
 
 UINT_PTR CALLBACK ttpriv::OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */, LPARAM lParam)

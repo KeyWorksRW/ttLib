@@ -53,7 +53,7 @@ void ttCStr::ChangeExtension(const char* pszExtension)
 	if (!m_psz)
 		m_psz = tt::StrDup("");
 
-	char* psz = tt::findLastChar(m_psz, '.');
+	char* psz = tt::FindLastChar(m_psz, '.');
 	if (psz && !(psz == m_psz || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/'))	// ignore .file, ./file, and ../file
 		*psz = 0;	// remove the extension if none of the above is true
 
@@ -62,9 +62,9 @@ void ttCStr::ChangeExtension(const char* pszExtension)
 	*this += pszExtension;
 }
 
-char* ttCStr::findExt() const
+char* ttCStr::FindExt() const
 {
-	char* psz = tt::findLastChar(m_psz, '.');
+	char* psz = tt::FindLastChar(m_psz, '.');
 	if (psz == m_psz || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/')	// ignore .file, ./file, and ../file
 		return nullptr;
 	return psz;
@@ -73,7 +73,7 @@ char* ttCStr::findExt() const
 void ttCStr::RemoveExtension()
 {
 	 if (m_psz) {
-		char* psz = tt::findLastChar(m_psz, '.');
+		char* psz = tt::FindLastChar(m_psz, '.');
 		if (psz) {
 			if (psz == m_psz || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/')	// ignore .file, ./file, and ../file
 				return;
@@ -88,20 +88,20 @@ void ttCStr::AddTrailingSlash()
 		m_psz = tt::StrDup("/");
 		return;
 	}
-	const char* pszLastSlash = findLastSlash();
+	const char* pszLastSlash = FindLastSlash();
 	if (!pszLastSlash || pszLastSlash[1])	// only add if there was no slash or there was something after the slash
 		*this += "/";
 }
 
-char* ttCStr::findLastSlash()
+char* ttCStr::FindLastSlash()
 {
 	ttASSERT_MSG(m_psz, "NULL pointer!");
 
 	if (!m_psz || !*m_psz)
 		return nullptr;
 
-	char* pszLastBackSlash = tt::findLastChar(m_psz, '\\');
-	char* pszLastFwdSlash  = tt::findLastChar(m_psz, '/');
+	char* pszLastBackSlash = tt::FindLastChar(m_psz, '\\');
+	char* pszLastFwdSlash  = tt::FindLastChar(m_psz, '/');
 	if (!pszLastBackSlash)
 		return pszLastFwdSlash ? pszLastFwdSlash : nullptr;
 	else if (!pszLastFwdSlash)
@@ -110,10 +110,10 @@ char* ttCStr::findLastSlash()
 		return pszLastFwdSlash > pszLastBackSlash ? pszLastFwdSlash : pszLastBackSlash;		// Impossible for them to be equal
 }
 
-char* ttCStr::getCWD()
+char* ttCStr::GetCWD()
 {
 #ifdef _WINDOWS_
-	resize(MAX_PATH);
+	ReSize(MAX_PATH);
 	DWORD cb = GetCurrentDirectoryA(MAX_PATH, m_psz);
 	m_psz[cb] = 0;	// in case GetCurrentDirectory() failed
 #else
@@ -127,7 +127,7 @@ char* ttCStr::getCWD()
 
 #ifdef _WINDOWS_
 
-void ttCStr::getFullPathName()
+void ttCStr::GetFullPathName()
 {
 	ttASSERT(m_psz);
 	char szPath[MAX_PATH];
@@ -135,7 +135,7 @@ void ttCStr::getFullPathName()
 	tt::StrDup(szPath, &m_psz);
 }
 
-char* ttCStr::getListBoxText(HWND hwnd, size_t sel)
+char* ttCStr::GetListBoxText(HWND hwnd, size_t sel)
 {
 	if (m_psz)
 		tt::FreeAlloc(m_psz);
@@ -162,7 +162,7 @@ char* ttCStr::getListBoxText(HWND hwnd, size_t sel)
 		tt::hinstResources = LoadLibrary("dll name");
 */
 
-char* ttCStr::getResString(size_t idString)
+char* ttCStr::GetResString(size_t idString)
 {
 	char szStringBuf[1024];
 
@@ -180,7 +180,7 @@ char* ttCStr::getResString(size_t idString)
 	return m_psz;
 }
 
-bool ttCStr::getWindowText(HWND hwnd)
+bool ttCStr::GetWindowText(HWND hwnd)
 {
 	if (m_psz) {
 		 tt::FreeAlloc(m_psz);
@@ -221,7 +221,7 @@ void ttCStr::MakeLower()
 		char* psz = m_psz;
 		while (*psz) {
 			*psz = (char) tolower(*psz);
-			psz = (char*) tt::nextChar(psz);	// handles utf8
+			psz = (char*) tt::NextChar(psz);	// handles utf8
 		}
 	}
 }
@@ -232,7 +232,7 @@ void ttCStr::MakeUpper()
 		char* psz = m_psz;
 		while (*psz) {
 			*psz = (char) toupper(*psz);
-			psz = (char*) tt::nextChar(psz);	// handles utf8
+			psz = (char*) tt::NextChar(psz);	// handles utf8
 		}
 	}
 }
@@ -273,7 +273,7 @@ bool ttCStr::CopyWide(const wchar_t* pwsz)	// convert UNICODE to UTF8 and store 
 	return true;
 }
 
-void ttCStr::resize(size_t cbNew)
+void ttCStr::ReSize(size_t cbNew)
 {
 	ttASSERT(cbNew <= MAX_STRING);
 	if (cbNew > MAX_STRING)
@@ -294,7 +294,7 @@ bool ttCStr::ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCa
 	if (!pszNewText)
 		pszNewText = "";
 
-	char* pszPos = bCaseSensitive ? tt::findStr(m_psz, pszOldText) : tt::findStri(m_psz, pszOldText);
+	char* pszPos = bCaseSensitive ? tt::FindStr(m_psz, pszOldText) : tt::FindStrI(m_psz, pszOldText);
 	if (!pszPos)
 		return false;
 
@@ -424,7 +424,7 @@ char* cdecl ttCStr::printf(const char* pszFormat, ...)
 char* cdecl ttCStr::printf(size_t idFmtString, ...)
 {
 	ttCStr cszTmp;
-	cszTmp.getResString(idFmtString);
+	cszTmp.GetResString(idFmtString);
 
 	va_list argList;
 	va_start(argList, idFmtString);
@@ -509,7 +509,7 @@ char* ttCStr::Hextoa(size_t val, bool bUpperCase)
 	return tt::StrDup(szNum, &m_psz);
 }
 
-char* ttCStr::getString(const char* pszString, char chBegin, char chEnd)
+char* ttCStr::GetString(const char* pszString, char chBegin, char chEnd)
 {
 	ttASSERT_NONEMPTY(pszString);
 
@@ -529,14 +529,14 @@ char* ttCStr::getString(const char* pszString, char chBegin, char chEnd)
 	}
 
 	// step over any leading whitespace
-	while (tt::isWhitespace(*pszString))
+	while (tt::IsWhitespace(*pszString))
 		++pszString;
 
 	if (*pszString == chBegin) {
 		pszString++;
 		const char* pszStart = pszString;
 		while (*pszString != chEnd && *pszString)
-			pszString = tt::nextChar(pszString);
+			pszString = tt::NextChar(pszString);
 		strncpy_s(m_psz, DEST_SIZE, pszStart, pszString - pszStart);
 		m_psz[pszString - pszStart] = 0;	// make certain it is null terminated
 	}
@@ -552,7 +552,7 @@ char* ttCStr::getString(const char* pszString, char chBegin, char chEnd)
 	return m_psz;
 }
 
-char* ttCStr::getQuotedString(const char* pszQuote)
+char* ttCStr::GetQuotedString(const char* pszQuote)
 {
 	ttASSERT_NONEMPTY(pszQuote);
 
@@ -561,27 +561,27 @@ char* ttCStr::getQuotedString(const char* pszQuote)
 		return nullptr;
 	}
 
-	while (tt::isWhitespace(*pszQuote)) // step over any leading whitespace
+	while (tt::IsWhitespace(*pszQuote)) // step over any leading whitespace
 		++pszQuote;
 
 	switch (*pszQuote) {
 		default:
 		case '"':	// CH_QUOTE
-			return getString(pszQuote, CH_QUOTE, CH_QUOTE);
+			return GetString(pszQuote, CH_QUOTE, CH_QUOTE);
 
 		case '\'':	// CH_SQUOTE
-			return getString(pszQuote, CH_SQUOTE, CH_SQUOTE);
+			return GetString(pszQuote, CH_SQUOTE, CH_SQUOTE);
 
 		case '`':	// CH_START_QUOTE
-			return getString(pszQuote, CH_START_QUOTE, CH_END_QUOTE);
+			return GetString(pszQuote, CH_START_QUOTE, CH_END_QUOTE);
 
 		case '<':
-			return getString(pszQuote, '<', '>');
+			return GetString(pszQuote, '<', '>');
 
 		case '[':	// CH_LEFT_BRACKET
-			return getString(pszQuote, '[', ']');
+			return GetString(pszQuote, '[', ']');
 
 		case '(':	// CH_OPEN_PAREN
-			return getString(pszQuote, '[', ']');
+			return GetString(pszQuote, '[', ']');
 	}
 }

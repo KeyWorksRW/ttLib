@@ -75,7 +75,7 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 		ttCDlg* pThis = (ttCDlg*) lParam;
 		pThis->m_hwnd = hdlg;
 		tt::hwndMsgBoxParent = hdlg;
-		if (!tt::isValidWindow(pThis->m_hwndParent))
+		if (!tt::IsValidWindow(pThis->m_hwndParent))
 			pThis->m_hwndParent = GetActiveWindow();
 
 		LRESULT lResult = 0;

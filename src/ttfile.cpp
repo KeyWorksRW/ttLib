@@ -102,7 +102,7 @@ bool ttCFile::WriteFile(const char* pszFile)
 {
 	CHECK_FILE_PTR(pszFile);	// returns false on failure
 #ifdef _DEBUG
-	m_pszFile = tt::findFilePortion(pszFile);	// set this so Debugger will see it
+	m_pszFile = tt::FindFilePortion(pszFile);	// set this so Debugger will see it
 #endif
 	ttASSERT_MSG(m_pCurrent > m_pbuf, "Trying to write an empty file!");
 	if (m_pCurrent == m_pbuf) {
@@ -141,7 +141,7 @@ bool ttCFile::ReadFile(const char* pszFile)
 	Delete();
 	CHECK_FILE_PTR(pszFile);	// returns on failure
 #ifdef _DEBUG
-	m_pszFile = tt::findFilePortion(pszFile);	// set this so Debugger will see it
+	m_pszFile = tt::FindFilePortion(pszFile);	// set this so Debugger will see it
 #endif
 
 #ifdef _WX_WX_H_
@@ -396,7 +396,7 @@ void cdecl ttCFile::printf(const char* pszFormat, ...)
 	ttCStr csz;
 	va_list argList;
 	va_start(argList, pszFormat);
-	tt::vprintf(csz.getPPtr(), pszFormat, argList);
+	tt::vprintf(csz.GetPPtr(), pszFormat, argList);
 	va_end(argList);
 
 	WriteStr(csz);
@@ -490,7 +490,7 @@ bool ttCFile::ReplaceStr(const char* pszOldText, const char* pszNewText, bool fC
 	if (!pszOldText || !*pszOldText)
 		return false;
 
-	char* pszPos = fCaseSensitive ? tt::findStr(m_pbuf, pszOldText) : tt::findStri(m_pbuf, pszOldText);
+	char* pszPos = fCaseSensitive ? tt::FindStr(m_pbuf, pszOldText) : tt::FindStrI(m_pbuf, pszOldText);
 	if (!pszPos)
 		return false;
 
@@ -551,7 +551,7 @@ size_t ttCFile::GetCurLineLength()
 	return tt::StrLen(pszBeginLine) - 1;
 }
 
-bool ttCFile::isThisPreviousString(const char* pszPrev)
+bool ttCFile::IsThisPreviousString(const char* pszPrev)
 {
 	ttASSERT_NONEMPTY(pszPrev);
 	ttASSERT(m_pCurrent);
@@ -563,7 +563,7 @@ bool ttCFile::isThisPreviousString(const char* pszPrev)
 
 	if (m_pCurrent - cb < m_pbuf)
 		return false;
-	return tt::isSameStr(m_pCurrent - cb, pszPrev);
+	return tt::IsSameStr(m_pCurrent - cb, pszPrev);
 }
 
 bool ttCFile::UnicodeToAnsi()
@@ -637,18 +637,18 @@ char* ttCFile::GetParsedYamlLine()
 		ReadLine();
 	ttASSERT_MSG(m_bReadlineReady, "Attempting to call GetParsedYamlLine() without a properly read file!");
 
-	const char* pszLine = tt::findNonSpace(m_pszLine);	// ignore any leading spaces
-	if (tt::isSameSubStri(pszLine, "%YAML"))
+	const char* pszLine = tt::FindNonSpace(m_pszLine);	// ignore any leading spaces
+	if (tt::IsSameSubStrI(pszLine, "%YAML"))
 		return nullptr;
 
-	if (tt::isEmpty(pszLine) || pszLine[0] == '#' || (pszLine[0] == '-' && pszLine[1] == '-' && pszLine[2] == '-'))	// ignore empty, comment or divider lines
+	if (tt::IsEmpty(pszLine) || pszLine[0] == '#' || (pszLine[0] == '-' && pszLine[1] == '-' && pszLine[2] == '-'))	// ignore empty, comment or divider lines
 		return nullptr;
 
-	char* pszComment = tt::findChar(pszLine, '#');	// strip off any comments
+	char* pszComment = tt::FindChar(pszLine, '#');	// strip off any comments
 	if (pszComment)
 		*pszComment = 0;
 
-	tt::trimRight((char*) pszLine);		// remove any trailing white space
+	tt::TrimRight((char*) pszLine);		// remove any trailing white space
 
 	return (char*) pszLine;
 }

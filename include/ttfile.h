@@ -80,7 +80,7 @@ public:
 	size_t	GetCurLineLength();	// Use when writing data
 	char	GetPrevChar() { if (m_pCurrent && m_pCurrent > m_pbuf) return m_pCurrent[-1]; else return 0; }
 	void	Backup(size_t cch);
-	bool	isThisPreviousString(const char* pszPrev);
+	bool	IsThisPreviousString(const char* pszPrev);
 	void	ReCalcSize();	// reset the current position based on string length of entire buffer
 
 	void cdecl printf(const char* pszFormat, ...);
@@ -94,7 +94,7 @@ public:
 	char*	GetEndPosition() const { return m_pEnd; }
 
 	char*	GetCurPosition() { return m_pCurrent; }	// used for InsertStr()
-	bool 	isUnicode() { return (m_pbuf && m_pEnd > m_pbuf + 2 && (BYTE) m_pbuf[0] == 0xFF && (BYTE) m_pbuf[1] == 0xFE); }
+	bool 	IsUnicode() { return (m_pbuf && m_pEnd > m_pbuf + 2 && (BYTE) m_pbuf[0] == 0xFF && (BYTE) m_pbuf[1] == 0xFE); }
 
 	void SetCurPosition(char* psz) {
 		ttASSERT(psz);

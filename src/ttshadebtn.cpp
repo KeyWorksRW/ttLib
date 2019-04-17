@@ -474,7 +474,7 @@ void ttCShadeBtn::OnPaint()
     HANDLE hBitmap = CreateCompatibleBitmap(hdcPaint, cx, cy);
 	HBITMAP hOldBitmap = (HBITMAP) SelectObject(hdcMem, hBitmap); // select the destination for MemDC
 
-	cszCaption.getWindowText(*this);							// get button text
+	cszCaption.GetWindowText(*this);							// get button text
 	SetBkMode(hdcMem, TRANSPARENT);
 	// with MemDC we need to select the font...
 

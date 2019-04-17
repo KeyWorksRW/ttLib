@@ -2,7 +2,7 @@
 // Name:		ttwstr.h
 // Purpose:		Wide-character string class. See ttstr.h for SBCS version
 // Author:		Ralph Walden
-// Copyright:	Copyright (c) 1998-2018 KeyWorks Software (Ralph Walden)
+// Copyright:	Copyright (c) 1998-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
@@ -43,9 +43,9 @@ public:
 	ttCWStr(size_t cb) { m_psz = (wchar_t*) tt::Malloc(cb); }	// Caution! cb is bytes, not wide chars
 	ttCWStr(const wchar_t* pwsz) { m_psz = pwsz ? tt::StrDup(pwsz) : nullptr; }
 	ttCWStr(const char* psz) { m_psz = nullptr; if (psz) CopyNarrow(psz); }
-	ttCWStr(ttCWStr& cwsz) { m_psz = cwsz.getPtr() ? tt::StrDup(cwsz.getPtr()) : nullptr; }
+	ttCWStr(ttCWStr& cwsz) { m_psz = cwsz.GetPtr() ? tt::StrDup(cwsz.GetPtr()) : nullptr; }
 #ifdef _WINDOWS_
-	ttCWStr(HWND hwnd) { m_psz = nullptr; getWindowText(hwnd); }
+	ttCWStr(HWND hwnd) { m_psz = nullptr; GetWindowText(hwnd); }
 #endif // _WINDOWS_
 
 	~ttCWStr() { if (m_psz)  tt::FreeAlloc(m_psz); }
@@ -58,21 +58,21 @@ public:
 	void	GetCWD();	// Caution: this will replace any current string
 	void	RemoveExtension();
 
-	const wchar_t* findLastSlash();		// Handles any mix of '\' and '/' in the filename
+	const wchar_t* FindLastSlash();		// Handles any mix of '\' and '/' in the filename
 
 #ifdef _WINDOWS_
-	void getFullPathName();
+	void GetFullPathName();
 #endif
 
 	// UI retrieving methods
 
 #ifdef _WINDOWS_
-	const wchar_t* getResString(size_t idString);
-	bool getWindowText(HWND hwnd);
+	const wchar_t* GetResString(size_t idString);
+	bool GetWindowText(HWND hwnd);
 
 	// The following will always return a pointer, but if an error occurred, it will point to an empty string
-	const wchar_t* getListBoxText(HWND hwnd) { return getListBoxText(hwnd, ::SendMessage(hwnd, LB_GETCURSEL, 0, 0)); }
-	const wchar_t* getListBoxText(HWND hwnd, size_t sel);
+	const wchar_t* GetListBoxText(HWND hwnd) { return GetListBoxText(hwnd, ::SendMessage(hwnd, LB_GETCURSEL, 0, 0)); }
+	const wchar_t* GetListBoxText(HWND hwnd, size_t sel);
 #endif	// _WINDOWS_
 
 	void	MakeLower();
@@ -80,7 +80,7 @@ public:
 
 	// When compiled with wxWidgets, IsSame() functions work with UTF8 strings, otherwise they only correctly handle the ANSI portion of UTF8 strings
 
-	bool	isSameSubString(const wchar_t* psz);	// returns true if psz is an exact match to the first part of ttCWStr (case-insensitive)
+	bool	IsSameSubString(const wchar_t* psz);	// returns true if psz is an exact match to the first part of ttCWStr (case-insensitive)
 	bool	IsSameString(const wchar_t* psz);		// returns true if psz is an exact match to ttCWStr (case-insensitive)
 
 	wchar_t* GetQuotedString(wchar_t* pszQuote);	// returns pointer to first character after closing quote (or nullptr if not a quoted string)
@@ -94,7 +94,7 @@ public:
 	void	 Delete() { if (m_psz) { tt::FreeAlloc(m_psz); m_psz = nullptr; } }
 	wchar_t* Enlarge(size_t cbTotalSize);	// increase buffer size if needed
 
-	wchar_t* getPtr() { return m_psz; }	// for when casting to char* is problematic
+	wchar_t* GetPtr() { return m_psz; }	// for when casting to char* is problematic
 
 	operator const wchar_t*() const { return (const wchar_t*) m_psz; }
 	operator wchar_t*() const { return (wchar_t*) m_psz; }
@@ -110,8 +110,8 @@ public:
 
 	wchar_t operator[](int pos);
 
-	bool operator==(const wchar_t* pwsz) { return (IsEmpty() || !pwsz) ? false : tt::isSameStr(m_psz, pwsz); }
-	bool operator==(const ttCWStr* pwstr) { return (IsEmpty() || !pwstr || pwstr->IsEmpty()) ? false : tt::isSameStr(m_psz, *pwstr); }
+	bool operator==(const wchar_t* pwsz) { return (IsEmpty() || !pwsz) ? false : tt::IsSameStr(m_psz, pwsz); }
+	bool operator==(const ttCWStr* pwstr) { return (IsEmpty() || !pwstr || pwstr->IsEmpty()) ? false : tt::IsSameStr(m_psz, *pwstr); }
 
 	bool CopyNarrow(const char* psz);	// convert UTF8 to UNICODE and store it
 

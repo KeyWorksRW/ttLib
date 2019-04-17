@@ -33,7 +33,7 @@ void tt::InitCaller(HINSTANCE hinstRes, HWND hwnd, const char* pszTitle)
 	tt::hwndMsgBoxParent = hwnd;
 }
 
-void tt::setMsgBoxTitle(const char* pszTitle)
+void tt::SetMsgBoxTitle(const char* pszTitle)
 {
 	if (tt::pszMsgTitle)
 		tt::FreeAlloc((void*) tt::pszMsgTitle);
@@ -50,8 +50,8 @@ int tt::MsgBox(const char* pszMsg, UINT uType)
 int tt::MsgBox(UINT idResource, UINT uType)
 {
 	ttCStr strRes;
-	strRes.getResString(idResource);
-	return MessageBoxA(GetActiveWindow(), strRes.isNonEmpty() ? (char*) strRes : "missing resource id", (tt::pszMsgTitle ? tt::pszMsgTitle : ""), uType);
+	strRes.GetResString(idResource);
+	return MessageBoxA(GetActiveWindow(), strRes.IsNonEmpty() ? (char*) strRes : "missing resource id", (tt::pszMsgTitle ? tt::pszMsgTitle : ""), uType);
 }
 
 int __cdecl tt::MsgBoxFmt(const char* pszFormat, UINT uType, ...)
@@ -59,7 +59,7 @@ int __cdecl tt::MsgBoxFmt(const char* pszFormat, UINT uType, ...)
 	ttCStr csz;
 	va_list argList;
 	va_start(argList, uType);
-	tt::vprintf(csz.getPPtr(), pszFormat, argList);
+	tt::vprintf(csz.GetPPtr(), pszFormat, argList);
 	va_end(argList);
 
 	return MessageBoxA(GetActiveWindow(), csz, tt::pszMsgTitle ? tt::pszMsgTitle : "", uType);
@@ -68,12 +68,12 @@ int __cdecl tt::MsgBoxFmt(const char* pszFormat, UINT uType, ...)
 int __cdecl tt::MsgBoxFmt(int idResource, UINT uType, ...)
 {
 	ttCStr cszTmp;
-	cszTmp.getResString(idResource);
+	cszTmp.GetResString(idResource);
 
 	ttCStr csz;
 	va_list argList;
 	va_start(argList, uType);
-	tt::vprintf(csz.getPPtr(), cszTmp, argList);
+	tt::vprintf(csz.GetPPtr(), cszTmp, argList);
 	va_end(argList);
 
 	return MessageBoxA(GetActiveWindow(), csz, tt::pszMsgTitle ? tt::pszMsgTitle : "", uType);
@@ -181,7 +181,7 @@ const char* tt::LoadTxtResource(int idRes, uint32_t* pcbFile, HINSTANCE hinst)
 
 */
 
-const char* tt::getResString(size_t idString)
+const char* tt::GetResString(size_t idString)
 {
 	static char szStringBuf[1024];
 
@@ -203,62 +203,4 @@ const char* tt::getResString(size_t idString)
 		szStringBuf[0] = '\0';
 	}
 	return (const char*) szStringBuf;
-}
-
-// KeyTrace can be used to send text messages that will be displayed by KeyView.exe (if it is running)
-// See https://github.com/Randalphwa/KeyHelp/KeyView for details of how KeyView works
-
-namespace {
-	HANDLE hKeyViewMapping;
-	HWND   hwndKeyView;
-	ttCCritSection g_csKeyView;
-	char*  g_pszKeyViewMap;		 // points to data in shared memory
-}
-
-#define WMP_GENERAL_MSG		 (WM_USER + 0x1f3)
-#define WMP_KEY_TRACE_MSG	 (WM_USER + 0x1f5)
-#define WMP_CLEAR_KEYVIEW	 (WM_USER + 0x1f9)	// clear the KeyView window
-
-void __cdecl tt::KeyTrace(const char* pszFormat, ...)
-{
-	if (!pszFormat || !*pszFormat)
-		return;
-
-	if (!IsWindow(hwndKeyView)) {
-		hwndKeyView = FindWindowA("KeyViewMsgs", NULL);
-		if (!hwndKeyView)
-			return;
-	}
-
-	ttCStr csz;
-	va_list argList;
-	va_start(argList, pszFormat);
-	tt::vprintf(csz.getPPtr(), pszFormat, argList);
-	va_end(argList);
-
-	// We don't want two threads trying to send text at the same time, so we wrap the rest of this in a critical section
-
-	ttCCritLock lock(&g_csKeyView);
-
-	if (!hKeyViewMapping) {
-		hKeyViewMapping = CreateFileMappingA((HANDLE) -1, NULL, PAGE_READWRITE, 0, 4096, "hhw_share");
-		if (!hKeyViewMapping) {
-			hwndKeyView = NULL;
-			return;
-		}
-		g_pszKeyViewMap = (PSTR) MapViewOfFile(hKeyViewMapping, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
-		if (!g_pszKeyViewMap) {
-			hwndKeyView = NULL;
-			return;
-		}
-	}
-
-	ttASSERT(tt::StrLen(csz) < 4094);
-
-	if (tt::StrLen(csz) >= 4094)
-		csz.getPtr()[4093] = 0;	// truncate to size KeyView can handle
-
-	tt::StrCopy(g_pszKeyViewMap, 4093, csz);
-
-	SendMessage(hwndKeyView, WMP_KEY_TRACE_MSG, 0, 0);
 }

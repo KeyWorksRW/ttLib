@@ -47,46 +47,46 @@ public:
 		if (m_hfind != INVALID_HANDLE_VALUE)
 			FindClose(m_hfind);
 		m_hfind = FindFirstFile(pszFilePattern, this);
-		return isValid();
+		return IsValid();
 	}
 
-	bool isArchive() const { return (dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE) ? true : false; }
-	bool isCompressed() const { return (dwFileAttributes & FILE_ATTRIBUTE_COMPRESSED) ? true : false; }
-	bool isDir() const { return (dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? true : false; }
-	bool isHidden() const { return (dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) ? true : false; }
-	bool isOffline() const { return (dwFileAttributes & FILE_ATTRIBUTE_OFFLINE) ? true : false; }
-	bool isReadOnly() const { return (dwFileAttributes & FILE_ATTRIBUTE_READONLY) ? true : false; }
-	bool isSystem() const { return (dwFileAttributes & FILE_ATTRIBUTE_SYSTEM) ? true : false; }
-	bool isTemporary() const { return (dwFileAttributes & FILE_ATTRIBUTE_TEMPORARY) ? true : false; }
-	bool isValid() const { return (m_hfind != INVALID_HANDLE_VALUE) ? true : false; }
+	bool IsArchive() const { return (dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE) ? true : false; }
+	bool IsCompressed() const { return (dwFileAttributes & FILE_ATTRIBUTE_COMPRESSED) ? true : false; }
+	bool IsDir() const { return (dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ? true : false; }
+	bool IsHidden() const { return (dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) ? true : false; }
+	bool IsOffline() const { return (dwFileAttributes & FILE_ATTRIBUTE_OFFLINE) ? true : false; }
+	bool IsReadOnly() const { return (dwFileAttributes & FILE_ATTRIBUTE_READONLY) ? true : false; }
+	bool IsSystem() const { return (dwFileAttributes & FILE_ATTRIBUTE_SYSTEM) ? true : false; }
+	bool IsTemporary() const { return (dwFileAttributes & FILE_ATTRIBUTE_TEMPORARY) ? true : false; }
+	bool IsValid() const { return (m_hfind != INVALID_HANDLE_VALUE) ? true : false; }
 
 	DWORD GetAttributes() { return dwFileAttributes; }
 	int64_t GetFullFileSize() { return (((int64_t) nFileSizeHigh) << 32) + (int64_t) nFileSizeLow; }
 
 	const char* GetFileName() { return cFileName; }
 
-	char*	findExtPortion() { return (char*) tt::findExtPortion(cFileName); }	// find filename extension
-	char*	findChar(char ch) { return tt::findChar(cFileName, ch); }
-	char*	findLastChar(char ch) { return tt::findLastChar(cFileName, ch); }
+	char*	FindExtPortion() { return (char*) tt::FindExtPortion(cFileName); }	// find filename extension
+	char*	FindChar(char ch) { return tt::FindChar(cFileName, ch); }
+	char*	FindLastChar(char ch) { return tt::FindLastChar(cFileName, ch); }
 
-	size_t	strByteLen() { return tt::strByteLen(cFileName); }	// length of string in bytes including 0 terminator
-	size_t	strLen() { return tt::strLen(cFileName); }		// number of characters (use strByteLen() for buffer size calculations)
+	size_t	StrByteLen() { return tt::StrByteLen(cFileName); }	// length of string in bytes including 0 terminator
+	size_t	StrLen() { return tt::StrLen(cFileName); }		// number of characters (use strByteLen() for buffer size calculations)
 
-	bool	isSameStr(const char* psz) { return tt::isSameStr(cFileName, psz); }
-	bool	isSameStri(const char* psz) { return tt::isSameStri(cFileName, psz); }
-	bool	isSameSubStr(const char* psz) { return tt::isSameSubStr(cFileName, psz); }
-	bool	isSameSubStri(const char* psz) { return tt::isSameSubStri(cFileName, psz); }
+	bool	IsSameStr(const char* psz) { return tt::IsSameStr(cFileName, psz); }
+	bool	IsSameStrI(const char* psz) { return tt::IsSameStrI(cFileName, psz); }
+	bool	IsSameSubStr(const char* psz) { return tt::IsSameSubStr(cFileName, psz); }
+	bool	IsSameSubStrI(const char* psz) { return tt::IsSameSubStrI(cFileName, psz); }
 
-	bool	isEmpty() const { return (!isValid() || !*cFileName)  ? true : false; }
-	bool	isNonEmpty() const { return (isValid() && *cFileName) ? true : false; }
+	bool	IsEmpty() const { return (!IsValid() || !*cFileName)  ? true : false; }
+	bool	IsNonEmpty() const { return (IsValid() && *cFileName) ? true : false; }
 
 	operator char*() const { return (char*) cFileName; }
 	operator DWORD() const { return dwFileAttributes; }
 
 	// Note that the two == operators are case insensitive since filenames on Windows are case insensitive
 
-	bool operator == (const char* psz) { return (isEmpty()) ? false : tt::isSameStri(cFileName, psz); } // isSameStr will check for psz == null
-	bool operator == (char* psz) { return (isEmpty()) ? false : tt::isSameStri(cFileName, psz); }		 // isSameStr will check for psz == null
+	bool operator == (const char* psz) { return (IsEmpty()) ? false : tt::IsSameStrI(cFileName, psz); } // isSameStr will check for psz == null
+	bool operator == (char* psz) { return (IsEmpty()) ? false : tt::IsSameStrI(cFileName, psz); }		 // isSameStr will check for psz == null
 
 protected:
 #ifdef _DEBUG

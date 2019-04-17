@@ -45,7 +45,7 @@ public:
 	ptrdiff_t Add(const TKey key, const TVal val) {
 		if (m_cItems >= m_cAllocated) {
 			m_cAllocated += 8;	// number of items to add at a time
-			m_aMapPairs = (MAP_PAIR*) m_pHeap->ttRealloc(m_aMapPairs, m_cAllocated * sizeof(MAP_PAIR));
+			m_aMapPairs = (MAP_PAIR*) m_pHeap->ttReAlloc(m_aMapPairs, m_cAllocated * sizeof(MAP_PAIR));
 		}
 		m_aMapPairs[m_cItems].key = key;
 		m_aMapPairs[m_cItems].val = val;

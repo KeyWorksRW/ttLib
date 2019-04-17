@@ -56,7 +56,7 @@ public:
 
 	void* ttMalloc(size_t cb);	// under _DEBUG, will fill with 0xCD
 	void* ttCalloc(size_t cb);
-	void* ttRealloc(void* pv, size_t cb);
+	void* ttReAlloc(void* pv, size_t cb);
 	void* ttReCalloc(void* pv, size_t cb);
 
 	void  ttFree(void* pv) { if (pv) HeapFree(m_hHeap, 0, pv); }
@@ -93,7 +93,7 @@ namespace tt {
 	inline void*	Calloc(size_t num, size_t cb) { return tt::MainHeap.ttCalloc(num * cb); }	// for compatability with C++ standard library
 	inline void		Delete(void* pv) { tt::MainHeap.ttFree(pv); }
 	inline void*	Malloc(size_t cb) { return tt::MainHeap.ttMalloc(cb); }
-	inline void*	ReAlloc(void* pv, size_t cbNew) { return tt::MainHeap.ttRealloc(pv, cbNew); }
+	inline void*	ReAlloc(void* pv, size_t cbNew) { return tt::MainHeap.ttReAlloc(pv, cbNew); }
 	inline void*	ReCalloc(void* pv, size_t cbNew) { return tt::MainHeap.ttReCalloc(pv, cbNew); }
 	inline char*	StrDup(const char* psz) { return tt::MainHeap.ttStrdup(psz); }
 	inline wchar_t*	StrDup(const wchar_t* pwsz) { return tt::MainHeap.ttStrdup(pwsz); }

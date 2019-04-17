@@ -44,7 +44,7 @@ public:
 	ttCMultiThrd();
 	~ttCMultiThrd();
 
-	virtual void doThreadWork(void* pvData1, void* pvData2) = NULL;	 // Derived class MUST supply this! While running, call isCancelled() to return
+	virtual void DoThreadWork(void* pvData1, void* pvData2) = NULL;	 // Derived class MUST supply this! While running, call isCancelled() to return
 
 	bool isCancelled() { return m_bCanceled; }	// true if threads are being aborted
 	void CancelThreads();

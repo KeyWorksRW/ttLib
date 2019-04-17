@@ -69,7 +69,7 @@ void ttCBaseThread::InitializeThreadForOle()
 unsigned __stdcall ttpriv::_BaseThread(void* pv)
 {
 	ttCBaseThread* pThis = (ttCBaseThread*) pv;
-	pThis->doThreadWork();
+	pThis->DoThreadWork();
 
 	if (pThis->m_bOleInitialized)
 		::CoUninitialize();

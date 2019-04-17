@@ -234,7 +234,7 @@ DWORD __stdcall _MultiThread(void* pv)
 			return 0;
 
 		try {
-			pThis->doThreadWork(pThrdInfo->pvData1, pThrdInfo->pvData2);
+			pThis->DoThreadWork(pThrdInfo->pvData1, pThrdInfo->pvData2);
 		}
 		catch (...) {
 			ttFAIL("Exception in doThreadWork()");

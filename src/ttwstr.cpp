@@ -53,7 +53,7 @@ void ttCWStr::ChangeExtension(const wchar_t* pszExtension)
 	if (!m_psz)
 		m_psz = tt::StrDup(L"");
 
-	wchar_t* pszEnd = tt::findLastChar(m_psz, '.');
+	wchar_t* pszEnd = tt::FindLastChar(m_psz, '.');
 	if (pszEnd && pszEnd[1] != '/' && pszEnd[1] != '\\')	// handle "./foo" -- don't assume the leading period is an extension if there's a folder seperator after it
 		*pszEnd = 0;
 
@@ -65,7 +65,7 @@ void ttCWStr::ChangeExtension(const wchar_t* pszExtension)
 void ttCWStr::RemoveExtension()
 {
 	 if (m_psz) {
-		wchar_t* psz = tt::findLastChar(m_psz, '.');
+		wchar_t* psz = tt::FindLastChar(m_psz, '.');
 		if (psz) {
 			if (psz == m_psz || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/')	// ignore .file, ./file, and ../file
 				return;
@@ -80,20 +80,20 @@ void ttCWStr::AddTrailingSlash()
 		m_psz = tt::StrDup(L"/");
 		return;
 	}
-	const wchar_t* pszLastSlash = findLastSlash();
+	const wchar_t* pszLastSlash = FindLastSlash();
 	if (!pszLastSlash || pszLastSlash[1])	// only add if there was no slash or there was something after the slash
 		*this += L"/";
 }
 
-const wchar_t* ttCWStr::findLastSlash()
+const wchar_t* ttCWStr::FindLastSlash()
 {
 	ttASSERT_NONEMPTY(m_psz);
 
 	if (!m_psz || !*m_psz)
 		return nullptr;
 
-	const wchar_t* pszLastBackSlash = tt::findLastChar(m_psz, '\\');
-	const wchar_t* pszLastFwdSlash	= tt::findLastChar(m_psz, '/');
+	const wchar_t* pszLastBackSlash = tt::FindLastChar(m_psz, '\\');
+	const wchar_t* pszLastFwdSlash	= tt::FindLastChar(m_psz, '/');
 	if (!pszLastBackSlash)
 		return pszLastFwdSlash ? pszLastFwdSlash : nullptr;
 	else if (!pszLastFwdSlash)
@@ -111,7 +111,7 @@ void ttCWStr::GetCWD()
 
 #ifdef _WINDOWS_
 
-void ttCWStr::getFullPathName()
+void ttCWStr::GetFullPathName()
 {
 	ttASSERT(m_psz);
 	wchar_t szPath[MAX_PATH];
@@ -120,7 +120,7 @@ void ttCWStr::getFullPathName()
 	m_psz = tt::StrDup(szPath);
 }
 
-const wchar_t* ttCWStr::getListBoxText(HWND hwnd, size_t sel)
+const wchar_t* ttCWStr::GetListBoxText(HWND hwnd, size_t sel)
 {
 	if (m_psz)
 		tt::FreeAlloc(m_psz);
@@ -147,7 +147,7 @@ const wchar_t* ttCWStr::getListBoxText(HWND hwnd, size_t sel)
 		tt::hinstResources = LoadLibrary("dll name");
 */
 
-const wchar_t* ttCWStr::getResString(size_t idString)
+const wchar_t* ttCWStr::GetResString(size_t idString)
 {
 	static wchar_t szStringBuf[1024];
 
@@ -167,7 +167,7 @@ const wchar_t* ttCWStr::getResString(size_t idString)
 	return m_psz;
 }
 
-bool ttCWStr::getWindowText(HWND hwnd)
+bool ttCWStr::GetWindowText(HWND hwnd)
 {
 	if (m_psz) {
 		 tt::FreeAlloc(m_psz);
@@ -259,11 +259,11 @@ wchar_t* ttCWStr::GetQuotedString(wchar_t* pszQuote)
 	return (*pszQuote ? pszQuote + 1 : pszQuote);
 }
 
-bool ttCWStr::isSameSubString(const wchar_t* pszSub)
+bool ttCWStr::IsSameSubString(const wchar_t* pszSub)
 {
 	if (!m_psz || !pszSub)
 		return false;
-	return tt::isSameSubStri(m_psz, pszSub);
+	return tt::IsSameSubStrI(m_psz, pszSub);
 }
 
 void ttCWStr::MakeLower()
@@ -512,11 +512,11 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 			chPad = 0;
 			pszEnd++;
 		}
-		if (tt::isDigit(*pszEnd)) {
+		if (tt::IsDigit(*pszEnd)) {
 			cbMin = tt::Atoi(pszEnd++);
 			if (cbMin > CB_MAX_FMT_WIDTH)
 				cbMin = CB_MAX_FMT_WIDTH;
-			while (tt::isDigit(*pszEnd))
+			while (tt::IsDigit(*pszEnd))
 				pszEnd++;
 		}
 
@@ -830,9 +830,9 @@ const wchar_t* ttCWStr::ProcessKFmt(const wchar_t* pszEnd, va_list* pargList)
 			break;
 
 		case 'I':	// 64-bit version of 'd' and 'u' that works in 32-bit builds
-			if (tt::isSameSubStri(pszEnd, L"I64d"))
+			if (tt::IsSameSubStrI(pszEnd, L"I64d"))
 				tt::Itoa(va_arg(*pargList, int64_t), szwBuf, sizeof(szwBuf));
-			else if (tt::isSameSubStri(pszEnd, L"I64u"))
+			else if (tt::IsSameSubStrI(pszEnd, L"I64u"))
 				tt::Utoa(va_arg(*pargList, uint64_t), szwBuf, sizeof(szwBuf));
 			ttpriv::AddCommasToNumber(szwBuf, szwBuf, sizeof(szwBuf));
 			pszEnd += 3;	// skip over I64 portion, then count normally
@@ -866,7 +866,7 @@ const wchar_t* ttCWStr::ProcessKFmt(const wchar_t* pszEnd, va_list* pargList)
 		case 'r':
 			{
 				ttCWStr cszRes;
-				cszRes.getResString(va_arg(*pargList, int));
+				cszRes.GetResString(va_arg(*pargList, int));
 				tt::StrCopy(szwBuf, sizeof(szwBuf), cszRes);
 			}
 			break;

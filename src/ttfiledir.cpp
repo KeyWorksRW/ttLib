@@ -92,7 +92,7 @@ bool tt::CreateDir(const char* pszDir)
 	ttCStr cszDir(pszDir);
 	tt::BackslashToForwardslash(cszDir);
 
-	char* psz = tt::findLastChar(cszDir, '/');
+	char* psz = tt::FindLastChar(cszDir, '/');
 	if (!psz)
 		return false;
 	*psz = '\0';
@@ -125,7 +125,7 @@ bool tt::CreateDir(const wchar_t* pszDir)
 	ttCStr cszDir(pszDir);
 	tt::BackslashToForwardslash(cszDir);
 
-	char* psz = tt::findLastChar(cszDir, '/');
+	char* psz = tt::FindLastChar(cszDir, '/');
 	if (!psz)
 		return false;
 	*psz = '\0';
@@ -174,9 +174,9 @@ void tt::ConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& csz
 	}
 
 	ttCStr cszRoot(pszRoot);
-	if (tt::isValidFileChar(pszFile, 0) && tt::isValidFileChar(pszFile, 1)) {	// this would mean we were only passed a filename
+	if (tt::IsValidFileChar(pszFile, 0) && tt::IsValidFileChar(pszFile, 1)) {	// this would mean we were only passed a filename
 		if (tt::FileExists(cszRoot)) {	// if the root included a filename, then remove it now
-			char* pszFilePortion = (char*) tt::findFilePortion(cszRoot);
+			char* pszFilePortion = (char*) tt::FindFilePortion(cszRoot);
 			if (pszFilePortion)
 				*pszFilePortion = 0;
 		}
@@ -189,9 +189,9 @@ void tt::ConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& csz
 		return;
 	}
 
-	cszRoot.getFullPathName();
+	cszRoot.GetFullPathName();
 	ttCStr cszFile(pszFile);
-	cszFile.getFullPathName();
+	cszFile.GetFullPathName();
 
 	if (toupper(cszRoot[0]) != toupper(cszFile[0])) {	// probably on a different drive, but clearly there's nothing relative about it
 		cszResult = cszFile;
@@ -204,7 +204,7 @@ void tt::ConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& csz
 	// We might have been passed a filename as the root, remove the filename portion if that's the case
 
 	if (tt::FileExists(cszRoot)) {
-		char* pszFilePortion = (char*) tt::findFilePortion(cszRoot);
+		char* pszFilePortion = (char*) tt::FindFilePortion(cszRoot);
 		if (pszFilePortion)
 			*pszFilePortion = 0;
 	}
@@ -215,11 +215,11 @@ void tt::ConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& csz
 
 	for (pos = 0; cszRoot[pos] && tolower(cszRoot[pos]) == tolower(cszFile[pos]); ++pos) {
 		if (cszRoot[pos] == '/')
-			pszLastSlash = cszRoot.getPtr() + pos;
+			pszLastSlash = cszRoot.GetPtr() + pos;
 	}
 
 	if (!pszLastSlash[1]) { // did the entire path match?
-		cszResult = cszFile.getPtr() + pos;
+		cszResult = cszFile.GetPtr() + pos;
 		return;
 	}
 #if 0
@@ -246,8 +246,8 @@ void tt::ConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& csz
 
 	cszResult.Delete();
 	++pszLastSlash;
-	size_t posDiff = pszLastSlash - cszRoot.getPtr();
-	ttASSERT(tt::findChar(pszLastSlash, '/'));	// we should never be pointing to the last slash
+	size_t posDiff = pszLastSlash - cszRoot.GetPtr();
+	ttASSERT(tt::FindChar(pszLastSlash, '/'));	// we should never be pointing to the last slash
 
 	do {
 		while (*pszLastSlash != '/')
@@ -256,7 +256,7 @@ void tt::ConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& csz
 		++pszLastSlash;
 	} while(*pszLastSlash);
 
-	cszResult += (cszFile.getPtr() + posDiff);
+	cszResult += (cszFile.GetPtr() + posDiff);
 }
 
 void tt::BackslashToForwardslash(char* psz)
@@ -265,10 +265,10 @@ void tt::BackslashToForwardslash(char* psz)
 	if (!psz)
 		return;
 
-	char* pszSlash = tt::findChar(psz, '\\');
+	char* pszSlash = tt::FindChar(psz, '\\');
 	while (pszSlash) {
 		*pszSlash = '/';
-		pszSlash = tt::findChar(tt::nextChar(pszSlash), '\\');
+		pszSlash = tt::FindChar(tt::NextChar(pszSlash), '\\');
 	}
 }
 
@@ -278,14 +278,14 @@ void tt::ForwardslashToBackslash(char* psz)
 	if (!psz)
 		return;
 
-	char* pszSlash = tt::findChar(psz, '/');
+	char* pszSlash = tt::FindChar(psz, '/');
 	while (pszSlash) {
 		*pszSlash = '\\';
-		pszSlash = tt::findChar(tt::nextChar(pszSlash), '/');
+		pszSlash = tt::FindChar(tt::NextChar(pszSlash), '/');
 	}
 }
 
-char* tt::findFilePortion(const char* pszPath)
+char* tt::FindFilePortion(const char* pszPath)
 {
 	ttASSERT_MSG(pszPath, "NULL pointer!");
 	if (!pszPath)
@@ -293,29 +293,29 @@ char* tt::findFilePortion(const char* pszPath)
 
 	char* psz;
 #ifdef _WINDOWS_
-	psz = tt::findLastChar(pszPath, '\\');	// Paths usually have back slashes under Windows
+	psz = tt::FindLastChar(pszPath, '\\');	// Paths usually have back slashes under Windows
 	if (psz)
 		pszPath = psz + 1;
 #endif	// _WINDOWS_
-	psz = tt::findLastChar(pszPath, '/');	// forward slashes are valid on all OS, so check that too
+	psz = tt::FindLastChar(pszPath, '/');	// forward slashes are valid on all OS, so check that too
 	if (psz)
 		return psz + 1;
 
 	// path contains no forward or back slash, so look for a colon
-	psz = tt::findLastChar(pszPath, ':');
+	psz = tt::FindLastChar(pszPath, ':');
 	return (psz ? psz + 1 : (char*) pszPath);
 }
 
-char* tt::findExtPortion(const char* pszPath)
+char* tt::FindExtPortion(const char* pszPath)
 {
-	char* psz = tt::findLastChar(pszPath, '.');
+	char* psz = tt::FindLastChar(pszPath, '.');
 	if (psz && !(psz == pszPath || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/'))	// ignore .file, ./file, and ../file
 		return psz;
 	else
 		return nullptr;
 }
 
-bool tt::isValidFileChar(const char* psz, size_t pos)
+bool tt::IsValidFileChar(const char* psz, size_t pos)
 {
 	if (psz) {
 		switch (psz[pos]) {
