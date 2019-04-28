@@ -67,7 +67,7 @@ ttCFile::~ttCFile()
 		InternetCloseHandle(m_hInternetSession);
 #endif
 	if (m_pbuf)
-		tt::FreeAlloc(m_pbuf);
+		ttfree(m_pbuf);
 }
 
 // Memory allocation is always rounded up to the nearest 4K boundary. I.e., if you request 1 byte or 4095 bytes, what will actually
@@ -80,7 +80,7 @@ void ttCFile::AllocateBuffer(size_t cbInitial)
 	cbInitial <<= 12;
 	cbInitial += 0x1000;	// round up to nearest 4K byte boundary (1-4095 becomes 4096, 4096-8191 become 8192)
 	m_cbAllocated = cbInitial;
-	m_pbuf = (char*) tt::Malloc(m_cbAllocated);	// won't return on failure
+	m_pbuf = (char*) ttmalloc(m_cbAllocated);	// won't return on failure
 	m_pszLine = m_pCurrent = m_pbuf;
 	m_pEnd = m_pbuf + (m_cbAllocated - CB_END_PAD);
 }
@@ -92,7 +92,7 @@ void ttCFile::AllocateMoreMemory(size_t cbMore)
 	cbMore <<= 12;
 	cbMore += 0x1000;	// round up to nearest 4k byte boundary
 	m_cbAllocated += (cbMore);
-	m_pbuf = (char*) tt::ReAlloc(m_pbuf, m_cbAllocated);
+	m_pbuf = (char*) ttrealloc(m_pbuf, m_cbAllocated);
 	m_pszLine = m_pbuf;
 	m_pCurrent = m_pbuf + cOffset;
 	m_pEnd = m_pbuf + (m_cbAllocated - CB_END_PAD);
@@ -445,9 +445,9 @@ bool ttCFile::ReadLine(char** ppszLine)
 void ttCFile::Delete()
 {
 	if (m_pbuf)
-		tt::FreeAlloc(m_pbuf);
+		ttfree(m_pbuf);
 	if (m_pCopy)
-		tt::FreeAlloc(m_pCopy);
+		ttfree(m_pCopy);
 
 	m_pbuf = m_pCopy = nullptr;
 	m_pCurrent = nullptr;
@@ -579,11 +579,11 @@ bool ttCFile::UnicodeToAnsi()
 	if (err == -1)
 		return false;
 
-	char* psz = (char*) tt::Malloc(cbLen + 1);
+	char* psz = (char*) ttmalloc(cbLen + 1);
 	err = wcstombs_s(&cbLen, psz, cbLen, (wchar_t*) (m_pbuf + 2), cb);
 	psz[cb] = '\0';
 
-	tt::FreeAlloc(m_pbuf);
+	ttfree(m_pbuf);
 	m_pbuf = psz;
 	m_pszLine = m_pCurrent = m_pbuf;
 	m_pEnd = m_pbuf + cb;
@@ -658,7 +658,7 @@ void ttCFile::MakeCopy()
 	ttASSERT_MSG(m_pbuf, "You must read a file before calling MakeCopy()!");
 	ttASSERT_MSG(!m_pCopy, "You have already created a copy and not called Delete() or RestoreCopy()");
 	if (!m_pCopy && m_pbuf)
-		m_pCopy = tt::StrDup(m_pbuf);
+		m_pCopy = ttstrdup(m_pbuf);
 }
 
 void ttCFile::RestoreCopy()
@@ -669,7 +669,7 @@ void ttCFile::RestoreCopy()
 		return;
 
 	if (m_pbuf)
-		tt::FreeAlloc(m_pbuf);
+		ttfree(m_pbuf);
 	m_pbuf = m_pCopy;
 	m_pCopy = nullptr;
 

@@ -425,7 +425,7 @@ wchar_t* ttHextoa(size_t val, wchar_t* pszDst, bool bUpperCase)
 	static wchar_t* szBuf = NULL;
 	if (!pszDst) {
 		if (!szBuf) {
-			szBuf = (wchar_t*) tt::Malloc(sizeof(size_t) * sizeof(wchar_t) + sizeof(wchar_t) * 4);	// extra room for null termination and general paranoia
+			szBuf = (wchar_t*) ttmalloc(sizeof(size_t) * sizeof(wchar_t) + sizeof(wchar_t) * 4);	// extra room for null termination and general paranoia
 		}
 		pszDst = szBuf;
 	}

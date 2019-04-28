@@ -21,9 +21,9 @@ public:
 		ttASSERT_MSG(ppszDst, "NULL pointer!");
 		m_ppszDst = ppszDst;
 		if (m_ppszDst && *m_ppszDst)
-			tt::FreeAlloc(*m_ppszDst);
+			ttfree(*m_ppszDst);
 		m_cAvail = 128;
-		m_psz = (char*) tt::Malloc(m_cAvail + 1);
+		m_psz = (char*) ttmalloc(m_cAvail + 1);
 		*m_psz = 0;
 	}
 	~ttPrintfPtr() {
@@ -31,7 +31,7 @@ public:
 			*m_ppszDst = m_psz;
 	}
 
-	void ReAlloc(size_t cb) { m_psz = (char*) tt::ReAlloc(m_psz, cb); m_cAvail = cb;}
+	void ReAlloc(size_t cb) { m_psz = (char*) ttrealloc(m_psz, cb); m_cAvail = cb;}
 	void Need(size_t cb);
 	void strCat(const char* psz) {
 		Need(tt::StrByteLen(m_psz) + tt::StrByteLen(psz));
@@ -80,7 +80,7 @@ char* cdecl tt::printf(char** ppszDst, const char* pszFormat, ...)
 // Note that the limit here of 64k is smaller then the kstr functions that use 16m (_KSTRMAX)
 
 #define MAX_STRING (64 * 1024)	// Use this to limit the length of a single string as a security precaution
-#define	DEST_SIZE (tt::SizeAlloc(sptr) - sizeof(char))
+#define	DEST_SIZE (ttsize(sptr) - sizeof(char))
 
 void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 {
@@ -282,14 +282,14 @@ WideChar:
 			if (cb <= 0 || cb > MAX_STRING) // empty or invalid string
 				return;
 
-			char* psz = (char*) tt::Malloc(cb + 1);
+			char* psz = (char*) ttmalloc(cb + 1);
 			// BUGBUG: [ralphw - 07-14-2018] Following line is _WINDOWS_ only
 			cb = WideCharToMultiByte(CP_ACP, 0, pwsz, (_int32) (cb / sizeof(wchar_t)), psz, (_int32) cb, nullptr, nullptr);
 			psz[cb] = '\0';
 
 			sptr.strCat(psz);
 			pszEnd++;
-			tt::FreeAlloc(psz);
+			ttfree(psz);
 			continue;
 		}
 		else if (*pszEnd == '%') {

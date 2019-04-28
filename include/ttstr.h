@@ -44,15 +44,15 @@ class ttCStr
 {
 public:
 	ttCStr(void)	{ m_psz = nullptr; }
-	ttCStr(size_t cb) { m_psz = (char*) tt::Malloc(cb); }
-	ttCStr(const char* psz) { m_psz = psz ? tt::StrDup(psz) : nullptr; }
+	ttCStr(size_t cb) { m_psz = (char*) ttmalloc(cb); }
+	ttCStr(const char* psz) { m_psz = psz ? ttstrdup(psz) : nullptr; }
 	ttCStr(const wchar_t* pwsz) { m_psz = nullptr; if (pwsz) CopyWide(pwsz); }
-	ttCStr(ttCStr& csz) { m_psz = csz.GetPtr() ? tt::StrDup(csz) : nullptr; }
+	ttCStr(ttCStr& csz) { m_psz = csz.GetPtr() ? ttstrdup(csz) : nullptr; }
 #ifdef _WINDOWS_
 	ttCStr(HWND hwnd) { m_psz = nullptr; GetWindowText(hwnd); }
 #endif // _WINDOWS_
 
-	~ttCStr() { if (m_psz) tt::FreeAlloc(m_psz); }
+	~ttCStr() { if (m_psz) ttfree(m_psz); }
 
 	// Method naming conventions are lower camel case when matching tt:: namespace functions
 
@@ -137,8 +137,8 @@ public:
 	char* cdecl printfAppend(const char* pszFormat, ...);	// Appends to the end of any current string
 
 	void	ReSize(size_t cb);
-	size_t	SizeBuffer() { return tt::SizeAlloc(m_psz); }	// returns 0 if m_psz is null
-	void	Delete() { if (m_psz) { tt::FreeAlloc(m_psz); m_psz = nullptr; } }
+	size_t	SizeBuffer() { return ttsize(m_psz); }	// returns 0 if m_psz is null
+	void	Delete() { if (m_psz) { ttfree(m_psz); m_psz = nullptr; } }
 
 	char*	GetPtr() { return m_psz; }		// for when casting to char* is problematic
 	char**	GetPPtr() { return &m_psz; }	// use with extreme caution!

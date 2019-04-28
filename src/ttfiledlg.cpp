@@ -29,7 +29,7 @@ ttCFileDlg::ttCFileDlg(HWND hwndParent)
 	if (_osv.dwMajorVersion >= 5)
 		cbStruct += sizeof(void*) + sizeof(DWORD) + sizeof(DWORD);
 #endif
-	m_pofn = (OPENFILENAMEA*) tt::Calloc(cbStruct);
+	m_pofn = (OPENFILENAMEA*) ttcalloc(cbStruct);
 
 	m_cszFileName.ReSize(MAX_PATH);
 
@@ -48,7 +48,7 @@ ttCFileDlg::ttCFileDlg(HWND hwndParent)
 
 ttCFileDlg::~ttCFileDlg()
 {
-	tt::FreeAlloc(m_pofn);
+	ttfree(m_pofn);
 }
 
 bool ttCFileDlg::GetOpenFileName()

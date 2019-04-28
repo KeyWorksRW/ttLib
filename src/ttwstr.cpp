@@ -25,7 +25,7 @@ namespace ttpriv {
 // Note that the limit here of 64k is smaller then the ttstr functions that use 16m
 
 #define MAX_STRING (64 * 1024)	// Use this to limit the length of a single string as a security precaution
-#define	DEST_SIZE (tt::SizeAlloc(m_psz) - sizeof(wchar_t))
+#define	DEST_SIZE (ttsize(m_psz) - sizeof(wchar_t))
 
 void ttCWStr::AppendFileName(const wchar_t* pszFile)
 {
@@ -35,7 +35,7 @@ void ttCWStr::AppendFileName(const wchar_t* pszFile)
 		return;
 
 	if (!m_psz)	{	// no folder or drive to append to, so leave as is without adding slash
-		m_psz = tt::StrDup(pszFile);		// REVIEW: [ralphw - 06-03-2018] We could prefix this with ".\"
+		m_psz = ttstrdup(pszFile);		// REVIEW: [ralphw - 06-03-2018] We could prefix this with ".\"
 		return;
 	}
 
@@ -51,7 +51,7 @@ void ttCWStr::ChangeExtension(const wchar_t* pszExtension)
 		return;
 
 	if (!m_psz)
-		m_psz = tt::StrDup(L"");
+		m_psz = ttstrdup(L"");
 
 	wchar_t* pszEnd = tt::FindLastChar(m_psz, '.');
 	if (pszEnd && pszEnd[1] != '/' && pszEnd[1] != '\\')	// handle "./foo" -- don't assume the leading period is an extension if there's a folder seperator after it
@@ -77,7 +77,7 @@ void ttCWStr::RemoveExtension()
 void ttCWStr::AddTrailingSlash()
 {
 	if (!m_psz) {
-		m_psz = tt::StrDup(L"/");
+		m_psz = ttstrdup(L"/");
 		return;
 	}
 	const wchar_t* pszLastSlash = FindLastSlash();
@@ -116,25 +116,25 @@ void ttCWStr::GetFullPathName()
 	ttASSERT(m_psz);
 	wchar_t szPath[MAX_PATH];
 	::GetFullPathNameW(m_psz, sizeof(szPath), szPath, NULL);
-	tt::FreeAlloc(m_psz);
-	m_psz = tt::StrDup(szPath);
+	ttfree(m_psz);
+	m_psz = ttstrdup(szPath);
 }
 
 const wchar_t* ttCWStr::GetListBoxText(HWND hwnd, size_t sel)
 {
 	if (m_psz)
-		tt::FreeAlloc(m_psz);
+		ttfree(m_psz);
 	if (sel == (size_t) LB_ERR)
-		m_psz = tt::StrDup(L"");
+		m_psz = ttstrdup(L"");
 	else {
 		size_t cb = ::SendMessage(hwnd, LB_GETTEXTLEN, sel, 0);
 		ttASSERT(cb != (size_t) LB_ERR);
 		if (cb != (size_t) LB_ERR) {
-			m_psz = (wchar_t*) tt::Malloc(cb + 1);
+			m_psz = (wchar_t*) ttmalloc(cb + 1);
 			::SendMessageA(hwnd, LB_GETTEXT, sel, (LPARAM) m_psz);
 		}
 		else {
-			m_psz = tt::StrDup(L"");
+			m_psz = ttstrdup(L"");
 		}
 	}
 	return m_psz;
@@ -156,13 +156,13 @@ const wchar_t* ttCWStr::GetResString(size_t idString)
 		cszMsg.printf("Invalid string id: %zu", idString);
 		ttFAIL(cszMsg);
 		if (m_psz)
-			tt::FreeAlloc(m_psz);
-		m_psz = tt::StrDup(L"");
+			ttfree(m_psz);
+		m_psz = ttstrdup(L"");
 	}
 	else {
 		if (m_psz)
-			tt::FreeAlloc(m_psz);
-		m_psz = tt::StrDup(szStringBuf);
+			ttfree(m_psz);
+		m_psz = ttstrdup(szStringBuf);
 	}
 	return m_psz;
 }
@@ -170,13 +170,13 @@ const wchar_t* ttCWStr::GetResString(size_t idString)
 bool ttCWStr::GetWindowText(HWND hwnd)
 {
 	if (m_psz) {
-		 tt::FreeAlloc(m_psz);
+		 ttfree(m_psz);
 		 m_psz = nullptr;
 	}
 
 	ttASSERT_MSG(hwnd && IsWindow(hwnd), "Invalid window handle");
 	if (!hwnd || !IsWindow(hwnd)) {
-		m_psz = tt::StrDup(L"");
+		m_psz = ttstrdup(L"");
 		return false;
 	}
 
@@ -184,15 +184,15 @@ bool ttCWStr::GetWindowText(HWND hwnd)
 	ttASSERT_MSG(cb <= MAX_STRING, "String is over 64k in size!");
 
 	if (cb == 0 || cb > MAX_STRING) {
-		m_psz = tt::StrDup(L"");
+		m_psz = ttstrdup(L"");
 		return false;
 	}
 
-	wchar_t* psz = (wchar_t*) tt::Malloc(cb + sizeof(wchar_t));
+	wchar_t* psz = (wchar_t*) ttmalloc(cb + sizeof(wchar_t));
 	cb = ::GetWindowTextW(hwnd, psz, cb);
 	if (cb == 0) {
-		m_psz = tt::StrDup(L"");
-		tt::FreeAlloc(psz);
+		m_psz = ttstrdup(L"");
+		ttfree(psz);
 		return false;
 	}
 	else
@@ -215,14 +215,14 @@ wchar_t* ttCWStr::GetQuotedString(wchar_t* pszQuote)
 	ttASSERT_MSG(cb <= MAX_STRING, "String is over 64k in size!");
 
 	if (m_psz)
-		tt::FreeAlloc(m_psz);
+		ttfree(m_psz);
 
 	if (cb == 0 || cb > MAX_STRING) {
 		m_psz = nullptr;	// it was already FreeAllocd above
 		return nullptr;
 	}
 	else {
-		m_psz = (wchar_t*) tt::Malloc(cb);		// this won't return if it fails, so you will never get a nullptr on return
+		m_psz = (wchar_t*) ttmalloc(cb);		// this won't return if it fails, so you will never get a nullptr on return
 		*m_psz = 0;
 	}
 
@@ -254,7 +254,7 @@ wchar_t* ttCWStr::GetQuotedString(wchar_t* pszQuote)
 	if (cb > 32) {	// don't bother if total allocation is 32 bytes or less
 		size_t cbNew = tt::StrByteLen(m_psz);
 		if (cbNew < cb - 32)
-			m_psz = (wchar_t*) tt::ReAlloc(m_psz, cbNew);
+			m_psz = (wchar_t*) ttrealloc(m_psz, cbNew);
 	}
 	return (*pszQuote ? pszQuote + 1 : pszQuote);
 }
@@ -291,12 +291,12 @@ void ttCWStr::MakeUpper()
 bool ttCWStr::CopyNarrow(const char* psz)	// convert UTF8 to UNICODE and store it
 {
 	if (m_psz)
-		 tt::FreeAlloc(m_psz);
+		 ttfree(m_psz);
 
 	ttASSERT_NONEMPTY(psz);
 
 	if (!psz || !*psz) {
-		m_psz = tt::StrDup(L"");
+		m_psz = ttstrdup(L"");
 		return false;
 	}
 
@@ -307,15 +307,15 @@ bool ttCWStr::CopyNarrow(const char* psz)	// convert UTF8 to UNICODE and store i
 
 	int cbNew = MultiByteToWideChar(CP_UTF8, 0, psz, (int) cch, nullptr, 0);
 	if (cbNew) {
-		m_psz = (wchar_t*) tt::Malloc(cbNew * sizeof(wchar_t) + sizeof(wchar_t));
+		m_psz = (wchar_t*) ttmalloc(cbNew * sizeof(wchar_t) + sizeof(wchar_t));
 		cch = MultiByteToWideChar(CP_UTF8, 0, psz, (int) cch, m_psz, cbNew);
 		if (cch == 0)
-			tt::FreeAlloc(m_psz);
+			ttfree(m_psz);
 		else
 			m_psz[cch] = 0;
 	}
 	if (cbNew == 0 || cch == 0) {
-		m_psz = tt::StrDup(L"");
+		m_psz = ttstrdup(L"");
 		return false;
 	}
 
@@ -328,14 +328,14 @@ wchar_t* ttCWStr::Enlarge(size_t cbTotalSize)
 	if (cbTotalSize > MAX_STRING)
 		cbTotalSize = MAX_STRING;
 
-	size_t curSize = m_psz ? tt::SizeAlloc(m_psz) : 0;
+	size_t curSize = m_psz ? ttsize(m_psz) : 0;
 	if (cbTotalSize <= curSize)
 		return m_psz;
 
 	if (m_psz)
-		m_psz = (wchar_t*) tt::ReAlloc(m_psz, cbTotalSize);
+		m_psz = (wchar_t*) ttrealloc(m_psz, cbTotalSize);
 	else
-		m_psz = (wchar_t*) tt::Malloc(cbTotalSize);
+		m_psz = (wchar_t*) ttmalloc(cbTotalSize);
 	return m_psz;
 }
 
@@ -356,9 +356,9 @@ void ttCWStr::operator=(const wchar_t* psz)
 		return;
 
 	if (m_psz)
-		tt::FreeAlloc(m_psz);
+		ttfree(m_psz);
 
-	m_psz = tt::StrDup(psz ? psz : L"");
+	m_psz = ttstrdup(psz ? psz : L"");
 }
 
 void ttCWStr::operator+=(const wchar_t* psz)
@@ -367,16 +367,16 @@ void ttCWStr::operator+=(const wchar_t* psz)
 	if (m_psz && m_psz == psz)
 		return;
 	if (!m_psz)
-		m_psz = tt::StrDup(psz && *psz ? psz : L"");
+		m_psz = ttstrdup(psz && *psz ? psz : L"");
 	else if (!psz || !*psz)
-		m_psz = tt::StrDup(L"");
+		m_psz = ttstrdup(L"");
 	else {
 		size_t cbNew = tt::StrByteLen(psz);
 		size_t cbOld = tt::StrByteLen(m_psz);
 		ttASSERT_MSG(cbNew + cbOld <= MAX_STRING, "String is over 64k in size!");
 		if (cbNew + cbOld > MAX_STRING)
 			return;		// ignore it if it's too large
-		m_psz = (wchar_t*) tt::ReAlloc(m_psz, cbNew + cbOld);
+		m_psz = (wchar_t*) ttrealloc(m_psz, cbNew + cbOld);
 		memcpy(m_psz + ((cbOld - sizeof(wchar_t)) / sizeof(wchar_t)), psz, cbNew);
 	}
 }
@@ -387,9 +387,9 @@ void ttCWStr::operator+=(wchar_t ch)
 	szTmp[0] = ch;
 	szTmp[1] = 0;
 	if (!m_psz)
-		m_psz = tt::StrDup(szTmp);
+		m_psz = ttstrdup(szTmp);
 	else {
-		m_psz = (wchar_t*) tt::ReAlloc(m_psz, tt::StrByteLen(m_psz));
+		m_psz = (wchar_t*) ttrealloc(m_psz, tt::StrByteLen(m_psz));
 		tt::StrCat(m_psz, DEST_SIZE, szTmp);
 	}
 }
@@ -441,12 +441,12 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 		cAvail >>=8;	// remove lower bits
 		cAvail <<=8;
 		cAvail += 0x100;	// allocate 256 byte blocks at a time
-		m_psz = (wchar_t*) tt::ReAlloc(m_psz, cAvail);
+		m_psz = (wchar_t*) ttrealloc(m_psz, cAvail);
 		cAvail--;	// don't include null-terminator
 	}
 	else {
 		cAvail = 255;
-		m_psz = (wchar_t*) tt::Malloc(cAvail + 1);
+		m_psz = (wchar_t*) ttmalloc(cAvail + 1);
 		*m_psz = 0;
 	}
 
@@ -471,7 +471,7 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 				cb >>= 7;
 				cb <<= 7;
 				cb +=  0x80;	// round up allocation size to 128
-				m_psz = (wchar_t*) tt::ReAlloc(m_psz, cb);
+				m_psz = (wchar_t*) ttrealloc(m_psz, cb);
 				cAvail = cb - sizeof(wchar_t);
 				ttASSERT(cAvail < 4096);
 			}
@@ -529,7 +529,7 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 				cb >>= 7;
 				cb <<= 7;
 				cb += 0x80;	// round up to 128
-				m_psz = (wchar_t*) tt::ReAlloc(m_psz, cb);
+				m_psz = (wchar_t*) ttrealloc(m_psz, cb);
 				cAvail = cb - 1;
 				ttASSERT(cAvail < 4096);
 			}
@@ -552,7 +552,7 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 				cb >>= 7;
 				cb <<= 7;
 				cb += 0x80;	// round up to 128
-				m_psz = (wchar_t*) tt::ReAlloc(m_psz, cb);
+				m_psz = (wchar_t*) ttrealloc(m_psz, cb);
 				cAvail = cb - 1;
 				ttASSERT(cAvail < 4096);
 			}
@@ -578,7 +578,7 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 				cb >>= 7;
 				cb <<= 7;
 				cb += 0x80;	// round up to 128
-				m_psz = (wchar_t*) tt::ReAlloc(m_psz, cb);
+				m_psz = (wchar_t*) ttrealloc(m_psz, cb);
 				cAvail = cb - 1;
 				ttASSERT(cAvail < 4096);
 			}
@@ -594,7 +594,7 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 						cb >>= 7;
 						cb <<= 7;
 						cb += 0x80;	// round up to 128
-						m_psz = (wchar_t*) tt::ReAlloc(m_psz, cb);
+						m_psz = (wchar_t*) ttrealloc(m_psz, cb);
 						cAvail = cb - 1;
 						ttASSERT(cAvail < 4096);
 					}
@@ -614,7 +614,7 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 				cb >>= 7;
 				cb <<= 7;
 				cb += 0x80;	// round up to 128
-				m_psz = (wchar_t*) tt::ReAlloc(m_psz, cb);
+				m_psz = (wchar_t*) ttrealloc(m_psz, cb);
 				cAvail = cb - 1;
 				ttASSERT(cAvail < 4096);
 			}
@@ -630,7 +630,7 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 						cb >>= 7;
 						cb <<= 7;
 						cb += 0x80;	// round up to 128
-						m_psz = (wchar_t*) tt::ReAlloc(m_psz, cb);
+						m_psz = (wchar_t*) ttrealloc(m_psz, cb);
 						cAvail = cb - sizeof(wchar_t);
 						ttASSERT(cAvail < 4096);
 					}
@@ -650,7 +650,7 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 				cb >>= 7;
 				cb <<= 7;
 				cb += 0x80;	// round up to 128
-				m_psz = (wchar_t*) tt::ReAlloc(m_psz, cb);
+				m_psz = (wchar_t*) ttrealloc(m_psz, cb);
 				cAvail = cb - 1;
 				ttASSERT(cAvail < 4096);
 			}
@@ -666,7 +666,7 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 						cb >>= 7;
 						cb <<= 7;
 						cb += 0x80;	// round up to 128
-						m_psz = (wchar_t*) tt::ReAlloc(m_psz, cb);
+						m_psz = (wchar_t*) ttrealloc(m_psz, cb);
 						cAvail = cb - 1;
 						ttASSERT(cAvail < 4096);
 					}
@@ -687,7 +687,7 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 				cb >>= 7;
 				cb <<= 7;
 				cb += 0x80;	// round up to 128
-				m_psz = (wchar_t*) tt::ReAlloc(m_psz, cb);
+				m_psz = (wchar_t*) ttrealloc(m_psz, cb);
 				cAvail = cb - 1;
 				ttASSERT(cAvail < 4096);
 			}
@@ -703,7 +703,7 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 						cb >>= 7;
 						cb <<= 7;
 						cb += 0x80;	// round up to 128
-						m_psz = (wchar_t*) tt::ReAlloc(m_psz, cb);
+						m_psz = (wchar_t*) ttrealloc(m_psz, cb);
 						cAvail = cb - 1;
 						ttASSERT(cAvail < 4096);
 					}
@@ -733,7 +733,7 @@ void ttCWStr::vprintf(const wchar_t* pszFormat, va_list argList)
 				cb >>= 7;
 				cb <<= 7;
 				cb += 0x80;	// round up to 128
-				m_psz = (wchar_t*) tt::ReAlloc(m_psz, cb);
+				m_psz = (wchar_t*) ttrealloc(m_psz, cb);
 				cAvail = cb - 1;
 				ttASSERT(cAvail < 4096);
 			}
@@ -758,7 +758,7 @@ WideChar:
 				cb >>= 7;
 				cb <<= 7;
 				cb += 0x80;	// round up to 128
-				m_psz = (wchar_t*) tt::ReAlloc(m_psz, cb);
+				m_psz = (wchar_t*) ttrealloc(m_psz, cb);
 				cAvail = cb - 1;
 				ttASSERT(cAvail < 4096);
 			}
@@ -772,7 +772,7 @@ WideChar:
 				cb >>= 7;
 				cb <<= 7;
 				cb += 0x80;	// round up to 128
-				m_psz = (wchar_t*) tt::ReAlloc(m_psz, cb);
+				m_psz = (wchar_t*) ttrealloc(m_psz, cb);
 				cAvail = cb - 1;
 				ttASSERT(cAvail < 4096);
 			}
@@ -792,7 +792,7 @@ WideChar:
 				cb >>= 7;
 				cb <<= 7;
 				cb += 0x80;	// round up to 128
-				m_psz = (wchar_t*) tt::ReAlloc(m_psz, cb);
+				m_psz = (wchar_t*) ttrealloc(m_psz, cb);
 				cAvail = cb - 1;
 				ttASSERT(cAvail < 4096);
 			}
@@ -803,7 +803,7 @@ WideChar:
 				cb >>= 7;
 				cb <<= 7;
 				cb += 0x80;	// round up to 128
-				m_psz = (wchar_t*) tt::ReAlloc(m_psz, cb);
+				m_psz = (wchar_t*) ttrealloc(m_psz, cb);
 				cAvail = cb - 1;
 				ttASSERT(cAvail < 4096);
 			}
@@ -815,7 +815,7 @@ WideChar:
 
 	// Now readjust the allocation to the actual size
 
-	m_psz = (wchar_t*) tt::ReAlloc(m_psz, tt::StrByteLen(m_psz));
+	m_psz = (wchar_t*) ttrealloc(m_psz, tt::StrByteLen(m_psz));
 }
 
 const wchar_t* ttCWStr::ProcessKFmt(const wchar_t* pszEnd, va_list* pargList)
@@ -889,11 +889,11 @@ const wchar_t* ttCWStr::ProcessKFmt(const wchar_t* pszEnd, va_list* pargList)
 			try {
 				const wchar_t* psz = va_arg(*pargList, const wchar_t*);
 				size_t cb = tt::StrLen(m_psz) + tt::StrLen(psz) + (3 * sizeof(wchar_t));
-				if (cb > tt::SizeAlloc(m_psz)) {
+				if (cb > ttsize(m_psz)) {
 					cb >>= 7;
 					cb <<= 7;
 					cb += 0x80;	// round up to 128
-					m_psz = (wchar_t*) tt::ReAlloc(m_psz, cb);
+					m_psz = (wchar_t*) ttrealloc(m_psz, cb);
 				}
 				tt::StrCat(m_psz, L"\042");
 				tt::StrCat(m_psz, psz);
@@ -907,11 +907,11 @@ const wchar_t* ttCWStr::ProcessKFmt(const wchar_t* pszEnd, va_list* pargList)
 	if (szwBuf[0]) {
 		size_t cbCur = tt::StrByteLen(m_psz);
 		size_t cb = cbCur + tt::StrByteLen(szwBuf);
-		if (cb > tt::SizeAlloc(m_psz)) {
+		if (cb > ttsize(m_psz)) {
 			cb >>= 7;
 			cb <<= 7;
 			cb += 0x80;	// round up to 128
-			m_psz = (wchar_t*) tt::ReAlloc(m_psz, cb);
+			m_psz = (wchar_t*) ttrealloc(m_psz, cb);
 		}
 		tt::StrCat(m_psz, DEST_SIZE - cbCur, szwBuf);
 	}

@@ -29,20 +29,20 @@ class ttCMem	// Header-only class
 {
 public:
 	ttCMem(void) { m_pb = nullptr; }
-	ttCMem(size_t size) { m_pb = (uint8_t*) tt::Malloc(size); }
+	ttCMem(size_t size) { m_pb = (uint8_t*) ttmalloc(size); }
 	~ttCMem(void) {
 		if (m_pb)
-			tt::FreeAlloc(m_pb);
+			ttfree(m_pb);
 		m_pb = nullptr;
 	}
 	void resize(size_t cb) {
 		if (!m_pb)
-			m_pb = (uint8_t*) tt::Malloc(cb);
+			m_pb = (uint8_t*) ttmalloc(cb);
 		else {
-			m_pb = (uint8_t*) tt::ReAlloc(m_pb, cb);
+			m_pb = (uint8_t*) ttrealloc(m_pb, cb);
 		}
 	}
-	size_t size() { return tt::SizeAlloc(m_pb); }
+	size_t size() { return ttsize(m_pb); }
 
 	operator void*() { return (void*) m_pb; };
 	operator const char*() { return (const char*) m_pb; };
@@ -56,10 +56,10 @@ template <typename T> class ttCTMem	// Header-only class
 {
 public:
 	ttCTMem() { m_p = NULL; }
-	ttCTMem(size_t size) { m_p = (T) tt::Malloc(size); }
+	ttCTMem(size_t size) { m_p = (T) ttmalloc(size); }
 	~ttCTMem() {
 		if (m_p)
-			tt::FreeAlloc(m_p);
+			ttfree(m_p);
 	}
 
 	void resize(size_t cb) {

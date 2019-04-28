@@ -40,15 +40,15 @@ namespace tt {
 	wchar_t* FindNonSpace(const wchar_t* psz);	// returns pointer to the next non-space character
 	wchar_t* FindSpace(const wchar_t* psz);		// returns pointer to the next space character
 
-	bool IsSameStr(const char* psz1, const char* psz2); 			// same as strcmp, but returns true/false
-	bool IsSameStrI(const char* psz1, const char* psz2);			// case-insensitive comparison
-	bool IsSameSubStr(const char* pszMain, const char* pszSub); 	// true if sub string matches first part of main string
-	bool IsSameSubStrI(const char* pszMain, const char* pszSub);	// case-insensitive comparison
+	bool	 IsSameStr(const char* psz1, const char* psz2); 			// same as strcmp, but returns true/false
+	bool	 IsSameStrI(const char* psz1, const char* psz2);			// case-insensitive comparison
+	bool	 IsSameSubStr(const char* pszMain, const char* pszSub); 	// true if sub string matches first part of main string
+	bool	 IsSameSubStrI(const char* pszMain, const char* pszSub);	// case-insensitive comparison
 
-	bool IsSameStr(const wchar_t* psz1, const wchar_t* psz2);			// same as strcmp, but returns true/false
-	bool IsSameStrI(const wchar_t* psz1, const wchar_t* psz2);			// case-insensitive comparison
-	bool IsSameSubStr(const wchar_t* pszMain, const wchar_t* pszSub);	// true if sub string matches first part of main string
-	bool IsSameSubStrI(const wchar_t* pszMain, const wchar_t* pszSub);	// case-insensitive comparison
+	bool	 IsSameStr(const wchar_t* psz1, const wchar_t* psz2);			// same as strcmp, but returns true/false
+	bool	 IsSameStrI(const wchar_t* psz1, const wchar_t* psz2);			// case-insensitive comparison
+	bool	 IsSameSubStr(const wchar_t* pszMain, const wchar_t* pszSub);	// true if sub string matches first part of main string
+	bool	 IsSameSubStrI(const wchar_t* pszMain, const wchar_t* pszSub);	// case-insensitive comparison
 
 	char*	 NextChar(const char * psz);	// handles UTF8 strings
 
@@ -223,5 +223,24 @@ namespace ttch {
 	const char CH_BACKSLASH =	 '\\';
 	const char CH_FORWARDSLASH = '/';
 } // end of ttch namespace
+
+int		  ttstrcat(char* pszDst, const char* pszSrc);
+int		  ttstrcat(char* pszDst, size_t cbDest, const char* pszSrc);
+int		  ttstrcpy(char* pszDst, const char* pszSrc);
+int		  ttstrcpy(char* pszDst, size_t cbDest, const char* pszSrc);
+size_t	  ttstrlen(const char* psz);
+char*	  ttstrchr(const char* psz, char ch);
+char*	  ttstrrchr(const char* psz, char ch);
+char*	  ttstrstr(const char* pszMain, const char* pszSub);
+char*	  ttstristr(const char* pszMain, const char* pszSub);
+
+int		  ttstrcat(wchar_t* pszDst, const wchar_t* pszSrc);
+int		  ttstrcat(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc);
+int		  ttstrcpy(wchar_t* pszDst, const wchar_t* pszSrc);
+int		  ttstrcpy(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc);
+size_t	  ttstrlen(const wchar_t* pwsz);
+wchar_t*  ttstrchr(const wchar_t* psz, wchar_t ch);
+wchar_t*  ttstrrchr(const wchar_t* psz, wchar_t ch);
+wchar_t*  ttstrstr(const wchar_t* pszMain, const wchar_t* pszSub);
 
 #endif	// __TTLIB_H__
