@@ -19,7 +19,9 @@ extern bool (_cdecl *pttAssertHandlerW)(const wchar_t* pszMsg, const char* pszFi
 typedef bool (_cdecl *TTASSERTHANDLERA)(const char* pszMsg, const char* pszFile, const char* pszFunction, int line);
 typedef bool (_cdecl *TTASSERTHANDLERW)(const wchar_t* pszMsg, const char* pszFile, const char* pszFunction, int line);
 
-// The tt namespace is used in other ttLib header files as well, so this is not a complete list.
+// Note that macros can replace namespace function names. For example, tt::StrCat will be changed to tt::lstrcatA if you
+// #include <shlwapi.h>. All the functions here have non-namespace versions declared in ttutil.h which will should avoid
+// any macro substitution issues.
 
 namespace tt {
 	const size_t MAX_STRING_LEN = 0x00FFFFFF;	// strings limited to 16,777,215 bytes (16 megabytes)
@@ -28,7 +30,7 @@ namespace tt {
 	char*	 FindLastChar(const char* psz, char ch);				// returns nullptr if not found, works on UTF8 strings
 	char*	 FindStr(const char* pszMain, const char* pszSub);
 	char*	 FindStrI(const char* pszMain, const char* pszSub);
-	char*	 FindNonSpace(const char* psz);		// returns pointer to the next non-space character
+	char*	 FindNonSpace(const char* psz); 		// returns pointer to the next non-space character
 	char*	 FindSpace(const char* psz);			// returns pointer to the next space character
 
 	wchar_t* FindChar(const wchar_t* psz, wchar_t ch);
@@ -38,17 +40,17 @@ namespace tt {
 	wchar_t* FindNonSpace(const wchar_t* psz);	// returns pointer to the next non-space character
 	wchar_t* FindSpace(const wchar_t* psz);		// returns pointer to the next space character
 
-	bool IsSameStr(const char* psz1, const char* psz2);			// same as strcmp, but returns true/false
+	bool IsSameStr(const char* psz1, const char* psz2); 			// same as strcmp, but returns true/false
 	bool IsSameStrI(const char* psz1, const char* psz2);			// case-insensitive comparison
-	bool IsSameSubStr(const char* pszMain, const char* pszSub);	// true if sub string matches first part of main string
+	bool IsSameSubStr(const char* pszMain, const char* pszSub); 	// true if sub string matches first part of main string
 	bool IsSameSubStrI(const char* pszMain, const char* pszSub);	// case-insensitive comparison
 
 	bool IsSameStr(const wchar_t* psz1, const wchar_t* psz2);			// same as strcmp, but returns true/false
 	bool IsSameStrI(const wchar_t* psz1, const wchar_t* psz2);			// case-insensitive comparison
-	bool IsSameSubStr(const wchar_t* pszMain, const wchar_t* pszSub);		// true if sub string matches first part of main string
+	bool IsSameSubStr(const wchar_t* pszMain, const wchar_t* pszSub);	// true if sub string matches first part of main string
 	bool IsSameSubStrI(const wchar_t* pszMain, const wchar_t* pszSub);	// case-insensitive comparison
 
-	char*	 NextChar(const char * psz);			// handles UTF8 strings
+	char*	 NextChar(const char * psz);	// handles UTF8 strings
 
 	char*	 StepOver(const char* psz);		// equivalent to FindNonSpace(FindSpace(psz))
 	wchar_t* StepOver(const wchar_t* pwsz);
