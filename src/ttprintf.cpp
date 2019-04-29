@@ -35,7 +35,7 @@ public:
 	void Need(size_t cb);
 	void strCat(const char* psz) {
 		Need(tt::StrByteLen(m_psz) + tt::StrByteLen(psz));
-		tt::StrCat(m_psz, m_cAvail, psz);
+		ttstrcat(m_psz, m_cAvail, psz);
 	}
 
 	operator char*()  { return (char*) m_psz; };
@@ -109,7 +109,7 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 				return;
 			sptr.Need(cb);
 
-			char* pszTmp = sptr + tt::StrLen(sptr);
+			char* pszTmp = sptr + ttstrlen(sptr);
 			while (pszBegin < pszEnd) {
 				*pszTmp++ = *pszBegin++;
 			}
@@ -189,7 +189,7 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 #endif	// defined(_WIN64) || defined(__x86_64__) || defined(__ppc64__)
 			if (cbMin >= 0) {
 				char szTmp[CB_MAX_FMT_WIDTH + 1];
-				size_t diff = cbMin - tt::StrLen(szNumBuf);
+				size_t diff = cbMin - ttstrlen(szNumBuf);
 				if (diff > 0) {
 					szTmp[diff--] = 0;
 					while (diff >= 0)
@@ -206,7 +206,7 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 			tt::Utoa(va_arg(argList, unsigned int), szNumBuf, sizeof(szNumBuf));
 			if (cbMin >= 0) {
 				char szTmp[CB_MAX_FMT_WIDTH + 1];
-				size_t diff = cbMin - tt::StrLen(szNumBuf);
+				size_t diff = cbMin - ttstrlen(szNumBuf);
 				if (diff > 0) {
 					szTmp[diff--] = 0;
 					while (diff >= 0)
@@ -223,7 +223,7 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 			tt::Hextoa(va_arg(argList, int), szNumBuf, false);
 			if (cbMin >= 0) {
 				char szTmp[CB_MAX_FMT_WIDTH + 1];
-				size_t diff = cbMin - tt::StrLen(szNumBuf);
+				size_t diff = cbMin - ttstrlen(szNumBuf);
 				if (diff > 0) {
 					szTmp[diff--] = 0;
 					while (diff >= 0)
@@ -241,7 +241,7 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 			tt::Hextoa(va_arg(argList, int), szNumBuf, true);
 			if (cbMin >= 0) {
 				char szTmp[CB_MAX_FMT_WIDTH + 1];
-				size_t diff = cbMin - tt::StrLen(szNumBuf);
+				size_t diff = cbMin - ttstrlen(szNumBuf);
 				if (diff > 0) {
 					szTmp[diff--] = 0;
 					while (diff >= 0)
@@ -277,7 +277,7 @@ WideChar:
 			if (!pwsz)
 				pwsz = L"(null)";
 
-			size_t cb = tt::StrLen(pwsz) * sizeof(wchar_t);
+			size_t cb = ttstrlen(pwsz) * sizeof(wchar_t);
 			ttASSERT(cb < MAX_STRING);
 			if (cb <= 0 || cb > MAX_STRING) // empty or invalid string
 				return;
@@ -421,9 +421,9 @@ char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargLi
 void ttpriv::AddCommasToNumber(char* pszNum, char* pszDst, size_t cbDst)
 {
 	if (pszDst != pszNum)
-		tt::StrCopy(pszDst, cbDst, pszNum);	// copy the number, performa all additional work in-place in the destination buffer
+		ttstrcpy(pszDst, cbDst, pszNum);	// copy the number, performa all additional work in-place in the destination buffer
 
-	ptrdiff_t cbNum = tt::StrLen(pszDst);	// needs to be signed because it can go negative
+	ptrdiff_t cbNum = ttstrlen(pszDst);	// needs to be signed because it can go negative
 	if (cbNum < 4) {
 		ttASSERT(cbNum < (ptrdiff_t) cbDst);
 		return;

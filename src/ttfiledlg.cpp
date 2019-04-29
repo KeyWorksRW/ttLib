@@ -92,7 +92,7 @@ void ttCFileDlg::FixExtension()
 		psz = psz + tt::StrByteLen(psz);
 		psz = psz + tt::StrByteLen(psz);
 	}
-	psz = psz + tt::StrLen(psz) + 1;
+	psz = psz + ttstrlen(psz) + 1;
 	ttASSERT(psz);
 	char* pszTmp = tt::FindChar(psz, ';');
 	if (pszTmp)

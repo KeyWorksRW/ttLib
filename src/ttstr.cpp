@@ -298,8 +298,8 @@ bool ttCStr::ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCa
 	if (!pszPos)
 		return false;
 
-	size_t cbOld = tt::StrLen(pszOldText);
-	size_t cbNew = tt::StrLen(pszNewText);
+	size_t cbOld = ttstrlen(pszOldText);
+	size_t cbNew = ttstrlen(pszNewText);
 
 	if (cbNew == 0) {	// delete the old text since new text is empty
 		char* pszEnd = m_psz + tt::StrByteLen(m_psz);
@@ -359,7 +359,7 @@ void ttCStr::operator+=(const char* psz)
 		if (cbNew + cbOld > MAX_STRING)
 			return;		// ignore it if it's too large
 		m_psz = (char*) ttrealloc(m_psz, cbNew + cbOld);
-		tt::StrCat(m_psz, psz);
+		ttstrcat(m_psz, psz);
 	}
 }
 
@@ -372,7 +372,7 @@ void ttCStr::operator+=(char ch)
 		m_psz = ttstrdup(szTmp);
 	else {
 		m_psz = (char*) ttrealloc(m_psz, tt::StrByteLen(m_psz) + sizeof(char));	// include room for ch
-		tt::StrCat(m_psz, DEST_SIZE, szTmp);
+		ttstrcat(m_psz, DEST_SIZE, szTmp);
 	}
 }
 
@@ -385,7 +385,7 @@ void ttCStr::operator+=(ptrdiff_t val)
 
 char ttCStr::operator[](int pos)
 {
-	if (!m_psz || pos > (int) tt::StrLen(m_psz))
+	if (!m_psz || pos > (int) ttstrlen(m_psz))
 		return 0;
 	else
 		return m_psz[pos];
@@ -393,7 +393,7 @@ char ttCStr::operator[](int pos)
 
 char ttCStr::operator[](size_t pos)
 {
-	if (!m_psz || pos > tt::StrLen(m_psz))
+	if (!m_psz || pos > ttstrlen(m_psz))
 		return 0;
 	else
 		return m_psz[pos];
@@ -541,7 +541,7 @@ char* ttCStr::GetString(const char* pszString, char chBegin, char chEnd)
 		m_psz[pszString - pszStart] = 0;	// make certain it is null terminated
 	}
 	else {	// if the string didn't start with chBegin, so just copy the string
-		tt::StrCopy(m_psz, ttsize(m_psz), pszString);
+		ttstrcpy(m_psz, ttsize(m_psz), pszString);
 		pszString += cb;
 	}
 

@@ -65,7 +65,7 @@ public:
 	size_t	StrByteLen() { return m_psz ? tt::StrByteLen(m_psz) : 0; }	// length of string in bytes including 0 terminator
 	int		StrCat(const char* psz);
 	int		StrCopy(const char* psz);
-	size_t	StrLen() { return m_psz ? tt::StrLen(m_psz) : 0; }		// number of characters (use strByteLen() for buffer size calculations)
+	size_t	StrLen() { return m_psz ? ttstrlen(m_psz) : 0; }		// number of characters (use strByteLen() for buffer size calculations)
 
 	bool	IsSameStr(const char* psz) { return tt::IsSameStr(m_psz, psz); }
 	bool	IsSameStrI(const char* psz) { return tt::IsSameStrI(m_psz, psz); }

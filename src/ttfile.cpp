@@ -17,7 +17,7 @@
 #include "../include/ttfile.h"
 
 #ifdef _WINDOWS_
-	#define CHECK_URL_PTR(str)	{ ttASSERT(str); if (!str || !str[0] || tt::StrLen(str) >= INTERNET_MAX_URL_LENGTH) { m_ioResult = ERROR_BAD_NAME; return false; } }
+	#define CHECK_URL_PTR(str)	{ ttASSERT(str); if (!str || !str[0] || ttstrlen(str) >= INTERNET_MAX_URL_LENGTH) { m_ioResult = ERROR_BAD_NAME; return false; } }
 
 	#pragma comment(lib, "Wininet.lib")
 #endif
@@ -39,7 +39,7 @@
 	#define ERROR_INVALID_NAME 123
 #endif
 
-#define CHECK_FILE_PTR(str) { ttASSERT(str); if (!str || !str[0] || tt::StrLen(str) >= FILENAME_MAX) { m_ioResult = ERROR_BAD_NAME; return false; } }
+#define CHECK_FILE_PTR(str) { ttASSERT(str); if (!str || !str[0] || ttstrlen(str) >= FILENAME_MAX) { m_ioResult = ERROR_BAD_NAME; return false; } }
 
 ttCFile::ttCFile()
 {
@@ -358,10 +358,10 @@ void ttCFile::WriteEol(const char* psz)
 	if (!m_pbuf)
 		AllocateBuffer(4097);
 
-	size_t cb = tt::StrLen(psz) + 2;	// include room for cr/lf (even if set for Unix -- the extra byte won't hurt)
+	size_t cb = ttstrlen(psz) + 2;	// include room for cr/lf (even if set for Unix -- the extra byte won't hurt)
 	if (m_pCurrent + cb > m_pEnd)
 		AllocateMoreMemory(max(cb + 1024, 16 * 1024));
-	tt::StrCopy(m_pCurrent, psz);
+	ttstrcpy(m_pCurrent, psz);
 	m_pCurrent += (cb - 2);
 
 	if (!m_fUnixLF)
@@ -377,12 +377,12 @@ void ttCFile::WriteStr(const char* psz)
 	if (!psz || !*psz)
 		return;
 	if (!m_pbuf)
-		AllocateBuffer(tt::StrLen(psz) + 4);
+		AllocateBuffer(ttstrlen(psz) + 4);
 
-	size_t cb = tt::StrLen(psz);
+	size_t cb = ttstrlen(psz);
 	if (m_pCurrent + cb + 2 > m_pEnd)
 		AllocateMoreMemory(max(cb + 1024, 16 * 1024));
-	tt::StrCopy(m_pCurrent, psz);
+	ttstrcpy(m_pCurrent, psz);
 	m_pCurrent += cb;
 }
 
@@ -467,7 +467,7 @@ void ttCFile::InsertStr(const char* pszText, char* pszPosition)
 	if (!pszText || !*pszText || !pszPosition || pszPosition < m_pbuf || pszPosition > m_pbuf + m_cbAllocated)
 		return;
 
-	size_t cb = tt::StrLen(pszText);
+	size_t cb = ttstrlen(pszText);
 	ptrdiff_t offset = pszPosition - m_pbuf;
 	while ((m_pCurrent - m_pbuf) + cb >= m_cbAllocated)
 		AllocateMoreMemory();
@@ -498,8 +498,8 @@ bool ttCFile::ReplaceStr(const char* pszOldText, const char* pszNewText, bool fC
 	if (pszPos >= m_pCurrent)
 		return false;
 
-	size_t cbOld = tt::StrLen(pszOldText);
-	size_t cbNew = tt::StrLen(pszNewText);
+	size_t cbOld = ttstrlen(pszOldText);
+	size_t cbNew = ttstrlen(pszNewText);
 
 	if (cbNew == 0) {	// delete the old text since new text is empty
 		ptrdiff_t cb = m_pCurrent - pszPos;
@@ -542,13 +542,13 @@ size_t ttCFile::GetCurLineLength()
 		return 0;
 
 	if (m_bReadlineReady && m_pszLine)
-		return tt::StrLen(m_pszLine);
+		return ttstrlen(m_pszLine);
 
 	const char* pszBeginLine = m_pCurrent;
 	while (pszBeginLine > m_pbuf && *pszBeginLine != '\n')
 		pszBeginLine--;
 
-	return tt::StrLen(pszBeginLine) - 1;
+	return ttstrlen(pszBeginLine) - 1;
 }
 
 bool ttCFile::IsThisPreviousString(const char* pszPrev)
@@ -559,7 +559,7 @@ bool ttCFile::IsThisPreviousString(const char* pszPrev)
 	if (!pszPrev || !*pszPrev || !m_pCurrent)
 		return false;
 
-	size_t cb = tt::StrLen(pszPrev);
+	size_t cb = ttstrlen(pszPrev);
 
 	if (m_pCurrent - cb < m_pbuf)
 		return false;
@@ -571,7 +571,7 @@ bool ttCFile::UnicodeToAnsi()
 	if (!m_pbuf || m_pEnd < m_pbuf + 2 || (uint8_t) m_pbuf[0] != 0xFF || (uint8_t) m_pbuf[1] != 0xFE)
 		return false;
 
-	size_t cb = tt::StrLen((wchar_t*) (m_pbuf + 2)) * sizeof(wchar_t);
+	size_t cb = ttstrlen((wchar_t*) (m_pbuf + 2)) * sizeof(wchar_t);
 	size_t cbLen;
 	int err = wcstombs_s(&cbLen, nullptr, cb, (wchar_t*) (m_pbuf + 2), cb);
 	// cb = wcstombs(nullptr, (wchar_t*) (m_pbuf + 2), cb);
@@ -618,7 +618,7 @@ void ttCFile::AddSingleLF()
 void ttCFile::ReCalcSize()
 {
 	if (m_pbuf)
-		m_pCurrent = m_pbuf + tt::StrLen(m_pbuf);
+		m_pCurrent = m_pbuf + ttstrlen(m_pbuf);
 }
 
 void ttCFile::Backup(size_t cch)

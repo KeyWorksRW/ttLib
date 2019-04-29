@@ -271,7 +271,7 @@ bool tt::IsSameStrI(const char* psz1, const char* psz2)
 	if (!psz1 || !psz2)
 		return false;
 
-	if (tt::StrLen(psz1) != tt::StrLen(psz2))
+	if (ttstrlen(psz1) != ttstrlen(psz2))
 		return false;
 	for (;;) {
 		if (*psz1 != *psz2)	{
@@ -290,7 +290,7 @@ bool tt::IsSameStrI(const wchar_t* psz1, const wchar_t* psz2)
 	if (!psz1 || !psz2)
 		return false;
 
-	if (tt::StrLen(psz1) != tt::StrLen(psz2))
+	if (ttstrlen(psz1) != ttstrlen(psz2))
 		return false;
 	for (;;) {
 		if (*psz1 != *psz2)	{
@@ -607,7 +607,7 @@ void tt::TrimRight(char* psz)
 	if (!psz || !*psz)
 		return;
 
-	char* pszEnd = psz + tt::StrLen(psz) - 1;
+	char* pszEnd = psz + ttstrlen(psz) - 1;
 	while ((*pszEnd == ' ' || *pszEnd == '\t' || *pszEnd == '\r' || *pszEnd == '\n' || *pszEnd == '\f')) {
 		pszEnd--;
 		if (pszEnd == psz) {
@@ -997,7 +997,7 @@ void tt::AddTrailingSlash(char* psz)
 		return;
 	char* pszLastSlash = tt::FindLastSlash(psz);
 	if (!pszLastSlash || pszLastSlash[1])	// only add if there was no slash or there was something after the slash
-		tt::StrCat(psz, "/");
+		ttstrcat(psz, "/");
 }
 
 int ttstrcat(char* pszDst, size_t cbDest, const char* pszSrc)

@@ -96,7 +96,7 @@ HFONT tt::CreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold, bool fI
 	lf.lfItalic = (BYTE) fItalics;
 	if (fBold)
 		lf.lfWeight = FW_BOLD;
-	tt::StrCopy(lf.lfFaceName, LF_FACESIZE, pszTypeFace);
+	ttstrcpy(lf.lfFaceName, LF_FACESIZE, pszTypeFace);
 
 	HFONT hfont = CreateFontIndirectA(&lf);
 	DeleteDC(hdc);

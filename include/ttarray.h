@@ -39,7 +39,7 @@ public:
 	size_t Add() {	// use this to add an emptry member which you can fill in using the returned array index
 		if (m_cItems >= m_cAllocated) {
 			m_cAllocated += 8;	// allocate room for 8 items at a time
-			m_aData = (T*) (m_aData ? tt::ReAlloc(m_aData, m_cAllocated * sizeof(T)) : tt::Malloc(m_cAllocated * sizeof(T)));
+			m_aData = (T*) (m_aData ? ttrealloc(m_aData, m_cAllocated * sizeof(T)) : ttmalloc(m_cAllocated * sizeof(T)));
 		}
 		return m_cItems++;
 	}

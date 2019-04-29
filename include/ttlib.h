@@ -19,6 +19,25 @@ extern bool (_cdecl *pttAssertHandlerW)(const wchar_t* pszMsg, const char* pszFi
 typedef bool (_cdecl *TTASSERTHANDLERA)(const char* pszMsg, const char* pszFile, const char* pszFunction, int line);
 typedef bool (_cdecl *TTASSERTHANDLERW)(const wchar_t* pszMsg, const char* pszFile, const char* pszFunction, int line);
 
+int		  ttstrcat(char* pszDst, const char* pszSrc);
+int		  ttstrcat(char* pszDst, size_t cbDest, const char* pszSrc);
+int		  ttstrcpy(char* pszDst, const char* pszSrc);
+int		  ttstrcpy(char* pszDst, size_t cbDest, const char* pszSrc);
+size_t	  ttstrlen(const char* psz);
+char*	  ttstrchr(const char* psz, char ch);
+char*	  ttstrrchr(const char* psz, char ch);
+char*	  ttstrstr(const char* pszMain, const char* pszSub);
+char*	  ttstristr(const char* pszMain, const char* pszSub);
+
+int		  ttstrcat(wchar_t* pszDst, const wchar_t* pszSrc);
+int		  ttstrcat(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc);
+int		  ttstrcpy(wchar_t* pszDst, const wchar_t* pszSrc);
+int		  ttstrcpy(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc);
+size_t	  ttstrlen(const wchar_t* pwsz);
+wchar_t*  ttstrchr(const wchar_t* psz, wchar_t ch);
+wchar_t*  ttstrrchr(const wchar_t* psz, wchar_t ch);
+wchar_t*  ttstrstr(const wchar_t* pszMain, const wchar_t* pszSub);
+
 // Note that macros can replace namespace function names. For example, tt::StrCat will be changed to tt::lstrcatA if you
 // #include <shlwapi.h>. All the functions here have non-namespace versions declared in ttutil.h which will should avoid
 // any macro substitution issues.
@@ -70,27 +89,27 @@ namespace tt {
 	inline	bool IsPunct(wchar_t ch) { return (ch == L'.' || ch == L',' || ch == L';' || ch == L':' || ch == L'?' || ch == L'!'); }
 	inline	bool IsWhitespace(wchar_t ch) { return (ch == L' ' || ch == L'\t' || ch == L'\r' || ch == L'\n' || ch == L'\f') ? true : false; }
 
-	int			StrCat(char* pszDst, size_t cbDest, const char* pszSrc);	// always zero-terminates, returns EOVERFLOW if truncated
-	int			StrCopy(char* pszDst, size_t cbDest, const char* pszSrc);	// always zero-terminates, returns EOVERFLOW if truncated
-	size_t		StrLen(const char* psz);
+[[deprecated]]	int			StrCat(char* pszDst, size_t cbDest, const char* pszSrc);	// always zero-terminates, returns EOVERFLOW if truncated
+[[deprecated]]	int			StrCopy(char* pszDst, size_t cbDest, const char* pszSrc);	// always zero-terminates, returns EOVERFLOW if truncated
+[[deprecated]]	size_t		StrLen(const char* psz);
 
-	int			StrCat(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc);
-	int			StrCopy(wchar_t* pwszDst, size_t cbDest, const wchar_t* pwszSrc);
-	size_t		StrLen(const wchar_t* pwsz);
+[[deprecated]]	int			StrCat(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc);
+[[deprecated]]	int			StrCopy(wchar_t* pwszDst, size_t cbDest, const wchar_t* pwszSrc);
+[[deprecated]]	size_t		StrLen(const wchar_t* pwsz);
 
 	// force "normal" calls to secure version -- possible buffer overflow if destination isn't large enough
 
-	inline int	StrCat(char* pszDst, const char* pszSrc) { return tt::StrCat(pszDst, tt::MAX_STRING_LEN, pszSrc); }
-	inline int	StrCopy(char* pszDst, const char* pszSrc) { return tt::StrCopy(pszDst, tt::MAX_STRING_LEN, pszSrc); }
+[[deprecated]]		inline int	StrCat(char* pszDst, const char* pszSrc) { return ttstrcat(pszDst, tt::MAX_STRING_LEN, pszSrc); }
+[[deprecated]]		inline int	StrCopy(char* pszDst, const char* pszSrc) { return ttstrcpy(pszDst, tt::MAX_STRING_LEN, pszSrc); }
 
-	inline int	StrCat(wchar_t* pwszDst, const wchar_t* pwszSrc) { return tt::StrCat(pwszDst, tt::MAX_STRING_LEN, pwszSrc); }
-	inline int	StrCopy(wchar_t* pwszDst, const wchar_t* pwszSrc) { return tt::StrCopy(pwszDst, tt::MAX_STRING_LEN, pwszSrc); }
+[[deprecated]]		inline int	StrCat(wchar_t* pwszDst, const wchar_t* pwszSrc) { return ttstrcat(pwszDst, tt::MAX_STRING_LEN, pwszSrc); }
+[[deprecated]]		inline int	StrCopy(wchar_t* pwszDst, const wchar_t* pwszSrc) { return ttstrcpy(pwszDst, tt::MAX_STRING_LEN, pwszSrc); }
 
 	// Use strLen() to get the number of characters without trailing zero, use strByteLen() to get the number of
 	// bytes including the terminating zero
 
-	inline size_t StrByteLen(const char* psz) { return tt::StrLen(psz) * sizeof(char) + sizeof(char); }	// char is 1 in SBCS builds, 2 in UNICODE builds
-	inline size_t StrByteLen(const wchar_t* pwsz) { return tt::StrLen(pwsz) * sizeof(wchar_t) + sizeof(wchar_t); }
+	inline size_t StrByteLen(const char* psz) { return ttstrlen(psz) * sizeof(char) + sizeof(char); }	// char is 1 in SBCS builds, 2 in UNICODE builds
+	inline size_t StrByteLen(const wchar_t* pwsz) { return ttstrlen(pwsz) * sizeof(wchar_t) + sizeof(wchar_t); }
 
 	void	  TrimRight(char* psz);
 
@@ -223,24 +242,5 @@ namespace ttch {
 	const char CH_BACKSLASH =	 '\\';
 	const char CH_FORWARDSLASH = '/';
 } // end of ttch namespace
-
-int		  ttstrcat(char* pszDst, const char* pszSrc);
-int		  ttstrcat(char* pszDst, size_t cbDest, const char* pszSrc);
-int		  ttstrcpy(char* pszDst, const char* pszSrc);
-int		  ttstrcpy(char* pszDst, size_t cbDest, const char* pszSrc);
-size_t	  ttstrlen(const char* psz);
-char*	  ttstrchr(const char* psz, char ch);
-char*	  ttstrrchr(const char* psz, char ch);
-char*	  ttstrstr(const char* pszMain, const char* pszSub);
-char*	  ttstristr(const char* pszMain, const char* pszSub);
-
-int		  ttstrcat(wchar_t* pszDst, const wchar_t* pszSrc);
-int		  ttstrcat(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc);
-int		  ttstrcpy(wchar_t* pszDst, const wchar_t* pszSrc);
-int		  ttstrcpy(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc);
-size_t	  ttstrlen(const wchar_t* pwsz);
-wchar_t*  ttstrchr(const wchar_t* psz, wchar_t ch);
-wchar_t*  ttstrrchr(const wchar_t* psz, wchar_t ch);
-wchar_t*  ttstrstr(const wchar_t* pszMain, const wchar_t* pszSub);
 
 #endif	// __TTLIB_H__
