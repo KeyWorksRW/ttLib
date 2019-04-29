@@ -2,7 +2,7 @@
 // Name:		ttCHashPair
 // Purpose:		Class utilizing an array of HASH numbers and an associated value
 // Author:		Ralph Walden
-// Copyright:	Copyright (c) 2004-2018 KeyWorks Software (Ralph Walden)
+// Copyright:	Copyright (c) 2004-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
@@ -20,7 +20,7 @@ ttCHashPair::ttCHashPair(size_t EstimatedMembers)
 		m_aData = nullptr;
 	}
 	else {
-		m_aData = (HASH_PAIR*) tt::Malloc(EstimatedMembers * sizeof(HASH_PAIR));
+		m_aData = (HASH_PAIR*) ttmalloc(EstimatedMembers * sizeof(HASH_PAIR));
 		m_cAllocated = EstimatedMembers;
 	}
 	m_cItems = 0;
@@ -34,7 +34,7 @@ ttCHashPair::~ttCHashPair()
 void ttCHashPair::Delete()
 {
 	if (m_aData) {
-		tt::FreeAlloc(m_aData);
+		ttfree(m_aData);
 		m_aData = nullptr;
 		m_cItems = m_cAllocated = 0;
 	}
@@ -46,7 +46,7 @@ void ttCHashPair::Add(size_t hash, size_t val)
 
 	if (m_cItems + 1 > m_cAllocated) {
 		m_cAllocated += GROWTH_MALLOC;
-		m_aData = (HASH_PAIR*) tt::ReAlloc(m_aData, m_cAllocated * sizeof(HASH_PAIR));
+		m_aData = (HASH_PAIR*) ttrealloc(m_aData, m_cAllocated * sizeof(HASH_PAIR));
 	}
 
 	if (!m_cItems) {

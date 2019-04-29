@@ -27,7 +27,7 @@ namespace tt {
 
 void tt::InitCaller(HINSTANCE hinstRes, HWND hwnd, const char* pszTitle)
 {
-	tt::pszMsgTitle = tt::StrDup(pszTitle ? pszTitle : "");
+	tt::pszMsgTitle = ttstrdup(pszTitle ? pszTitle : "");
 
 	tt::hinstResources = hinstRes;
 	tt::hwndMsgBoxParent = hwnd;
@@ -36,8 +36,8 @@ void tt::InitCaller(HINSTANCE hinstRes, HWND hwnd, const char* pszTitle)
 void tt::SetMsgBoxTitle(const char* pszTitle)
 {
 	if (tt::pszMsgTitle)
-		tt::FreeAlloc((void*) tt::pszMsgTitle);
-	tt::pszMsgTitle = tt::StrDup(pszTitle ? pszTitle : "");
+		ttfree((void*) tt::pszMsgTitle);
+	tt::pszMsgTitle = ttstrdup(pszTitle ? pszTitle : "");
 }
 
 // Note that these message boxes will work in a console app as well as a windowed app
@@ -96,7 +96,7 @@ HFONT tt::CreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold, bool fI
 	lf.lfItalic = (BYTE) fItalics;
 	if (fBold)
 		lf.lfWeight = FW_BOLD;
-	tt::StrCopy(lf.lfFaceName, LF_FACESIZE, pszTypeFace);
+	ttstrcpy(lf.lfFaceName, LF_FACESIZE, pszTypeFace);
 
 	HFONT hfont = CreateFontIndirectA(&lf);
 	DeleteDC(hdc);

@@ -69,7 +69,7 @@ bool ttCWin::SetClassName(const char* pszClassName)
 {
 	ttASSERT_NONEMPTY(pszClassName);
 
-	if (!pszClassName || !*pszClassName || tt::StrLen(pszClassName) > 256)	// Windows limits class names to 256 characters
+	if (!pszClassName || !*pszClassName || ttstrlen(pszClassName) > 256)	// Windows limits class names to 256 characters
 		return false;
 
 	if (m_pszClassName)

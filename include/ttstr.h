@@ -44,15 +44,15 @@ class ttCStr
 {
 public:
 	ttCStr(void)	{ m_psz = nullptr; }
-	ttCStr(size_t cb) { m_psz = (char*) tt::Malloc(cb); }
-	ttCStr(const char* psz) { m_psz = psz ? tt::StrDup(psz) : nullptr; }
+	ttCStr(size_t cb) { m_psz = (char*) ttmalloc(cb); }
+	ttCStr(const char* psz) { m_psz = psz ? ttstrdup(psz) : nullptr; }
 	ttCStr(const wchar_t* pwsz) { m_psz = nullptr; if (pwsz) CopyWide(pwsz); }
-	ttCStr(ttCStr& csz) { m_psz = csz.GetPtr() ? tt::StrDup(csz) : nullptr; }
+	ttCStr(ttCStr& csz) { m_psz = csz.GetPtr() ? ttstrdup(csz) : nullptr; }
 #ifdef _WINDOWS_
 	ttCStr(HWND hwnd) { m_psz = nullptr; GetWindowText(hwnd); }
 #endif // _WINDOWS_
 
-	~ttCStr() { if (m_psz) tt::FreeAlloc(m_psz); }
+	~ttCStr() { if (m_psz) ttfree(m_psz); }
 
 	// Method naming conventions are lower camel case when matching tt:: namespace functions
 
@@ -65,7 +65,7 @@ public:
 	size_t	StrByteLen() { return m_psz ? tt::StrByteLen(m_psz) : 0; }	// length of string in bytes including 0 terminator
 	int		StrCat(const char* psz);
 	int		StrCopy(const char* psz);
-	size_t	StrLen() { return m_psz ? tt::StrLen(m_psz) : 0; }		// number of characters (use strByteLen() for buffer size calculations)
+	size_t	StrLen() { return m_psz ? ttstrlen(m_psz) : 0; }		// number of characters (use strByteLen() for buffer size calculations)
 
 	bool	IsSameStr(const char* psz) { return tt::IsSameStr(m_psz, psz); }
 	bool	IsSameStrI(const char* psz) { return tt::IsSameStrI(m_psz, psz); }
@@ -137,8 +137,8 @@ public:
 	char* cdecl printfAppend(const char* pszFormat, ...);	// Appends to the end of any current string
 
 	void	ReSize(size_t cb);
-	size_t	SizeBuffer() { return tt::SizeAlloc(m_psz); }	// returns 0 if m_psz is null
-	void	Delete() { if (m_psz) { tt::FreeAlloc(m_psz); m_psz = nullptr; } }
+	size_t	SizeBuffer() { return ttsize(m_psz); }	// returns 0 if m_psz is null
+	void	Delete() { if (m_psz) { ttfree(m_psz); m_psz = nullptr; } }
 
 	char*	GetPtr() { return m_psz; }		// for when casting to char* is problematic
 	char**	GetPPtr() { return &m_psz; }	// use with extreme caution!

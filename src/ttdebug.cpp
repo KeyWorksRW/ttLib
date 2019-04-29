@@ -227,8 +227,8 @@ void __cdecl tt::Trace(const char* pszFormat, ...)
 		}
 	}
 
-	tt::StrCopy(g_pszTraceMap, 4093, csz);
-	tt::StrCat(g_pszTraceMap, 4094, "\r\n");
+	ttstrcpy(g_pszTraceMap, 4093, csz);
+	ttstrcat(g_pszTraceMap, 4094, "\r\n");
 
 	SendMessage(tt::hwndTrace, tt::WMP_TRACE_MSG, 0, 0);
 

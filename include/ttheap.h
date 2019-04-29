@@ -79,30 +79,22 @@ protected:
 	bool	m_bCreated;
 }; // end ttCHeap
 
-// The tt namespace is used in other ttLib header files as well, so this is not a complete list. It is STRONGLY
-// recommended that you reference all functions in ttLib with "tt::". Do NOT declare "using namespace tt" unless you want
-// other function calls in your code to be replaced. See https://github.com/KeyWorksRW/ttLib/issues/12 for discussion of
-// the issue.
-
 namespace tt {
 	extern ttCHeap MainHeap;	// this uses the process heap rather then a sub-heap
+}
 
-	// These are just shortcuts so you can use something like tt::Calloc(cb) instead of tt::MainHeap.ttCalloc(cb)
+// The following are alternatives to the namespace versions
 
-	inline void*	Calloc(size_t cb) { return tt::MainHeap.ttCalloc(cb); }
-	inline void*	Calloc(size_t num, size_t cb) { return tt::MainHeap.ttCalloc(num * cb); }	// for compatability with C++ standard library
-	inline void		Delete(void* pv) { tt::MainHeap.ttFree(pv); }
-	inline void*	Malloc(size_t cb) { return tt::MainHeap.ttMalloc(cb); }
-	inline void*	ReAlloc(void* pv, size_t cbNew) { return tt::MainHeap.ttReAlloc(pv, cbNew); }
-	inline void*	ReCalloc(void* pv, size_t cbNew) { return tt::MainHeap.ttReCalloc(pv, cbNew); }
-	inline char*	StrDup(const char* psz) { return tt::MainHeap.ttStrdup(psz); }
-	inline wchar_t*	StrDup(const wchar_t* pwsz) { return tt::MainHeap.ttStrdup(pwsz); }
-	inline char*	StrDup(const char* psz, char** ppszDst) { return tt::MainHeap.ttStrdup(psz, ppszDst); }
-	inline size_t	SizeAlloc(const void* pv) { return tt::MainHeap.ttSize(pv); }
-	inline bool		ValidateAlloc(const void* pv) { return tt::MainHeap.ttValidate(pv); }
-
-	inline void		FreeAlloc(void *pv) { tt::MainHeap.ttFree(pv); }
-// [[deprecated]]	inline void		FreeAlloc(void *pv) { tt::MainHeap.ttFree(pv); }
-}	// end namespace tt
+inline void*	ttcalloc(size_t cb) { return tt::MainHeap.ttCalloc(cb); }
+inline void*	ttcalloc(size_t num, size_t cb) { return tt::MainHeap.ttCalloc(num * cb); }	// for compatability with C++ standard library
+inline void		ttfree(void* pv) { tt::MainHeap.ttFree(pv); }
+inline void*	ttmalloc(size_t cb) { return tt::MainHeap.ttMalloc(cb); }
+inline void*	ttrealloc(void* pv, size_t cbNew) { return tt::MainHeap.ttReAlloc(pv, cbNew); }
+inline void*	ttrecalloc(void* pv, size_t cbNew) { return tt::MainHeap.ttReCalloc(pv, cbNew); }
+inline char*	ttstrdup(const char* psz) { return tt::MainHeap.ttStrdup(psz); }
+inline wchar_t*	ttstrdup(const wchar_t* pwsz) { return tt::MainHeap.ttStrdup(pwsz); }
+inline char*	ttstrdup(const char* psz, char** ppszDst) { return tt::MainHeap.ttStrdup(psz, ppszDst); }
+inline size_t	ttsize(const void* pv) { return tt::MainHeap.ttSize(pv); }
+inline bool		ttvalidate(const void* pv) { return tt::MainHeap.ttValidate(pv); }
 
 #endif	// __TTLIB_TTHEAP_H__

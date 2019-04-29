@@ -177,10 +177,10 @@ HTML_ELEMENT ttCParseXML::ParseElementTag(const char* pszName, const char* pszCu
 
 	// The tag name is unknown. We look for a close tag with the same name, and if found, we assume this is an XML tag.
 
-	if (pszCurLoc && tt::StrLen(pszName) < 254) {
+	if (pszCurLoc && ttstrlen(pszName) < 254) {
 		char szClose[256];
 		szClose[0] = '\\';
-		tt::StrCopy(szClose, sizeof(szClose), pszName);
+		ttstrcpy(szClose, sizeof(szClose), pszName);
 		if (tt::FindStrI(pszCurLoc, szClose)) {
 			if (!m_lstXmlTags.Find(pszName)) {
 				m_lstXmlTags.Add(pszName);
@@ -206,7 +206,7 @@ bool StrWtrim(char** s)
 	while(**s > 0 && **s < '!') // skip over leading whitespace
 		++(*s);
 
-	char* pszEnd = *s + (tt::StrLen(*s) - 1);
+	char* pszEnd = *s + (ttstrlen(*s) - 1);
 	while (isSpace(*pszEnd) && pszEnd > *s)
 		pszEnd--;
 	pszEnd++;
@@ -243,7 +243,7 @@ void _StrWnorm(char** s)
 	}
 	if (j < n) {	// Normalization buffer is actually different then input.
 		pszNorm[j] = 0;
-		tt::StrCopy(*s, pszNorm); // Copy it back to input.
+		ttstrcpy(*s, pszNorm); // Copy it back to input.
 	}
 }
 
@@ -418,9 +418,9 @@ HRESULT ttCParseXML::WriteBranch(ttCXMLBranch* pBranch, ttCFile& kf, size_t iInd
 				for (size_t iAttribute = 0; iAttribute < pBranch->GetAttributesCount(); iAttribute++) {
 					XMLATTR* pAttr = pBranch->GetAttributeAt(iAttribute);
 					if (pAttr->pszName) {
-						cbAttrs += tt::StrLen(pAttr->pszName);
+						cbAttrs += ttstrlen(pAttr->pszName);
 						if (pAttr->pszValue)
-							cbAttrs += tt::StrLen(pAttr->pszValue);
+							cbAttrs += ttstrlen(pAttr->pszValue);
 						cbAttrs += 2;	// include room for spacing
 					}
 				}
