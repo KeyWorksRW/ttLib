@@ -70,7 +70,7 @@ public:
 	char*	FindLastChar(char ch) { return tt::FindLastChar(cFileName, ch); }
 
 	size_t	StrByteLen() { return tt::StrByteLen(cFileName); }	// length of string in bytes including 0 terminator
-	size_t	StrLen() { return tt::StrLen(cFileName); }		// number of characters (use strByteLen() for buffer size calculations)
+	size_t	StrLen() { return ttstrlen(cFileName); }		// number of characters (use strByteLen() for buffer size calculations)
 
 	bool	IsSameStr(const char* psz) { return tt::IsSameStr(cFileName, psz); }
 	bool	IsSameStrI(const char* psz) { return tt::IsSameStrI(cFileName, psz); }
