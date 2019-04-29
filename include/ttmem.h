@@ -64,11 +64,11 @@ public:
 
 	void resize(size_t cb) {
 		if (!m_p)
-			m_p = (T) tt::Malloc(cb);
+			m_p = (T) ttmalloc(cb);
 		else
-			m_p = (T) tt::ReAlloc(m_p, cb);
+			m_p = (T) ttrealloc(m_p, cb);
 	}
-	size_t size() { return tt::SizeAlloc(m_p); }
+	size_t size() { return ttsize(m_p); }
 
 	operator T()	{ ttASSERT(m_p); return m_p; };
 	T operator->() { ttASSERT(m_p); return m_p; };
