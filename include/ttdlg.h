@@ -15,11 +15,8 @@
 	#error This code will only work on Windows
 #endif
 
-// This is a modal-only dialog class with no base requirements other than compiling for Windows. It can be used whether
-// your app is using ATL, WTL, wxWidgets, or is just a console app that needs a Modal() dialog box.
-
-// If you use BEGIN_TTMSG_MAP/END_TTMSG_MAP then you can use all the regular handlers from ttmsgmap.h just as if it was an
-// ATL CDialogImpl derived class
+// This dialog class has no base requirements other than compiling for Windows. It can be used whether your app is using
+// ATL, WTL, wxWidgets, or is just a console app that needs a dialog box.
 
 // Classes are also provided for some dialog controls: ttCComboBox, ttCListBox, ttCListView
 
@@ -41,8 +38,6 @@
 		#define DLG_ID(id) id
 	#endif
 #endif
-
-// These are needed for centering a window (WMP_CENTER_WINDOW)
 
 namespace ttpriv {
 	INT_PTR WINAPI DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -126,19 +121,16 @@ protected:
 
 	// Class members
 
-	bool m_bCancelEnd;
-
-	bool m_bInitializing;
-	bool m_bModeless;
-
-	int m_idTemplate;
-
 	HWND m_hwnd;			// m_hwnd vs m_hWnd -- SDK/include, ATL and WTL use both variants. We're sticking with all lowercase.
 	HWND m_hwndParent;
 
 	ttCMultiBtn* m_pShadedBtns;
 
-	LRESULT m_result;
+	int m_idTemplate;
+
+	bool m_bCancelEnd;
+	bool m_bInitializing;
+	bool m_bModeless;
 }; // end of ttCDlg
 
 class ttCComboBox
@@ -208,7 +200,7 @@ public:
 	operator HWND() const { return m_hwnd; }
 
 	HWND m_hwnd;
-};
+}; // end of ttCComboBox
 
 class ttCListBox
 {
@@ -311,7 +303,7 @@ public:
 	void operator += (const char* psz) const { SendMessage(LB_ADDSTRING, 0, (LPARAM) psz); }
 
 	HWND m_hwnd;
-};
+};	// end of ttCListBox
 
 class ttCListView
 {
@@ -350,6 +342,6 @@ public:
 	operator HWND() const { return m_hwnd; }
 
 	HWND m_hwnd;
-};
+};	// end of ttCListView
 
 #endif	// __TTLIB_TTCDLG_H__
