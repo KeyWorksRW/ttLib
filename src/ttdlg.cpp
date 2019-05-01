@@ -94,7 +94,7 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 		pThis->m_pShadedBtns = nullptr;
 	}
 
-	LRESULT lResult = 0;
+	LRESULT lResult = 0;	// This is passed by reference to OnCmdCaseMap
 	if (msg == WM_COMMAND && pThis->OnCmdCaseMap((int) LOWORD(wParam), (int) HIWORD(wParam), lResult))
 		return lResult;
 
@@ -118,10 +118,8 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 						pThis->OnCancel();
 						if (pThis->m_bCancelEnd)
 							pThis->m_bCancelEnd = false;
-						else {
-							// Note that if the dialog is cancelled, we don't fade, we just exit immediately
+						else
 							pThis->CloseDialog(IDCANCEL);
-						}
 						break;
 
 					default:
