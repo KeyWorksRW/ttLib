@@ -45,6 +45,8 @@ namespace tt {
 	#define ttASSERT_MSG(exp, pszMsg) { if (!(exp)) tt::AssertionMsg(pszMsg, __FILE__, __func__, __LINE__); }
 	#define ttFAIL(pszMsg) tt::AssertionMsg(pszMsg, __FILE__, __func__, __LINE__)
 
+	#define ttVERIFY(exp) (void)((!!(exp)) || tt::AssertionMsg(#exp, __FILE__, __func__, __LINE__))		// this still executes the expression in non-DEBUG build, it just doesn't check result
+
 	#define ttTRACE(msg) tt::Trace(msg)
 	#define ttTRACE_CLEAR() tt::TraceClear();
 
@@ -64,6 +66,8 @@ namespace tt {
 	#define ttASSERT(exp)
 	#define ttASSERT_MSG(exp, pszMsg)
 	#define ttFAIL(pszMsg)
+
+	#define ttVERIFY(exp) ((void)(exp))
 
 	#define ttTRACE(msg)
 	#define ttTRACE_CLEAR()
