@@ -89,9 +89,17 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 	if (!pThis)
 		return FALSE;
 
-	if (msg == WM_DESTROY && pThis->m_pShadedBtns) {
-		delete pThis->m_pShadedBtns;
-		pThis->m_pShadedBtns = nullptr;
+	if (msg == WM_DESTROY) {
+		if (pThis->m_pShadedBtns) {
+			delete pThis->m_pShadedBtns;
+			pThis->m_pShadedBtns = nullptr;
+		}
+#ifdef _DEBUG
+		// This allows a destructor to verify that the window was destroyed before the destructor was called
+
+		if (pThis->m_bModeless)
+			pThis->m_hwnd = nullptr;
+#endif
 	}
 
 	LRESULT lResult = 0;	// This is passed by reference to OnCmdCaseMap
