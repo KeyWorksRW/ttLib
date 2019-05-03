@@ -85,16 +85,17 @@ public:
 	void ShowControl(int id) const { ::ShowWindow(GetDlgItem(id), SW_SHOW); }
 	void HideControl(int id) const { ::ShowWindow(GetDlgItem(id), SW_HIDE); }
 
-	bool GetCheck(int id) const { return (SendMessage(id, BM_GETCHECK) == BST_CHECKED); }
+	bool GetCheck(int id) const { return (SendItemMsg(id, BM_GETCHECK) == BST_CHECKED); }
 	bool IsChecked(int id) const { return GetCheck(id); }
-	void SetCheck(int id, BOOL bCheck = TRUE) const { (void) SendMessage(id, BM_SETCHECK, bCheck); }
-	void UnCheck(int id) const { (void) SendMessage(id, BM_SETCHECK, FALSE); }
+	void SetCheck(int id, BOOL bCheck = TRUE) const { (void) SendItemMsg(id, BM_SETCHECK, bCheck); }
+	void UnCheck(int id) const { (void) SendItemMsg(id, BM_SETCHECK, FALSE); }
 
 	HICON SetIcon(HICON hIcon, BOOL bBigIcon = TRUE) { ttASSERT(::IsWindow(m_hwnd)); return (HICON)::SendMessage(m_hwnd, WM_SETICON, bBigIcon, (LPARAM)hIcon); }
 
-	LRESULT SendMessage(int id, UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::SendMessage(GetDlgItem(id), msg, wParam, lParam); }
+	LRESULT SendItemMsg(int id, UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::SendMessage(GetDlgItem(id), msg, wParam, lParam); }
+	LRESULT PostItemMsg(int id, UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::PostMessage(GetDlgItem(id), msg, wParam, lParam); }
+
 	LRESULT SendMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::SendMessage(*this, msg, wParam, lParam); }
-	LRESULT PostMessage(int id, UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::PostMessage(GetDlgItem(id), msg, wParam, lParam); }
 	LRESULT PostMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::PostMessage(*this, msg, wParam, lParam); }
 
 	void SetFocus(int idControl) const { ::SetFocus(GetDlgItem(idControl)); }
