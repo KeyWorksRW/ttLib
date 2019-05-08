@@ -58,10 +58,6 @@ build $outdir/ttprintf.obj: compile ttprintf.cpp | $outdir/pch.obj
 
 build $outdir/ttstr.obj: compile ttstr.cpp | $outdir/pch.obj
 
-build $outdir/ttutil.obj: compile ttutil.cpp | $outdir/pch.obj
-
-build $outdir/ttutilw.obj: compile ttutilw.cpp | $outdir/pch.obj
-
 build $outdir/ttwstr.obj: compile ttwstr.cpp | $outdir/pch.obj
 
 build $outdir/ttxml.obj: compile ttxml.cpp | $outdir/pch.obj
@@ -96,8 +92,6 @@ build ../lib/ttLib64D.lib : lib $
   $outdir/ttmultithread.obj $
   $outdir/ttprintf.obj $
   $outdir/ttstr.obj $
-  $outdir/ttutil.obj $
-  $outdir/ttutilw.obj $
   $outdir/ttwstr.obj $
   $outdir/ttxml.obj $
   $outdir/ttdib.obj $

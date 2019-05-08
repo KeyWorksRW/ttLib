@@ -30,6 +30,8 @@ LIB=$(LIB64) # \
 !ifdef PATH64 # \
 PATH=$(PATH64) # \
 !endif  # \
+!else # \
+bits=32 # \
 !endif  # b64 \
 !ifndef cmplr # \
 cmplr=msvc # \
@@ -47,6 +49,8 @@ ifdef b64
 	ifdef PATH64
 		PATH=$(PATH64)
 	endif
+else
+	bits=32
 endif
 
 ifndef cmplr
