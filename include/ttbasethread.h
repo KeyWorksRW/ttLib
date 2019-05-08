@@ -22,7 +22,7 @@ class ttCBaseThread
 {
 public:
 	ttCBaseThread();
-	~ttCBaseThread();
+	virtual ~ttCBaseThread();
 
 	// Class functions
 
