@@ -107,7 +107,7 @@ LRESULT CMainFrame::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 
 void CMainFrame::OnGeneralMsg(WPARAM /* wParam */, LPARAM /* lParam */)
 {
-	if (tt::isSameStri(m_pszMap, m_cszLastMsg))
+	if (tt::IsSameStrI(m_pszMap, m_cszLastMsg))
 		return;	// duplicate message
 	m_cszLastMsg = m_pszMap;
 
@@ -200,5 +200,5 @@ void CMainFrame::OnSaveAs()
 void CMainFrame::OnPreferences()
 {
 	CPreferences dlg;
-	dlg.DoModal();
+	dlg.DoModal(NULL);
 }

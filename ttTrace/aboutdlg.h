@@ -17,5 +17,5 @@
 class CAboutDlg : public ttCDlg
 {
 public:
-	CAboutDlg(HWND hwndParent = NULL) : ttCDlg(IDD_ABOUTBOX, hwndParent) {  }
+	CAboutDlg() : ttCDlg(IDD_ABOUTBOX) {  }
 };

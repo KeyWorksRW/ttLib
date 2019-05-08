@@ -25,7 +25,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /* l
 		return 0;
 	}
 
-	tt::InitCaller(tt::getResInst(), NULL, tt::getResString(IDR_MAINFRAME));
+	tt::InitCaller(tt::GetResInst(), NULL, tt::GetResString(IDR_MAINFRAME));
 
 #ifdef _DEBUG
 	HRESULT hRes =
@@ -70,7 +70,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /* l
 		ttFAIL("Main window creation failed!\n");
 		return 0;
 	}
-	tt::InitCaller(tt::getResInst(), wndMain, tt::getResString(IDR_MAINFRAME));
+	tt::InitCaller(tt::GetResInst(), wndMain, tt::GetResString(IDR_MAINFRAME));
 
 	wndMain.ShowWindow(nCmdShow);
 

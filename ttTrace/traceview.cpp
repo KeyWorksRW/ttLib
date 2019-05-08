@@ -30,7 +30,7 @@ LRESULT CTraceView::OnCreate(CREATESTRUCT* /* pcs */)
 		lf.lfHeight++;
 
 	lf.lfHeight = -lf.lfHeight;
-	tt::strCopy(lf.lfFaceName, LF_FACESIZE, "MS Shell Dlg");
+	ttstrcpy(lf.lfFaceName, LF_FACESIZE, "MS Shell Dlg");
 
 	HFONT hfont = CreateFontIndirect(&lf);
 	DeleteDC(hdc);
