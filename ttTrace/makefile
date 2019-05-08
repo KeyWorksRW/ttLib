@@ -17,7 +17,7 @@
 
 # Remove the '#' character in the following line to always build 64-bit targets
 
-#b64=1
+b64=1
 
 # \
 !ifndef 0 # \
@@ -30,6 +30,8 @@ LIB=$(LIB64) # \
 !ifdef PATH64 # \
 PATH=$(PATH64) # \
 !endif  # \
+!else # \
+bits=32 # \
 !endif  # b64 \
 !ifndef cmplr # \
 cmplr=msvc # \
@@ -47,6 +49,8 @@ ifdef b64
 	ifdef PATH64
 		PATH=$(PATH64)
 	endif
+else
+	bits=32
 endif
 
 ifndef cmplr
@@ -84,14 +88,10 @@ ttTraceD:
 
 ########## clean release section ##########
 
-clean: ttTraceClean
-
-ttTraceClean:
+clean:
 	ninja -f build/$(cmplr)Build$(bits).ninja -t clean
 
 ########## clean debug section ##########
 
-cleanD: ttTraceCleanD
-
-ttTraceCleanD:
+cleanD:
 	ninja -f build/$(cmplr)Build$(bits)D.ninja -t clean
