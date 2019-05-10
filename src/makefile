@@ -76,14 +76,10 @@ ttLibD:
 
 ########## clean release section ##########
 
-clean: ttLibClean
-
-ttLibClean:
+clean:
 	ninja -f build/$(cmplr)Build$(bits).ninja -t clean
 
 ########## clean debug section ##########
 
-cleanD: ttLibCleanD
-
-ttLibCleanD:
+cleanD:
 	ninja -f build/$(cmplr)Build$(bits)D.ninja -t clean
