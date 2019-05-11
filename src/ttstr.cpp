@@ -155,6 +155,26 @@ char* ttCStr::GetListBoxText(HWND hwnd, size_t sel)
 	return m_psz;
 }
 
+char* ttCStr::GetComboLBText(HWND hwnd, size_t sel)
+{
+	if (m_psz)
+		ttfree(m_psz);
+	if (sel == (size_t) LB_ERR)
+		m_psz = ttstrdup("");
+	else {
+		size_t cb = ::SendMessage(hwnd, CB_GETLBTEXTLEN, sel, 0);
+		ttASSERT(cb != (size_t) CB_ERR);
+		if (cb != (size_t) CB_ERR) {
+			m_psz = (char*) ttmalloc(cb + 1);
+			::SendMessageA(hwnd, CB_GETLBTEXT, sel, (LPARAM) m_psz);
+		}
+		else {
+			m_psz = ttstrdup("");
+		}
+	}
+	return m_psz;
+}
+
 /*
 	tt::hinstResources is typically set by InitCaller() and determines where to load resources from. If you need to load the resources
 	from a DLL, then first call:

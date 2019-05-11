@@ -118,6 +118,9 @@ public:
 	// The following will always return a pointer, but if an error occurred, it will point to an empty string
 	char* GetListBoxText(HWND hwnd) { return GetListBoxText(hwnd, ::SendMessage(hwnd, LB_GETCURSEL, 0, 0)); }
 	char* GetListBoxText(HWND hwnd, size_t sel);
+
+	char* GetComboLBText(HWND hwnd) { return GetListBoxText(hwnd, ::SendMessage(hwnd, CB_GETCURSEL, 0, 0)); }
+	char* GetComboLBText(HWND hwnd, size_t sel);
 #endif	// _WINDOWS_
 
 	void	MakeLower();
