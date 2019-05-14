@@ -64,7 +64,7 @@ bool ttCEnumStr::Enum(const char** ppszCurrent)
 
 	if (m_pszCur == nullptr) {	// means we haven't been called before, or ResetEnum() was called to reset
 		m_pszCur = m_csz;
-		m_pszEnd = tt::FindChar(m_pszCur, m_chSeparator);
+		m_pszEnd = ttStrChr(m_pszCur, m_chSeparator);
 		if (m_pszEnd)
 			*m_pszEnd = 0;
 		if (ppszCurrent)
@@ -80,8 +80,8 @@ bool ttCEnumStr::Enum(const char** ppszCurrent)
 		else {
 			*m_pszEnd = m_chSeparator;
 			do {	// handle doubled characters, or characters with only space between them (";;" or "; ;")
-				m_pszCur = tt::FindNonSpace(m_pszEnd + 1);
-				m_pszEnd = tt::FindChar(m_pszCur, m_chSeparator);
+				m_pszCur = ttFindNonSpace(m_pszEnd + 1);
+				m_pszEnd = ttStrChr(m_pszCur, m_chSeparator);
 			} while(*m_pszCur == m_chSeparator && m_pszEnd);
 
 			if (*m_pszCur == m_chSeparator) {	// means we got to the end with no more separators

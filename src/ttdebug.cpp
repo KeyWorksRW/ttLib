@@ -59,7 +59,7 @@ using namespace ttdbg;
 
 // Displays a message box displaying the ASSERT with an option to ignore, break into a debugger, or exit the program
 
-bool tt::AssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFunction, int line)
+bool ttAssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFunction, int line)
 {
 	if (ttdbg::bNoAssert)
 		return false;
@@ -122,7 +122,7 @@ bool tt::AssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFu
 
 }
 
-bool tt::AssertionMsg(const wchar_t* pwszMsg, const char* pszFile, const char* pszFunction, int line)
+bool ttAssertionMsg(const wchar_t* pwszMsg, const char* pszFile, const char* pszFunction, int line)
 {
 	if (ttdbg::bNoAssert)
 		return false;
@@ -144,20 +144,20 @@ bool tt::AssertionMsg(const wchar_t* pwszMsg, const char* pszFile, const char* p
 		else
 			cszMsg = pwszMsg;
 
-		bResult = tt::AssertionMsg((char*) cszMsg, pszFile, pszFunction, line);
+		bResult = ttAssertionMsg((char*) cszMsg, pszFile, pszFunction, line);
 	}
 	crtAssert.Unlock();
 	return bResult;
 }
 
-void tt::SetAsserts(bool bDisable)
+void ttSetAsserts(bool bDisable)
 {
 	ttdbg::bNoAssert = bDisable;
 }
 
 #ifdef _WINDOWS_
 
-void tt::doReportLastError(const char* pszFile, const char* pszFunc, int line)
+void ttdoReportLastError(const char* pszFile, const char* pszFunc, int line)
 {
 	char* pszMsg;
 
@@ -165,7 +165,7 @@ void tt::doReportLastError(const char* pszFile, const char* pszFunc, int line)
 		NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 		(LPTSTR) &pszMsg, 0, NULL);
 
-	AssertionMsg(pszMsg, pszFile, pszFunc, line);
+	ttAssertionMsg(pszMsg, pszFile, pszFunc, line);
 
 	LocalFree((HLOCAL) pszMsg);
 }
@@ -175,14 +175,14 @@ DWORD tt::CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile,
 	if (::GetDlgItem(hwnd, id) == NULL) {
 		ttCStr cszMsg;
 		cszMsg.printf("Invalid dialog control id: %s (%u)", pszID, id);
-		tt::AssertionMsg(cszMsg, pszFile, pszFunc, line);
+		ttAssertionMsg(cszMsg, pszFile, pszFunc, line);
 	}
 	return id;
 }
 
 // WARNING! Do not call ttASSERT in this function or you will end up with a recursive call.
 
-void __cdecl tt::Trace(const char* pszFormat, ...)
+void __cdecl ttTrace(const char* pszFormat, ...)
 {
 	// We don't want two threads trying to send text at the same time, so we wrap the function in a critical section
 
@@ -191,7 +191,7 @@ void __cdecl tt::Trace(const char* pszFormat, ...)
 	if (!pszFormat || !*pszFormat)
 		return;
 
-	if (!tt::IsValidWindow(tt::hwndTrace)) {
+	if (!ttIsValidWindow(tt::hwndTrace)) {
 		// Trace could be called a lot, and we don't really want to be searching for the window constantly.
 
 		DWORD cCurTick = GetTickCount();
@@ -199,7 +199,7 @@ void __cdecl tt::Trace(const char* pszFormat, ...)
 
 		if (g_cLastTickCheck == 0 || cCurTick > g_cLastTickCheck + 5) {
 			tt::hwndTrace = FindWindowA(tt::txtTraceClass, NULL);
-			if (!hwndTrace) {
+			if (!tt::hwndTrace) {
 				g_cLastTickCheck = cCurTick;
 				return;
 			}
@@ -209,26 +209,26 @@ void __cdecl tt::Trace(const char* pszFormat, ...)
 	ttCStr csz;
 	va_list argList;
 	va_start(argList, pszFormat);
-	tt::vprintf(csz.GetPPtr(), pszFormat, argList);
+	ttVPrintf(csz.GetPPtr(), pszFormat, argList);
 	va_end(argList);
 
 	if (!hTraceMapping) {
 		hTraceMapping = CreateFileMappingA(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 4096, tt::txtTraceShareName);
 		if (!hTraceMapping) {
-			hwndTrace = NULL;
+			tt::hwndTrace = NULL;
 			return;
 		}
 	}
 	if (!g_pszTraceMap) {
 		g_pszTraceMap = (char*) MapViewOfFile(hTraceMapping, FILE_MAP_WRITE, 0, 0, 0);
 		if (!g_pszTraceMap) {
-			hwndTrace = NULL;
+			tt::hwndTrace = NULL;
 			return;
 		}
 	}
 
-	ttstrcpy(g_pszTraceMap, 4093, csz);
-	ttstrcat(g_pszTraceMap, 4094, "\r\n");
+	ttStrCpy(g_pszTraceMap, 4093, csz);
+	ttStrCat(g_pszTraceMap, 4094, "\r\n");
 
 	SendMessage(tt::hwndTrace, tt::WMP_TRACE_MSG, 0, 0);
 
@@ -236,10 +236,10 @@ void __cdecl tt::Trace(const char* pszFormat, ...)
 	g_pszTraceMap = nullptr;
 }
 
-void tt::TraceClear()
+void ttTraceClear()
 {
 	ttCCritLock lock(&g_csTrace);
-	if (!tt::IsValidWindow(tt::hwndTrace))
+	if (!ttIsValidWindow(tt::hwndTrace))
 		return;
 	SendMessage(tt::hwndTrace, tt::WMP_CLEAR_TRACE, 0, 0);
 }

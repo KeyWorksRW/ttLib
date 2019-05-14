@@ -20,7 +20,7 @@
 
 const size_t TT_MAX_STRING_LEN = 0x00FFFFFF;	// strings limited to 16,777,215 bytes (16 megabytes)
 
-int ttstrcat(char* pszDst, size_t cbDest, const char* pszSrc)
+int ttStrCat(char* pszDst, size_t cbDest, const char* pszSrc)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");		// We leave this assert because this is a serious problem for the caller
 	// ttASSERT_MSG(pszSrc, "NULL pointer!");	// Issue #45--limit asserts when we handle a nullptr correctly
@@ -55,7 +55,7 @@ int ttstrcat(char* pszDst, size_t cbDest, const char* pszSrc)
 	return (*pszSrc ? EOVERFLOW : result);
 }
 
-int ttstrcat(char* pszDst, const char* pszSrc)
+int ttStrCat(char* pszDst, const char* pszSrc)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");		// We leave this assert because this is a serious problem for the caller
 	// ttASSERT_MSG(pszSrc, "NULL pointer!");	// Issue #45--limit asserts when we handle a nullptr correctly
@@ -90,7 +90,7 @@ int ttstrcat(char* pszDst, const char* pszSrc)
 	return (*pszSrc ? EOVERFLOW : result);
 }
 
-int ttstrcpy(char* pszDst, size_t cbDest, const char* pszSrc)
+int ttStrCpy(char* pszDst, size_t cbDest, const char* pszSrc)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");
 	ttASSERT_MSG(pszSrc, "NULL pointer!");
@@ -120,7 +120,7 @@ int ttstrcpy(char* pszDst, size_t cbDest, const char* pszSrc)
 	return (*pszSrc ? EOVERFLOW : result);
 }
 
-int ttstrcpy(char* pszDst, const char* pszSrc)
+int ttStrCpy(char* pszDst, const char* pszSrc)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");
 	ttASSERT_MSG(pszSrc, "NULL pointer!");
@@ -145,7 +145,7 @@ int ttstrcpy(char* pszDst, const char* pszSrc)
 	return (*pszSrc ? EOVERFLOW : result);
 }
 
-size_t ttstrlen(const char* psz)
+size_t ttStrLen(const char* psz)
 {
 	if (psz) {
 		size_t cch = ::strlen(psz); 	// now that we know it's not a null pointer, call the standard version of strLen
@@ -391,7 +391,7 @@ void ttTrimRight(char* psz)
 	if (!psz || !*psz)
 		return;
 
-	char* pszEnd = psz + ttstrlen(psz) - 1;
+	char* pszEnd = psz + ttStrLen(psz) - 1;
 	while ((*pszEnd == ' ' || *pszEnd == '\t' || *pszEnd == '\r' || *pszEnd == '\n' || *pszEnd == '\f')) {
 		pszEnd--;
 		if (pszEnd == psz) {
@@ -420,7 +420,7 @@ char* ttUtoa(uint32_t val, char* pszDst, size_t cbDst)
 		val /= 10;	// get next digit
 		cbDst--;
 	} while (cbDst > 0 && val > 0);
-	ttASSERT_MSG(cbDst > 0, "Buffer supplied to tt::Itoa is too small for the supplied integer!");
+	ttASSERT_MSG(cbDst > 0, "Buffer supplied to ttItoa is too small for the supplied integer!");
 
 	*pszDst-- = '\0';
 
@@ -451,7 +451,7 @@ char* ttUtoa(uint64_t val, char* pszDst, size_t cbDst)
 		val /= 10;	// get next digit
 		cbDst--;
 	} while (cbDst > 0 && val > 0);
-	ttASSERT_MSG(cbDst > 0, "Buffer supplied to tt::Itoa is too small for the supplied integer!");
+	ttASSERT_MSG(cbDst > 0, "Buffer supplied to ttItoa is too small for the supplied integer!");
 
 	*pszDst-- = '\0';
 
@@ -480,7 +480,7 @@ char* ttItoa(int32_t val, char* pszDst, size_t cbDst)
 		cbDst--;
 	}
 
-	tt::Utoa((uint32_t) val, pszDst, cbDst);
+	ttUtoa((uint32_t) val, pszDst, cbDst);
 	return pszRet;
 }
 
@@ -497,7 +497,7 @@ char* ttItoa(int64_t val, char* pszDst, size_t cbDst)
 	}
 
 	char* pszRet = pszDst;
-	tt::Utoa((uint64_t) val, pszDst, cbDst);
+	ttUtoa((uint64_t) val, pszDst, cbDst);
 	return pszRet;
 }
 
@@ -506,7 +506,7 @@ char* ttHextoa(size_t val, char* pszDst, bool bUpperCase)
 	static char* szBuf = NULL;
 	if (!pszDst) {
 		if (!szBuf) {
-			szBuf = (char*) ttmalloc(sizeof(size_t) * sizeof(char) + sizeof(char) * 4);	// extra room for null termination and general paranoia
+			szBuf = (char*) ttMalloc(sizeof(size_t) * sizeof(char) + sizeof(char) * 4);	// extra room for null termination and general paranoia
 		}
 		pszDst = szBuf;
 	}
@@ -605,5 +605,5 @@ void ttAddTrailingSlash(char* psz)
 		return;
 	char* pszLastSlash = ttFindLastSlash(psz);
 	if (!pszLastSlash || pszLastSlash[1])	// only add if there was no slash or there was something after the slash
-		ttstrcat(psz, "/");
+		ttStrCat(psz, "/");
 }

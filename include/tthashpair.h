@@ -2,7 +2,7 @@
 // Name:		ttCHashPair
 // Purpose:		Class utilizing an array of HASH numbers and an associated value
 // Author:		Ralph Walden
-// Copyright:	Copyright (c) 2004-2018 KeyWorks Software (Ralph Walden)
+// Copyright:	Copyright (c) 2004-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
@@ -30,15 +30,15 @@ public:
 	// Class functions
 
 	void	Add(size_t hash, size_t val = 0);
-	void	Add(const char* psz, size_t val = 0) { Add(tt::HashFromSz(psz), val); }
+	void	Add(const char* psz, size_t val = 0) { Add(ttHashFromSz(psz), val); }
 	bool	Find(size_t hash) const { return InRange(GetVal(hash)); }
-	bool	Find(const char* psz) const { return InRange(GetVal(tt::HashFromSz(psz))); }
+	bool	Find(const char* psz) const { return InRange(GetVal(ttHashFromSz(psz))); }
 	size_t	GetVal(size_t hash) const;		// returns -1 if not found
-	size_t	GetVal(const char* psz) const { return GetVal(tt::HashFromSz(psz)); }
+	size_t	GetVal(const char* psz) const { return GetVal(ttHashFromSz(psz)); }
 	void	Remove(size_t hash);
-	void	Remove(const char* psz) { Remove(tt::HashFromSz(psz)); }
+	void	Remove(const char* psz) { Remove(ttHashFromSz(psz)); }
 	void	SetVal(size_t hash, size_t val);
-	void	SetVal(const char* psz, size_t val) { SetVal(tt::HashFromSz(psz), val); }
+	void	SetVal(const char* psz, size_t val) { SetVal(ttHashFromSz(psz), val); }
 
 	void	Delete();	// remove all hash/val pairs
 
@@ -47,10 +47,10 @@ public:
 	// The URL variants are case-insensitive, and forward/back slashes are considered the same.
 	// E.g., foo\bar and Foo/bar will generate the same hash number
 
-	bool	FindURL(const char* pszURL) const { return Find(tt::HashFromURL(pszURL)); }
-	void	AddURL(const char* pszURL, size_t val = 0) { Add(tt::HashFromURL(pszURL), val); }
-	size_t	GetUrlVal(const char* pszURL) const { return GetVal(tt::HashFromURL(pszURL)); }
-	void	RemoveURL(const char* pszURL) { Remove(tt::HashFromURL(pszURL)); }
+	bool	FindURL(const char* pszURL) const { return Find(ttHashFromURL(pszURL)); }
+	void	AddURL(const char* pszURL, size_t val = 0) { Add(ttHashFromURL(pszURL), val); }
+	size_t	GetUrlVal(const char* pszURL) const { return GetVal(ttHashFromURL(pszURL)); }
+	void	RemoveURL(const char* pszURL) { Remove(ttHashFromURL(pszURL)); }
 
 #ifdef _DEBUG
 	void Verify() {	// make certain the hash numbers are in numerical order

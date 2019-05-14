@@ -11,7 +11,7 @@
 #include "../include/ttdebug.h" 	// for ttASSERTS
 #include "../include/ttstr.h"	// ttCStr
 
-size_t tt::HashFromSz(const char* psz)
+size_t ttHashFromSz(const char* psz)
 {
 	ttASSERT_NONEMPTY(psz);
 
@@ -35,7 +35,7 @@ size_t tt::HashFromSz(const char* psz)
 	return hash;
 }
 
-size_t tt::HashFromSz(const wchar_t* psz)
+size_t ttHashFromSz(const wchar_t* psz)
 {
 	ttASSERT_NONEMPTY(psz);
 
@@ -52,18 +52,18 @@ size_t tt::HashFromSz(const wchar_t* psz)
 
 // Unlike a "regular" hash, this version treats forward and backslashes identically, as well as upper and lower-case letters
 
-size_t tt::HashFromURL(const char* pszURL)
+size_t ttHashFromURL(const char* pszURL)
 {
 	ttCStr csz(pszURL);
-	tt::BackslashToForwardslash(csz);
+	ttBackslashToForwardslash(csz);
 	csz.MakeLower();
-	return tt::HashFromSz(csz);
+	return ttHashFromSz(csz);
 }
 
-size_t tt::HashFromURL(const wchar_t* pszURL)
+size_t ttHashFromURL(const wchar_t* pszURL)
 {
 	ttCStr csz(pszURL);
-	tt::BackslashToForwardslash(csz);
+	ttBackslashToForwardslash(csz);
 	csz.MakeLower();
-	return HashFromSz(csz);
+	return ttHashFromSz(csz);
 }

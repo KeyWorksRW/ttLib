@@ -11,6 +11,18 @@
 #ifndef __TTLIB_H__
 #define __TTLIB_H__
 
+namespace tt
+{
+	const size_t MAX_STRING_LEN = 0x00FFFFFF;	// strings limited to 16,777,215 bytes (16 megabytes)
+
+#ifdef _WINDOWS_
+	extern HWND hwndMsgBoxParent;		// parent for MessageBox--if Abort is requested in ttASSERT, this window will receive a WM_CLOSE message prior to shut down
+	extern HINSTANCE hinstResources;	// handle to use to load resources
+	extern const char* pszMsgTitle;		// title for message boxes
+	extern size_t LanguageOffset;		// language offset used to load other languages from .rc file
+#endif	// _WINDOWS_
+} // end of tt namespace
+
 class ttCStr;	 // forward definition
 
 extern bool (_cdecl *pttAssertHandlerA)(const char* pszMsg, const char* pszFile, const char* pszFunction, int line);
@@ -19,210 +31,186 @@ extern bool (_cdecl *pttAssertHandlerW)(const wchar_t* pszMsg, const char* pszFi
 typedef bool (_cdecl *TTASSERTHANDLERA)(const char* pszMsg, const char* pszFile, const char* pszFunction, int line);
 typedef bool (_cdecl *TTASSERTHANDLERW)(const wchar_t* pszMsg, const char* pszFile, const char* pszFunction, int line);
 
-int		  ttstrcat(char* pszDst, const char* pszSrc);
-int		  ttstrcat(char* pszDst, size_t cbDest, const char* pszSrc);
-int		  ttstrcpy(char* pszDst, const char* pszSrc);
-int		  ttstrcpy(char* pszDst, size_t cbDest, const char* pszSrc);
-size_t	  ttstrlen(const char* psz);
-char*	  ttstrchr(const char* psz, char ch);
-char*	  ttstrrchr(const char* psz, char ch);
-char*	  ttstrstr(const char* pszMain, const char* pszSub);
-char*	  ttstristr(const char* pszMain, const char* pszSub);
+int 	  ttStrCat(char* pszDst, const char* pszSrc);
+int 	  ttStrCat(char* pszDst, size_t cbDest, const char* pszSrc);
+char*	  ttStrChr(const char* psz, char ch);
+char*	  ttStrChrR(const char* psz, char ch);
+int 	  ttStrCpy(char* pszDst, const char* pszSrc);
+int 	  ttStrCpy(char* pszDst, size_t cbDest, const char* pszSrc);
+size_t	  ttStrLen(const char* psz);
+char*	  ttStrStr(const char* pszMain, const char* pszSub);
+char*	  ttStrStrI(const char* pszMain, const char* pszSub);
 
-int		  ttstrcat(wchar_t* pszDst, const wchar_t* pszSrc);
-int		  ttstrcat(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc);
-int		  ttstrcpy(wchar_t* pszDst, const wchar_t* pszSrc);
-int		  ttstrcpy(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc);
-size_t	  ttstrlen(const wchar_t* pwsz);
-wchar_t*  ttstrchr(const wchar_t* psz, wchar_t ch);
-wchar_t*  ttstrrchr(const wchar_t* psz, wchar_t ch);
-wchar_t*  ttstrstr(const wchar_t* pszMain, const wchar_t* pszSub);
+// Use ttStrLen() to get the number of characters without trailing zero, use ttStrByteLen() to get the number of bytes
+// including the terminating zero
 
-// Note that macros can replace namespace function names. For example, tt::StrCat will be changed to tt::lstrcatA if you
-// #include <shlwapi.h>. All the functions here have non-namespace versions declared in ttutil.h which will should avoid
-// any macro substitution issues.
+inline size_t ttStrByteLen(const char* psz) { return ttStrLen(psz) * sizeof(char) + sizeof(char); }
 
-namespace tt {
-	const size_t MAX_STRING_LEN = 0x00FFFFFF;	// strings limited to 16,777,215 bytes (16 megabytes)
+void*	  ttCalloc(size_t cb);
+void*	  ttCalloc(size_t num, size_t cb);
+void	  ttFree(void* pv);
+void*	  ttMalloc(size_t cb);
+void*	  ttReAlloc(void* pv, size_t cbNew);
+void*	  ttReCalloc(void* pv, size_t cbNew);
+char*	  ttStrDup(const char* psz);
+char*	  ttStrDup(const char* psz, char** ppszDst);
+size_t	  ttSize(const void* pv);
+bool	  ttValidate(const void* pv);
 
-	char*	 FindChar(const char* psz, char ch);
-	char*	 FindLastChar(const char* psz, char ch);				// returns nullptr if not found, works on UTF8 strings
-	char*	 FindStr(const char* pszMain, const char* pszSub);
-	char*	 FindStrI(const char* pszMain, const char* pszSub);
-	char*	 FindNonSpace(const char* psz); 		// returns pointer to the next non-space character
-	char*	 FindSpace(const char* psz);			// returns pointer to the next space character
+bool	  ttIsSameStr(const char* psz1, const char* psz2); 			// same as strcmp, but returns true/false
+bool	  ttIsSameStrI(const char* psz1, const char* psz2);			// case-insensitive comparison
+bool	  ttIsSameSubStr(const char* pszMain, const char* pszSub); 	// true if sub string matches first part of main string
+bool	  ttIsSameSubStrI(const char* pszMain, const char* pszSub);	// case-insensitive comparison
+bool	  ttIsValidFileChar(const char* psz, size_t pos);
 
-	wchar_t* FindChar(const wchar_t* psz, wchar_t ch);
-	wchar_t* FindLastChar(const wchar_t* psz, wchar_t ch);	// returns nullptr if not found, works on UTF8 strings
-	wchar_t* FindStr(const wchar_t* pszMain, const wchar_t* pszSub);
-	wchar_t* FindStrI(const wchar_t* pszMain, const wchar_t* pszSub);
-	wchar_t* FindNonSpace(const wchar_t* psz);	// returns pointer to the next non-space character
-	wchar_t* FindSpace(const wchar_t* psz);		// returns pointer to the next space character
+void	  ttAddTrailingSlash(char* pszPath);
+void	  ttBackslashToForwardslash(char* pszPath); 	// converts all backslashes in the string to forward slashes
+void	  ttConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszResult);
+bool	  ttCreateDir(const char* pszDir);
+char*	  ttFindNonSpace(const char* psz);		// returns pointer to the next non-space character
+char*	  ttFindSpace(const char* psz); 		// returns pointer to the next space character
+void	  ttForwardslashToBackslash(char* pszPath);
+size_t	  ttHashFromSz(const char* psz);		// creates a hash number from an string
+size_t	  ttHashFromURL(const char* pszURL);	// creates a hash number from a url or filename--'/' and '\' are considered the same, letter case doesn't matter
+char*	  ttNextChar(const char * psz); // handles UTF8 strings
+char*	  ttStepOver(const char* psz);		// equivalent to FindNonSpace(FindSpace(psz))
+void	  ttTrimRight(char* psz);
 
-	bool	 IsSameStr(const char* psz1, const char* psz2); 			// same as strcmp, but returns true/false
-	bool	 IsSameStrI(const char* psz1, const char* psz2);			// case-insensitive comparison
-	bool	 IsSameSubStr(const char* pszMain, const char* pszSub); 	// true if sub string matches first part of main string
-	bool	 IsSameSubStrI(const char* pszMain, const char* pszSub);	// case-insensitive comparison
+inline	bool ttIsAlpha(char ch) { return ( (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')); }
+inline	bool ttIsDigit(char ch) { return ((ch >= '0' && ch <= '9') || ch == '-'); }
+inline	bool ttIsEmpty(const char* psz) { return (bool) ((psz == nullptr) || (!psz[0])); }
+inline	bool ttIsNonEmpty(const char* psz) { return (psz != nullptr && psz[0]); }
+inline	bool ttIsPunct(char ch) { return (ch == '.' || ch == ',' || ch == ';' || ch == ':' || ch == '?' || ch == '!'); }
+inline	bool ttIsUTF8(char ch) { return ((ch & 0xC0) != 0x80); }	// is ch the start of a utf8 sequence?
+inline	bool ttIsWhitespace(char ch) { return ttStrChr(" \t\r\n\f", ch) ? true : false; };
 
-	bool	 IsSameStr(const wchar_t* psz1, const wchar_t* psz2);			// same as strcmp, but returns true/false
-	bool	 IsSameStrI(const wchar_t* psz1, const wchar_t* psz2);			// case-insensitive comparison
-	bool	 IsSameSubStr(const wchar_t* pszMain, const wchar_t* pszSub);	// true if sub string matches first part of main string
-	bool	 IsSameSubStrI(const wchar_t* pszMain, const wchar_t* pszSub);	// case-insensitive comparison
+ptrdiff_t ttAtoi(const char* psz);
+char*	  ttHextoa(size_t val, char* pszDst, bool bUpperCase);
+char*	  ttItoa(int32_t val, char* pszDst, size_t cbDst);
+char*	  ttItoa(int64_t val, char* pszDst, size_t cbDst);
+char*	  ttUtoa(uint32_t val, char* pszDst, size_t cbDst);
+char*	  ttUtoa(uint64_t val, char* pszDst, size_t cbDst);
 
-	char*	 NextChar(const char * psz);	// handles UTF8 strings
+// The Exists() functions return true/false base on whether the file or directory actually exists
+bool	ttDirExists(const char* pszFolder);
+bool	ttFileExists(const char* pszFile);
 
-	char*	 StepOver(const char* psz);		// equivalent to FindNonSpace(FindSpace(psz))
-	wchar_t* StepOver(const wchar_t* pwsz);
+// ttFindExtPortion and ttFindFilePortion properly handle directories and filenames that start with '.' -- i.e.,
+// ttFindExtPortion(".gitignore") will return nullptr
 
-	inline	bool IsAlpha(char ch) { return ( (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')); }
-	inline	bool IsDigit(char ch) { return ((ch >= '0' && ch <= '9') || ch == '-'); }
-	inline	bool IsEmpty(const char* psz) { return (bool) ((psz == nullptr) || (!psz[0])); }
-	inline	bool IsNonEmpty(const char* psz) { return (psz != nullptr && psz[0]); }
-	inline	bool IsPunct(char ch) { return (ch == '.' || ch == ',' || ch == ';' || ch == ':' || ch == '?' || ch == '!'); }
-	inline	bool IsUTF8(char ch) { return ((ch & 0xC0) != 0x80); }	// is ch the start of a utf8 sequence?
-	inline	bool IsWhitespace(char ch) { return tt::FindChar(" \t\r\n\f", ch) ? true : false; };
+char*	 ttFindExt(const char* pszPath, const char* pszExt);		// find a case-insensitive extension in a path string
+char*	 ttFindExtPortion(const char* pszPath); 					// returns pointer to the '.' that begins a file name extension, or nullptr
+char*	 ttFindFilePortion(const char* pszPath);					// returns pointer to the filename portion of a path
+char*	 ttFindLastSlash(const char* pszPath);						// handles both forward and back slashes
 
-	inline	bool IsAlpha(wchar_t ch) { return ( (ch >= L'a' && ch <= L'z') || (ch >= L'A' && ch <= L'Z')); }
-	inline	bool IsDigit(wchar_t ch) { return ((ch >= L'0' && ch <= L'9') || ch == L'-'); }
-	inline	bool IsEmpty(const wchar_t* psz) { return (bool) ((psz == nullptr) || (!psz[0])); }
-	inline	bool IsNonEmpty(const wchar_t* psz) { return (psz != nullptr && psz[0]); }
-	inline	bool IsPunct(wchar_t ch) { return (ch == L'.' || ch == L',' || ch == L';' || ch == L':' || ch == L'?' || ch == L'!'); }
-	inline	bool IsWhitespace(wchar_t ch) { return (ch == L' ' || ch == L'\t' || ch == L'\r' || ch == L'\n' || ch == L'\f') ? true : false; }
-
-[[deprecated]]	int			StrCat(char* pszDst, size_t cbDest, const char* pszSrc);	// always zero-terminates, returns EOVERFLOW if truncated
-[[deprecated]]	int			StrCopy(char* pszDst, size_t cbDest, const char* pszSrc);	// always zero-terminates, returns EOVERFLOW if truncated
-[[deprecated]]	size_t		StrLen(const char* psz);
-
-[[deprecated]]	int			StrCat(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc);
-[[deprecated]]	int			StrCopy(wchar_t* pwszDst, size_t cbDest, const wchar_t* pwszSrc);
-[[deprecated]]	size_t		StrLen(const wchar_t* pwsz);
-
-	// force "normal" calls to secure version -- possible buffer overflow if destination isn't large enough
-
-[[deprecated]]		inline int	StrCat(char* pszDst, const char* pszSrc) { return ttstrcat(pszDst, tt::MAX_STRING_LEN, pszSrc); }
-[[deprecated]]		inline int	StrCopy(char* pszDst, const char* pszSrc) { return ttstrcpy(pszDst, tt::MAX_STRING_LEN, pszSrc); }
-
-[[deprecated]]		inline int	StrCat(wchar_t* pwszDst, const wchar_t* pwszSrc) { return ttstrcat(pwszDst, tt::MAX_STRING_LEN, pwszSrc); }
-[[deprecated]]		inline int	StrCopy(wchar_t* pwszDst, const wchar_t* pwszSrc) { return ttstrcpy(pwszDst, tt::MAX_STRING_LEN, pwszSrc); }
-
-	// Use strLen() to get the number of characters without trailing zero, use strByteLen() to get the number of
-	// bytes including the terminating zero
-
-	inline size_t StrByteLen(const char* psz) { return ttstrlen(psz) * sizeof(char) + sizeof(char); }	// char is 1 in SBCS builds, 2 in UNICODE builds
-	inline size_t StrByteLen(const wchar_t* pwsz) { return ttstrlen(pwsz) * sizeof(wchar_t) + sizeof(wchar_t); }
-
-	void	  TrimRight(char* psz);
-
-	ptrdiff_t Atoi(const char* psz);
-	char*	  Hextoa(size_t val, char* pszDst, bool bUpperCase);
-	char*	  Itoa(int32_t val, char* pszDst, size_t cbDst);
-	char*	  Itoa(int64_t val, char* pszDst, size_t cbDst);
-	char*	  Utoa(uint32_t val, char* pszDst, size_t cbDst);
-	char*	  Utoa(uint64_t val, char* pszDst, size_t cbDst);
-
-	ptrdiff_t Atoi(const wchar_t* psz);
-	wchar_t*  Hextoa(size_t val, wchar_t* pszDst, bool bUpperCase);
-	wchar_t*  Itoa(int32_t val, wchar_t* pszDst, size_t cbDst);
-	wchar_t*  Itoa(int64_t val, wchar_t* pszDst, size_t cbDst);
-	wchar_t*  Utoa(uint32_t val, wchar_t* pszDst, size_t cbDst);
-	wchar_t*  Utoa(uint64_t val, wchar_t* pszDst, size_t cbDst);
-
-	// printf/vprintf provides a sub-set of the standard sprintf format codes, with automatic allocation of sufficient memory to hold
-	// the result, along with some special format specifiers.
-	//
-	//		standard: c, C, d, i, u, x, X, s, S		(no floating point, precision or padding)
-	//
-	//		%kd -  formats an integer with commas. I.e., 54321 would be formatted as 54,321
-	//		%kq -  outputs quotation marks around the string
-	//		%ks -  adds a 's' to the current buffer if the integer is zero or greater then 1, e.g., printf("item%ks", cItems);
-	//		%kS -  adds a 's' to the current buffer if the __int64 is zero or greater then 1
-	//		%kls - adds a 's' to the current buffer if the last numeric argument is zero or greater then 1 (printf("%d item%kls", cItems);
-	//		%kt -  formats a size_t value with commas
-	//		%ku -  formats an unsigned integer with commas
-
-	//		%kI64d -- handles int64_t, adding commas if needed
-	//		%kI64u -- handles uint64_t, adding commas if needed
-
-	// The following are only valid when compiling for _WINDOWS_
-
-	//		%ke - formats a system message assuming the argument is an error number
-	//		%kr - argument is a resource identifier to a string
-
-	char* cdecl printf(char** ppszDst, const char* pszFormat, ...);		// CAUTION! The memory ppszDst points to will be modified by ttHeap functions
-	void		vprintf(char** ppszDst, const char* pszFormat, va_list argList);
-
-	void	ConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszResult);
-	bool	CreateDir(const char* pszDir);
-	bool	CreateDir(const wchar_t* pszDir);
-
-	// The exists functions return true/false base on whether the file or directory actually exists
-	bool	DirExists(const char* pszFolder);
-	bool	DirExists(const wchar_t* pszFolder);
-	bool	FileExists(const char* pszFile);
-	bool	FileExists(const wchar_t* pszFile);
-
-	bool	IsValidFileChar(const char* psz, size_t pos);
-
-	void	BackslashToForwardslash(char* pszPath);		// converts all backslashes in the string to forward slashes
-	void	ForwardslashToBackslash(char* pszPath);
-
-	void	AddTrailingSlash(char* pszPath);
-
-	// FindExtPortion and FindFilePortion properly handle directories and filenames that start with '.' -- i.e.,
-	// tt::FindExtPortion(".gitignore") will return nullptr
-
-	char*	 FindExtPortion(const char* pszPath);	// returns pointer to the '.' that begins a file name extension, or nullptr
-	char*	 FindFilePortion(const char* pszPath);	// returns pointer to the filename portion of a path
-
-	char*	 FindExt(const char* pszPath, const char* pszExt);		// find a case-insensitive extension in a path string
-	wchar_t* FindExt(const wchar_t* pszPath, const wchar_t* pszExt);
-	char*	 FindLastSlash(const char* pszPath);	// handles both forward and back slashes
-
-	size_t	 HashFromSz(const char* psz);			// creates a hash number from an string
-	size_t	 HashFromSz(const wchar_t* psz);
-	size_t	 HashFromURL(const char* pszURL);		// creates a hash number from a url or filename--'/' and '\' are considered the same, letter case doesn't matter
-	size_t	 HashFromURL(const wchar_t* pszURL);
-
-	inline void	SetAssertHandlerA(TTASSERTHANDLERA pFunc) { pttAssertHandlerA = pFunc; }	// Replace the ttLib assertion handler with your own
-	inline void	SetAssertHandlerW(TTASSERTHANDLERW pFunc) { pttAssertHandlerW = pFunc; }
+inline void	ttSetAssertHandlerA(TTASSERTHANDLERA pFunc) { pttAssertHandlerA = pFunc; }	// Replace the ttLib assertion handler with your own
+inline void	ttSetAssertHandlerW(TTASSERTHANDLERW pFunc) { pttAssertHandlerW = pFunc; }
 
 #ifdef _WINDOWS_
-	extern HWND hwndMsgBoxParent;		// parent for MessageBox--if Abort is requested in ttASSERT, this window will receive a WM_CLOSE message prior to shut down
-	extern HINSTANCE hinstResources;	// handle to use to load resources
-	extern const char* pszMsgTitle;		// title for message boxes
-	extern size_t LanguageOffset;		// language offset used to load other languages from .rc file
 
-	// InitCaller is equivalent to calling setResInst(hinstRes), setMsgBoxParent(hwndParent) and setMsgBoxTitle(pszMsgTitle)
-	void		InitCaller(HINSTANCE hinstRes, HWND hwndParent, const char* pszMsgTitle);
-	inline void	InitCaller(const char* pszTitle) { InitCaller(GetModuleHandle(nullptr), nullptr, pszTitle); }	// use this for console apps
+// ttInitCaller is equivalent to calling setResInst(hinstRes), setMsgBoxParent(hwndParent) and setMsgBoxTitle(pszMsgTitle)
+void		ttInitCaller(HINSTANCE hinstRes, HWND hwndParent, const char* pszMsgTitle);
+inline void	ttInitCaller(const char* pszTitle) { ttInitCaller(GetModuleHandle(nullptr), nullptr, pszTitle); }	// use this for console apps
 
-	inline HINSTANCE   GetResInst() { return hinstResources; }
-	inline void		   SetResInst(HINSTANCE hinst) { hinstResources = hinst; }
-	inline void		   SetMsgBoxParent(HWND hwnd) { hwndMsgBoxParent = hwnd; }
-		   void		   SetMsgBoxTitle(const char* pszMsgTitle);
-	inline const char* GetMsgBoxTitle() { return pszMsgTitle; }
+inline HINSTANCE   ttGetResInst() { return tt::hinstResources; }
+inline void		   ttSetResInst(HINSTANCE hinst) { tt::hinstResources = hinst; }
+inline void		   ttSetMsgBoxParent(HWND hwnd) { tt::hwndMsgBoxParent = hwnd; }
+inline const char* ttGetMsgBoxTitle() { return tt::pszMsgTitle; }
 
-	const char* GetResString(size_t idString);
-	const char* LoadTxtResource(int idRes, uint32_t* pcbFile = nullptr, HINSTANCE hinst = tt::hinstResources);
+void		ttSetMsgBoxTitle(const char* pszMsgTitle);
 
-	int			MsgBox(UINT idResource, UINT uType = MB_OK | MB_ICONWARNING);
-	int			MsgBox(const char* pszMsg, UINT uType = MB_OK | MB_ICONWARNING);
-	int cdecl	MsgBoxFmt(const char* pszFormat, UINT uType, ...);
-	int cdecl	MsgBoxFmt(int idResource, UINT uType, ...);
+const char* ttGetResString(size_t idString);
+const char* ttLoadTxtResource(int idRes, uint32_t* pcbFile = nullptr, HINSTANCE hinst = tt::hinstResources);
 
-	ptrdiff_t	CompareFileTime(FILETIME* pftSrc, FILETIME* pftDst);
-	HFONT		CreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold = false, bool fItalics = false);
+int			ttMsgBox(UINT idResource, UINT uType = MB_OK | MB_ICONWARNING);
+int			ttMsgBox(const char* pszMsg, UINT uType = MB_OK | MB_ICONWARNING);
+int cdecl	ttMsgBoxFmt(const char* pszFormat, UINT uType, ...);
+int cdecl	ttMsgBoxFmt(int idResource, UINT uType, ...);
 
-	inline int	RC_HEIGHT(const RECT* prc) { return prc->bottom - prc->top; };
-	inline int	RC_HEIGHT(const RECT rc) { return rc.bottom - rc.top; };
-	inline int	RC_WIDTH(const RECT* prc) { return prc->right - prc->left; };
-	inline int	RC_WIDTH(const RECT rc) { return rc.right - rc.left; };
+ptrdiff_t	ttCompareFileTime(FILETIME* pftSrc, FILETIME* pftDst);
+HFONT		ttCreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold = false, bool fItalics = false);
 
-	inline bool IsPosInRect(const RECT* prc, int xPos, int yPos) { return (xPos >= prc->left && xPos <= prc->right && yPos >= prc->top && yPos <= prc->bottom); }
-	inline bool	IsValidWindow(HWND hwnd) { return (bool) (hwnd && IsWindow(hwnd)); };
+inline int	ttRC_HEIGHT(const RECT* prc) { return prc->bottom - prc->top; };
+inline int	ttRC_HEIGHT(const RECT rc) { return rc.bottom - rc.top; };
+inline int	ttRC_WIDTH(const RECT* prc) { return prc->right - prc->left; };
+inline int	ttRC_WIDTH(const RECT rc) { return rc.right - rc.left; };
+
+inline bool ttIsPosInRect(const RECT* prc, int xPos, int yPos) { return (xPos >= prc->left && xPos <= prc->right && yPos >= prc->top && yPos <= prc->bottom); }
+inline bool	ttIsValidWindow(HWND hwnd) { return (bool) (hwnd && IsWindow(hwnd)); };
+
 #endif	// _WINDOWS_
 
-} // end of tt namespace
+// ttPrintf/ttVPrintf provides a sub-set of the standard sprintf format codes, with automatic allocation of sufficient memory to hold
+// the result, along with some special format specifiers.
+//
+//		standard: c, C, d, i, u, x, X, s, S		(no floating point, precision or padding)
+//
+//		%kd -  formats an integer with commas. I.e., 54321 would be formatted as 54,321
+//		%kq -  outputs quotation marks around the string
+//		%ks -  adds a 's' to the current buffer if the integer is zero or greater then 1, e.g., printf("item%ks", cItems);
+//		%kS -  adds a 's' to the current buffer if the __int64 is zero or greater then 1
+//		%kls - adds a 's' to the current buffer if the last numeric argument is zero or greater then 1 (printf("%d item%kls", cItems);
+//		%kt -  formats a size_t value with commas
+//		%ku -  formats an unsigned integer with commas
+
+//		%kI64d -- handles int64_t, adding commas if needed
+//		%kI64u -- handles uint64_t, adding commas if needed
+
+// The following are only valid when compiling for _WINDOWS_
+
+//		%ke - formats a system message assuming the argument is an error number
+//		%kr - argument is a resource identifier to a string
+
+char* cdecl ttPrintf(char** ppszDst, const char* pszFormat, ...);		// CAUTION! The memory ppszDst points to will be modified by ttHeap functions
+void		ttVPrintf(char** ppszDst, const char* pszFormat, va_list argList);
+
+/////////////////////////// wide character versions /////////////////////////////////////
+
+int		  ttStrCat(wchar_t* pszDst, const wchar_t* pszSrc);
+int		  ttStrCat(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc);
+int		  ttStrCpy(wchar_t* pszDst, const wchar_t* pszSrc);
+int		  ttStrCpy(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc);
+size_t	  ttStrLen(const wchar_t* pwsz);
+wchar_t*  ttStrChr(const wchar_t* psz, wchar_t ch);
+wchar_t*  ttStrChrR(const wchar_t* psz, wchar_t ch);
+wchar_t*  ttStrStr(const wchar_t* pszMain, const wchar_t* pszSub);
+
+wchar_t*  ttStrChr(const wchar_t* psz, wchar_t ch);
+wchar_t*  ttStrChrR(const wchar_t* psz, wchar_t ch);	// returns nullptr if not found, works on UTF8 strings
+wchar_t*  ttStrStr(const wchar_t* pszMain, const wchar_t* pszSub);
+wchar_t*  ttStrStrI(const wchar_t* pszMain, const wchar_t* pszSub);
+wchar_t*  ttFindNonSpace(const wchar_t* psz);	// returns pointer to the next non-space character
+wchar_t*  ttFindSpace(const wchar_t* psz);		// returns pointer to the next space character
+
+wchar_t*  ttStrDup(const wchar_t* pwsz);
+
+bool	  ttIsSameStr(const wchar_t* psz1, const wchar_t* psz2);			// same as strcmp, but returns true/false
+bool	  ttIsSameStrI(const wchar_t* psz1, const wchar_t* psz2);			// case-insensitive comparison
+bool	  ttIsSameSubStr(const wchar_t* pszMain, const wchar_t* pszSub);	// true if sub string matches first part of main string
+bool	  ttIsSameSubStrI(const wchar_t* pszMain, const wchar_t* pszSub);	// case-insensitive comparison
+
+ptrdiff_t ttAtoi(const wchar_t* psz);
+wchar_t*  ttHextoa(size_t val, wchar_t* pszDst, bool bUpperCase);
+wchar_t*  ttItoa(int32_t val, wchar_t* pszDst, size_t cbDst);
+wchar_t*  ttItoa(int64_t val, wchar_t* pszDst, size_t cbDst);
+wchar_t*  ttUtoa(uint32_t val, wchar_t* pszDst, size_t cbDst);
+wchar_t*  ttUtoa(uint64_t val, wchar_t* pszDst, size_t cbDst);
+
+inline	bool   ttIsAlpha(wchar_t ch) { return ( (ch >= L'a' && ch <= L'z') || (ch >= L'A' && ch <= L'Z')); }
+inline	bool   ttIsDigit(wchar_t ch) { return ((ch >= L'0' && ch <= L'9') || ch == L'-'); }
+inline	bool   ttIsEmpty(const wchar_t* psz) { return (bool) ((psz == nullptr) || (!psz[0])); }
+inline	bool   ttIsNonEmpty(const wchar_t* psz) { return (psz != nullptr && psz[0]); }
+inline	bool   ttIsPunct(wchar_t ch) { return (ch == L'.' || ch == L',' || ch == L';' || ch == L':' || ch == L'?' || ch == L'!'); }
+inline	bool   ttIsWhitespace(wchar_t ch) { return (ch == L' ' || ch == L'\t' || ch == L'\r' || ch == L'\n' || ch == L'\f') ? true : false; }
+inline  size_t ttStrByteLen(const wchar_t* pwsz) { return ttStrLen(pwsz) * sizeof(wchar_t) + sizeof(wchar_t); }
+
+bool	  ttCreateDir(const wchar_t* pszDir);
+bool	  ttDirExists(const wchar_t* pszFolder);
+bool	  ttFileExists(const wchar_t* pszFile);
+wchar_t*  ttFindExt(const wchar_t* pszPath, const wchar_t* pszExt);
+size_t	  ttHashFromSz(const wchar_t* psz);
+size_t	  ttHashFromURL(const wchar_t* pszURL);
+wchar_t*  ttStepOver(const wchar_t* pwsz);
 
 namespace ttch {
 	const char CH_OPEN_PAREN =	'(';

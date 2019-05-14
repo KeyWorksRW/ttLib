@@ -25,47 +25,47 @@ namespace tt {
 	size_t		LanguageOffset;		// language offset used to load other languages from .rc file
 }
 
-void tt::InitCaller(HINSTANCE hinstRes, HWND hwnd, const char* pszTitle)
+void ttInitCaller(HINSTANCE hinstRes, HWND hwnd, const char* pszTitle)
 {
-	tt::pszMsgTitle = ttstrdup(pszTitle ? pszTitle : "");
+	tt::pszMsgTitle = ttStrDup(pszTitle ? pszTitle : "");
 
 	tt::hinstResources = hinstRes;
 	tt::hwndMsgBoxParent = hwnd;
 }
 
-void tt::SetMsgBoxTitle(const char* pszTitle)
+void ttSetMsgBoxTitle(const char* pszTitle)
 {
 	if (tt::pszMsgTitle)
-		ttfree((void*) tt::pszMsgTitle);
-	tt::pszMsgTitle = ttstrdup(pszTitle ? pszTitle : "");
+		ttFree((void*) tt::pszMsgTitle);
+	tt::pszMsgTitle = ttStrDup(pszTitle ? pszTitle : "");
 }
 
 // Note that these message boxes will work in a console app as well as a windowed app
 
-int tt::MsgBox(const char* pszMsg, UINT uType)
+int ttMsgBox(const char* pszMsg, UINT uType)
 {
 	return MessageBoxA(GetActiveWindow(), pszMsg, (tt::pszMsgTitle ? tt::pszMsgTitle : ""), uType);
 }
 
-int tt::MsgBox(UINT idResource, UINT uType)
+int ttMsgBox(UINT idResource, UINT uType)
 {
 	ttCStr strRes;
 	strRes.GetResString(idResource);
 	return MessageBoxA(GetActiveWindow(), strRes.IsNonEmpty() ? (char*) strRes : "missing resource id", (tt::pszMsgTitle ? tt::pszMsgTitle : ""), uType);
 }
 
-int __cdecl tt::MsgBoxFmt(const char* pszFormat, UINT uType, ...)
+int __cdecl ttMsgBoxFmt(const char* pszFormat, UINT uType, ...)
 {
 	ttCStr csz;
 	va_list argList;
 	va_start(argList, uType);
-	tt::vprintf(csz.GetPPtr(), pszFormat, argList);
+	ttVPrintf(csz.GetPPtr(), pszFormat, argList);
 	va_end(argList);
 
 	return MessageBoxA(GetActiveWindow(), csz, tt::pszMsgTitle ? tt::pszMsgTitle : "", uType);
 }
 
-int __cdecl tt::MsgBoxFmt(int idResource, UINT uType, ...)
+int __cdecl ttMsgBoxFmt(int idResource, UINT uType, ...)
 {
 	ttCStr cszTmp;
 	cszTmp.GetResString(idResource);
@@ -73,13 +73,13 @@ int __cdecl tt::MsgBoxFmt(int idResource, UINT uType, ...)
 	ttCStr csz;
 	va_list argList;
 	va_start(argList, uType);
-	tt::vprintf(csz.GetPPtr(), cszTmp, argList);
+	ttVPrintf(csz.GetPPtr(), cszTmp, argList);
 	va_end(argList);
 
 	return MessageBoxA(GetActiveWindow(), csz, tt::pszMsgTitle ? tt::pszMsgTitle : "", uType);
 }
 
-HFONT tt::CreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold, bool fItalics)
+HFONT ttCreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold, bool fItalics)
 {
 	HDC hdc = CreateCompatibleDC(NULL);
 	SetMapMode(hdc, MM_TEXT);
@@ -96,7 +96,7 @@ HFONT tt::CreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold, bool fI
 	lf.lfItalic = (BYTE) fItalics;
 	if (fBold)
 		lf.lfWeight = FW_BOLD;
-	ttstrcpy(lf.lfFaceName, LF_FACESIZE, pszTypeFace);
+	ttStrCpy(lf.lfFaceName, LF_FACESIZE, pszTypeFace);
 
 	HFONT hfont = CreateFontIndirectA(&lf);
 	DeleteDC(hdc);
@@ -107,7 +107,7 @@ HFONT tt::CreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold, bool fI
 // The system API CompareFileTime() will say write access time was different if the files are only 2 seconds apart -- which they can be on networked or FAT drives.
 // We roll our own to account for this.
 
-ptrdiff_t tt::CompareFileTime(FILETIME* pftSrc, FILETIME* pftDst)
+ptrdiff_t ttCompareFileTime(FILETIME* pftSrc, FILETIME* pftDst)
 {
 	SYSTEMTIME stSrc, stDst;
 	FileTimeToSystemTime(pftSrc, &stSrc);
@@ -148,7 +148,7 @@ ptrdiff_t tt::CompareFileTime(FILETIME* pftSrc, FILETIME* pftDst)
 	return 0;	// Note that we do NOT check milliseconds
 }
 
-const char* tt::LoadTxtResource(int idRes, uint32_t* pcbFile, HINSTANCE hinst)
+const char* ttLoadTxtResource(int idRes, uint32_t* pcbFile, HINSTANCE hinst)
 {
 	HRSRC hrsrc	 = FindResource(hinst, MAKEINTRESOURCE(idRes), RT_RCDATA);
 	if (!hrsrc)
@@ -181,7 +181,7 @@ const char* tt::LoadTxtResource(int idRes, uint32_t* pcbFile, HINSTANCE hinst)
 
 */
 
-const char* tt::GetResString(size_t idString)
+const char* ttGetResString(size_t idString)
 {
 	static char szStringBuf[1024];
 

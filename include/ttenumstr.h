@@ -37,8 +37,8 @@ public:
 	char* GetCurrent() const { return m_pszCur; }	// value is undefined if Enum() returned false
 	operator char*() const { return m_pszCur; }
 
-	bool operator == (const char* psz)	{ return tt::IsSameStr(m_pszCur, psz); }
-	bool operator == (char* psz)		{ return tt::IsSameStr(m_pszCur, psz); }
+	bool operator == (const char* psz)	{ return ttIsSameStr(m_pszCur, psz); }
+	bool operator == (char* psz)		{ return ttIsSameStr(m_pszCur, psz); }
 
 protected:
 	// Class members

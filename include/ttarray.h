@@ -25,13 +25,13 @@ public:
 	}
 	~ttCArray() {
 		if (m_aData)
-			ttfree(m_aData);
+			ttFree(m_aData);
 	}
 
 	void Add(const T t) {
 		if (m_cItems >= m_cAllocated) {
 			m_cAllocated += 8;	// allocate room for 8 items at a time
-			m_aData = (T*) (m_aData ? ttrealloc(m_aData, m_cAllocated * sizeof(T)) : ttmalloc(m_cAllocated * sizeof(T)));
+			m_aData = (T*) (m_aData ? ttReAlloc(m_aData, m_cAllocated * sizeof(T)) : ttMalloc(m_cAllocated * sizeof(T)));
 		}
 		m_aData[m_cItems++] = t;
 	}
@@ -39,7 +39,7 @@ public:
 	size_t Add() {	// use this to add an emptry member which you can fill in using the returned array index
 		if (m_cItems >= m_cAllocated) {
 			m_cAllocated += 8;	// allocate room for 8 items at a time
-			m_aData = (T*) (m_aData ? ttrealloc(m_aData, m_cAllocated * sizeof(T)) : ttmalloc(m_cAllocated * sizeof(T)));
+			m_aData = (T*) (m_aData ? ttReAlloc(m_aData, m_cAllocated * sizeof(T)) : ttMalloc(m_cAllocated * sizeof(T)));
 		}
 		return m_cItems++;
 	}
@@ -70,7 +70,7 @@ public:
 
 	void Reset() {	// caller's responsibility to delete any allocated members first!
 		if (m_aData) {
-			ttfree(m_aData);
+			ttFree(m_aData);
 			m_aData = nullptr;
 		}
 		m_cAllocated = m_cItems = 0;

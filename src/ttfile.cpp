@@ -17,7 +17,7 @@
 #include "../include/ttfile.h"
 
 #ifdef _WINDOWS_
-	#define CHECK_URL_PTR(str)	{ ttASSERT(str); if (!str || !str[0] || ttstrlen(str) >= INTERNET_MAX_URL_LENGTH) { m_ioResult = ERROR_BAD_NAME; return false; } }
+	#define CHECK_URL_PTR(str)	{ ttASSERT(str); if (!str || !str[0] || ttStrLen(str) >= INTERNET_MAX_URL_LENGTH) { m_ioResult = ERROR_BAD_NAME; return false; } }
 
 	#pragma comment(lib, "Wininet.lib")
 #endif
@@ -39,7 +39,7 @@
 	#define ERROR_INVALID_NAME 123
 #endif
 
-#define CHECK_FILE_PTR(str) { ttASSERT(str); if (!str || !str[0] || ttstrlen(str) >= FILENAME_MAX) { m_ioResult = ERROR_BAD_NAME; return false; } }
+#define CHECK_FILE_PTR(str) { ttASSERT(str); if (!str || !str[0] || ttStrLen(str) >= FILENAME_MAX) { m_ioResult = ERROR_BAD_NAME; return false; } }
 
 ttCFile::ttCFile()
 {
@@ -67,7 +67,7 @@ ttCFile::~ttCFile()
 		InternetCloseHandle(m_hInternetSession);
 #endif
 	if (m_pbuf)
-		ttfree(m_pbuf);
+		ttFree(m_pbuf);
 }
 
 // Memory allocation is always rounded up to the nearest 4K boundary. I.e., if you request 1 byte or 4095 bytes, what will actually
@@ -80,7 +80,7 @@ void ttCFile::AllocateBuffer(size_t cbInitial)
 	cbInitial <<= 12;
 	cbInitial += 0x1000;	// round up to nearest 4K byte boundary (1-4095 becomes 4096, 4096-8191 become 8192)
 	m_cbAllocated = cbInitial;
-	m_pbuf = (char*) ttmalloc(m_cbAllocated);	// won't return on failure
+	m_pbuf = (char*) ttMalloc(m_cbAllocated);	// won't return on failure
 	m_pszLine = m_pCurrent = m_pbuf;
 	m_pEnd = m_pbuf + (m_cbAllocated - CB_END_PAD);
 }
@@ -92,7 +92,7 @@ void ttCFile::AllocateMoreMemory(size_t cbMore)
 	cbMore <<= 12;
 	cbMore += 0x1000;	// round up to nearest 4k byte boundary
 	m_cbAllocated += (cbMore);
-	m_pbuf = (char*) ttrealloc(m_pbuf, m_cbAllocated);
+	m_pbuf = (char*) ttReAlloc(m_pbuf, m_cbAllocated);
 	m_pszLine = m_pbuf;
 	m_pCurrent = m_pbuf + cOffset;
 	m_pEnd = m_pbuf + (m_cbAllocated - CB_END_PAD);
@@ -102,7 +102,7 @@ bool ttCFile::WriteFile(const char* pszFile)
 {
 	CHECK_FILE_PTR(pszFile);	// returns false on failure
 #ifdef _DEBUG
-	m_pszFile = tt::FindFilePortion(pszFile);	// set this so Debugger will see it
+	m_pszFile = ttFindFilePortion(pszFile);	// set this so Debugger will see it
 #endif
 	ttASSERT_MSG(m_pCurrent > m_pbuf, "Trying to write an empty file!");
 	if (m_pCurrent == m_pbuf) {
@@ -141,7 +141,7 @@ bool ttCFile::ReadFile(const char* pszFile)
 	Delete();
 	CHECK_FILE_PTR(pszFile);	// returns on failure
 #ifdef _DEBUG
-	m_pszFile = tt::FindFilePortion(pszFile);	// set this so Debugger will see it
+	m_pszFile = ttFindFilePortion(pszFile);	// set this so Debugger will see it
 #endif
 
 #ifdef _WX_WX_H_
@@ -358,10 +358,10 @@ void ttCFile::WriteEol(const char* psz)
 	if (!m_pbuf)
 		AllocateBuffer(4097);
 
-	size_t cb = ttstrlen(psz) + 2;	// include room for cr/lf (even if set for Unix -- the extra byte won't hurt)
+	size_t cb = ttStrLen(psz) + 2;	// include room for cr/lf (even if set for Unix -- the extra byte won't hurt)
 	if (m_pCurrent + cb > m_pEnd)
 		AllocateMoreMemory(max(cb + 1024, 16 * 1024));
-	ttstrcpy(m_pCurrent, psz);
+	ttStrCpy(m_pCurrent, psz);
 	m_pCurrent += (cb - 2);
 
 	if (!m_fUnixLF)
@@ -377,12 +377,12 @@ void ttCFile::WriteStr(const char* psz)
 	if (!psz || !*psz)
 		return;
 	if (!m_pbuf)
-		AllocateBuffer(ttstrlen(psz) + 4);
+		AllocateBuffer(ttStrLen(psz) + 4);
 
-	size_t cb = ttstrlen(psz);
+	size_t cb = ttStrLen(psz);
 	if (m_pCurrent + cb + 2 > m_pEnd)
 		AllocateMoreMemory(max(cb + 1024, 16 * 1024));
-	ttstrcpy(m_pCurrent, psz);
+	ttStrCpy(m_pCurrent, psz);
 	m_pCurrent += cb;
 }
 
@@ -396,7 +396,7 @@ void cdecl ttCFile::printf(const char* pszFormat, ...)
 	ttCStr csz;
 	va_list argList;
 	va_start(argList, pszFormat);
-	tt::vprintf(csz.GetPPtr(), pszFormat, argList);
+	ttVPrintf(csz.GetPPtr(), pszFormat, argList);
 	va_end(argList);
 
 	WriteStr(csz);
@@ -445,9 +445,9 @@ bool ttCFile::ReadLine(char** ppszLine)
 void ttCFile::Delete()
 {
 	if (m_pbuf)
-		ttfree(m_pbuf);
+		ttFree(m_pbuf);
 	if (m_pCopy)
-		ttfree(m_pCopy);
+		ttFree(m_pCopy);
 
 	m_pbuf = m_pCopy = nullptr;
 	m_pCurrent = nullptr;
@@ -467,12 +467,12 @@ void ttCFile::InsertStr(const char* pszText, char* pszPosition)
 	if (!pszText || !*pszText || !pszPosition || pszPosition < m_pbuf || pszPosition > m_pbuf + m_cbAllocated)
 		return;
 
-	size_t cb = ttstrlen(pszText);
+	size_t cb = ttStrLen(pszText);
 	ptrdiff_t offset = pszPosition - m_pbuf;
 	while ((m_pCurrent - m_pbuf) + cb >= m_cbAllocated)
 		AllocateMoreMemory();
 	pszPosition = m_pbuf + offset;	// because AllocateMoreMemory() may change location
-	memmove(pszPosition + cb, pszPosition, tt::StrByteLen(pszPosition));
+	memmove(pszPosition + cb, pszPosition, ttStrByteLen(pszPosition));
 	while (*pszText)	// can't use strCopy() because we don't want the NULL terminator
 		*pszPosition++ = *pszText++;
 	m_pCurrent += cb;
@@ -490,7 +490,7 @@ bool ttCFile::ReplaceStr(const char* pszOldText, const char* pszNewText, bool fC
 	if (!pszOldText || !*pszOldText)
 		return false;
 
-	char* pszPos = fCaseSensitive ? tt::FindStr(m_pbuf, pszOldText) : tt::FindStrI(m_pbuf, pszOldText);
+	char* pszPos = fCaseSensitive ? ttStrStr(m_pbuf, pszOldText) : ttStrStrI(m_pbuf, pszOldText);
 	if (!pszPos)
 		return false;
 
@@ -498,8 +498,8 @@ bool ttCFile::ReplaceStr(const char* pszOldText, const char* pszNewText, bool fC
 	if (pszPos >= m_pCurrent)
 		return false;
 
-	size_t cbOld = ttstrlen(pszOldText);
-	size_t cbNew = ttstrlen(pszNewText);
+	size_t cbOld = ttStrLen(pszOldText);
+	size_t cbNew = ttStrLen(pszNewText);
 
 	if (cbNew == 0) {	// delete the old text since new text is empty
 		ptrdiff_t cb = m_pCurrent - pszPos;
@@ -542,13 +542,13 @@ size_t ttCFile::GetCurLineLength()
 		return 0;
 
 	if (m_bReadlineReady && m_pszLine)
-		return ttstrlen(m_pszLine);
+		return ttStrLen(m_pszLine);
 
 	const char* pszBeginLine = m_pCurrent;
 	while (pszBeginLine > m_pbuf && *pszBeginLine != '\n')
 		pszBeginLine--;
 
-	return ttstrlen(pszBeginLine) - 1;
+	return ttStrLen(pszBeginLine) - 1;
 }
 
 bool ttCFile::IsThisPreviousString(const char* pszPrev)
@@ -559,11 +559,11 @@ bool ttCFile::IsThisPreviousString(const char* pszPrev)
 	if (!pszPrev || !*pszPrev || !m_pCurrent)
 		return false;
 
-	size_t cb = ttstrlen(pszPrev);
+	size_t cb = ttStrLen(pszPrev);
 
 	if (m_pCurrent - cb < m_pbuf)
 		return false;
-	return tt::IsSameStr(m_pCurrent - cb, pszPrev);
+	return ttIsSameStr(m_pCurrent - cb, pszPrev);
 }
 
 bool ttCFile::UnicodeToAnsi()
@@ -571,7 +571,7 @@ bool ttCFile::UnicodeToAnsi()
 	if (!m_pbuf || m_pEnd < m_pbuf + 2 || (uint8_t) m_pbuf[0] != 0xFF || (uint8_t) m_pbuf[1] != 0xFE)
 		return false;
 
-	size_t cb = ttstrlen((wchar_t*) (m_pbuf + 2)) * sizeof(wchar_t);
+	size_t cb = ttStrLen((wchar_t*) (m_pbuf + 2)) * sizeof(wchar_t);
 	size_t cbLen;
 	int err = wcstombs_s(&cbLen, nullptr, cb, (wchar_t*) (m_pbuf + 2), cb);
 	// cb = wcstombs(nullptr, (wchar_t*) (m_pbuf + 2), cb);
@@ -579,11 +579,11 @@ bool ttCFile::UnicodeToAnsi()
 	if (err == -1)
 		return false;
 
-	char* psz = (char*) ttmalloc(cbLen + 1);
+	char* psz = (char*) ttMalloc(cbLen + 1);
 	err = wcstombs_s(&cbLen, psz, cbLen, (wchar_t*) (m_pbuf + 2), cb);
 	psz[cb] = '\0';
 
-	ttfree(m_pbuf);
+	ttFree(m_pbuf);
 	m_pbuf = psz;
 	m_pszLine = m_pCurrent = m_pbuf;
 	m_pEnd = m_pbuf + cb;
@@ -618,7 +618,7 @@ void ttCFile::AddSingleLF()
 void ttCFile::ReCalcSize()
 {
 	if (m_pbuf)
-		m_pCurrent = m_pbuf + ttstrlen(m_pbuf);
+		m_pCurrent = m_pbuf + ttStrLen(m_pbuf);
 }
 
 void ttCFile::Backup(size_t cch)
@@ -637,18 +637,18 @@ char* ttCFile::GetParsedYamlLine()
 		ReadLine();
 	ttASSERT_MSG(m_bReadlineReady, "Attempting to call GetParsedYamlLine() without a properly read file!");
 
-	const char* pszLine = tt::FindNonSpace(m_pszLine);	// ignore any leading spaces
-	if (tt::IsSameSubStrI(pszLine, "%YAML"))
+	const char* pszLine = ttFindNonSpace(m_pszLine);	// ignore any leading spaces
+	if (ttIsSameSubStrI(pszLine, "%YAML"))
 		return nullptr;
 
-	if (tt::IsEmpty(pszLine) || pszLine[0] == '#' || (pszLine[0] == '-' && pszLine[1] == '-' && pszLine[2] == '-'))	// ignore empty, comment or divider lines
+	if (ttIsEmpty(pszLine) || pszLine[0] == '#' || (pszLine[0] == '-' && pszLine[1] == '-' && pszLine[2] == '-'))	// ignore empty, comment or divider lines
 		return nullptr;
 
-	char* pszComment = tt::FindChar(pszLine, '#');	// strip off any comments
+	char* pszComment = ttStrChr(pszLine, '#');	// strip off any comments
 	if (pszComment)
 		*pszComment = 0;
 
-	tt::TrimRight((char*) pszLine);		// remove any trailing white space
+	ttTrimRight((char*) pszLine);		// remove any trailing white space
 
 	return (char*) pszLine;
 }
@@ -658,7 +658,7 @@ void ttCFile::MakeCopy()
 	ttASSERT_MSG(m_pbuf, "You must read a file before calling MakeCopy()!");
 	ttASSERT_MSG(!m_pCopy, "You have already created a copy and not called Delete() or RestoreCopy()");
 	if (!m_pCopy && m_pbuf)
-		m_pCopy = ttstrdup(m_pbuf);
+		m_pCopy = ttStrDup(m_pbuf);
 }
 
 void ttCFile::RestoreCopy()
@@ -669,16 +669,16 @@ void ttCFile::RestoreCopy()
 		return;
 
 	if (m_pbuf)
-		ttfree(m_pbuf);
+		ttFree(m_pbuf);
 	m_pbuf = m_pCopy;
 	m_pCopy = nullptr;
 
 	m_bReadlineReady = false;
 
-	// We allocated the buffer using StrDup(), so we can't be sure tt::size(m_pbuf) will be the exact size, and
-	// m_pCurrent has to point to the null-terminating character. We're stuck with tt::StrByteLen()
+	// We allocated the buffer using StrDup(), so we can't be sure ttSize(m_pbuf) will be the exact size, and
+	// m_pCurrent has to point to the null-terminating character. We're stuck with ttStrByteLen()
 
-	m_cbAllocated = tt::StrByteLen(m_pbuf);
+	m_cbAllocated = ttStrByteLen(m_pbuf);
 	m_pCurrent = m_pbuf + m_cbAllocated - sizeof(char);
 	m_pszLine = m_pbuf;
 }

@@ -20,7 +20,7 @@ BOOL WINAPI ttpriv::EnumBtnProc(HWND hwnd, LPARAM lval)
 	char szClass[MAX_PATH];
 	if ((GetWindowLong(hwnd, GWL_STYLE) & 0x0f) < BS_CHECKBOX) {
 		GetClassName(hwnd, szClass, sizeof(szClass));
-		if (tt::IsSameStrI(szClass, "Button")) {
+		if (ttIsSameStrI(szClass, "Button")) {
 			ttCMultiBtn* pMultiBtn = (ttCMultiBtn*) lval;
 			ttCShadeBtn* pBtn = new ttCShadeBtn;
 			pBtn->SubClass(hwnd);
@@ -60,7 +60,7 @@ void ttCMultiBtn::SetIcon(int idBtn, int idIcon, UINT nIconAlign)
 		}
 	}
 #ifdef _DEBUG
-	tt::Trace("ttCMultiBtn::SetIcon was unable to find the button id: %d", idBtn);
+	ttTrace("ttCMultiBtn::SetIcon was unable to find the button id: %d", idBtn);
 #endif
 }
 

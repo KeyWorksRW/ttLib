@@ -44,38 +44,38 @@ class ttCStr
 {
 public:
 	ttCStr(void)	{ m_psz = nullptr; }
-	ttCStr(size_t cb) { m_psz = (char*) ttmalloc(cb); }
-	ttCStr(const char* psz) { m_psz = psz ? ttstrdup(psz) : nullptr; }
+	ttCStr(size_t cb) { m_psz = (char*) ttMalloc(cb); }
+	ttCStr(const char* psz) { m_psz = psz ? ttStrDup(psz) : nullptr; }
 	ttCStr(const wchar_t* pwsz) { m_psz = nullptr; if (pwsz) CopyWide(pwsz); }
-	ttCStr(ttCStr& csz) { m_psz = csz.GetPtr() ? ttstrdup(csz) : nullptr; }
+	ttCStr(ttCStr& csz) { m_psz = csz.GetPtr() ? ttStrDup(csz) : nullptr; }
 #ifdef _WINDOWS_
 	ttCStr(HWND hwnd) { m_psz = nullptr; GetWindowText(hwnd); }
 #endif // _WINDOWS_
 
-	~ttCStr() { if (m_psz) ttfree(m_psz); }
+	~ttCStr() { if (m_psz) ttFree(m_psz); }
 
 	// Method naming conventions are lower camel case when matching tt:: namespace functions
 
-	char*	FindExt(const char* pszExt) { return (char*) tt::FindExt(m_psz, pszExt); }	// find filename extension
-	char*	FindStr(const char* psz) { return tt::FindStr(m_psz, psz); }
-	char*	FindStrI(const char* psz) { return tt::FindStrI(m_psz, psz); }
-	char*	FindChar(char ch) { return tt::FindChar(m_psz, ch); }
-	char*	FindLastChar(char ch) { return tt::FindLastChar(m_psz, ch); }
+	char*	FindExt(const char* pszExt) { return (char*) ttFindExt(m_psz, pszExt); }	// find filename extension
+	char*	FindStr(const char* psz) { return ttStrStr(m_psz, psz); }
+	char*	FindStrI(const char* psz) { return ttStrStrI(m_psz, psz); }
+	char*	FindChar(char ch) { return ttStrChr(m_psz, ch); }
+	char*	FindLastChar(char ch) { return ttStrChrR(m_psz, ch); }
 
-	size_t	StrByteLen() { return m_psz ? tt::StrByteLen(m_psz) : 0; }	// length of string in bytes including 0 terminator
+	size_t	StrByteLen() { return m_psz ? ttStrByteLen(m_psz) : 0; }	// length of string in bytes including 0 terminator
 	int		StrCat(const char* psz);
 	int		StrCopy(const char* psz);
-	size_t	StrLen() { return m_psz ? ttstrlen(m_psz) : 0; }		// number of characters (use strByteLen() for buffer size calculations)
+	size_t	StrLen() { return m_psz ? ttStrLen(m_psz) : 0; }		// number of characters (use strByteLen() for buffer size calculations)
 
-	bool	IsSameStr(const char* psz) { return tt::IsSameStr(m_psz, psz); }
-	bool	IsSameStrI(const char* psz) { return tt::IsSameStrI(m_psz, psz); }
-	bool	IsSameSubStr(const char* psz) { return tt::IsSameSubStr(m_psz, psz); }
-	bool	IsSameSubStrI(const char* psz) { return tt::IsSameSubStrI(m_psz, psz); }
+	bool	IsSameStr(const char* psz) { return ttIsSameStr(m_psz, psz); }
+	bool	IsSameStrI(const char* psz) { return ttIsSameStrI(m_psz, psz); }
+	bool	IsSameSubStr(const char* psz) { return ttIsSameSubStr(m_psz, psz); }
+	bool	IsSameSubStrI(const char* psz) { return ttIsSameSubStrI(m_psz, psz); }
 
-	char*	FindExt() { return (char*) tt::FindNonSpace(m_psz); }
-	char*	FindSpace() { return (char*) tt::FindSpace(m_psz); }
+	char*	FindExt() { return (char*) ttFindNonSpace(m_psz); }
+	char*	FindSpace() { return (char*) ttFindSpace(m_psz); }
 
-	ptrdiff_t Atoi() { return tt::Atoi(m_psz); }
+	ptrdiff_t Atoi() { return ttAtoi(m_psz); }
 
 	char*	Itoa(int32_t val);
 	char*	Itoa(int64_t val);
@@ -83,7 +83,7 @@ public:
 	char*	Utoa(uint64_t val);
 	char*	Hextoa(size_t val, bool bUpperCase = false);
 
-	void	TrimRight() { tt::TrimRight(m_psz); }
+	void	TrimRight() { ttTrimRight(m_psz); }
 
 	bool	IsEmpty() const { return (!m_psz || !*m_psz)  ? true : false; }
 	bool	IsNonEmpty() const { return (m_psz && *m_psz) ? true : false; }
@@ -140,8 +140,8 @@ public:
 	char* cdecl printfAppend(const char* pszFormat, ...);	// Appends to the end of any current string
 
 	void	ReSize(size_t cb);
-	size_t	SizeBuffer() { return ttsize(m_psz); }	// returns 0 if m_psz is null
-	void	Delete() { if (m_psz) { ttfree(m_psz); m_psz = nullptr; } }
+	size_t	SizeBuffer() { return ttSize(m_psz); }	// returns 0 if m_psz is null
+	void	Delete() { if (m_psz) { ttFree(m_psz); m_psz = nullptr; } }
 
 	char*	GetPtr() { return m_psz; }		// for when casting to char* is problematic
 	char**	GetPPtr() { return &m_psz; }	// use with extreme caution!
@@ -160,10 +160,10 @@ public:
 	char operator [] (int pos);
 	char operator [] (size_t pos);
 
-	bool operator == (const char* psz)	{ return (IsEmpty() || !psz) ? false : tt::IsSameStr(m_psz, psz); }
-	bool operator == (char* psz)		{ return (IsEmpty() || !psz) ? false : tt::IsSameStr(m_psz, psz); }
-	bool operator != (const char* psz)	{ return (IsEmpty() || !psz) ? true	 : !tt::IsSameStr(m_psz, psz); }
-	bool operator != (char* psz)		{ return (IsEmpty() || !psz) ? true	 : !tt::IsSameStr(m_psz, psz); }
+	bool operator == (const char* psz)	{ return (IsEmpty() || !psz) ? false : ttIsSameStr(m_psz, psz); }
+	bool operator == (char* psz)		{ return (IsEmpty() || !psz) ? false : ttIsSameStr(m_psz, psz); }
+	bool operator != (const char* psz)	{ return (IsEmpty() || !psz) ? true	 : !ttIsSameStr(m_psz, psz); }
+	bool operator != (char* psz)		{ return (IsEmpty() || !psz) ? true	 : !ttIsSameStr(m_psz, psz); }
 
 	// Use extreme caution about calling the Transfer functions!
 

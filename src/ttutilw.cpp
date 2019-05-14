@@ -19,7 +19,7 @@
 const size_t TT_MAX_STRING_LEN = 0x00FFFFFF;	// strings limited to 16,777,215 bytes (16 megabytes)
 
 
-int ttstrcat(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
+int ttStrCat(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");
 
@@ -53,7 +53,7 @@ int ttstrcat(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
 	return (*pszSrc ? EOVERFLOW : result);
 }
 
-int ttstrcat(wchar_t* pszDst, const wchar_t* pszSrc)
+int ttStrCat(wchar_t* pszDst, const wchar_t* pszSrc)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");
 
@@ -87,7 +87,7 @@ int ttstrcat(wchar_t* pszDst, const wchar_t* pszSrc)
 	return (*pszSrc ? EOVERFLOW : result);
 }
 
-int ttstrcpy(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
+int ttStrCpy(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");
 	ttASSERT_MSG(pszSrc, "NULL pointer!");
@@ -117,7 +117,7 @@ int ttstrcpy(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
 	return (*pszSrc ? EOVERFLOW : result);
 }
 
-int ttstrcpy(wchar_t* pszDst, const wchar_t* pszSrc)
+int ttStrCpy(wchar_t* pszDst, const wchar_t* pszSrc)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");
 	ttASSERT_MSG(pszSrc, "NULL pointer!");
@@ -142,7 +142,7 @@ int ttstrcpy(wchar_t* pszDst, const wchar_t* pszSrc)
 	return (*pszSrc ? EOVERFLOW : result);
 }
 
-size_t ttstrlen(const wchar_t* pwsz)
+size_t ttStrLen(const wchar_t* pwsz)
 {
 	if (pwsz) {
 		size_t cch = wcslen(pwsz);
@@ -425,7 +425,7 @@ wchar_t* ttHextoa(size_t val, wchar_t* pszDst, bool bUpperCase)
 	static wchar_t* szBuf = NULL;
 	if (!pszDst) {
 		if (!szBuf) {
-			szBuf = (wchar_t*) ttmalloc(sizeof(size_t) * sizeof(wchar_t) + sizeof(wchar_t) * 4);	// extra room for null termination and general paranoia
+			szBuf = (wchar_t*) ttMalloc(sizeof(size_t) * sizeof(wchar_t) + sizeof(wchar_t) * 4);	// extra room for null termination and general paranoia
 		}
 		pszDst = szBuf;
 	}

@@ -21,9 +21,9 @@ public:
 		ttASSERT_MSG(ppszDst, "NULL pointer!");
 		m_ppszDst = ppszDst;
 		if (m_ppszDst && *m_ppszDst)
-			ttfree(*m_ppszDst);
+			ttFree(*m_ppszDst);
 		m_cAvail = 128;
-		m_psz = (char*) ttmalloc(m_cAvail + 1);
+		m_psz = (char*) ttMalloc(m_cAvail + 1);
 		*m_psz = 0;
 	}
 	~ttPrintfPtr() {
@@ -31,11 +31,11 @@ public:
 			*m_ppszDst = m_psz;
 	}
 
-	void ReAlloc(size_t cb) { m_psz = (char*) ttrealloc(m_psz, cb); m_cAvail = cb;}
+	void ReAlloc(size_t cb) { m_psz = (char*) ttReAlloc(m_psz, cb); m_cAvail = cb;}
 	void Need(size_t cb);
 	void strCat(const char* psz) {
-		Need(tt::StrByteLen(m_psz) + tt::StrByteLen(psz));
-		ttstrcat(m_psz, m_cAvail, psz);
+		Need(ttStrByteLen(m_psz) + ttStrByteLen(psz));
+		ttStrCat(m_psz, m_cAvail, psz);
 	}
 
 	operator char*()  { return (char*) m_psz; };
@@ -62,11 +62,11 @@ namespace ttpriv {
 	void	AddCommasToNumber(char* pszNum, char* pszDst, size_t cbDst);
 }
 
-char* cdecl tt::printf(char** ppszDst, const char* pszFormat, ...)
+char* cdecl ttPrintf(char** ppszDst, const char* pszFormat, ...)
 {
 	va_list argList;
 	va_start(argList, pszFormat);
- 	tt::vprintf(ppszDst, pszFormat, argList);
+ 	ttVPrintf(ppszDst, pszFormat, argList);
 	va_end(argList);
 	return *ppszDst;
 }
@@ -82,7 +82,7 @@ char* cdecl tt::printf(char** ppszDst, const char* pszFormat, ...)
 #define MAX_STRING (64 * 1024)	// Use this to limit the length of a single string as a security precaution
 #define	DEST_SIZE (ttsize(sptr) - sizeof(char))
 
-void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
+void ttVPrintf(char** ppszDst, const char* pszFormat, va_list argList)
 {
 	ttASSERT_MSG(pszFormat, "NULL pointer!");
 	ttASSERT_MSG(*pszFormat, "Empty format string!");
@@ -103,13 +103,13 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 			size_t cb = (pszEnd - pszBegin);
 			if (!cb)
 				return;	// empty format string
-			cb += tt::StrByteLen(sptr);
+			cb += ttStrByteLen(sptr);
 			ttASSERT(cb <= MAX_STRING);
 			if (cb > MAX_STRING) // empty or invalid string
 				return;
 			sptr.Need(cb);
 
-			char* pszTmp = sptr + ttstrlen(sptr);
+			char* pszTmp = sptr + ttStrLen(sptr);
 			while (pszBegin < pszEnd) {
 				*pszTmp++ = *pszBegin++;
 			}
@@ -145,11 +145,11 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 			chPad = 0;
 			pszEnd++;
 		}
-		if (tt::IsDigit(*pszEnd)) {
-			cbMin = tt::Atoi(pszEnd++);
+		if (ttIsDigit(*pszEnd)) {
+			cbMin = ttAtoi(pszEnd++);
 			if (cbMin > CB_MAX_FMT_WIDTH)
 				cbMin = CB_MAX_FMT_WIDTH;
-			while (tt::IsDigit(*pszEnd))
+			while (ttIsDigit(*pszEnd))
 				pszEnd++;
 		}
 
@@ -179,17 +179,17 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 #if defined(_WIN64) || defined(__x86_64__) || defined(__ppc64__)	// TODO: [randalphwa - 08-30-2018] Need CLANG preprocessor flag
 			// note that we don't have to do any special processing if not compiling 64-bit app, as size_t will be same as int
 			if (bSize_t) {
-				tt::Itoa(va_arg(argList, _int64), szNumBuf, sizeof(szNumBuf) - 1);
+				ttItoa(va_arg(argList, _int64), szNumBuf, sizeof(szNumBuf) - 1);
 			}
 			else {
-				tt::Itoa(va_arg(argList, int), szNumBuf, sizeof(szNumBuf) - 1);
+				ttItoa(va_arg(argList, int), szNumBuf, sizeof(szNumBuf) - 1);
 			}
 #else	// not defined(_WIN64) || defined(__x86_64__) || defined(__ppc64__)
-			tt::Itoa(va_arg(argList, int), szNumBuf, sizeof(szNumBuf) - 1);
+			ttItoa(va_arg(argList, int), szNumBuf, sizeof(szNumBuf) - 1);
 #endif	// defined(_WIN64) || defined(__x86_64__) || defined(__ppc64__)
 			if (cbMin >= 0) {
 				char szTmp[CB_MAX_FMT_WIDTH + 1];
-				size_t diff = cbMin - ttstrlen(szNumBuf);
+				size_t diff = cbMin - ttStrLen(szNumBuf);
 				if (diff > 0) {
 					szTmp[diff--] = 0;
 					while (diff >= 0)
@@ -203,10 +203,10 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 			continue;
 		}
 		else if (*pszEnd == 'u') {
-			tt::Utoa(va_arg(argList, unsigned int), szNumBuf, sizeof(szNumBuf));
+			ttUtoa(va_arg(argList, unsigned int), szNumBuf, sizeof(szNumBuf));
 			if (cbMin >= 0) {
 				char szTmp[CB_MAX_FMT_WIDTH + 1];
-				size_t diff = cbMin - ttstrlen(szNumBuf);
+				size_t diff = cbMin - ttStrLen(szNumBuf);
 				if (diff > 0) {
 					szTmp[diff--] = 0;
 					while (diff >= 0)
@@ -220,10 +220,10 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 			continue;
 		}
 		else if (*pszEnd == 'x') {
-			tt::Hextoa(va_arg(argList, int), szNumBuf, false);
+			ttHextoa(va_arg(argList, int), szNumBuf, false);
 			if (cbMin >= 0) {
 				char szTmp[CB_MAX_FMT_WIDTH + 1];
-				size_t diff = cbMin - ttstrlen(szNumBuf);
+				size_t diff = cbMin - ttStrLen(szNumBuf);
 				if (diff > 0) {
 					szTmp[diff--] = 0;
 					while (diff >= 0)
@@ -238,10 +238,10 @@ void tt::vprintf(char** ppszDst, const char* pszFormat, va_list argList)
 		}
 		else if (*pszEnd == 'X') {
 			ttASSERT_MSG(!bSize_t, "zX and IX not supported");
-			tt::Hextoa(va_arg(argList, int), szNumBuf, true);
+			ttHextoa(va_arg(argList, int), szNumBuf, true);
 			if (cbMin >= 0) {
 				char szTmp[CB_MAX_FMT_WIDTH + 1];
-				size_t diff = cbMin - ttstrlen(szNumBuf);
+				size_t diff = cbMin - ttStrLen(szNumBuf);
 				if (diff > 0) {
 					szTmp[diff--] = 0;
 					while (diff >= 0)
@@ -277,19 +277,19 @@ WideChar:
 			if (!pwsz)
 				pwsz = L"(null)";
 
-			size_t cb = ttstrlen(pwsz) * sizeof(wchar_t);
+			size_t cb = ttStrLen(pwsz) * sizeof(wchar_t);
 			ttASSERT(cb < MAX_STRING);
 			if (cb <= 0 || cb > MAX_STRING) // empty or invalid string
 				return;
 
-			char* psz = (char*) ttmalloc(cb + 1);
+			char* psz = (char*) ttMalloc(cb + 1);
 			// BUGBUG: [ralphw - 07-14-2018] Following line is _WINDOWS_ only
 			cb = WideCharToMultiByte(CP_ACP, 0, pwsz, (_int32) (cb / sizeof(wchar_t)), psz, (_int32) cb, nullptr, nullptr);
 			psz[cb] = '\0';
 
 			sptr.strCat(psz);
 			pszEnd++;
-			ttfree(psz);
+			ttFree(psz);
 			continue;
 		}
 		else if (*pszEnd == '%') {
@@ -313,7 +313,7 @@ WideChar:
 
 	// Now readjust the allocation to the actual size
 
-	sptr.ReAlloc(tt::StrByteLen(sptr));
+	sptr.ReAlloc(ttStrByteLen(sptr));
 }
 
 char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargList, bool* pbPlural)
@@ -323,29 +323,29 @@ char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargLi
 	switch (*pszEnd) {
 		case 'n':	// 'n' is deprecated, 'd' should be used instead
 		case 'd':
-			tt::Itoa((int) va_arg(*pargList, int), szBuf, sizeof(szBuf));
+			ttItoa((int) va_arg(*pargList, int), szBuf, sizeof(szBuf));
 			*pbPlural = szBuf[0] != '1' ? true : false;
 			ttpriv::AddCommasToNumber(szBuf, szBuf, sizeof(szBuf));
 			break;
 
 		case 'I':	// 64-bit version of 'd' and 'u' that works in 32-bit builds
-			if (tt::IsSameSubStrI(pszEnd, "I64d"))
-				tt::Itoa(va_arg(*pargList, int64_t), szBuf, sizeof(szBuf));
-			else if (tt::IsSameSubStrI(pszEnd, "I64u"))
-				tt::Utoa(va_arg(*pargList, uint64_t), szBuf, sizeof(szBuf));
+			if (ttIsSameSubStrI(pszEnd, "I64d"))
+				ttItoa(va_arg(*pargList, int64_t), szBuf, sizeof(szBuf));
+			else if (ttIsSameSubStrI(pszEnd, "I64u"))
+				ttUtoa(va_arg(*pargList, uint64_t), szBuf, sizeof(szBuf));
 			*pbPlural = szBuf[0] != '1' ? true : false;
 			ttpriv::AddCommasToNumber(szBuf, szBuf, sizeof(szBuf));
 			pszEnd += 3;	// skip over I64 portion, then count normally
 			break;
 
 		case 't':	// use for size_t parameters, this will handle both 32 and 64 bit compilations
-			tt::Utoa(va_arg(*pargList, size_t), szBuf, sizeof(szBuf));
+			ttUtoa(va_arg(*pargList, size_t), szBuf, sizeof(szBuf));
 			*pbPlural = szBuf[0] != '1' ? true : false;
 			ttpriv::AddCommasToNumber(szBuf, szBuf, sizeof(szBuf));
 			break;
 
 		case 'u':
-			tt::Utoa(va_arg(*pargList, unsigned int), szBuf, sizeof(szBuf));
+			ttUtoa(va_arg(*pargList, unsigned int), szBuf, sizeof(szBuf));
 			*pbPlural = szBuf[0] != '1' ? true : false;
 			ttpriv::AddCommasToNumber(szBuf, szBuf, sizeof(szBuf));
 			break;
@@ -421,9 +421,9 @@ char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargLi
 void ttpriv::AddCommasToNumber(char* pszNum, char* pszDst, size_t cbDst)
 {
 	if (pszDst != pszNum)
-		ttstrcpy(pszDst, cbDst, pszNum);	// copy the number, performa all additional work in-place in the destination buffer
+		ttStrCpy(pszDst, cbDst, pszNum);	// copy the number, performa all additional work in-place in the destination buffer
 
-	ptrdiff_t cbNum = ttstrlen(pszDst);	// needs to be signed because it can go negative
+	ptrdiff_t cbNum = ttStrLen(pszDst);	// needs to be signed because it can go negative
 	if (cbNum < 4) {
 		ttASSERT(cbNum < (ptrdiff_t) cbDst);
 		return;
@@ -442,7 +442,7 @@ void ttpriv::AddCommasToNumber(char* pszNum, char* pszDst, size_t cbDst)
 	if (cbStart == 0)
 		cbStart += 3;
 	while (cbStart < cbNum) {
-		memmove(pszDst + cbStart + 1, pszDst + cbStart, tt::StrByteLen(pszDst + cbStart));	// make space for a comma
+		memmove(pszDst + cbStart + 1, pszDst + cbStart, ttStrByteLen(pszDst + cbStart));	// make space for a comma
 		pszDst[cbStart] = ',';
 		++cbNum;		// track that we added a comma for loop comparison
 		cbStart += 4;	// 3 numbers plus the comma

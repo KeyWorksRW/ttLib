@@ -40,15 +40,15 @@ class ttCWStr
 {
 public:
 	ttCWStr(void)	{ m_psz = nullptr; }
-	ttCWStr(size_t cb) { m_psz = (wchar_t*) ttmalloc(cb); }	// Caution! cb is bytes, not wide chars
-	ttCWStr(const wchar_t* pwsz) { m_psz = pwsz ? ttstrdup(pwsz) : nullptr; }
+	ttCWStr(size_t cb) { m_psz = (wchar_t*) ttMalloc(cb); }	// Caution! cb is bytes, not wide chars
+	ttCWStr(const wchar_t* pwsz) { m_psz = pwsz ? ttStrDup(pwsz) : nullptr; }
 	ttCWStr(const char* psz) { m_psz = nullptr; if (psz) CopyNarrow(psz); }
-	ttCWStr(ttCWStr& cwsz) { m_psz = cwsz.GetPtr() ? ttstrdup(cwsz.GetPtr()) : nullptr; }
+	ttCWStr(ttCWStr& cwsz) { m_psz = cwsz.GetPtr() ? ttStrDup(cwsz.GetPtr()) : nullptr; }
 #ifdef _WINDOWS_
 	ttCWStr(HWND hwnd) { m_psz = nullptr; GetWindowText(hwnd); }
 #endif // _WINDOWS_
 
-	~ttCWStr() { if (m_psz)  ttfree(m_psz); }
+	~ttCWStr() { if (m_psz)  ttFree(m_psz); }
 
 	// Filename handling methods
 
@@ -91,7 +91,7 @@ public:
 	bool	 IsEmpty() const { return (m_psz ? (*m_psz ? false : true) : true); }
 	bool	 IsNonEmpty() const { return (!IsEmpty()); }
 	bool	 IsNull() const { return (m_psz == nullptr); }
-	void	 Delete() { if (m_psz) { ttfree(m_psz); m_psz = nullptr; } }
+	void	 Delete() { if (m_psz) { ttFree(m_psz); m_psz = nullptr; } }
 	wchar_t* Enlarge(size_t cbTotalSize);	// increase buffer size if needed
 
 	wchar_t* GetPtr() { return m_psz; }	// for when casting to char* is problematic
@@ -110,8 +110,8 @@ public:
 
 	wchar_t operator[](int pos);
 
-	bool operator==(const wchar_t* pwsz) { return (IsEmpty() || !pwsz) ? false : tt::IsSameStr(m_psz, pwsz); }
-	bool operator==(const ttCWStr* pwstr) { return (IsEmpty() || !pwstr || pwstr->IsEmpty()) ? false : tt::IsSameStr(m_psz, *pwstr); }
+	bool operator==(const wchar_t* pwsz) { return (IsEmpty() || !pwsz) ? false : ttIsSameStr(m_psz, pwsz); }
+	bool operator==(const ttCWStr* pwstr) { return (IsEmpty() || !pwstr || pwstr->IsEmpty()) ? false : ttIsSameStr(m_psz, *pwstr); }
 
 	bool CopyNarrow(const char* psz);	// convert UTF8 to UNICODE and store it
 

@@ -29,7 +29,7 @@ ttCFileDlg::ttCFileDlg(HWND hwndParent)
 	if (_osv.dwMajorVersion >= 5)
 		cbStruct += sizeof(void*) + sizeof(DWORD) + sizeof(DWORD);
 #endif
-	m_pofn = (OPENFILENAMEA*) ttcalloc(cbStruct);
+	m_pofn = (OPENFILENAMEA*) ttCalloc(cbStruct);
 
 	m_cszFileName.ReSize(MAX_PATH);
 
@@ -48,7 +48,7 @@ ttCFileDlg::ttCFileDlg(HWND hwndParent)
 
 ttCFileDlg::~ttCFileDlg()
 {
-	ttfree(m_pofn);
+	ttFree(m_pofn);
 }
 
 bool ttCFileDlg::GetOpenFileName()
@@ -84,17 +84,17 @@ bool ttCFileDlg::GetSaveFileName()
 
 void ttCFileDlg::FixExtension()
 {
-	if (tt::FindChar(m_cszFileName, '.'))
+	if (ttStrChr(m_cszFileName, '.'))
 		return;	// we have an extension, return
 
 	const char* psz = m_pofn->lpstrFilter;
 	for (DWORD i = 1; i < m_pofn->nFilterIndex; i++) {
-		psz = psz + tt::StrByteLen(psz);
-		psz = psz + tt::StrByteLen(psz);
+		psz = psz + ttStrByteLen(psz);
+		psz = psz + ttStrByteLen(psz);
 	}
-	psz = psz + ttstrlen(psz) + 1;
+	psz = psz + ttStrLen(psz) + 1;
 	ttASSERT(psz);
-	char* pszTmp = tt::FindChar(psz, ';');
+	char* pszTmp = ttStrChr(psz, ';');
 	if (pszTmp)
 		*pszTmp = '\0';
 	m_cszFileName.ChangeExtension(psz + 1);
@@ -107,10 +107,10 @@ void ttCFileDlg::SetFilter(const char* pszFilters)
 		return;
 
 	m_cszFilter = pszFilters;
-	char* psz = tt::FindChar(m_cszFilter, '|');
+	char* psz = ttStrChr(m_cszFilter, '|');
 	while (psz) {
 		*psz = '\0';
-		psz = tt::FindChar(psz + 1, '|');
+		psz = ttStrChr(psz + 1, '|');
 	}
 	m_pofn->lpstrFilter = m_cszFilter.GetPtr();
 }
@@ -118,10 +118,10 @@ void ttCFileDlg::SetFilter(const char* pszFilters)
 void ttCFileDlg::SetFilter(int idResource)
 {
 	m_cszFilter.GetResString(idResource);
-	char* psz = tt::FindChar(m_cszFilter, '|');
+	char* psz = ttStrChr(m_cszFilter, '|');
 	while (psz) {
 		*psz = '\0';
-		psz = tt::FindChar(psz + 1, '|');
+		psz = ttStrChr(psz + 1, '|');
 	}
 	m_pofn->lpstrFilter = m_cszFilter.GetPtr();
 }
@@ -166,7 +166,7 @@ UINT_PTR CALLBACK ttpriv::OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */,
 					if (pThis->m_bRepositionWindow)	{
 						pThis->m_bRepositionWindow = false;
 						MoveWindow(GetParent(hdlg), pThis->m_rcPosition.left, pThis->m_rcPosition.top,
-							tt::RC_WIDTH(pThis->m_rcPosition), tt::RC_HEIGHT(pThis->m_rcPosition), FALSE);
+							ttRC_WIDTH(pThis->m_rcPosition), ttRC_HEIGHT(pThis->m_rcPosition), FALSE);
 					}
 				}
 				break;

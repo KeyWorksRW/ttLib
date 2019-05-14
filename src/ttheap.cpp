@@ -62,7 +62,7 @@ void* ttCHeap::ttMalloc(size_t cb)
 	void* pv = HeapAlloc(m_hHeap, 0, cb);
 	ttASSERT(pv);
 	if (!pv)
-		tt::OOM();
+		ttOOM();
 #ifdef _DEBUG
 	memset(pv, 0xCD, cb);
 #endif
@@ -73,7 +73,7 @@ void* ttCHeap::ttCalloc(size_t cb)
 {
 	void* pv = HeapAlloc(m_hHeap, 0 | HEAP_ZERO_MEMORY, cb);
 	if (!pv)
-		tt::OOM();
+		ttOOM();
 	return pv;
 }
 
@@ -83,7 +83,7 @@ void* ttCHeap::ttReAlloc(void* pv, size_t cb)
 		return ttMalloc(cb);
 	pv = HeapReAlloc(m_hHeap, 0, pv, cb);
 	if (!pv)
-		tt::OOM();
+		ttOOM();
 	return pv;
 }
 
@@ -93,43 +93,43 @@ void* ttCHeap::ttReCalloc(void* pv, size_t cb)
 		return ttCalloc(cb);
 	pv = HeapReAlloc(m_hHeap, 0 | HEAP_ZERO_MEMORY, pv, cb);
 	if (!pv)
-		tt::OOM();
+		ttOOM();
 	return pv;
 }
 
-char* ttCHeap::ttStrdup(const char* psz)
+char* ttCHeap::ttStrDup(const char* psz)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 
 	if (!psz || !*psz)
 		psz = "";
 
-	size_t cb = tt::StrByteLen(psz);
+	size_t cb = ttStrByteLen(psz);
 	char* pszDst = (char*) ttMalloc(cb);
 	memcpy(pszDst, psz, cb);
 	return pszDst;
 }
 
-wchar_t* ttCHeap::ttStrdup(const wchar_t* pwsz)
+wchar_t* ttCHeap::ttStrDup(const wchar_t* pwsz)
 {
 	ttASSERT_MSG(pwsz, "NULL pointer!");
 
 	if (!pwsz || !*pwsz)
 		pwsz = L"";
 
-	size_t cb = tt::StrByteLen(pwsz);
+	size_t cb = ttStrByteLen(pwsz);
 	wchar_t* pwszDst = (wchar_t*) ttMalloc(cb);
 	memcpy(pwszDst, pwsz, cb);
 	return pwszDst;
 }
 
-char* ttCHeap::ttStrdup(const char* pszSrc, char** pszDst)
+char* ttCHeap::ttStrDup(const char* pszSrc, char** pszDst)
 {
 	ttASSERT_MSG(pszSrc, "NULL pointer!");
 
 	if (!pszSrc || !*pszSrc)
 		pszSrc = "";
-	size_t cb = tt::StrByteLen(pszSrc);
+	size_t cb = ttStrByteLen(pszSrc);
 	*pszDst = *pszDst ? (char*) HeapReAlloc(m_hHeap, 0, *pszDst, cb) : (char*) HeapAlloc(m_hHeap, 0, cb);
 	memcpy(*pszDst, pszSrc, cb);
 	return *pszDst;
@@ -139,9 +139,9 @@ char* ttCHeap::ttStrdup(const char* pszSrc, char** pszDst)
 	__declspec(noreturn) void __cdecl exit(int _Code);
 #endif
 
-// In _DEBUG builds, tt::OOM() will provide an option to invoke a debugger before exiting. In non-debug builds it will simply exit.
+// In _DEBUG builds, ttOOM() will provide an option to invoke a debugger before exiting. In non-debug builds it will simply exit.
 
-__declspec(noreturn) void tt::OOM(void)
+__declspec(noreturn) void ttOOM(void)
 {
 #ifdef _DEBUG
 
@@ -153,11 +153,21 @@ __declspec(noreturn) void tt::OOM(void)
 	// Don't use GetCurrentWindowHandle() since that might only return an active window
 	if (tt::hwndMsgBoxParent && IsWindow(tt::hwndMsgBoxParent))
 		SendMessage(tt::hwndMsgBoxParent, WM_CLOSE, 0, 0);	// attempt to give the application window a graceful way to shut down
-#elif _WX_WX_H_
-	wxFAIL_MSG("Out of Memory!!!");
 #endif	// __WINDOWS_ and _WX_WX_H_
 
 #endif	// _DEBUG
 
 	exit(-1);
 }
+
+void*		ttCalloc(size_t cb) { return tt::MainHeap.ttCalloc(cb); }
+void*		ttCalloc(size_t num, size_t cb) { return tt::MainHeap.ttCalloc(num * cb); }	// for compatability with C++ standard library
+void		ttFree(void* pv) { tt::MainHeap.ttFree(pv); }
+void*		ttMalloc(size_t cb) { return tt::MainHeap.ttMalloc(cb); }
+void*		ttReAlloc(void* pv, size_t cbNew) { return tt::MainHeap.ttReAlloc(pv, cbNew); }
+void*		ttReCalloc(void* pv, size_t cbNew) { return tt::MainHeap.ttReCalloc(pv, cbNew); }
+char*		ttStrDup(const char* psz) { return tt::MainHeap.ttStrDup(psz); }
+wchar_t*	ttStrDup(const wchar_t* pwsz) { return tt::MainHeap.ttStrDup(pwsz); }
+char*		ttStrDup(const char* psz, char** ppszDst) { return tt::MainHeap.ttStrDup(psz, ppszDst); }
+size_t		ttSize(const void* pv) { return tt::MainHeap.ttSize(pv); }
+bool		ttValidate(const void* pv) { return tt::MainHeap.ttValidate(pv); }

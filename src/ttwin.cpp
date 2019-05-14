@@ -69,7 +69,7 @@ bool ttCWin::SetClassName(const char* pszClassName)
 {
 	ttASSERT_NONEMPTY(pszClassName);
 
-	if (!pszClassName || !*pszClassName || ttstrlen(pszClassName) > 256)	// Windows limits class names to 256 characters
+	if (!pszClassName || !*pszClassName || ttStrLen(pszClassName) > 256)	// Windows limits class names to 256 characters
 		return false;
 
 	if (m_pszClassName)
@@ -87,7 +87,7 @@ bool ttCWin::CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWN
 			// attempt to make a unique class name
 			ttCStr cszClass(32);
 			cszClass.StrCopy("ttCWin");
-			tt::Hextoa(GetTickCount(), (char*) cszClass + cszClass.StrLen(), true);
+			ttHextoa(GetTickCount(), (char*) cszClass + cszClass.StrLen(), true);
 			m_pszClassName = _strdup(cszClass);
 			m_pwc->lpszClassName = m_pszClassName;
 		}
@@ -103,14 +103,14 @@ bool ttCWin::CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWN
 
 	if (prcPosition != NULL)
 		m_hwnd = ::CreateWindowExA(dwExStyle, m_pszClassName, pszTitle, dwStyle,
-			prcPosition->left, prcPosition->top, tt::RC_WIDTH(prcPosition), tt::RC_HEIGHT(prcPosition),
+			prcPosition->left, prcPosition->top, ttRC_WIDTH(prcPosition), ttRC_HEIGHT(prcPosition),
 			hwndParent, hmenu, m_hinst, (void*) this);
 	else
 		m_hwnd = ::CreateWindowExA(dwExStyle, m_pszClassName, pszTitle, dwStyle,
 			CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 			hwndParent, hmenu, m_hinst, (void*) this);
 
-	return tt::IsValidWindow(m_hwnd);
+	return ttIsValidWindow(m_hwnd);
 }
 
 bool ttCWin::SubClass(HWND hwnd)

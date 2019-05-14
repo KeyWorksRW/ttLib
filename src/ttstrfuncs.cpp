@@ -16,7 +16,7 @@
 // the "right" thing that will allow the program to continue, but without a buffer overun, or GPF caused by
 // a NULL pointer. Note also that we have a significantly smaller max string length (16 megs versus 2 gigs).
 
-size_t tt::StrLen(const char* psz)
+size_t ttStrLen(const char* psz)
 {
 	if (psz) {
 		size_t cch = ::strlen(psz);	// now that we know it's not a null pointer, call the standard version of strLen
@@ -28,7 +28,7 @@ size_t tt::StrLen(const char* psz)
 	return 0;
 }
 
-size_t tt::StrLen(const wchar_t* pwsz)
+size_t ttStrLen(const wchar_t* pwsz)
 {
 	if (pwsz) {
 		size_t cch = wcslen(pwsz);
@@ -41,7 +41,10 @@ size_t tt::StrLen(const wchar_t* pwsz)
 	return 0;
 }
 
-int tt::StrCopy(char* pszDst, size_t cbDest, const char* pszSrc)
+int ttStrCpy(char* pszDst, const char* pszSrc) { return ttStrCpy(pszDst, tt::MAX_STRING_LEN, pszSrc); }
+int	ttStrCpy(wchar_t* pszDst, const wchar_t* pszSrc) { return ttStrCpy(pszDst, tt::MAX_STRING_LEN / sizeof(wchar_t), pszSrc); }
+
+int ttStrCpy(char* pszDst, size_t cbDest, const char* pszSrc)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");
 	ttASSERT_MSG(pszSrc, "NULL pointer!");
@@ -55,9 +58,9 @@ int tt::StrCopy(char* pszDst, size_t cbDest, const char* pszSrc)
 	}
 
 #ifdef _DEBUG
-	if (tt::StrByteLen(pszSrc) > cbDest) {
+	if (ttStrByteLen(pszSrc) > cbDest) {
 		ttCStr cszMsg;
-		cszMsg.printf("Buffer overflow in strCopy_s:\n\tcbDest = %ku, pszSrc = %ku", cbDest, tt::StrByteLen(pszSrc));
+		cszMsg.printf("Buffer overflow in strCopy_s:\n\tcbDest = %ku, pszSrc = %ku", cbDest, ttStrByteLen(pszSrc));
 		ttFAIL(cszMsg);
 	}
 #endif
@@ -79,7 +82,7 @@ int tt::StrCopy(char* pszDst, size_t cbDest, const char* pszSrc)
 	return (*pszSrc ? EOVERFLOW : result);
 }
 
-int tt::StrCopy(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
+int ttStrCpy(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");
 	ttASSERT_MSG(pszSrc, "NULL pointer!");
@@ -92,7 +95,7 @@ int tt::StrCopy(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
 		return EINVAL;
 	}
 
-	ttASSERT_MSG(tt::StrByteLen(pszSrc) <= cbDest, "buffer overflow");
+	ttASSERT_MSG(ttStrByteLen(pszSrc) <= cbDest, "buffer overflow");
 
 	int result = 0;
 
@@ -111,7 +114,10 @@ int tt::StrCopy(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
 	return (*pszSrc ? EOVERFLOW : result);
 }
 
-int tt::StrCat(char* pszDst, size_t cbDest, const char* pszSrc)
+int ttStrCat(char* pszDst, const char* pszSrc) { return ttStrCat(pszDst, tt::MAX_STRING_LEN, pszSrc); }
+int	ttStrCat(wchar_t* pszDst, const wchar_t* pszSrc) { return ttStrCat(pszDst, tt::MAX_STRING_LEN / sizeof(wchar_t), pszSrc); }
+
+int ttStrCat(char* pszDst, size_t cbDest, const char* pszSrc)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");		// We leave this assert because this is a serious problem for the caller
 	// ttASSERT_MSG(pszSrc, "NULL pointer!");	// Issue #45--limit asserts when we handle a nullptr correctly
@@ -123,7 +129,7 @@ int tt::StrCat(char* pszDst, size_t cbDest, const char* pszSrc)
 
 	int result = 0;
 
-	size_t cbInUse = StrByteLen(pszDst);
+	size_t cbInUse = ttStrByteLen(pszDst);
 	ttASSERT_MSG(cbInUse <= tt::MAX_STRING_LEN, "String is too long!");
 
 	if (cbInUse > tt::MAX_STRING_LEN) {
@@ -146,7 +152,7 @@ int tt::StrCat(char* pszDst, size_t cbDest, const char* pszSrc)
 	return (*pszSrc ? EOVERFLOW : result);
 }
 
-int tt::StrCat(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
+int ttStrCat(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");
 
@@ -157,7 +163,7 @@ int tt::StrCat(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
 
 	int result = 0;
 
-	size_t cbInUse = StrByteLen(pszDst);
+	size_t cbInUse = ttStrByteLen(pszDst);
 	ttASSERT_MSG(cbInUse <= tt::MAX_STRING_LEN / sizeof(wchar_t), "String is too long!");
 
 	if (cbInUse > tt::MAX_STRING_LEN / sizeof(wchar_t)) {
@@ -180,26 +186,26 @@ int tt::StrCat(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
 	return (*pszSrc ? EOVERFLOW : result);
 }
 
-char* tt::FindChar(const char* psz, char ch)
+char* ttStrChr(const char* psz, char ch)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 	if (!psz)
 		return nullptr;
 	while (*psz && *psz != ch)
-		psz = tt::NextChar(psz);
+		psz = ttNextChar(psz);
 	return (*psz ? (char*) psz : nullptr);
 }
 
-char* tt::FindLastChar(const char* psz, char ch)
+char* ttStrChrR(const char* psz, char ch)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 	if (!psz)
 		return nullptr;
 
-	const char* pszLastFound = tt::FindChar(psz, ch);
+	const char* pszLastFound = ttStrChr(psz, ch);
 	if (pszLastFound) {
 		for (;;) {
-			psz = tt::FindChar(tt::NextChar(pszLastFound), ch);
+			psz = ttStrChr(ttNextChar(pszLastFound), ch);
 			if (psz)
 				pszLastFound = psz;
 			else
@@ -209,7 +215,7 @@ char* tt::FindLastChar(const char* psz, char ch)
 	return (char*) pszLastFound;
 }
 
-wchar_t* tt::FindChar(const wchar_t* psz, wchar_t ch)
+wchar_t* ttStrChr(const wchar_t* psz, wchar_t ch)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 	if (!psz)
@@ -219,16 +225,16 @@ wchar_t* tt::FindChar(const wchar_t* psz, wchar_t ch)
 	return (*psz ? (wchar_t*) psz : nullptr);
 }
 
-wchar_t* tt::FindLastChar(const wchar_t* psz, wchar_t ch)
+wchar_t* ttStrChrR(const wchar_t* psz, wchar_t ch)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 	if (!psz)
 		return nullptr;
 
-	wchar_t* pszLastFound = tt::FindChar(psz, ch);
+	wchar_t* pszLastFound = ttStrChr(psz, ch);
 	if (pszLastFound) {
 		for (;;) {
-			psz = tt::FindChar(pszLastFound + 1, ch);
+			psz = ttStrChr(pszLastFound + 1, ch);
 			if (psz)
 				pszLastFound = (wchar_t*) psz;
 			else
@@ -238,7 +244,7 @@ wchar_t* tt::FindLastChar(const wchar_t* psz, wchar_t ch)
 	return (wchar_t*) pszLastFound;
 }
 
-bool tt::IsSameStr(const char* psz1, const char* psz2)
+bool ttIsSameStr(const char* psz1, const char* psz2)
 {
 	if (!psz1 || !psz2)		// note that we return false even if both strings are a null pointer
 		return false;
@@ -252,7 +258,7 @@ bool tt::IsSameStr(const char* psz1, const char* psz2)
 	return false;
 }
 
-bool tt::IsSameStr(const wchar_t* psz1, const wchar_t* psz2)
+bool ttIsSameStr(const wchar_t* psz1, const wchar_t* psz2)
 {
 	if (!psz1 || !psz2)
 		return false;
@@ -266,12 +272,12 @@ bool tt::IsSameStr(const wchar_t* psz1, const wchar_t* psz2)
 	return false;
 }
 
-bool tt::IsSameStrI(const char* psz1, const char* psz2)
+bool ttIsSameStrI(const char* psz1, const char* psz2)
 {
 	if (!psz1 || !psz2)
 		return false;
 
-	if (ttstrlen(psz1) != ttstrlen(psz2))
+	if (ttStrLen(psz1) != ttStrLen(psz2))
 		return false;
 	for (;;) {
 		if (*psz1 != *psz2)	{
@@ -280,17 +286,17 @@ bool tt::IsSameStrI(const char* psz1, const char* psz2)
 		}
 		if (!*psz1)
 			return true;
-		psz1 = tt::NextChar(psz1);
-		psz2 = tt::NextChar(psz2);
+		psz1 = ttNextChar(psz1);
+		psz2 = ttNextChar(psz2);
 	}
 }
 
-bool tt::IsSameStrI(const wchar_t* psz1, const wchar_t* psz2)
+bool ttIsSameStrI(const wchar_t* psz1, const wchar_t* psz2)
 {
 	if (!psz1 || !psz2)
 		return false;
 
-	if (ttstrlen(psz1) != ttstrlen(psz2))
+	if (ttStrLen(psz1) != ttStrLen(psz2))
 		return false;
 	for (;;) {
 		if (*psz1 != *psz2)	{
@@ -304,7 +310,7 @@ bool tt::IsSameStrI(const wchar_t* psz1, const wchar_t* psz2)
 	}
 }
 
-bool tt::IsSameSubStr(const char* pszMain, const char* pszSub)
+bool ttIsSameSubStr(const char* pszMain, const char* pszSub)
 {
 	if (!pszMain || !pszSub)
 		return false;
@@ -312,13 +318,13 @@ bool tt::IsSameSubStr(const char* pszMain, const char* pszSub)
 	while (*pszSub) {
 		if (*pszMain != *pszSub)
 			return false;	// doesn't match even when case is made the same
-		pszMain = tt::NextChar(pszMain);
-		pszSub	= tt::NextChar(pszSub);
+		pszMain = ttNextChar(pszMain);
+		pszSub	= ttNextChar(pszSub);
 	}
 	return true;
 }
 
-bool tt::IsSameSubStr(const wchar_t* pszMain, const wchar_t* pszSub)
+bool ttIsSameSubStr(const wchar_t* pszMain, const wchar_t* pszSub)
 {
 	if (!pszMain || !pszSub)
 		return false;
@@ -332,7 +338,7 @@ bool tt::IsSameSubStr(const wchar_t* pszMain, const wchar_t* pszSub)
 	return true;
 }
 
-bool tt::IsSameSubStrI(const char* pszMain, const char* pszSub)
+bool ttIsSameSubStrI(const char* pszMain, const char* pszSub)
 {
 	if (!pszMain || !pszSub)
 		return false;
@@ -342,13 +348,13 @@ bool tt::IsSameSubStrI(const char* pszMain, const char* pszSub)
 			if (tolower(*pszMain) != tolower(*pszSub))
 				return false;	// doesn't match even when case is made the same
 		}
-		pszMain = tt::NextChar(pszMain);
-		pszSub	= tt::NextChar(pszSub);
+		pszMain = ttNextChar(pszMain);
+		pszSub	= ttNextChar(pszSub);
 	}
 	return true;
 }
 
-bool tt::IsSameSubStrI(const wchar_t* pszMain, const wchar_t* pszSub)
+bool ttIsSameSubStrI(const wchar_t* pszMain, const wchar_t* pszSub)
 {
 	if (!pszMain || !pszSub)
 		return false;
@@ -366,25 +372,25 @@ bool tt::IsSameSubStrI(const wchar_t* pszMain, const wchar_t* pszSub)
 
 // find a case-insensitive extension in a path string
 
-char* tt::FindExt(const char* pszPath, const char* pszExt)
+char* ttFindExt(const char* pszPath, const char* pszExt)
 {
 	if (!pszPath || !pszExt)
 		return nullptr;
 
-	char* psz = tt::FindLastChar(pszPath, '.');
-	return (psz && tt::IsSameStrI(psz, pszExt)) ? psz : nullptr;
+	char* psz = ttStrChrR(pszPath, '.');
+	return (psz && ttIsSameStrI(psz, pszExt)) ? psz : nullptr;
 }
 
-wchar_t* tt::FindExt(const wchar_t* pszPath, const wchar_t* pszExt)
+wchar_t* ttFindExt(const wchar_t* pszPath, const wchar_t* pszExt)
 {
 	if (!pszPath || !pszExt)
 		return nullptr;
 
-	wchar_t* psz = tt::FindLastChar(pszPath, '.');
-	return (psz && tt::IsSameStrI(psz, pszExt)) ? psz : nullptr;
+	wchar_t* psz = ttStrChrR(pszPath, '.');
+	return (psz && ttIsSameStrI(psz, pszExt)) ? psz : nullptr;
 }
 
-char* tt::FindStrI(const char* pszMain, const char* pszSub)
+char* ttStrStrI(const char* pszMain, const char* pszSub)
 {
 	if (!pszMain || !pszSub)
 		return nullptr;
@@ -426,7 +432,7 @@ char* tt::FindStrI(const char* pszMain, const char* pszSub)
 
 // Similar as C runtime strstr, only this one checks for NULL pointers and an empty sub string
 
-char* tt::FindStr(const char* pszMain, const char* pszSub)
+char* ttStrStr(const char* pszMain, const char* pszSub)
 {
 	if (!pszMain || !pszSub)
 		return nullptr;
@@ -469,7 +475,7 @@ char* tt::FindStr(const char* pszMain, const char* pszSub)
 	return nullptr;	// end of main string
 }
 
-wchar_t* tt::FindStr(const wchar_t* pszMain, const wchar_t* pszSub)
+wchar_t* ttStrStr(const wchar_t* pszMain, const wchar_t* pszSub)
 {
 	if (!pszMain || !pszSub)
 		return nullptr;
@@ -510,28 +516,7 @@ wchar_t* tt::FindStr(const wchar_t* pszMain, const wchar_t* pszSub)
 	return nullptr;	// end of main string
 }
 
-#ifdef _WX_WX_H_
-
-wchar_t* tt::FindStrI(const wchar_t* pszMain, const wchar_t* pszSub)
-{
-	if (!pszMain || !pszSub)
-		return nullptr;
-	if (!*pszSub)
-		return pszMain;	// matches what strstr does
-
-	wxString sMain(pszMain);
-	wxString sSub(pszSub);
-	sMain.Lower();
-	sSub.Lower();
-	int iPos = sMain.find(sSub);
-	if (iPos == wxNOT_FOUND)
-		return nullptr;
-	return (wchar_t*) pszMain + iPos;
-}
-
-#endif //  _WX_WX_H_
-
-char* tt::NextChar(const char*psz)
+char* ttNextChar(const char*psz)
 {
 	ttASSERT_NONEMPTY(psz);		// This is a serious problem for the caller so we assert (see Issue #45 for discussion)
 	if (!psz)
@@ -539,48 +524,48 @@ char* tt::NextChar(const char*psz)
 	if (!*psz)
 		return (char*) psz;
 	size_t i = 0;
-	(void) (tt::IsUTF8(psz[++i]) || tt::IsUTF8(psz[++i]) || tt::IsUTF8(psz[++i]));
+	(void) (ttIsUTF8(psz[++i]) || ttIsUTF8(psz[++i]) || ttIsUTF8(psz[++i]));
 
 	return (char*) psz + i;
 }
 
-char* tt::FindNonSpace(const char* psz)
+char* ttFindNonSpace(const char* psz)
 {
 	if (!psz)
 		return nullptr;
-	while (tt::IsWhitespace(*psz))
+	while (ttIsWhitespace(*psz))
 		psz++;
 	return (char*) psz;
 }
 
-char* tt::FindSpace(const char* psz)
+char* ttFindSpace(const char* psz)
 {
 	if (!psz)
 		return nullptr;
-	while (*psz && !tt::IsWhitespace(*psz))
+	while (*psz && !ttIsWhitespace(*psz))
 		psz++;
 	return (char*) psz;
 }
 
-wchar_t* tt::FindNonSpace(const wchar_t* psz)
+wchar_t* ttFindNonSpace(const wchar_t* psz)
 {
 	if (!psz)
 		return nullptr;
-	while (tt::IsWhitespace(*psz))
+	while (ttIsWhitespace(*psz))
 		psz++;
 	return (wchar_t*) psz;
 }
 
-wchar_t* tt::FindSpace(const wchar_t* psz)
+wchar_t* ttFindSpace(const wchar_t* psz)
 {
 	if (!psz)
 		return nullptr;
-	while (*psz && !tt::IsWhitespace(*psz))
+	while (*psz && !ttIsWhitespace(*psz))
 		psz++;
 	return (wchar_t*) psz;
 }
 
-char* tt::StepOver(const char* psz)
+char* ttStepOver(const char* psz)
 {
 	if (!psz)
 		return nullptr;
@@ -591,7 +576,7 @@ char* tt::StepOver(const char* psz)
 	return (char*) psz;
 }
 
-wchar_t* tt::StepOver(const wchar_t* psz)
+wchar_t* ttStepOver(const wchar_t* psz)
 {
 	if (!psz)
 		return nullptr;
@@ -602,12 +587,12 @@ wchar_t* tt::StepOver(const wchar_t* psz)
 	return (wchar_t*) psz;
 }
 
-void tt::TrimRight(char* psz)
+void ttTrimRight(char* psz)
 {
 	if (!psz || !*psz)
 		return;
 
-	char* pszEnd = psz + ttstrlen(psz) - 1;
+	char* pszEnd = psz + ttStrLen(psz) - 1;
 	while ((*pszEnd == ' ' || *pszEnd == '\t' || *pszEnd == '\r' || *pszEnd == '\n' || *pszEnd == '\f')) {
 		pszEnd--;
 		if (pszEnd == psz) {
@@ -621,7 +606,7 @@ void tt::TrimRight(char* psz)
 	pszEnd[1] = '\0';
 }
 
-char* tt::Utoa(uint32_t val, char* pszDst, size_t cbDst)
+char* ttUtoa(uint32_t val, char* pszDst, size_t cbDst)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");
 	ttASSERT_MSG(cbDst > 2, "Buffer is too small!");
@@ -652,7 +637,7 @@ char* tt::Utoa(uint32_t val, char* pszDst, size_t cbDst)
 	return pszRet;
 }
 
-char* tt::Utoa(uint64_t val, char* pszDst, size_t cbDst)
+char* ttUtoa(uint64_t val, char* pszDst, size_t cbDst)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");
 	ttASSERT_MSG(cbDst > 2, "Buffer is too small!");
@@ -683,7 +668,7 @@ char* tt::Utoa(uint64_t val, char* pszDst, size_t cbDst)
 	return pszRet;
 }
 
-char* tt::Itoa(int32_t val, char* pszDst, size_t cbDst)
+char* ttItoa(int32_t val, char* pszDst, size_t cbDst)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");
 	ttASSERT_MSG(cbDst > 2, "Buffer is too small!");
@@ -696,11 +681,11 @@ char* tt::Itoa(int32_t val, char* pszDst, size_t cbDst)
 		cbDst--;
 	}
 
-	tt::Utoa((uint32_t) val, pszDst, cbDst);
+	ttUtoa((uint32_t) val, pszDst, cbDst);
 	return pszRet;
 }
 
-char* tt::Itoa(int64_t val, char* pszDst, size_t cbDst)
+char* ttItoa(int64_t val, char* pszDst, size_t cbDst)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");
 	ttASSERT_MSG(cbDst > 2, "Buffer is too small!");
@@ -713,11 +698,11 @@ char* tt::Itoa(int64_t val, char* pszDst, size_t cbDst)
 	}
 
 	char* pszRet = pszDst;
-	tt::Utoa((uint64_t) val, pszDst, cbDst);
+	ttUtoa((uint64_t) val, pszDst, cbDst);
 	return pszRet;
 }
 
-wchar_t* tt::Itoa(int32_t val, wchar_t* pszDst, size_t cbDst)
+wchar_t* ttItoa(int32_t val, wchar_t* pszDst, size_t cbDst)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");
 	ttASSERT_MSG(cbDst > 2, "Buffer is too small!");
@@ -730,11 +715,11 @@ wchar_t* tt::Itoa(int32_t val, wchar_t* pszDst, size_t cbDst)
 		cbDst--;
 	}
 
-	tt::Utoa((uint32_t) val, pszDst, cbDst);
+	ttUtoa((uint32_t) val, pszDst, cbDst);
 	return pszRet;
 }
 
-wchar_t* tt::Itoa(int64_t val, wchar_t* pszDst, size_t cbDst)
+wchar_t* ttItoa(int64_t val, wchar_t* pszDst, size_t cbDst)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");
 	ttASSERT_MSG(cbDst > 2, "Buffer is too small!");
@@ -747,16 +732,16 @@ wchar_t* tt::Itoa(int64_t val, wchar_t* pszDst, size_t cbDst)
 	}
 
 	wchar_t* pszRet = pszDst;
-	tt::Utoa((uint64_t) val, pszDst, cbDst);
+	ttUtoa((uint64_t) val, pszDst, cbDst);
 	return pszRet;
 }
 
-char* tt::Hextoa(size_t val, char* pszDst, bool bUpperCase)
+char* ttHextoa(size_t val, char* pszDst, bool bUpperCase)
 {
 	static char* szBuf = NULL;
 	if (!pszDst) {
 		if (!szBuf) {
-			szBuf = (char*) ttmalloc(sizeof(size_t) * sizeof(char) + sizeof(char) * 4);	// extra room for null termination and general paranoia
+			szBuf = (char*) ttMalloc(sizeof(size_t) * sizeof(char) + sizeof(char) * 4);	// extra room for null termination and general paranoia
 		}
 		pszDst = szBuf;
 	}
@@ -784,7 +769,7 @@ char* tt::Hextoa(size_t val, char* pszDst, bool bUpperCase)
 	return pszRet;
 }
 
-ptrdiff_t tt::Atoi(const char* psz)
+ptrdiff_t ttAtoi(const char* psz)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 	if (!psz)
@@ -831,12 +816,12 @@ ptrdiff_t tt::Atoi(const char* psz)
 		return total;
 }
 
-wchar_t* tt::Hextoa(size_t val, wchar_t* pszDst, bool bUpperCase)
+wchar_t* ttHextoa(size_t val, wchar_t* pszDst, bool bUpperCase)
 {
 	static wchar_t* szBuf = NULL;
 	if (!pszDst) {
 		if (!szBuf) {
-			szBuf = (wchar_t*) ttmalloc(sizeof(size_t) * sizeof(wchar_t) + sizeof(wchar_t) * 4);	// extra room for null termination and general paranoia
+			szBuf = (wchar_t*) ttMalloc(sizeof(size_t) * sizeof(wchar_t) + sizeof(wchar_t) * 4);	// extra room for null termination and general paranoia
 		}
 		pszDst = szBuf;
 	}
@@ -864,7 +849,7 @@ wchar_t* tt::Hextoa(size_t val, wchar_t* pszDst, bool bUpperCase)
 	return pszRet;
 }
 
-ptrdiff_t tt::Atoi(const wchar_t* psz)
+ptrdiff_t ttAtoi(const wchar_t* psz)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 	if (!psz)
@@ -911,7 +896,7 @@ ptrdiff_t tt::Atoi(const wchar_t* psz)
 		return total;
 }
 
-wchar_t* tt::Utoa(uint32_t val, wchar_t* pszDst, size_t cbDst)
+wchar_t* ttUtoa(uint32_t val, wchar_t* pszDst, size_t cbDst)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");
 	ttASSERT_MSG(cbDst > 2, "Buffer is too small!");
@@ -942,7 +927,7 @@ wchar_t* tt::Utoa(uint32_t val, wchar_t* pszDst, size_t cbDst)
 	return pszRet;
 }
 
-wchar_t* tt::Utoa(uint64_t val, wchar_t* pszDst, size_t cbDst)
+wchar_t* ttUtoa(uint64_t val, wchar_t* pszDst, size_t cbDst)
 {
 	ttASSERT_MSG(pszDst, "NULL pointer!");
 	ttASSERT_MSG(cbDst > 2, "Buffer is too small!");
@@ -973,15 +958,15 @@ wchar_t* tt::Utoa(uint64_t val, wchar_t* pszDst, size_t cbDst)
 	return pszRet;
 }
 
-char* tt::FindLastSlash(const char* psz)
+char* ttFindLastSlash(const char* psz)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 
 	if (!psz || !*psz)
 		return nullptr;
 
-	char* pszLastBackSlash = tt::FindLastChar(psz, '\\');
-	char* pszLastFwdSlash	 = tt::FindLastChar(psz, '/');
+	char* pszLastBackSlash = ttStrChrR(psz, '\\');
+	char* pszLastFwdSlash	 = ttStrChrR(psz, '/');
 	if (!pszLastBackSlash)
 		return pszLastFwdSlash ? pszLastFwdSlash : nullptr;
 	else if (!pszLastFwdSlash)
@@ -990,468 +975,12 @@ char* tt::FindLastSlash(const char* psz)
 		return pszLastFwdSlash > pszLastBackSlash ? pszLastFwdSlash : pszLastBackSlash;		// Impossible for them to be equal
 }
 
-void tt::AddTrailingSlash(char* psz)
+void ttAddTrailingSlash(char* psz)
 {
 	ttASSERT_MSG(psz, "NULL pointer!");
 	if (!psz)
 		return;
-	char* pszLastSlash = tt::FindLastSlash(psz);
+	char* pszLastSlash = ttFindLastSlash(psz);
 	if (!pszLastSlash || pszLastSlash[1])	// only add if there was no slash or there was something after the slash
-		ttstrcat(psz, "/");
-}
-
-int ttstrcat(char* pszDst, size_t cbDest, const char* pszSrc)
-{
-	ttASSERT_MSG(pszDst, "NULL pointer!");		// We leave this assert because this is a serious problem for the caller
-	// ttASSERT_MSG(pszSrc, "NULL pointer!");	// Issue #45--limit asserts when we handle a nullptr correctly
-
-	if (pszDst == nullptr || pszSrc == nullptr)
-		return EINVAL;
-	if (!*pszSrc)
-		return 0;
-
-	int result = 0;
-
-	size_t cbInUse = tt::StrByteLen(pszDst);
-	ttASSERT_MSG(cbInUse <= tt::MAX_STRING_LEN, "String is too long!");
-
-	if (cbInUse > tt::MAX_STRING_LEN) {
-		cbInUse = tt::MAX_STRING_LEN;
-		result = EOVERFLOW;
-	}
-
-	ttASSERT_MSG(cbInUse < cbDest, "Destination is too small");
-	if (cbInUse >= cbDest)
-		return EOVERFLOW;	// we've already maxed out the destination buffer, so we can't add anything
-
-	pszDst += (cbInUse - sizeof(char));
-	cbDest -= cbInUse;
-	while (cbDest && (*pszSrc != 0)) {
-		*pszDst++ = *pszSrc++;
-		cbDest -= sizeof(char);
-	}
-	*pszDst = 0;
-	ttASSERT_MSG(!*pszSrc, "Buffer overflow!");
-	return (*pszSrc ? EOVERFLOW : result);
-}
-
-int ttstrcat(char* pszDst, const char* pszSrc)
-{
-	ttASSERT_MSG(pszDst, "NULL pointer!");		// We leave this assert because this is a serious problem for the caller
-	// ttASSERT_MSG(pszSrc, "NULL pointer!");	// Issue #45--limit asserts when we handle a nullptr correctly
-
-	if (pszDst == nullptr || pszSrc == nullptr)
-		return EINVAL;
-	if (!*pszSrc)
-		return 0;
-
-	int result = 0;
-
-	size_t cbInUse = tt::StrByteLen(pszDst);
-	ttASSERT_MSG(cbInUse <= tt::MAX_STRING_LEN, "String is too long!");
-
-	if (cbInUse > tt::MAX_STRING_LEN) {
-		cbInUse = tt::MAX_STRING_LEN;
-		result = EOVERFLOW;
-	}
-
-	size_t cbDest = tt::MAX_STRING_LEN - cbInUse;
-	ttASSERT_MSG(cbInUse < cbDest, "Destination is too small");
-	if (cbInUse >= cbDest)
-		return EOVERFLOW;	// we've already maxed out the destination buffer, so we can't add anything
-
-	pszDst += (cbInUse - sizeof(char));
-	while (cbDest && (*pszSrc != 0)) {
-		*pszDst++ = *pszSrc++;
-		cbDest -= sizeof(char);
-	}
-	*pszDst = 0;
-	ttASSERT_MSG(!*pszSrc, "Buffer overflow!");
-	return (*pszSrc ? EOVERFLOW : result);
-}
-
-int ttstrcpy(char* pszDst, size_t cbDest, const char* pszSrc)
-{
-	ttASSERT_MSG(pszDst, "NULL pointer!");
-	ttASSERT_MSG(pszSrc, "NULL pointer!");
-
-	if (pszDst == nullptr)
-		return EINVAL;
-
-	if (pszSrc == nullptr) {
-		*pszDst = 0;
-		return EINVAL;
-	}
-
-	int result = 0;
-
-	if (cbDest > tt::MAX_STRING_LEN) {
-		cbDest = tt::MAX_STRING_LEN - sizeof(char);
-		result = EOVERFLOW;
-	}
-
-	cbDest -= sizeof(char);		// leave room for trailing zero
-	while (cbDest > 0 && (*pszSrc != 0)) {
-		*pszDst++ = *pszSrc++;
-		cbDest -= sizeof(char);
-	}
-	*pszDst = 0;
-	ttASSERT_MSG(!*pszSrc, "Buffer overflow!");
-	return (*pszSrc ? EOVERFLOW : result);
-}
-
-int ttstrcpy(char* pszDst, const char* pszSrc)
-{
-	ttASSERT_MSG(pszDst, "NULL pointer!");
-	ttASSERT_MSG(pszSrc, "NULL pointer!");
-
-	if (pszDst == nullptr)
-		return EINVAL;
-
-	if (pszSrc == nullptr) {
-		*pszDst = 0;
-		return EINVAL;
-	}
-
-	int result = 0;
-
-	size_t cbDest = tt::MAX_STRING_LEN - sizeof(char);
-	while (cbDest > 0 && (*pszSrc != 0)) {
-		*pszDst++ = *pszSrc++;
-		cbDest -= sizeof(char);
-	}
-	*pszDst = 0;
-	ttASSERT_MSG(!*pszSrc, "Buffer overflow!");
-	return (*pszSrc ? EOVERFLOW : result);
-}
-
-size_t ttstrlen(const char* psz)
-{
-	if (psz) {
-		size_t cch = ::strlen(psz); 	// now that we know it's not a null pointer, call the standard version of strLen
-		ttASSERT_MSG(cch < tt::MAX_STRING_LEN, "String is too long!");
-		if (cch > tt::MAX_STRING_LEN)	// make certain the string length fits within out standard limits for string length
-			cch = tt::MAX_STRING_LEN;
-		return cch;
-	}
-	return 0;
-}
-
-char* ttstrchr(const char* psz, char ch)
-{
-	ttASSERT_MSG(psz, "NULL pointer!");
-	if (!psz)
-		return nullptr;
-	while (*psz && *psz != ch)
-		psz = tt::NextChar(psz);
-	return (*psz ? (char*) psz : nullptr);
-}
-
-char* ttstrrchr(const char* psz, char ch)
-{
-	ttASSERT_MSG(psz, "NULL pointer!");
-	if (!psz)
-		return nullptr;
-
-	const char* pszLastFound = ttstrchr(psz, ch);
-	if (pszLastFound) {
-		for (;;) {
-			psz = ttstrchr(tt::NextChar(pszLastFound), ch);
-			if (psz)
-				pszLastFound = psz;
-			else
-				break;
-		}
-	}
-	return (char*) pszLastFound;
-}
-
-char* ttstrstr(const char* pszMain, const char* pszSub)
-{
-	if (!pszMain || !pszSub)
-		return nullptr;
-	if (!*pszSub)
-		return (char*) pszMain;	// this is what std::strstr does
-
-	// We keep the first character of pszSub in first_ch. First we loop trying to find a match for this character. Once
-	// we have found a match, we start with the second character of both pszMain and pszSub and walk through both strings
-	// If we make it all the way through pszSub with matches, then we bail with a pointer to the string's location in
-	// pszMain.
-
-	const char* pszTmp1;
-	const char* pszTmp2;
-	char  first_ch = *pszSub;
-
-	while (*pszMain) {
-		if (*pszMain != first_ch) {
-			pszMain++;
-		}
-		else {
-			if (!pszSub[1])		// end of substring, means we found a match
-				return (char*) pszMain;
-			pszTmp1 = (pszMain + 1);
-			pszTmp2 = (pszSub + 1);
-			while (*pszTmp1) {
-				if (*pszTmp1++ != *pszTmp2++) {
-					pszMain++;	// increment main, go back to looking for first character match
-					break;
-				}
-				if (!*pszTmp2) {	// end of substring, means we found a match
-					return (char*) pszMain;
-				}
-			}
-			if (!*pszTmp1) {
-				return nullptr;	// end of main string before end of sub string, so not possible to match
-				break;
-			}
-		}
-	}
-	return nullptr;	// end of main string
-}
-
-char* ttstristr(const char* pszMain, const char* pszSub)
-{
-	if (!pszMain || !pszSub)
-		return nullptr;
-	if (!*pszSub)
-		return (char*) pszMain;	// matches what strstr does
-
-	char* pszTmp1;
-	char* pszTmp2;
-	char lowerch = (char) tolower(*pszSub);
-	char upperch = (char) toupper(*pszSub);
-
-	while (*pszMain) {
-		if (*pszMain != lowerch && *pszMain != upperch) {
-			pszMain++;
-		}
-		else {
-			if (!pszSub[1])		// end of substring, means we found a match
-				return (char*) pszMain;
-			pszTmp1 = (char*) (pszMain + 1);
-			if (!*pszTmp1) {
-				return nullptr;
-			}
-			pszTmp2 = (char*) (pszSub + 1);
-			while (*pszTmp1) {
-				if (tolower(*pszTmp1++) != tolower(*pszTmp2++)) {
-					pszMain++;	// increment main, go back to looking for first character match
-					break;
-				}
-				if (!*pszTmp2) {	// end of substring, means we found a match
-					return (char*) pszMain;
-				}
-				if (!*pszTmp1) {
-					return nullptr;	// end of main string before end of sub string, so not possible to match
-				}
-			}
-		}
-	}
-	return nullptr;	// end of main string
-}
-
-int ttstrcat(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
-{
-	ttASSERT_MSG(pszDst, "NULL pointer!");
-
-	if (pszDst == nullptr || pszSrc == nullptr)
-		return EINVAL;
-	if (!*pszSrc)
-		return 0;
-
-	int result = 0;
-
-	size_t cbInUse = tt::StrByteLen(pszDst);
-	ttASSERT_MSG(cbInUse <= tt::MAX_STRING_LEN / sizeof(wchar_t), "String is too long!");
-
-	if (cbInUse > tt::MAX_STRING_LEN / sizeof(wchar_t)) {
-		cbInUse = tt::MAX_STRING_LEN / sizeof(wchar_t);
-		result = EOVERFLOW;
-	}
-
-	ttASSERT_MSG(cbInUse < cbDest, "Destination is too small");
-	if (cbInUse >= cbDest)
-		return EOVERFLOW;	// we've already maxed out the destination buffer, so we can't add anything
-
-	pszDst += (cbInUse - sizeof(wchar_t));
-	cbDest -= cbInUse;
-	while (cbDest && (*pszSrc != 0)) {
-		*pszDst++ = *pszSrc++;
-		cbDest -= sizeof(wchar_t);
-	}
-	*pszDst = 0;
-	ttASSERT_MSG(!*pszSrc, "Buffer overflow!");
-	return (*pszSrc ? EOVERFLOW : result);
-}
-
-int ttstrcat(wchar_t* pszDst, const wchar_t* pszSrc)
-{
-	ttASSERT_MSG(pszDst, "NULL pointer!");
-
-	if (pszDst == nullptr || pszSrc == nullptr)
-		return EINVAL;
-	if (!*pszSrc)
-		return 0;
-
-	int result = 0;
-
-	size_t cbInUse = tt::StrByteLen(pszDst);
-	ttASSERT_MSG(cbInUse <= tt::MAX_STRING_LEN / sizeof(wchar_t), "String is too long!");
-
-	if (cbInUse > tt::MAX_STRING_LEN / sizeof(wchar_t)) {
-		cbInUse = tt::MAX_STRING_LEN / sizeof(wchar_t);
-		result = EOVERFLOW;
-	}
-
-	size_t cbDest = (tt::MAX_STRING_LEN / sizeof(wchar_t)) - cbInUse;
-	ttASSERT_MSG(cbInUse < cbDest, "Destination is too small");
-	if (cbInUse >= cbDest)
-		return EOVERFLOW;	// we've already maxed out the destination buffer, so we can't add anything
-
-	pszDst += (cbInUse - sizeof(wchar_t));
-	while (cbDest && (*pszSrc != 0)) {
-		*pszDst++ = *pszSrc++;
-		cbDest -= sizeof(wchar_t);
-	}
-	*pszDst = 0;
-	ttASSERT_MSG(!*pszSrc, "Buffer overflow!");
-	return (*pszSrc ? EOVERFLOW : result);
-}
-
-int ttstrcpy(wchar_t* pszDst, size_t cbDest, const wchar_t* pszSrc)
-{
-	ttASSERT_MSG(pszDst, "NULL pointer!");
-	ttASSERT_MSG(pszSrc, "NULL pointer!");
-
-	if (pszDst == nullptr)
-		return EINVAL;
-
-	if (pszSrc == nullptr) {
-		*pszDst = 0;
-		return EINVAL;
-	}
-
-	int result = 0;
-
-	if (cbDest > tt::MAX_STRING_LEN / sizeof(wchar_t)) {
-		cbDest = tt::MAX_STRING_LEN / sizeof(wchar_t) - sizeof(wchar_t);
-		result = EOVERFLOW;
-	}
-
-	cbDest -= sizeof(wchar_t);		// leave room for trailing zero
-	while (cbDest > 0 && (*pszSrc != 0)) {
-		*pszDst++ = *pszSrc++;
-		cbDest -= sizeof(wchar_t);
-	}
-	*pszDst = 0;
-	ttASSERT_MSG(!*pszSrc, "Buffer overflow!");
-	return (*pszSrc ? EOVERFLOW : result);
-}
-
-int ttstrcpy(wchar_t* pszDst, const wchar_t* pszSrc)
-{
-	ttASSERT_MSG(pszDst, "NULL pointer!");
-	ttASSERT_MSG(pszSrc, "NULL pointer!");
-
-	if (pszDst == nullptr)
-		return EINVAL;
-
-	if (pszSrc == nullptr) {
-		*pszDst = 0;
-		return EINVAL;
-	}
-
-	int result = 0;
-
-	size_t cbDest = tt::MAX_STRING_LEN - sizeof(wchar_t);
-	while (cbDest > 0 && (*pszSrc != 0)) {
-		*pszDst++ = *pszSrc++;
-		cbDest -= sizeof(wchar_t);
-	}
-	*pszDst = 0;
-	ttASSERT_MSG(!*pszSrc, "Buffer overflow!");
-	return (*pszSrc ? EOVERFLOW : result);
-}
-
-size_t ttstrlen(const wchar_t* pwsz)
-{
-	if (pwsz) {
-		size_t cch = wcslen(pwsz);
-		// We use MAX_STRING_LEN as a max buffer size, so we need to divide by the size of wchar_t
-		ttASSERT_MSG(cch < tt::MAX_STRING_LEN / sizeof(wchar_t), "String is too long!");
-		if (cch > tt::MAX_STRING_LEN / sizeof(wchar_t))
-			cch = tt::MAX_STRING_LEN / sizeof(wchar_t);
-		return cch;
-	}
-	return 0;
-}
-
-wchar_t* ttstrchr(const wchar_t* psz, wchar_t ch)
-{
-	ttASSERT_MSG(psz, "NULL pointer!");
-	if (!psz)
-		return nullptr;
-	while (*psz && *psz != ch)
-		psz++;
-	return (*psz ? (wchar_t*) psz : nullptr);
-}
-
-wchar_t* ttstrrchr(const wchar_t* psz, wchar_t ch)
-{
-	ttASSERT_MSG(psz, "NULL pointer!");
-	if (!psz)
-		return nullptr;
-
-	wchar_t* pszLastFound = ttstrchr(psz, ch);
-	if (pszLastFound) {
-		for (;;) {
-			psz = ttstrchr(pszLastFound + 1, ch);
-			if (psz)
-				pszLastFound = (wchar_t*) psz;
-			else
-				break;
-		}
-	}
-	return (wchar_t*) pszLastFound;
-}
-
-wchar_t* ttstrstr(const wchar_t* pszMain, const wchar_t* pszSub)
-{
-	if (!pszMain || !pszSub)
-		return nullptr;
-	if (!*pszSub)
-		return (wchar_t*) pszMain;	// matches what strstr does
-
-	// We keep the first character of pszSub in first_ch. First we loop trying to find a match for this character. Once
-	// we have found a match, we start with the second character of both pszMain and pszSub and walk through both strings
-	// If we make it all the way through pszSub with matches, then we bail with a pointer to the string's location in
-	// pszMain.
-
-	const wchar_t* pszTmp1;
-	const wchar_t* pszTmp2;
-	wchar_t	 first_ch = *pszSub;
-
-	while (*pszMain) {
-		if (*pszMain != first_ch) {
-			pszMain++;
-		}
-		else {
-			pszTmp1 = (pszMain + 1);
-			pszTmp2 = (pszSub + 1);
-			while (*pszTmp1) {
-				if (*pszTmp1++ != *pszTmp2++) {
-					pszMain++;	// increment main, go back to looking for first character match
-					break;
-				}
-				if (!*pszTmp2) {	// end of substring, means we found a match
-					return (wchar_t*) pszMain;
-				}
-				if (!*pszTmp1) {
-					return nullptr;	// end of main string before end of sub string, so not possible to match
-					break;
-				}
-			}
-		}
-	}
-	return nullptr;	// end of main string
+		ttStrCat(psz, "/");
 }

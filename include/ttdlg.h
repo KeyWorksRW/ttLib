@@ -167,7 +167,7 @@ public:
 
 	LRESULT Add(const char* psz) const { ttASSERT(psz); return SendMessage(CB_ADDSTRING, 0, (LPARAM) psz); }
 	LRESULT Add(const wchar_t* pwsz) const { ttASSERT(pwsz); return SendMessageW(CB_ADDSTRING, 0, (LPARAM) pwsz); }
-	LRESULT Add(int val) const { char szNum[30]; tt::Itoa(val, szNum, sizeof(szNum)); return SendMessageA(CB_ADDSTRING, 0, (LPARAM) szNum); }
+	LRESULT Add(int val) const { char szNum[30]; ttItoa(val, szNum, sizeof(szNum)); return SendMessageA(CB_ADDSTRING, 0, (LPARAM) szNum); }
 	LRESULT AddString(const char* psz) const { ttASSERT(psz); return SendMessage(CB_ADDSTRING, 0, (LPARAM) psz); }
 	LRESULT AddString(const wchar_t* pwsz) const { ttASSERT(pwsz); return SendMessageW(CB_ADDSTRING, 0, (LPARAM) pwsz); }
 	LRESULT InsertString(int index, const char* psz) const { ttASSERT(psz); return SendMessage(CB_INSERTSTRING, index, (LPARAM) psz); }

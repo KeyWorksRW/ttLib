@@ -71,7 +71,7 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 		ttCDlg* pThis = (ttCDlg*) lParam;
 		pThis->m_hwnd = hdlg;
 		tt::hwndMsgBoxParent = hdlg;
-		if (!tt::IsValidWindow(pThis->m_hwndParent))
+		if (!ttIsValidWindow(pThis->m_hwndParent))
 			pThis->m_hwndParent = GetActiveWindow();
 
 		LRESULT lResult = 0;
@@ -144,13 +144,13 @@ ptrdiff_t ttCDlg::GetControlInteger(int id) const
 {
 	char szBuf[20];
 	GetControlText(id, szBuf, sizeof(szBuf) - 1);
-	return tt::Atoi(szBuf);
+	return ttAtoi(szBuf);
 }
 
 void ttCDlg::SetControlInteger(int id, ptrdiff_t val) const
 {
 	char szBuf[20];
-	tt::Itoa(val, szBuf, sizeof(szBuf));
+	ttItoa(val, szBuf, sizeof(szBuf));
 	SetControlText(id, szBuf);
 }
 
@@ -178,16 +178,16 @@ void ttCDlg::CenterWindow(bool bCenterOnDesktop)
 	RECT rc;
 	GetWindowRect(*this, &rc);
 
-	int cx = tt::RC_WIDTH(rc);
-	int cy = tt::RC_HEIGHT(rc);
+	int cx = ttRC_WIDTH(rc);
+	int cy = ttRC_HEIGHT(rc);
 
 	if (!bCenterOnDesktop && m_hwndParent)
 		GetWindowRect(m_hwndParent, &rc);
 	else
 		SystemParametersInfo(SPI_GETWORKAREA, 0, &rc, 0);
 
-	int left = rc.left + (tt::RC_WIDTH(rc) - cx) / 2;
-	int top	 = rc.top + (tt::RC_HEIGHT(rc) - cy) / 2;
+	int left = rc.left + (ttRC_WIDTH(rc) - cx) / 2;
+	int top	 = rc.top + (ttRC_HEIGHT(rc) - cy) / 2;
 
 	// Make certain the dialog doesn't spawn between two monitors
 

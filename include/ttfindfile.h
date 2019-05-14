@@ -65,17 +65,17 @@ public:
 
 	const char* GetFileName() { return cFileName; }
 
-	char*	FindExtPortion() { return (char*) tt::FindExtPortion(cFileName); }	// find filename extension
-	char*	FindChar(char ch) { return tt::FindChar(cFileName, ch); }
-	char*	FindLastChar(char ch) { return tt::FindLastChar(cFileName, ch); }
+	char*	FindExtPortion() { return (char*) ttFindExtPortion(cFileName); }	// find filename extension
+	char*	FindChar(char ch) { return ttStrChr(cFileName, ch); }
+	char*	FindLastChar(char ch) { return ttStrChrR(cFileName, ch); }
 
-	size_t	StrByteLen() { return tt::StrByteLen(cFileName); }	// length of string in bytes including 0 terminator
-	size_t	StrLen() { return ttstrlen(cFileName); }		// number of characters (use strByteLen() for buffer size calculations)
+	size_t	StrByteLen() { return ttStrByteLen(cFileName); }	// length of string in bytes including 0 terminator
+	size_t	StrLen() { return ttStrLen(cFileName); }		// number of characters (use strByteLen() for buffer size calculations)
 
-	bool	IsSameStr(const char* psz) { return tt::IsSameStr(cFileName, psz); }
-	bool	IsSameStrI(const char* psz) { return tt::IsSameStrI(cFileName, psz); }
-	bool	IsSameSubStr(const char* psz) { return tt::IsSameSubStr(cFileName, psz); }
-	bool	IsSameSubStrI(const char* psz) { return tt::IsSameSubStrI(cFileName, psz); }
+	bool	IsSameStr(const char* psz) { return ttIsSameStr(cFileName, psz); }
+	bool	IsSameStrI(const char* psz) { return ttIsSameStrI(cFileName, psz); }
+	bool	IsSameSubStr(const char* psz) { return ttIsSameSubStr(cFileName, psz); }
+	bool	IsSameSubStrI(const char* psz) { return ttIsSameSubStrI(cFileName, psz); }
 
 	bool	IsEmpty() const { return (!IsValid() || !*cFileName)  ? true : false; }
 	bool	IsNonEmpty() const { return (IsValid() && *cFileName) ? true : false; }
@@ -85,8 +85,8 @@ public:
 
 	// Note that the two == operators are case insensitive since filenames on Windows are case insensitive
 
-	bool operator == (const char* psz) { return (IsEmpty()) ? false : tt::IsSameStrI(cFileName, psz); } // isSameStr will check for psz == null
-	bool operator == (char* psz) { return (IsEmpty()) ? false : tt::IsSameStrI(cFileName, psz); }		 // isSameStr will check for psz == null
+	bool operator == (const char* psz) { return (IsEmpty()) ? false : ttIsSameStrI(cFileName, psz); } // isSameStr will check for psz == null
+	bool operator == (char* psz) { return (IsEmpty()) ? false : ttIsSameStrI(cFileName, psz); }		 // isSameStr will check for psz == null
 
 protected:
 #ifdef _DEBUG

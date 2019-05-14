@@ -2,7 +2,7 @@
 // Name:		shadebtn.h
 // Purpose:		Class for implementing an owner-draw button
 // Author:		Davide Pizzolato
-// Copyright:   Copyright (c) [2001] Davide Pizzolato
+// Copyright:   Copyright (c) [2001-2019] Davide Pizzolato
 // Licence:     The Code Project Open License (see ../CPOL.md)
 /////////////////////////////////////////////////////////////////////////////
 
@@ -55,7 +55,7 @@ ttCShadeBtn::ttCShadeBtn()
 	// 0 may cause it to be much larger then originally intended for the button. Ultimately, if this
 	// default font is unsatisfactory, the caller should call ttCShadeBtn::SetFont().
 
-	m_hFont = tt::CreateLogFont("MS Shell Dlg", 8);
+	m_hFont = ttCreateLogFont("MS Shell Dlg", 8);
 
 	// Another option is to get the font for Message Boxes and use that. However, it's quite possible that
 	// the user changed that font specifically for message boxes without expecting it to also change the font
@@ -67,7 +67,7 @@ ttCShadeBtn::ttCShadeBtn()
 	if (SystemParametersInfo(SPI_GETNONCLIENTMETRICS, 0, pmetrics, 0)) {
 		SetFont(&pmetrics->lfMessageFont);
 	}
-	ttfree(pmetrics);
+	ttFree(pmetrics);
 #endif
 }
 
@@ -76,7 +76,7 @@ ttCShadeBtn::~ttCShadeBtn()
 	if (m_hFont)
 		DeleteObject(m_hFont);
 	if (m_pLF)
-		ttfree(m_pLF);
+		ttFree(m_pLF);
 	if (m_hIconDown != m_hIcon && m_hIconDown)
 		DestroyIcon(m_hIconDown);
 	if (m_hIconHighLight != m_hIcon && m_hIconHighLight)
@@ -92,7 +92,7 @@ bool ttCShadeBtn::SetFont(LOGFONT* pNewStyle)
 {
 	if (pNewStyle) {
 		if (m_pLF == NULL)
-			m_pLF = (LOGFONT*) ttcalloc(sizeof(LOGFONT));
+			m_pLF = (LOGFONT*) ttCalloc(sizeof(LOGFONT));
 		if (m_pLF) {
 			memcpy(m_pLF, pNewStyle, sizeof(LOGFONT));
 			if (m_hFont)
@@ -107,7 +107,7 @@ bool ttCShadeBtn::SetFont(LOGFONT* pNewStyle)
 bool ttCShadeBtn::SetFont(const char* pszFontName, long lSize, long lWeight, BYTE bItalic, BYTE bUnderline)
 {
 	if (m_pLF == NULL)
-		m_pLF = (LOGFONT*) ttcalloc(sizeof(LOGFONT));
+		m_pLF = (LOGFONT*) ttCalloc(sizeof(LOGFONT));
 	if (m_pLF) {
 		strncpy_s(m_pLF->lfFaceName, sizeof(m_pLF->lfFaceName), pszFontName, 31);
 		m_pLF->lfHeight = lSize;
