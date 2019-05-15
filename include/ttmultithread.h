@@ -2,7 +2,7 @@
 // Name:		ttCMultiThrd, CMultiChildThread
 // Purpose:		Class for handling multiple thread
 // Author:		Ralph Walden
-// Copyright:	Copyright (c) 2010-2018 KeyWorks Software (Ralph Walden)
+// Copyright:	Copyright (c) 2010-2019 KeyWorks Software (Ralph Walden)
 // License:		Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
@@ -34,9 +34,7 @@
 	class CMultiChildThread;	// forward definition
 #endif
 
-namespace tt {
-	size_t		GetCPUCount();
-} // end of tt namespace
+size_t ttGetCPUCount();
 
 class ttCMultiThrd
 {
