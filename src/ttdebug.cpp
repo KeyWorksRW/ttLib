@@ -110,16 +110,11 @@ bool ttAssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFunc
 
 #else	// not _WINDOWS_
 
-#ifdef _WX_WX_H_
-	wxFAIL_MSG(pszMsg, pszFile, line, pszFunction);
-#else	// not _WX_WX_H_
 	asm volatile ("int $3");
-#endif // _WX_WX_H_
 
 	crtAssert.Unlock();
 	return false;
 #endif	// _WINDOWS_
-
 }
 
 bool ttAssertionMsg(const wchar_t* pwszMsg, const char* pszFile, const char* pszFunction, int line)

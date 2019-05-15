@@ -11,6 +11,10 @@
 #include "../include/ttdebug.h"	// ASSERTs
 #include "../include/ttheap.h"	// ttCHeap
 
+#ifndef _WINDOWS_
+	#error This code will only work on Windows
+#endif
+
 ttCHeap tt::MainHeap;
 
 /*
@@ -145,7 +149,6 @@ __declspec(noreturn) void ttOOM(void)
 {
 #ifdef _DEBUG
 
-#ifdef _WINDOWS_
 	int answer = MessageBoxA(GetActiveWindow(), "Out of Memory!!!", "Do you want to call DebugBreak()?", MB_YESNO | MB_ICONERROR);
 
 	if (answer == IDYES)
@@ -153,7 +156,6 @@ __declspec(noreturn) void ttOOM(void)
 	// Don't use GetCurrentWindowHandle() since that might only return an active window
 	if (tt::hwndMsgBoxParent && IsWindow(tt::hwndMsgBoxParent))
 		SendMessage(tt::hwndMsgBoxParent, WM_CLOSE, 0, 0);	// attempt to give the application window a graceful way to shut down
-#endif	// __WINDOWS_ and _WX_WX_H_
 
 #endif	// _DEBUG
 

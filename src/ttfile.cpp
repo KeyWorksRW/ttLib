@@ -10,10 +10,6 @@
 
 #include <stdlib.h>	// for wcstombs_s
 
-#ifdef _WX_WX_H_
-	#include <wx/file.h>
-#endif
-
 #include "../include/ttfile.h"
 
 #ifdef _WINDOWS_
@@ -110,18 +106,6 @@ bool ttCFile::WriteFile(const char* pszFile)
 		return false;	// we refuse to write an empty file
 	}
 
-#ifdef _WX_WX_H_
-	wxFile file(pszFile, wxFile::write);
-
-	if (!file.IsOpened()) {
-		m_ioResult = ERROR_CANT_OPEN;
-		return false;
-	}
-
-	ptrdiff_t cbWritten = file.Write(m_pbuf, m_pCurrent - m_pbuf);
-	m_ioResult = cbWritten == (m_pCurrent - m_pbuf) ? ERROR_NONE : ERROR_CANT_WRITE;
-	return m_ioResult == ERROR_NONE ? true : false;
-#else
 	HANDLE hf = CreateFile(pszFile, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 	if (hf == INVALID_HANDLE_VALUE)	{
 		m_ioResult = ERROR_CANT_OPEN;
@@ -133,7 +117,6 @@ bool ttCFile::WriteFile(const char* pszFile)
 	CloseHandle(hf);
 	m_ioResult = bResult ? ERROR_NONE : ERROR_CANT_WRITE;
 	return bResult ? true : false;
-#endif
 }
 
 bool ttCFile::ReadFile(const char* pszFile)
@@ -144,19 +127,6 @@ bool ttCFile::ReadFile(const char* pszFile)
 	m_pszFile = ttFindFilePortion(pszFile);	// set this so Debugger will see it
 #endif
 
-#ifdef _WX_WX_H_
-	wxFile file(pszFile, wxFile::read);
-	if (!file.IsOpened()) {
-		m_ioResult = ERROR_CANT_OPEN;
-		return false;
-	}
-
-	wxFileOffset cbFile = file.Length();
-	if (cbFile == wxInvalidOffset) {
-		m_ioResult = ERROR_SEEK_FAILURE;
-		return false;
-	}
-#else	// not _WX_WX_H_
 	HANDLE hf = CreateFile(pszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 	if (hf == INVALID_HANDLE_VALUE) {
 		m_ioResult = ERROR_CANT_OPEN;
@@ -167,7 +137,6 @@ bool ttCFile::ReadFile(const char* pszFile)
 		m_ioResult = ERROR_SEEK_FAILURE;
 		return false;
 	}
-#endif	// _WX_WX_H_
 
 	if (m_pbuf)
 		AllocateMoreMemory((size_t) cbFile + CB_END_PAD);
@@ -175,13 +144,6 @@ bool ttCFile::ReadFile(const char* pszFile)
 		AllocateBuffer((size_t) cbFile + CB_END_PAD);
 	}
 
-#ifdef _WX_WX_H_
-	wxFileOffset cbRead = file.Read((void*) m_pCurrent, (size_t) cbFile);
-	if (cbRead == wxInvalidOffset) {
-		m_ioResult = ERROR_CANT_READ;
-		return false;
-	}
-#else	// not _WX_WX_H_
 	DWORD cbRead;
 	if (!::ReadFile(hf, (void*) m_pCurrent, cbFile, &cbRead, NULL)) {
 		CloseHandle(hf);
@@ -189,7 +151,6 @@ bool ttCFile::ReadFile(const char* pszFile)
 		return false;
 	}
 	CloseHandle(hf);
-#endif	// _WX_WX_H_
 
 	ttASSERT_MSG((size_t) cbRead < m_cbAllocated, "Read more bytes than buffer size!");
 	m_pCurrent[(size_t) cbRead] = 0;	// null-terminate the file

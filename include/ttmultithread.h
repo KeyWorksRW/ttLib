@@ -30,10 +30,6 @@
 
 #include "ttmap.h"	// ttCMap
 
-#ifdef _WX_WX_H_
-	class CMultiChildThread;	// forward definition
-#endif
-
 size_t ttGetCPUCount();
 
 class ttCMultiThrd
@@ -60,10 +56,6 @@ protected:
 	bool m_bEndThreads;
 	bool m_bCanceled;
 
-#ifdef _WX_WX_H_
-	wxSemaphore* m_psemAvailThrd;
-	CMultiChildThread** m_aThrds;
-#else	// not _WX_WX_H_
 	typedef struct {
 		HANDLE hThread;
 		HANDLE hsemStart;
@@ -75,30 +67,9 @@ protected:
 
 	ttCMap<DWORD /* threadID */, MULTI_THRD_INFO*> m_threadMap;
 
-	friend DWORD __stdcall _MultiThread(void* pv);
+	friend DWORD __stdcall _ttMultiThread(void* pv);
 	MULTI_THRD_INFO* m_aThrdInfo;
 	HANDLE* m_ahsemDone;
-#endif	// _WX_WX_H_
 };
-
-#ifdef _WX_WX_H_
-class CMultiChildThread : public wxThread
-{
-public:
-	wxThread::ExitCode Entry();
-
-	wxSemaphore m_semStart;
-
-	// The following two are created and set by ttCMultiThrd
-
-	wxSemaphore* m_psemTerminate;
-	wxSemaphore* m_psemAvailThrd;
-	ttCMultiThrd* m_pMultiThrd;
-
-	void* m_pvData1;	// additional data passed to the worker thread
-	void* m_pvData2;	// additional data passed to the worker thread
-	bool  m_fDone;
-};
-#endif	// _WX_WX_H_
 
 #endif	// __TTLIB_MULTITHREAD_H__

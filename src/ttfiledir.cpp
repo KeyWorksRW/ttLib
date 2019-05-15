@@ -11,64 +11,40 @@
 #include "../include/ttdebug.h" 	// for ttASSERTS
 #include "../include/ttstr.h"	// ttCStr
 
-#if !defined(_WINDOWS_) && !defined(_WX_WX_H_)
-	#error wxWidgets is required for non-Windows builds
-#endif
-
-#ifdef _WX_WX_H_
-	#include <wx/dir.h>	// wxDir class
+#ifndef _WINDOWS_
+	#error This code will only work on Windows
 #endif
 
 bool ttFileExists(const char* pszFile)
 {
 	if (!pszFile)
 		return false;
-#ifdef _WINDOWS_
 	DWORD result = GetFileAttributesA(pszFile);
 	return (result != INVALID_FILE_ATTRIBUTES && !(result & FILE_ATTRIBUTE_DIRECTORY));
-#else
-	wxFileName fn;
-	return fn.FileExists(pszFile);
-#endif
 }
 
 bool ttFileExists(const wchar_t* pszFile)
 {
 	if (!pszFile)
 		return false;
-#ifdef _WINDOWS_
 	DWORD result = GetFileAttributesW(pszFile);
 	return (result != INVALID_FILE_ATTRIBUTES && !(result & FILE_ATTRIBUTE_DIRECTORY));
-#else
-	wxFileName fn;
-	return fn.FileExists(pszFile);
-#endif
 }
 
 bool ttDirExists(const char* pszFolder)
 {
 	if (!pszFolder)
 		return false;
-#ifdef _WINDOWS_
 	DWORD result = GetFileAttributesA(pszFolder);
 	return (result != INVALID_FILE_ATTRIBUTES && result & FILE_ATTRIBUTE_DIRECTORY);
-#else
-	wxFileName fn;
-	return fn.DirExists(pszFile);
-#endif
 }
 
 bool ttDirExists(const wchar_t* pszFolder)
 {
 	if (!pszFolder)
 		return false;
-#ifdef _WINDOWS_
 	DWORD result = GetFileAttributesW(pszFolder);
 	return (result != INVALID_FILE_ATTRIBUTES && result & FILE_ATTRIBUTE_DIRECTORY);
-#else
-	wxFileName fn;
-	return fn.DirExists(pszFile);
-#endif
 }
 
 // REVIEW: [randalphwa - 09-01-2018] I suspect this will fail if the sub folder name contains a trailing slash. I.e.,
@@ -80,14 +56,8 @@ bool ttCreateDir(const char* pszDir)
 	if (!pszDir)
 		return false;
 
-#ifdef	_WX_WX_H_
-	wxDir dir;
-	if (dir.Make(pszDir))
-		return true;
-#else
 	if (CreateDirectoryA(pszDir, nullptr))
 		return true;
-#endif
 
 	ttCStr cszDir(pszDir);
 	ttBackslashToForwardslash(cszDir);
@@ -100,11 +70,7 @@ bool ttCreateDir(const char* pszDir)
 		return false;
 	*psz = '/';
 
-#ifdef	_WX_WX_H_
-	return dir.Make(pszDir);
-#else
 	return CreateDirectoryA(pszDir, nullptr) ? true : false;
-#endif
 }
 
 bool ttCreateDir(const wchar_t* pszDir)
@@ -113,14 +79,8 @@ bool ttCreateDir(const wchar_t* pszDir)
 	if (!pszDir)
 		return false;
 
-#ifdef	_WX_WX_H_
-	wxDir dir;
-	if (dir.Make(pszDir))
-		return true;
-#else
 	if (CreateDirectoryW(pszDir, nullptr))
 		return true;
-#endif
 
 	ttCStr cszDir(pszDir);
 	ttBackslashToForwardslash(cszDir);
@@ -133,11 +93,7 @@ bool ttCreateDir(const wchar_t* pszDir)
 		return false;
 	*psz = '/';
 
-#ifdef	_WX_WX_H_
-	return dir.Make(pszDir);
-#else
 	return CreateDirectoryW(pszDir, nullptr) ? true : false;
-#endif
 }
 
 /*
