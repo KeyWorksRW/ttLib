@@ -50,6 +50,7 @@ public:
 	void	ShowCreatePrompt() { m_pofn->Flags &= ~OFN_FILEMUSTEXIST; m_pofn->Flags |= OFN_CREATEPROMPT; }
 	void	ShowReadOnlyBox() { m_pofn->Flags &= ~OFN_HIDEREADONLY; }
 	void	UseCurrentDirectory() { m_cszCurDir.GetCWD(); m_pofn->lpstrInitialDir = m_cszCurDir; }
+	void	RestoreDirectory() { m_pofn->Flags |= OFN_NOCHANGEDIR; }
 
 	void	SetWindowRect(const RECT* prc) { ttASSERT(!IsRectEmpty(prc)); CopyRect(&m_rcPosition, prc); }
 	RECT*	GetWindowRect() { return &m_rcPosition; }
