@@ -57,6 +57,7 @@ char*	  ttStrDup(const char* psz, char** ppszDst);
 size_t	  ttSize(const void* pv);
 bool	  ttValidate(const void* pv);
 
+bool	  ttIsSamePath(const char* pszFile1, const char* pszFile2);
 bool	  ttIsSameStr(const char* psz1, const char* psz2); 			// same as strcmp, but returns true/false
 bool	  ttIsSameStrI(const char* psz1, const char* psz2);			// case-insensitive comparison
 bool	  ttIsSameSubStr(const char* pszMain, const char* pszSub); 	// true if sub string matches first part of main string
@@ -184,6 +185,7 @@ wchar_t*  ttFindSpace(const wchar_t* psz);		// returns pointer to the next space
 
 wchar_t*  ttStrDup(const wchar_t* pwsz);
 
+bool	  ttIsSamePath(const wchar_t* pszFile1, const wchar_t* pszFile2);
 bool	  ttIsSameStr(const wchar_t* psz1, const wchar_t* psz2);			// same as strcmp, but returns true/false
 bool	  ttIsSameStrI(const wchar_t* psz1, const wchar_t* psz2);			// case-insensitive comparison
 bool	  ttIsSameSubStr(const wchar_t* pszMain, const wchar_t* pszSub);	// true if sub string matches first part of main string

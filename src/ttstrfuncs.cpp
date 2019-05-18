@@ -12,6 +12,8 @@
 #include "../include/ttheap.h"		// ttCHeap
 #include "../include/ttstr.h"	// ttCStr
 
+using namespace ttch;	// CH_constants
+
 // We use our own "safe" string handling instead of strsafe.h. Rather then returning an error, we try to do
 // the "right" thing that will allow the program to continue, but without a buffer overun, or GPF caused by
 // a NULL pointer. Note also that we have a significantly smaller max string length (16 megs versus 2 gigs).
@@ -244,6 +246,53 @@ wchar_t* ttStrChrR(const wchar_t* psz, wchar_t ch)
 	return (wchar_t*) pszLastFound;
 }
 
+bool ttIsSamePath(const char* psz1, const char* psz2)
+{
+	if (!psz1 || !psz2)
+		return false;
+
+	if (ttStrLen(psz1) != ttStrLen(psz2))
+		return false;
+	for (;;) {
+		if (*psz1 != *psz2)	{
+			if (*psz1 == CH_BACKSLASH && *psz2 == CH_FORWARDSLASH)
+				continue;	// consider them the same
+			else if (*psz1 == CH_FORWARDSLASH && *psz2 == CH_BACKSLASH)
+				continue;	// consider them the same
+			else if (tolower(*psz1) != tolower(*psz2))
+				return false;	// doesn't match even when case is made the same
+		}
+		if (!*psz1)
+			return true;
+		psz1 = ttNextChar(psz1);
+		psz2 = ttNextChar(psz2);
+	}
+
+}
+
+bool ttIsSamePath(const wchar_t* psz1, const wchar_t* psz2)
+{
+	if (!psz1 || !psz2)
+		return false;
+
+	if (ttStrLen(psz1) != ttStrLen(psz2))
+		return false;
+	for (;;) {
+		if (*psz1 != *psz2)	{
+			if (*psz1 == L'\\' && *psz2 == L'/')
+				continue;	// consider them the same
+			else if (*psz1 == L'/' && *psz2 == L'\\')
+				continue;	// consider them the same
+			if (towlower(*psz1) != towlower(*psz2))
+				return false;	// doesn't match even when case is made the same
+		}
+		if (!*psz1)
+			return true;
+		++psz1;
+		++psz2;
+	}
+}
+
 bool ttIsSameStr(const char* psz1, const char* psz2)
 {
 	if (!psz1 || !psz2)		// note that we return false even if both strings are a null pointer
@@ -257,7 +306,6 @@ bool ttIsSameStr(const char* psz1, const char* psz2)
 	}
 	return false;
 }
-
 bool ttIsSameStr(const wchar_t* psz1, const wchar_t* psz2)
 {
 	if (!psz1 || !psz2)
