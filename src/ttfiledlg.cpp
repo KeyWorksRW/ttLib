@@ -178,3 +178,13 @@ UINT_PTR CALLBACK ttpriv::OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */,
 	}
 	return 0;
 }
+
+void ttCFileDlg::SetInitialDir(const char* pszFolder)
+{
+	ttASSERT_MSG(pszFolder, "NULL pointer!");
+
+	m_cszSetDir = pszFolder;
+	m_cszSetDir.GetFullPathName();	// probably not necessary, but doesn't hurt
+	ttForwardslashToBackslash(m_cszSetDir);
+	m_pofn->lpstrInitialDir = m_cszSetDir;
+}
