@@ -317,6 +317,8 @@ public:
     void    Attach(HWND hwndCtrl) { m_hwnd = hwndCtrl; }
 
     LRESULT GetCurSel() { return SendMessage(m_hwnd, LVM_GETNEXTITEM, (WPARAM) -1, MAKELPARAM(LVNI_SELECTED, 0)); }
+    LRESULT SetCurSel(int pos);
+    LRESULT SetCurSel(const char* pszItem);
 
     bool    GetItem(LVITEM* pItem) { return SendMessage(m_hwnd, LVM_GETITEM, 0, (LPARAM) pItem) ? true : false; }
     bool    SetItem(LVITEMA* pItem) { return SendMessage(m_hwnd, LVM_SETITEMA, 0, (LPARAM) pItem) ? true : false; }

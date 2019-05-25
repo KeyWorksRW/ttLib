@@ -320,6 +320,23 @@ void ttCListView::InsertColumn(int iColumn, const wchar_t* pszText, int width)
     ::SendMessage(m_hwnd, LVM_INSERTCOLUMNW, (WPARAM) iColumn, (LPARAM) &lvc);
 }
 
+LRESULT ttCListView::SetCurSel(int pos)
+{
+    LVITEMA lvi;
+    lvi.stateMask = 0x0F;
+    lvi.state = LVIS_FOCUSED | LVIS_SELECTED;
+    return ::SendMessage(m_hwnd, LVM_SETITEMSTATE, pos, (LPARAM) &lvi);
+}
+
+LRESULT ttCListView::SetCurSel(const char* pszItem)
+{
+    LV_FINDINFO lvfi;
+    lvfi.flags = LVFI_STRING;
+    lvfi.psz = pszItem;
+    auto pos = ::SendMessage(m_hwnd, LVM_FINDITEM, (WPARAM) -1, (LPARAM) &lvfi);
+    return (pos != -1) ? SetCurSel(pos) : -1;
+}
+
 ///////////////////// Monitor Code /////////////////////////////////////////
 
 static HMONITOR (WINAPI* s_pfnMonitorFromWindow)(HWND, DWORD);
