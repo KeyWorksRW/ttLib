@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttCMultiThrd, CMultiChildThread
-// Purpose:		Class for handling multiple thread
-// Author:		Ralph Walden
-// Copyright:	Copyright (c) 2010-2019 KeyWorks Software (Ralph Walden)
-// License:		Apache License (see ../LICENSE)
+// Name:      ttCMultiThrd, CMultiChildThread
+// Purpose:   Class for handling multiple thread
+// Author:    Ralph Walden
+// Copyright: Copyright (c) 2010-2019 KeyWorks Software (Ralph Walden)
+// License:   Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -28,48 +28,48 @@
 
 // a try/catch section is placed around the call to doThreadWork
 
-#include "ttmap.h"	// ttCMap
+#include "ttmap.h"  // ttCMap
 
 size_t ttGetCPUCount();
 
 class ttCMultiThrd
 {
 public:
-	ttCMultiThrd();
-	~ttCMultiThrd();
+    ttCMultiThrd();
+    ~ttCMultiThrd();
 
-	virtual void DoThreadWork(void* pvData1, void* pvData2) = NULL;	 // Derived class MUST supply this! While running, call isCancelled() to return
+    virtual void DoThreadWork(void* pvData1, void* pvData2) = NULL;  // Derived class MUST supply this! While running, call isCancelled() to return
 
-	bool isCancelled() { return m_bCanceled; }	// true if threads are being aborted
-	void CancelThreads();
+    bool isCancelled() { return m_bCanceled; }  // true if threads are being aborted
+    void CancelThreads();
 
-	void InitializeThreads(size_t nThreads = 0);		// 0 means create as many threads as there are CPUs
-	void StartThread(void* pvData1, void* pvData2);		// will not return until an available thread is found
+    void InitializeThreads(size_t nThreads = 0);        // 0 means create as many threads as there are CPUs
+    void StartThread(void* pvData1, void* pvData2);     // will not return until an available thread is found
 
-	size_t GetAvailableThreads();		// returns currently available threads
+    size_t GetAvailableThreads();       // returns currently available threads
 
-	void WaitForThreadsToComplete();	// waits for all threads to finish, then returns
+    void WaitForThreadsToComplete();    // waits for all threads to finish, then returns
 
 protected:
-	size_t	m_cThreads;
+    size_t  m_cThreads;
 
-	bool m_bEndThreads;
-	bool m_bCanceled;
+    bool m_bEndThreads;
+    bool m_bCanceled;
 
-	typedef struct {
-		HANDLE hThread;
-		HANDLE hsemStart;
-		HANDLE hsemDone;
-		void* pvData1;	// additional data passed to the worker thread
-		void* pvData2;	// additional data passed to the worker thread
-		bool   bDone;
-	} MULTI_THRD_INFO;
+    typedef struct {
+        HANDLE hThread;
+        HANDLE hsemStart;
+        HANDLE hsemDone;
+        void* pvData1;  // additional data passed to the worker thread
+        void* pvData2;  // additional data passed to the worker thread
+        bool   bDone;
+    } MULTI_THRD_INFO;
 
-	ttCMap<DWORD /* threadID */, MULTI_THRD_INFO*> m_threadMap;
+    ttCMap<DWORD /* threadID */, MULTI_THRD_INFO*> m_threadMap;
 
-	friend DWORD __stdcall _ttMultiThread(void* pv);
-	MULTI_THRD_INFO* m_aThrdInfo;
-	HANDLE* m_ahsemDone;
+    friend DWORD __stdcall _ttMultiThread(void* pv);
+    MULTI_THRD_INFO* m_aThrdInfo;
+    HANDLE* m_ahsemDone;
 };
 
-#endif	// __TTLIB_MULTITHREAD_H__
+#endif  // __TTLIB_MULTITHREAD_H__

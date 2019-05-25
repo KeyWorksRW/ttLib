@@ -1,41 +1,41 @@
 Options:
-	Project:	 ttLib		  # project target name
-	PCH:		 pch.h		  # precompiled header
-	optimize:	 space		  # speed or space (default)
-	exe_type:	 lib		  # [window | console | lib | dll]
-	WarnLevel:	 4			  # compiler warning level (1-4) (default if not specified is 4)
+    Project:     ttLib        # project target name
+    PCH:         pch.h        # precompiled header
+    optimize:    space        # speed or space (default)
+    exe_type:    lib          # [window | console | lib | dll]
+    WarnLevel:   4            # compiler warning level (1-4) (default if not specified is 4)
 
-	64Bit:		 true		  # create 64-bit project as well as 32-bit project
-	TargetDir64: ../lib		  # 64-bit target directory
-	32Bit:		 true		  # if true, build 32-bit target
-	TargetDir32: ../lib		  # 32-bit target directory
+    64Bit:       true         # create 64-bit project as well as 32-bit project
+    TargetDir64: ../lib       # 64-bit target directory
+    32Bit:       true         # if true, build 32-bit target
+    TargetDir32: ../lib       # 32-bit target directory
 
 Files:
-	pch.cpp
+    pch.cpp
 
-	ttfiledir.cpp		# file and directory handling
-	ttmisc.cpp			# miscellaneous functions
-	ttstrfuncs.cpp		# string handling and ttStr class
-	ttbasethread.cpp	# ttCBaseThread class
-	ttdebug.cpp			# debug and assertion handling
-	ttdirdlg.cpp		# dialog for selecting a directory
-	ttenumstr.cpp		# ttCEnumStr class
-	ttfile.cpp			# ttCFile class
-	tthashpair.cpp		# ttCHashPair
-	ttheap.cpp			# ttCHeap class
-	ttlist.cpp			# ttCList class
-	ttmultithread.cpp	# ttCMultiThrd class
-	ttprintf.cpp		# printf
-	ttstr.cpp			# ttCStr class
-	ttwstr.cpp			# ttCWStr class
-	ttxml.cpp			# ttCParseXML class
+    ttfiledir.cpp       # file and directory handling
+    ttmisc.cpp          # miscellaneous functions
+    ttstrfuncs.cpp      # string handling and ttStr class
+    ttbasethread.cpp    # ttCBaseThread class
+    ttdebug.cpp         # debug and assertion handling
+    ttdirdlg.cpp        # dialog for selecting a directory
+    ttenumstr.cpp       # ttCEnumStr class
+    ttfile.cpp          # ttCFile class
+    tthashpair.cpp      # ttCHashPair
+    ttheap.cpp          # ttCHeap class
+    ttlist.cpp          # ttCList class
+    ttmultithread.cpp   # ttCMultiThrd class
+    ttprintf.cpp        # printf
+    ttstr.cpp           # ttCStr class
+    ttwstr.cpp          # ttCWStr class
+    ttxml.cpp           # ttCParseXML class
 
 # _WINDOWS_ only files
 
-	ttdib.cpp			# ttCDib class
-	ttdlg.cpp			# ttCDlg class
-	ttfiledlg.cpp		# ttCFileDlg class
-	ttmultibtn.cpp		# ttCMultiBtn class
-	ttshadebtn.cpp		# ttCShadeBtn class
-	ttwin.cpp			# ttCWin class
-	ttwinmisc.cpp		# Miscellaneous functions for use on Windows
+    ttdib.cpp           # ttCDib class
+    ttdlg.cpp           # ttCDlg class
+    ttfiledlg.cpp       # ttCFileDlg class
+    ttmultibtn.cpp      # ttCMultiBtn class
+    ttshadebtn.cpp      # ttCShadeBtn class
+    ttwin.cpp           # ttCWin class
+    ttwinmisc.cpp       # Miscellaneous functions for use on Windows

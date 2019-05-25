@@ -1,36 +1,36 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		ttCDirDlg
-// Purpose:		Class for displaying a dialog to select a directory
-// Author:		Ralph Walden
-// Copyright:	Copyright (c) 2019 KeyWorks Software (Ralph Walden)
-// License:     Apache License (see ../LICENSE)
+// Name:      ttCDirDlg
+// Purpose:   Class for displaying a dialog to select a directory
+// Author:    Ralph Walden
+// Copyright: Copyright (c) 2019 KeyWorks Software (Ralph Walden)
+// License:   Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
 
 #include <shlobj.h>
 
-#include "ttstr.h"		// ttCStr
-#include "ttwstr.h" 	// ttCWStr
+#include "ttstr.h"      // ttCStr
+#include "ttwstr.h"     // ttCWStr
 
 class ttCDirDlg
 {
 public:
-	ttCDirDlg();
+    ttCDirDlg();
 
-	// Class functions
+    // Class functions
 
-	void SetTitle(const char* pszTitle) { m_cwszTitle = pszTitle; }
-	void SetStartingDir(const char* pszDir) { m_cwszStartingDir = pszDir; }
+    void SetTitle(const char* pszTitle) { m_cwszTitle = pszTitle; }
+    void SetStartingDir(const char* pszDir) { m_cwszStartingDir = pszDir; }
 
-	bool GetFolderName(HWND hwndParent = NULL);
+    bool GetFolderName(HWND hwndParent = NULL);
 
-	operator char*() const { return (char*) m_cszDirName; }
+    operator char*() const { return (char*) m_cszDirName; }
 
 protected:
-	// Class members
+    // Class members
 
-	ttCWStr m_cwszTitle;	// defaults to "Select a Folder"
-	ttCWStr m_cwszStartingDir;
-	ttCStr  m_cszDirName;
+    ttCWStr m_cwszTitle;    // defaults to "Select a Folder"
+    ttCWStr m_cwszStartingDir;
+    ttCStr  m_cszDirName;
 };
