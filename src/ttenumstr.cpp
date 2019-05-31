@@ -96,6 +96,10 @@ bool ttCEnumStr::Enum(const char** ppszCurrent)
             }
             if (m_pszEnd)
                 *m_pszEnd = 0;
+
+            if (m_pszCur && !m_pszCur[0])   // Don't return empty string -- this can happen when a original string ends without a separator
+                return Enum(ppszCurrent);
+
             if (ppszCurrent)
                 *ppszCurrent = m_pszCur;
             return true;
