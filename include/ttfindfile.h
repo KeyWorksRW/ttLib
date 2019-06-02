@@ -32,7 +32,8 @@
 class ttCFindFile : public WIN32_FIND_DATA
 {
 public:
-    ttCFindFile(const char* pszFilePattern) { m_hfind = FindFirstFile(pszFilePattern, this);
+    ttCFindFile(void) { m_hfind = INVALID_HANDLE_VALUE; } // With this constructor, call NewPattern(...) to initialize
+    ttCFindFile(const char* pszFilePattern) { m_hfind = FindFirstFileEx(pszFilePattern, FindExInfoBasic, this, FindExSearchNameMatch, nullptr, FIND_FIRST_EX_LARGE_FETCH);
 #ifdef _DEBUG
         m_pszFilename = cFileName;
 #endif
@@ -46,7 +47,7 @@ public:
     bool NewPattern(const char* pszFilePattern) {
         if (m_hfind != INVALID_HANDLE_VALUE)
             FindClose(m_hfind);
-        m_hfind = FindFirstFile(pszFilePattern, this);
+        m_hfind = FindFirstFileEx(pszFilePattern, FindExInfoBasic, this, FindExSearchNameMatch, nullptr, FIND_FIRST_EX_LARGE_FETCH);
         return IsValid();
     }
 
