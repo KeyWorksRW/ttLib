@@ -85,6 +85,8 @@ inline  bool ttIsPunct(char ch) { return (ch == '.' || ch == ',' || ch == ';' ||
 inline  bool ttIsUTF8(char ch) { return ((ch & 0xC0) != 0x80); }    // is ch the start of a utf8 sequence?
 inline  bool ttIsWhitespace(char ch) { return ttStrChr(" \t\r\n\f", ch) ? true : false; };
 
+inline  bool ttChDir(const char* pszDir) { return (SetCurrentDirectoryA(pszDir) != FALSE); }
+
 ptrdiff_t ttAtoi(const char* psz);
 char*     ttHextoa(size_t val, char* pszDst, bool bUpperCase);
 char*     ttItoa(int32_t val, char* pszDst, size_t cbDst);
@@ -205,6 +207,8 @@ inline  bool   ttIsNonEmpty(const wchar_t* psz) { return (psz != nullptr && psz[
 inline  bool   ttIsPunct(wchar_t ch) { return (ch == L'.' || ch == L',' || ch == L';' || ch == L':' || ch == L'?' || ch == L'!'); }
 inline  bool   ttIsWhitespace(wchar_t ch) { return (ch == L' ' || ch == L'\t' || ch == L'\r' || ch == L'\n' || ch == L'\f') ? true : false; }
 inline  size_t ttStrByteLen(const wchar_t* pwsz) { return ttStrLen(pwsz) * sizeof(wchar_t) + sizeof(wchar_t); }
+
+inline  bool   ttChDir(const wchar_t* pwszDir) { return (SetCurrentDirectoryW(pwszDir) != FALSE); }
 
 bool      ttCreateDir(const wchar_t* pszDir);
 bool      ttDirExists(const wchar_t* pszFolder);
