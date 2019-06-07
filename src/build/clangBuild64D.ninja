@@ -9,7 +9,7 @@ resout = build/res
 msvc_deps_prefix = Note: including file:
 
 # -EHsc	// Structured exception handling
-# -MDd	// Multithreaded debug dll (MSVCRTD)
+# -MTd	// Multithreaded debug dll (MSVCRTD)
 # -Z7	// produces object files with full symbolic debugging information
 
 cflags = -nologo -D_DEBUG -showIncludes -EHsc -W4 -Zl -Od -Z7 -GS- -D__clang__ -fms-compatibility-version=19 -m64 /Fp$outdir/ttLib.pch

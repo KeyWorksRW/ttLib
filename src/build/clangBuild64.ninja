@@ -9,7 +9,7 @@ resout = build/res
 msvc_deps_prefix = Note: including file:
 
 # -EHsc	// Structured exception handling
-# -MD	// DLL version of multi-threaded library
+# -MT	// Static multi-threaded library
 # -Zl	// Don't specify default runtime library in .obj file
 # -O1	// Optimize for size (/Og /Os /Oy /Ob2 /Gs /GF /Gy)
 
