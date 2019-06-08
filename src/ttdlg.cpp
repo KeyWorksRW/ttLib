@@ -334,7 +334,7 @@ LRESULT ttCListView::SetCurSel(const char* pszItem)
     lvfi.flags = LVFI_STRING;
     lvfi.psz = pszItem;
     auto pos = ::SendMessage(m_hwnd, LVM_FINDITEM, (WPARAM) -1, (LPARAM) &lvfi);
-    return (pos != -1) ? SetCurSel(pos) : -1;
+    return (pos != -1) ? SetCurSel((int) pos) : -1;
 }
 
 ///////////////////// Monitor Code /////////////////////////////////////////
