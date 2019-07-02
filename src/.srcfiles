@@ -1,9 +1,8 @@
 Options:
-    Project:     ttLib        # project target name
+    Project:     ttLibA       # project target name
     PCH:         pch.h        # precompiled header
     optimize:    space        # speed or space (default)
     exe_type:    lib          # [window | console | lib | dll]
-    WarnLevel:   4            # compiler warning level (1-4) (default if not specified is 4)
 
     64Bit:       true         # create 64-bit project as well as 32-bit project
     TargetDir64: ../lib       # 64-bit target directory
