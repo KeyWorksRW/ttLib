@@ -8,31 +8,32 @@
 # nmake clean release <-- this will clean and rebuild release target(s)
 # nmake cleanD debug  <-- this will clean and rebuild debug target(s)
 
-# If the environment variable "b64" is set (or b64=1 is part of the make command line), then a '64' suffix is added to
-# all ninja build script names. In addition, if you add a LIB64 environment variable that points to all 64-bit LIB paths,
-# then your LIB environment will be changed to the contents of LIB64 before building.
+# By default, a 64 is appended to all .ninja script filenames to build a 64-bit target. However,  If the environment
+# variable "b32" is set (or b32=1 is part of the make command line), then a '32' suffix is added instead to all ninja
+# build script names. In addition, if you add a LIB32 environment variable that points to all 32-bit LIB paths, then your
+# LIB environment will be changed to the contents of LIB32 before building.
 
-# If you are using the MSVC compiler, then you should also set a PATH64 environment variable ahead of time to point to
-# the 64-bit compiler/linker.
+# If you are using the MSVC compiler, then you should also set a PATH32 environment variable ahead of time to point to
+# the 32-bit compiler/linker. Not that this is not needed for the CLANG compiler
 
-# Remove the '#' character in the following line to always build 64-bit targets
+# Remove the '#' character in the following line to always build 32-bit targets
 
-#b64=1
+b32=1
 
 # \
 !ifndef 0 # \
 # Following section is for nmake \
-!ifdef b64 # \
-bits=64 # \
-!ifdef LIB64 # \
-LIB=$(LIB64) # \
+!ifdef b32 # \
+bits=32 # \
+!ifdef LIB32 # \
+LIB=$(LIB32) # \
 !endif # \
-!ifdef PATH64 # \
-PATH=$(PATH64) # \
+!ifdef PATH32 # \
+PATH=$(PATH32) # \
 !endif  # \
 !else # \
-bits=32 # \
-!endif  # b64 \
+bits=64 # \
+!endif  # b32 \
 !ifndef cmplr # \
 cmplr=msvc # \
 !endif
@@ -41,16 +42,16 @@ cmplr=msvc # \
 !else
 # Following section is for GNU make and variants
 
-ifdef b64
-	bits=64
-	ifdef LIB64
-		LIB=$(LIB64)
+ifdef b32
+	bits=32
+	ifdef LIB32
+		LIB=$(LIB32)
 	endif
-	ifdef PATH64
-		PATH=$(PATH64)
+	ifdef PATH32
+		PATH=$(PATH32)
 	endif
 else
-	bits=32
+	bits=64
 endif
 
 ifndef cmplr
