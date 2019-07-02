@@ -49,7 +49,7 @@ public:
     ttCStr(const wchar_t* pwsz) { m_psz = nullptr; if (pwsz) CopyWide(pwsz); }
     ttCStr(ttCStr& csz) { m_psz = csz.GetPtr() ? ttStrDup(csz) : nullptr; }
 #ifdef _WINDOWS_
-    ttCStr(HWND hwnd) { m_psz = nullptr; GetWindowText(hwnd); }
+    ttCStr(HWND hwnd) { m_psz = nullptr; GetWndText(hwnd); }
 #endif // _WINDOWS_
 
     ~ttCStr() { if (m_psz) ttFree(m_psz); }
@@ -106,14 +106,16 @@ public:
     char*   FindExt() const;    // will return nullptr if no extension
 
 #ifdef _WINDOWS_
-    void GetFullPathName();
+    void FullPathName();
+    void GetFullPathName() { FullPathName(); }
 #endif
 
     // UI retrieving methods
 
 #ifdef _WINDOWS_
     char* GetResString(size_t idString);
-    bool  GetWindowText(HWND hwnd);
+    bool  GetWndText(HWND hwnd);
+    bool  GetWindowText(HWND hwnd) { return GetWndText(hwnd); } // Deal with macros that change this to GetWindowTextW or GetWindowTextA
 
     // The following will always return a pointer, but if an error occurred, it will point to an empty string
     char* GetListBoxText(HWND hwnd) { return GetListBoxText(hwnd, ::SendMessage(hwnd, LB_GETCURSEL, 0, 0)); }

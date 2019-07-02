@@ -33,6 +33,14 @@ void ttInitCaller(HINSTANCE hinstRes, HWND hwnd, const char* pszTitle)
     tt::hwndMsgBoxParent = hwnd;
 }
 
+void ttInitCaller(const char* pszTitle)
+{
+#if defined(_WIN32)
+    tt::hinstResources = GetModuleHandle(NULL);
+#endif
+     ttSetMsgBoxTitle(pszTitle);
+}
+
 void ttSetMsgBoxTitle(const char* pszTitle)
 {
     if (tt::pszMsgTitle)

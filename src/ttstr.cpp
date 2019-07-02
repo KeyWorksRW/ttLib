@@ -130,7 +130,7 @@ char* ttCStr::GetCWD()
 
 #ifdef _WINDOWS_
 
-void ttCStr::GetFullPathName()
+void ttCStr::FullPathName()
 {
     ttASSERT(m_psz);
     char szPath[MAX_PATH];
@@ -206,7 +206,7 @@ char* ttCStr::GetResString(size_t idString)
     return m_psz;
 }
 
-bool ttCStr::GetWindowText(HWND hwnd)
+bool ttCStr::GetWndText(HWND hwnd)
 {
     if (m_psz) {
          ttFree(m_psz);

@@ -15,7 +15,7 @@ namespace tt
 {
     const size_t MAX_STRING_LEN = 0x00FFFFFF;   // strings limited to 16,777,215 bytes (16 megabytes)
 
-#ifdef _WINDOWS_
+#if defined(_WIN32)
     extern HWND hwndMsgBoxParent;       // parent for MessageBox--if Abort is requested in ttASSERT, this window will receive a WM_CLOSE message prior to shut down
     extern HINSTANCE hinstResources;    // handle to use to load resources
     extern const char* pszMsgTitle;     // title for message boxes
@@ -109,11 +109,12 @@ char*    ttFindLastSlash(const char* pszPath);                      // handles b
 inline void ttSetAssertHandlerA(TTASSERTHANDLERA pFunc) { pttAssertHandlerA = pFunc; }  // Replace the ttLib assertion handler with your own
 inline void ttSetAssertHandlerW(TTASSERTHANDLERW pFunc) { pttAssertHandlerW = pFunc; }
 
+void ttInitCaller(const char* pszTitle);
+
 #ifdef _WINDOWS_
 
 // ttInitCaller is equivalent to calling setResInst(hinstRes), setMsgBoxParent(hwndParent) and setMsgBoxTitle(pszMsgTitle)
-void        ttInitCaller(HINSTANCE hinstRes, HWND hwndParent, const char* pszMsgTitle);
-inline void ttInitCaller(const char* pszTitle) { ttInitCaller(GetModuleHandle(nullptr), nullptr, pszTitle); }   // use this for console apps
+[[deprecated]] void ttInitCaller(HINSTANCE hinstRes, HWND hwndParent, const char* pszMsgTitle); // apps should be calling ttInitCaller(pszTitle) instead
 
 inline HINSTANCE   ttGetResInst() { return tt::hinstResources; }
 inline void        ttSetResInst(HINSTANCE hinst) { tt::hinstResources = hinst; }

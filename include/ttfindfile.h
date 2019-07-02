@@ -29,11 +29,11 @@
         }
 */
 
-class ttCFindFile : public WIN32_FIND_DATA
+class ttCFindFile : public WIN32_FIND_DATAA
 {
 public:
     ttCFindFile(void) { m_hfind = INVALID_HANDLE_VALUE; } // With this constructor, call NewPattern(...) to initialize
-    ttCFindFile(const char* pszFilePattern) { m_hfind = FindFirstFileEx(pszFilePattern, FindExInfoBasic, this, FindExSearchNameMatch, nullptr, FIND_FIRST_EX_LARGE_FETCH);
+    ttCFindFile(const char* pszFilePattern) { m_hfind = FindFirstFileExA(pszFilePattern, FindExInfoBasic, this, FindExSearchNameMatch, nullptr, FIND_FIRST_EX_LARGE_FETCH);
 #ifdef _DEBUG
         m_pszFilename = cFileName;
 #endif
@@ -43,11 +43,11 @@ public:
             FindClose(m_hfind);
     }
 
-    bool NextFile() { return FindNextFile(m_hfind, this) ? true : false; }
+    bool NextFile() { return FindNextFileA(m_hfind, this) ? true : false; }
     bool NewPattern(const char* pszFilePattern) {
         if (m_hfind != INVALID_HANDLE_VALUE)
             FindClose(m_hfind);
-        m_hfind = FindFirstFileEx(pszFilePattern, FindExInfoBasic, this, FindExSearchNameMatch, nullptr, FIND_FIRST_EX_LARGE_FETCH);
+        m_hfind = FindFirstFileExA(pszFilePattern, FindExInfoBasic, this, FindExSearchNameMatch, nullptr, FIND_FIRST_EX_LARGE_FETCH);
         return IsValid();
     }
 
