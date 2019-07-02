@@ -18,7 +18,7 @@
 
 # Remove the '#' character in the following line to always build 32-bit targets
 
-b32=1
+#b32=1
 
 # \
 !ifndef 0 # \
