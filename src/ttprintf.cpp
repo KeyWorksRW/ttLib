@@ -174,22 +174,18 @@ void ttVPrintf(char** ppszDst, const char* pszFormat, va_list argList)
         }
         else if (*pszEnd == 'C')
         {
-            wchar_t szwBuf[2];
+            wchar_t szwBuf[sizeof(wchar_t) * 2];
             szwBuf[0] = (wchar_t) (va_arg (argList, int) & 0xFFFF);
             szwBuf[1] = '\0';
-            char szBuf[4];
-
-            size_t cb = WideCharToMultiByte(CP_ACP, 0, szwBuf, sizeof(szwBuf), szBuf, sizeof(szBuf), NULL, NULL);
-            ttASSERT(cb < sizeof(szBuf));
-            szBuf[cb] = '\0';
-            sptr.strCat(szBuf);
+            ttCStr csz(szwBuf); // this will convert the buffer to UTF8
+            sptr.strCat(csz);
             pszEnd++;
             continue;
         }
         else if (*pszEnd == 'd' || *pszEnd == 'i')
         {
 
-#if defined(_WIN64) || defined(__x86_64__) || defined(__ppc64__)    // TODO: [randalphwa - 08-30-2018] Need CLANG preprocessor flag
+#if defined(_WIN64) || defined(__x86_64__) || defined(__ppc64__)
             // note that we don't have to do any special processing if not compiling 64-bit app, as size_t will be same as int
             if (bSize_t)
                 ttItoa(va_arg(argList, _int64), szNumBuf, sizeof(szNumBuf) - 1);
@@ -283,9 +279,9 @@ void ttVPrintf(char** ppszDst, const char* pszFormat, va_list argList)
             const char* psz = va_arg(argList, char*);
 
             if (!psz || psz <= (const char*) 0xFFFF
-#ifdef _WINDOWS_
+#if defined(_WIN32)
                     || IsBadReadPtr(psz, 1) // IsBadReadPtr() is technically obsolete, but it prevents a crash if caller forgets to supply enough parameters.
-#endif
+#endif    // defined(_WIN32)
                 )
             {
                 ttASSERT_MSG(psz, "NULL pointer passed to ttCStr::printf(\"%s");
@@ -302,19 +298,9 @@ WideChar:
             if (!pwsz)
                 pwsz = L"(null)";
 
-            size_t cb = ttStrLen(pwsz) * sizeof(wchar_t);
-            ttASSERT(cb < MAX_STRING);
-            if (cb <= 0 || cb > MAX_STRING) // empty or invalid string
-                return;
-
-            char* psz = (char*) ttMalloc(cb + 1);
-            // BUGBUG: [ralphw - 07-14-2018] Following line is _WINDOWS_ only
-            cb = WideCharToMultiByte(CP_ACP, 0, pwsz, (_int32) (cb / sizeof(wchar_t)), psz, (_int32) cb, nullptr, nullptr);
-            psz[cb] = '\0';
-
-            sptr.strCat(psz);
+            ttCStr csz(pwsz);   // this will convert to a UTF8 string
+            sptr.strCat(csz);
             pszEnd++;
-            ttFree(psz);
             continue;
         }
         else if (*pszEnd == '%')
@@ -406,7 +392,7 @@ char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargLi
             }
             break;
 
-#ifdef _WINDOWS_
+#if defined(_WIN32)
         case 'r':
             {
                 ttCStr cszRes;
@@ -428,7 +414,7 @@ char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargLi
                 }
             }
             break;
-#endif // _WINDOWS_
+#endif    // defined(_WIN32)
 
         case 'q':
             try

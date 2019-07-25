@@ -11,9 +11,7 @@
 #ifndef __TTLIB_FILEDLG_H__
 #define __TTLIB_FILEDLG_H__
 
-#ifndef _WINDOWS_
-    #error This code will only work on Windows
-#endif
+#if defined(_WIN32)
 
 #include <commdlg.h>
 
@@ -37,8 +35,8 @@ public:
 
     // Class functions
 
-    bool    GetOpenFileName();  // call this or the following to launch the actual dialog box
-    bool    GetSaveFileName();
+    bool    GetOpenName();  // call this or the following to launch the actual dialog box
+    bool    GetSaveName();
 
     char*   GetFileName() { return m_cszFileName; } // call this after one of the above two functions has been called
 
@@ -81,7 +79,7 @@ protected:
     ttCStr  m_cszFilter;
     ttCStr  m_cszSetDir;
 
-    RECT      m_rcPosition;
+    RECT    m_rcPosition;
 
     // This is Malloc'd because the size changes depending on the version of Windows
     OPENFILENAMEA* m_pofn;
@@ -94,4 +92,5 @@ protected:
     bool m_bShadeBtns;
 };
 
-#endif  // __TTLIB_FILEDLG_H__
+#endif    // defined(_WIN32)
+#endif    // __TTLIB_FILEDLG_H__

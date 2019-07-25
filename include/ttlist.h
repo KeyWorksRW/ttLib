@@ -253,4 +253,37 @@ protected:
     bool m_bIgnoreCase;
 };
 
+// This class is primarily designed for use with localized id/string pairs, which is why it doesn't have as much
+// functionality as the other string list classes.
+
+class ttCCritSection;   // forward definition
+
+class ttCIntStrList
+{
+public:
+    ttCIntStrList(void);     // Until issue #43 (https://github.com/KeyWorksRW/keyBld/issues/43) gets implemented
+    ~ttCIntStrList();
+
+    const char* Add(size_t id, const char* psz);   // returns pointer to the duplicated string, not the original
+    const char* Find(size_t id);
+    size_t      GetCount() const { return m_cItems; }   // returns the number of unique id/string pairs added (duplicates ids are not added)
+
+    void Delete();   // resets the list to empty state (frees all string memory).
+
+    bool InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
+
+private:
+    typedef struct {
+        size_t id;
+        const char* psz;
+    } KEYVAL_PAIR;
+
+    // Class members
+
+    size_t m_cItems;
+    size_t m_cAllocated;
+    KEYVAL_PAIR* m_aData;
+    ttCCritSection* m_pcrit;
+};
+
 #endif  // __TTLIB_STRLIST_H__

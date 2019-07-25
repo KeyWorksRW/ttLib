@@ -11,9 +11,7 @@
 #ifndef __TTLIB_TTHEAP_H__
 #define __TTLIB_TTHEAP_H__
 
-#ifndef _WINDOWS_
-    #error This code will only work on Windows
-#endif
+#if defined(_WIN32)
 
 /*
     The Windows heap manager is a bit faster to use then the C runtime. Replacing the standard memory allocation
@@ -60,7 +58,8 @@ public:
     char*    ttStrDup(const char* psz);
     wchar_t* ttStrDup(const wchar_t* pwsz);
 
-    char*   ttStrDup(const char* psz, char** ppszDst);      // allocates/ReAllocates *ppszDst
+    char*    ttStrDup(const char* psz, char** ppszDst);      // allocates/ReAllocates *ppszDst
+    wchar_t* ttStrDup(const wchar_t* psz, wchar_t** ppszDst);
 
     size_t  ttSize(const void* pv) { return pv ? HeapSize(m_hHeap, 0, pv) : 0; }
     bool    ttValidate(const void* pv) { return HeapValidate(m_hHeap, 0, pv); }
@@ -78,4 +77,5 @@ namespace tt {
     extern ttCHeap MainHeap;    // this uses the process heap rather then a sub-heap
 }
 
-#endif  // __TTLIB_TTHEAP_H__
+#endif    // defined(_WIN32)
+#endif    // __TTLIB_TTHEAP_H__

@@ -1,8 +1,16 @@
 # Directories to ignore
-lib/
+bin32/
+bin64/
+lib32/
+lib64
 build/
+bldMSW/
+bldMAC/
+bldUNIX/
+
+archive/
+backup/
 .private/
-bonepile/
 
 # General file extensions to ignore
 *.backup
@@ -40,6 +48,14 @@ bonepile/
 .codelite/
 *.project
 *.workspace
+
+# Eclipse project files
+.project
+.cproject
+
+# SublimeText project files
+*.sublime-project
+*.sublime-workspace
 
 # Visual Studio files and folders
 # Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore

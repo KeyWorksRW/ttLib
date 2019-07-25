@@ -11,9 +11,7 @@
 #ifndef __TTLIB_TTCDLG_H__
 #define __TTLIB_TTCDLG_H__
 
-#ifndef _WINDOWS_
-    #error This code will only work on Windows
-#endif
+#if defined(_WIN32)
 
 // This dialog class has no base requirements other than compiling for Windows. It can be used whether your app is using
 // ATL, WTL, wxWidgets, or is just a console app that needs a dialog box.
@@ -58,20 +56,21 @@ public:
     void CenterWindow(bool bCenterOnDesktop = false);   // Call this in OnBegin to center dialog in owner window or desktop
     void EnableShadeBtns();                             // call this in OnBegin to convert all buttons in the dialog to 3D shaded buttons
     void SetBtnIcon(int idBtn, int idIcon, UINT nIconAlign = BS_LEFT);  // call this in OnBegin to add an Icon to a 3D shaded button
+    void SetBtnIcon(int idBtn, const char* pszIconName, UINT nIconAlign = BS_LEFT);  // call this in OnBegin to add an Icon to a 3D shaded button
 
     void CancelEnd() { m_bCancelEnd = true; } // call within OnEnd() to cancel ending the dialog
     BOOL CloseDialog(size_t result = IDOK) { return (m_bModeless ? DestroyWindow(*this) : ::EndDialog(*this, (int) result)); }
 
     HWND GetDlgItem(int id) const { return ::GetDlgItem(m_hwnd, (int) id); }
-    int  GetControlTextLength(int id) const { return ::GetWindowTextLength(GetDlgItem(id)); }
+    int  GetControlTextLength(int id) const { return ::GetWindowTextLengthA(GetDlgItem(id)); }
     BOOL GetControlRect(int id, RECT* prc) const { return ::GetWindowRect(GetDlgItem(id), prc); }
 
     void GetControlText(int id, char* pszText, int cchMax = MAX_PATH) const { (void) ::GetWindowTextA(GetDlgItem(id), pszText, cchMax); }
-    void GetControlText(int id, ttCStr* pcsz) const { pcsz->GetWindowText(GetDlgItem(id)); }
+    void GetControlText(int id, ttCStr* pcsz) const { pcsz->GetWndText(GetDlgItem(id)); }
     void SetControlText(int id, const char* pszText) const { ttASSERT(pszText); (void) ::SetWindowTextA(GetDlgItem(id), pszText); }
 
     void GetControlText(int id, wchar_t* pwszText, int cchMax = MAX_PATH) const { (void) ::GetWindowTextW(GetDlgItem(id), pwszText, cchMax); }
-    void GetControlText(int id, ttCWStr* pcsz) const { pcsz->GetWindowText(GetDlgItem(id)); }
+    void GetControlText(int id, ttCWStr* pcsz) const { pcsz->GetWndText(GetDlgItem(id)); }
     void SetControlText(int id, const wchar_t* pwszText) const { ttASSERT(pwszText); (void) ::SetWindowTextW(GetDlgItem(id), pwszText); }
 
     void SetTitle(const char* pszTitle) { ::SetWindowTextA(*this, pszTitle); }
@@ -90,13 +89,13 @@ public:
     void SetCheck(int id, BOOL bCheck = TRUE) const { (void) SendItemMsg(id, BM_SETCHECK, bCheck); }
     void UnCheck(int id) const { (void) SendItemMsg(id, BM_SETCHECK, FALSE); }
 
-    HICON SetIcon(HICON hIcon, BOOL bBigIcon = TRUE) { ttASSERT(::IsWindow(m_hwnd)); return (HICON)::SendMessage(m_hwnd, WM_SETICON, bBigIcon, (LPARAM)hIcon); }
+    HICON SetIcon(HICON hIcon, BOOL bBigIcon = TRUE) { ttASSERT(::IsWindow(m_hwnd)); return (HICON)::SendMessageA(m_hwnd, WM_SETICON, bBigIcon, (LPARAM)hIcon); }
 
-    LRESULT SendItemMsg(int id, UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::SendMessage(GetDlgItem(id), msg, wParam, lParam); }
-    LRESULT PostItemMsg(int id, UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::PostMessage(GetDlgItem(id), msg, wParam, lParam); }
+    LRESULT SendItemMsg(int id, UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::SendMessageA(GetDlgItem(id), msg, wParam, lParam); }
+    LRESULT PostItemMsg(int id, UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::PostMessageA(GetDlgItem(id), msg, wParam, lParam); }
 
-    LRESULT SendMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::SendMessage(*this, msg, wParam, lParam); }
-    LRESULT PostMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::PostMessage(*this, msg, wParam, lParam); }
+    LRESULT SendMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::SendMessageA(*this, msg, wParam, lParam); }
+    LRESULT PostMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::PostMessageA(*this, msg, wParam, lParam); }
 
     void SetFocus(int idControl) const { ::SetFocus(GetDlgItem(idControl)); }
 
@@ -150,11 +149,11 @@ public:
 
     void Enable(BOOL fEnable = TRUE) const { EnableWindow(m_hwnd, fEnable); }
 
-    int     GetTextLength() const { ttASSERT(m_hwnd); return GetWindowTextLength(m_hwnd); }
+    int     GetTextLength() const { ttASSERT(m_hwnd); return GetWindowTextLengthA(m_hwnd); }
     LRESULT GetLBTextLength(LRESULT iSel) const { ttASSERT(m_hwnd); return SendMessage(CB_GETLBTEXTLEN, iSel, 0); }
 
     inline int      GetText(char* psz, int cchMax = MAX_PATH) const { ttASSERT(m_hwnd); return ::GetWindowTextA(m_hwnd, psz, cchMax); }
-    inline LRESULT  GetLBText(char* psz, LRESULT iSel) const { return SendMessage(CB_GETLBTEXT, iSel, (LPARAM) psz); }
+    inline LRESULT  GetLBText(char* psz, LRESULT iSel) const { return SendMessageA(CB_GETLBTEXT, iSel, (LPARAM) psz); }
     inline void     SetText(const char* psz) const { ttASSERT(m_hwnd); ttASSERT(psz); (void) ::SetWindowTextA(m_hwnd, psz); }
 
     inline int      GetText(wchar_t* pwsz, int cchMax = MAX_PATH) const { ttASSERT(m_hwnd); return ::GetWindowTextW(m_hwnd, pwsz, cchMax); }
@@ -165,12 +164,12 @@ public:
     void    ResetContent() const { SendMessage(CB_RESETCONTENT); }
     void    Reset() const { SendMessage(CB_RESETCONTENT); }
 
-    LRESULT Add(const char* psz) const { ttASSERT(psz); return SendMessage(CB_ADDSTRING, 0, (LPARAM) psz); }
+    LRESULT Add(const char* psz) const { ttASSERT(psz); return SendMessageA(CB_ADDSTRING, 0, (LPARAM) psz); }
     LRESULT Add(const wchar_t* pwsz) const { ttASSERT(pwsz); return SendMessageW(CB_ADDSTRING, 0, (LPARAM) pwsz); }
     LRESULT Add(int val) const { char szNum[30]; ttItoa(val, szNum, sizeof(szNum)); return SendMessageA(CB_ADDSTRING, 0, (LPARAM) szNum); }
-    LRESULT AddString(const char* psz) const { ttASSERT(psz); return SendMessage(CB_ADDSTRING, 0, (LPARAM) psz); }
+    LRESULT AddString(const char* psz) const { ttASSERT(psz); return SendMessageA(CB_ADDSTRING, 0, (LPARAM) psz); }
     LRESULT AddString(const wchar_t* pwsz) const { ttASSERT(pwsz); return SendMessageW(CB_ADDSTRING, 0, (LPARAM) pwsz); }
-    LRESULT InsertString(int index, const char* psz) const { ttASSERT(psz); return SendMessage(CB_INSERTSTRING, index, (LPARAM) psz); }
+    LRESULT InsertString(int index, const char* psz) const { ttASSERT(psz); return SendMessageA(CB_INSERTSTRING, index, (LPARAM) psz); }
     LRESULT InsertString(int index, const wchar_t* pwsz) const { ttASSERT(pwsz); return SendMessageW(CB_INSERTSTRING, index, (LPARAM) pwsz); }
     LRESULT DeleteString(WPARAM index) const { return SendMessage(CB_DELETESTRING, index); }
 
@@ -183,19 +182,19 @@ public:
     void    SetEditSel(int iStart, int iEnd) const { (void) SendMessage(CB_SETEDITSEL, 0, MAKELPARAM(iStart, iEnd)); }
     void    SelectEditContol(void) const { SendMessage(CB_SETEDITSEL, 0, MAKELPARAM(0, -1)); }
 
-    LRESULT FindString(const char* pszString, int iStart = -1) const { ttASSERT(pszString); return SendMessage(CB_FINDSTRINGEXACT, (WPARAM) iStart, (LPARAM) pszString); }
+    LRESULT FindString(const char* pszString, int iStart = -1) const { ttASSERT(pszString); return SendMessageA(CB_FINDSTRINGEXACT, (WPARAM) iStart, (LPARAM) pszString); }
     LRESULT FindString(const wchar_t* pwszString, int iStart = -1) const { ttASSERT(pwszString); return SendMessageW(CB_FINDSTRINGEXACT, (WPARAM) iStart, (LPARAM) pwszString); }
-    LRESULT FindPrefix(const char* pszPrefix, int iStart = -1) const { ttASSERT(pszPrefix); return SendMessage(CB_FINDSTRING, (WPARAM) iStart, (LPARAM) pszPrefix); }
+    LRESULT FindPrefix(const char* pszPrefix, int iStart = -1) const { ttASSERT(pszPrefix); return SendMessageA(CB_FINDSTRING, (WPARAM) iStart, (LPARAM) pszPrefix); }
     LRESULT FindPrefix(const wchar_t* pwszPrefix, int iStart = -1) const { ttASSERT(pwszPrefix); return SendMessageW(CB_FINDSTRING, (WPARAM) iStart, (LPARAM) pwszPrefix); }
 
-    LRESULT SelectString(const char* pszString, int iStart = -1) const { return SendMessage(CB_SELECTSTRING, (WPARAM) iStart, (LPARAM) pszString); }
+    LRESULT SelectString(const char* pszString, int iStart = -1) const { return SendMessageA(CB_SELECTSTRING, (WPARAM) iStart, (LPARAM) pszString); }
     LRESULT SelectString(const wchar_t* pwszString, int iStart = -1) const { return SendMessageW(CB_SELECTSTRING, (WPARAM) iStart, (LPARAM) pwszString); }
 
-    void SetFont(HFONT hfont) { SendMessage(WM_SETFONT, (WPARAM) hfont); }
+    void SetFont(HFONT hfont) { SendMessageA(WM_SETFONT, (WPARAM) hfont); }
 
     void InValidateAlloc(BOOL bErase = TRUE) { ttASSERT(m_hwnd); InvalidateRect(m_hwnd, nullptr, bErase); }
 
-    void operator += (const char* psz) const { ttASSERT(psz); SendMessage(CB_ADDSTRING, 0, (LPARAM) psz); }
+    void operator += (const char* psz) const { ttASSERT(psz); SendMessageA(CB_ADDSTRING, 0, (LPARAM) psz); }
     void operator += (const wchar_t* pwsz) const { ttASSERT(pwsz); SendMessageW(CB_ADDSTRING, 0, (LPARAM) pwsz); }
 
     operator HWND() const { return m_hwnd; }
@@ -219,7 +218,7 @@ public:
 
     void    Enable(BOOL fEnable = TRUE) const { EnableWindow(m_hwnd, fEnable); }
 
-    LRESULT GetTextLength(int index = -1) const { return SendMessage(LB_GETTEXTLEN, (index == -1) ? GetCurSel() : index); }
+    LRESULT GetTextLength(int index = -1) const { return SendMessageA(LB_GETTEXTLEN, (index == -1) ? GetCurSel() : index); }
 
     LRESULT GetText(char* psz, int index = -1) const { return SendMessageA(LB_GETTEXT, (index == -1) ? GetCurSel() : index, (LPARAM) psz); }
     LRESULT GetText(wchar_t* pwsz, int index = -1) const { return SendMessageW(LB_GETTEXT, (index == -1) ? GetCurSel() : index, (LPARAM) pwsz); }   // wide char version
@@ -237,13 +236,13 @@ public:
                     SendMessage(LB_SETCOUNT, (WPARAM) cItems);
                     ttASSERT_MSG(result != LB_ERR, "SetCount failed. Does listbox have LBS_NODATA style?"); }
 
-    void    SetFont(HFONT hfont, bool fRedraw = false) { SendMessage(WM_SETFONT, (WPARAM) hfont, (LPARAM) (fRedraw ? TRUE : FALSE)); }
+    void    SetFont(HFONT hfont, bool fRedraw = false) { SendMessageA(WM_SETFONT, (WPARAM) hfont, (LPARAM) (fRedraw ? TRUE : FALSE)); }
 
-    LRESULT  Add(const char* psz) const { ttASSERT(psz); return SendMessage(LB_ADDSTRING, 0, (LPARAM) psz); }
-    LRESULT  Add(const wchar_t* pwsz) const { ttASSERT(pwsz); return SendMessage(LB_ADDSTRING, 0, (LPARAM) pwsz); }
+    LRESULT  Add(const char* psz) const { ttASSERT(psz); return SendMessageA(LB_ADDSTRING, 0, (LPARAM) psz); }
+    LRESULT  Add(const wchar_t* pwsz) const { ttASSERT(pwsz); return SendMessageW(LB_ADDSTRING, 0, (LPARAM) pwsz); }
     LRESULT  Add(const char* psz, LPARAM data) const {
                     ttASSERT(psz);
-                    LRESULT index = SendMessage(LB_ADDSTRING, 0, (LPARAM) psz);
+                    LRESULT index = SendMessageA(LB_ADDSTRING, 0, (LPARAM) psz);
                     if (index != LB_ERR)
                         SendMessage(LB_SETITEMDATA, index, data);
                     return index; }
@@ -253,9 +252,9 @@ public:
                     if (index != LB_ERR)
                         SendMessageW(LB_SETITEMDATA, index, data);
                     return index; }
-    LRESULT  AddString(const char* psz) const { return SendMessage(LB_ADDSTRING, 0, (LPARAM) psz); }
+    LRESULT  AddString(const char* psz) const { return SendMessageA(LB_ADDSTRING, 0, (LPARAM) psz); }
     LRESULT  AddString(const wchar_t* pwsz) const { return SendMessageW(LB_ADDSTRING, 0, (LPARAM) pwsz); }
-    LRESULT  InsertString(int index, const char* psz) const { return SendMessage(LB_INSERTSTRING, index, (LPARAM) psz); }
+    LRESULT  InsertString(int index, const char* psz) const { return SendMessageA(LB_INSERTSTRING, index, (LPARAM) psz); }
     LRESULT  InsertString(int index, const wchar_t* pwsz) const { return SendMessageW(LB_INSERTSTRING, index, (LPARAM) pwsz); }
 
     LRESULT  DeleteString(ptrdiff_t index) const { return SendMessage(LB_DELETESTRING, index); }
@@ -285,13 +284,13 @@ public:
                     ttASSERT_MSG((GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)), "SetSel() only works on multiple-select list box");
                     (void) SendMessage(LB_SETSEL, fSelect, MAKELPARAM(index, 0)); }
 
-    LRESULT FindString(const char* pszString, int iStart = -1) const { return SendMessage(LB_FINDSTRINGEXACT, iStart, (LPARAM) pszString); }
+    LRESULT FindString(const char* pszString, int iStart = -1) const { return SendMessageA(LB_FINDSTRINGEXACT, iStart, (LPARAM) pszString); }
     LRESULT FindString(const wchar_t* pwszString, int iStart = -1) const { return SendMessageW(LB_FINDSTRINGEXACT, iStart, (LPARAM) pwszString); }
-    LRESULT FindPrefix(const char* pszPrefix, int iStart = -1) const { return SendMessage(LB_FINDSTRING, iStart, (LPARAM) pszPrefix); }
+    LRESULT FindPrefix(const char* pszPrefix, int iStart = -1) const { return SendMessageA(LB_FINDSTRING, iStart, (LPARAM) pszPrefix); }
     LRESULT FindPrefix(const wchar_t* pwszPrefix, int iStart = -1) const { return SendMessageW(LB_FINDSTRING, iStart, (LPARAM) pwszPrefix); }
     LRESULT SelectString(const char* pszString, int iStart = -1) const { // works on single selection listbox only
                     ttASSERT_MSG(!(GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)), "SelectString only works on single-selection listbox");
-                    return SendMessage(LB_SELECTSTRING, iStart, (LPARAM) pszString); }
+                    return SendMessageA(LB_SELECTSTRING, iStart, (LPARAM) pszString); }
     LRESULT SelectString(const wchar_t* pwszString, int iStart = -1) const { // works on single selection listbox only
                     ttASSERT_MSG(!(GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)), "SelectString only works on single-selection listbox");
                     return SendMessageW(LB_SELECTSTRING, iStart, (LPARAM) pwszString); }
@@ -301,7 +300,7 @@ public:
     void    EnableRedraw(void)   { SendMessage(WM_SETREDRAW, TRUE); }
 
     operator HWND() const { return m_hwnd; }
-    void operator += (const char* psz) const { SendMessage(LB_ADDSTRING, 0, (LPARAM) psz); }
+    void operator += (const char* psz) const { SendMessageA(LB_ADDSTRING, 0, (LPARAM) psz); }
 
     HWND m_hwnd;
 };  // end of ttCListBox
@@ -320,12 +319,12 @@ public:
     LRESULT SetCurSel(int pos);
     LRESULT SetCurSel(const char* pszItem);
 
-    bool    GetItem(LVITEM* pItem) { return SendMessage(m_hwnd, LVM_GETITEM, 0, (LPARAM) pItem) ? true : false; }
-    bool    SetItem(LVITEMA* pItem) { return SendMessage(m_hwnd, LVM_SETITEMA, 0, (LPARAM) pItem) ? true : false; }
-    bool    SetItem(LVITEMW* pItem) { return SendMessage(m_hwnd, LVM_SETITEMW, 0, (LPARAM) pItem) ? true : false; }
+    bool    GetItem(LVITEMA* pItem) { return SendMessageA(m_hwnd, LVM_GETITEM, 0, (LPARAM) pItem) ? true : false; }
+    bool    SetItem(LVITEMA* pItem) { return SendMessageA(m_hwnd, LVM_SETITEMA, 0, (LPARAM) pItem) ? true : false; }
+    bool    SetItem(LVITEMW* pItem) { return SendMessageW(m_hwnd, LVM_SETITEMW, 0, (LPARAM) pItem) ? true : false; }
 
-    LRESULT InsertItem(LVITEMA* pitem) { return (LRESULT)   ::SendMessage(m_hwnd, LVM_INSERTITEMA, 0, (LPARAM) pitem); }
-    LRESULT InsertItemW(LVITEMW* pitem) { return (LRESULT) ::SendMessage(m_hwnd, LVM_INSERTITEMW, 0, (LPARAM) pitem); }
+    LRESULT InsertItem(LVITEMA* pitem) { return (LRESULT)   ::SendMessageA(m_hwnd, LVM_INSERTITEMA, 0, (LPARAM) pitem); }
+    LRESULT InsertItemW(LVITEMW* pitem) { return (LRESULT) ::SendMessageW(m_hwnd, LVM_INSERTITEMW, 0, (LPARAM) pitem); }
     BOOL    DeleteItem(int index) { return (BOOL) ListView_DeleteItem(m_hwnd, index); }
     void    Reset() const { ListView_DeleteAllItems(m_hwnd); }
 
@@ -347,4 +346,6 @@ public:
     HWND m_hwnd;
 };  // end of ttCListView
 
-#endif  // __TTLIB_TTCDLG_H__
+#endif    // defined(_WIN32)
+#endif    // __TTLIB_TTCDLG_H__
+

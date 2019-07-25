@@ -20,29 +20,14 @@ using namespace ttch;   // CH_constants
 
 size_t ttStrLen(const char* psz)
 {
-    if (psz)
-    {
-        size_t cch = ::strlen(psz); // now that we know it's not a null pointer, call the standard version of strLen
-        ttASSERT_MSG(cch < tt::MAX_STRING_LEN, "String is too long!");
-        if (cch > tt::MAX_STRING_LEN)   // make certain the string length fits within out standard limits for string length
-            cch = tt::MAX_STRING_LEN;
-        return cch;
-    }
-    return 0;
+    ttASSERT_MSG(psz, "NULL pointer!");
+    return psz ? ::strlen(psz) : 0;
 }
 
 size_t ttStrLen(const wchar_t* pwsz)
 {
-    if (pwsz)
-    {
-        size_t cch = wcslen(pwsz);
-        // We use MAX_STRING_LEN as a max buffer size, so we need to divide by the size of wchar_t
-        ttASSERT_MSG(cch < tt::MAX_STRING_LEN / sizeof(wchar_t), "String is too long!");
-        if (cch > tt::MAX_STRING_LEN / sizeof(wchar_t))
-            cch = tt::MAX_STRING_LEN / sizeof(wchar_t);
-        return cch;
-    }
-    return 0;
+    ttASSERT_MSG(pwsz, "NULL pointer!");
+    return pwsz ? wcslen(pwsz) : 0;
 }
 
 int ttStrCpy(char* pszDst, const char* pszSrc) { return ttStrCpy(pszDst, tt::MAX_STRING_LEN, pszSrc); }
@@ -514,6 +499,52 @@ char* ttStrStrI(const char* pszMain, const char* pszSub)
     return nullptr; // end of main string
 }
 
+wchar_t* ttStrStrI(const wchar_t* pszMain, const wchar_t* pszSub)
+{
+    if (!pszMain || !pszSub)
+        return nullptr;
+    if (!*pszSub)
+        return (wchar_t*) pszMain; // matches what strstr does
+    wchar_t* pszTmp1;
+    wchar_t* pszTmp2;
+    wchar_t lowerch = (char) towlower(*pszSub);
+    wchar_t upperch = (char) towupper(*pszSub);
+
+    while (*pszMain)
+    {
+        if (*pszMain != lowerch && *pszMain != upperch)
+        {
+            pszMain++;
+        }
+        else {
+            if (!pszSub[1])     // end of substring, means we found a match
+                return (wchar_t*) pszMain;
+            pszTmp1 = (wchar_t*) (pszMain + 1);
+            if (!*pszTmp1)
+                return nullptr;
+
+            pszTmp2 = (wchar_t*) (pszSub + 1);
+            while (*pszTmp1)
+            {
+                if (towlower(*pszTmp1++) != towlower(*pszTmp2++))
+                {
+                    pszMain++;  // increment main, go back to looking for first character match
+                    break;
+                }
+                if (!*pszTmp2)// end of substring, means we found a match
+                {
+                    return (wchar_t*) pszMain;
+                }
+                if (!*pszTmp1)
+                {
+                    return nullptr; // end of main string before end of sub string, so not possible to match
+                }
+            }
+        }
+    }
+    return nullptr; // end of main string
+}
+
 // Similar as C runtime strstr, only this one checks for NULL pointers and an empty sub string
 
 char* ttStrStr(const char* pszMain, const char* pszSub)
@@ -694,6 +725,26 @@ void ttTrimRight(char* psz)
         pszEnd--;
         if (pszEnd == psz) {
             if ((*pszEnd == ' ' || *pszEnd == '\t' || *pszEnd == '\r' || *pszEnd == '\n' || *pszEnd == '\f'))
+                *pszEnd = 0;
+            else
+                pszEnd[1] = '\0';
+            return;
+        }
+    }
+    pszEnd[1] = '\0';
+}
+
+void ttTrimRight(wchar_t* psz)
+{
+    if (!psz || !*psz)
+        return;
+
+    wchar_t* pszEnd = psz + ttStrLen(psz) - 1;
+    while ((*pszEnd == L' ' || *pszEnd == L'\t' || *pszEnd == L'\r' || *pszEnd == L'\n' || *pszEnd == L'\f'))
+    {
+        pszEnd--;
+        if (pszEnd == psz) {
+            if ((*pszEnd == L' ' || *pszEnd == L'\t' || *pszEnd == L'\r' || *pszEnd == L'\n' || *pszEnd == L'\f'))
                 *pszEnd = 0;
             else
                 pszEnd[1] = '\0';

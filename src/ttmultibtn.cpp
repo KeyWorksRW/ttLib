@@ -8,9 +8,7 @@
 
 #include "pch.h"
 
-#ifndef _WINDOWS_
-    #error This code will only work on Windows
-#endif
+#if defined(_WIN32)
 
 #include "../include/ttmultibtn.h"  // ttCMultiBtn
 #include "../include/ttshadebtn.h"  // ttCShadeBtn
@@ -20,7 +18,7 @@ BOOL WINAPI ttpriv::EnumBtnProc(HWND hwnd, LPARAM lval)
     char szClass[MAX_PATH];
     if ((GetWindowLong(hwnd, GWL_STYLE) & 0x0f) < BS_CHECKBOX)
     {
-        GetClassName(hwnd, szClass, sizeof(szClass));
+        GetClassNameA(hwnd, szClass, sizeof(szClass));
         if (ttIsSameStrI(szClass, "Button"))
         {
             ttCMultiBtn* pMultiBtn = (ttCMultiBtn*) lval;
@@ -68,6 +66,23 @@ void ttCMultiBtn::SetIcon(int idBtn, int idIcon, UINT nIconAlign)
 #endif
 }
 
+void ttCMultiBtn::SetIcon(int idBtn, const char* pszIconName, UINT nIconAlign)
+{
+    ttASSERT_MSG(m_aBtns.GetCount(), "Calling SetIcon without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
+
+    for (size_t i = 0; i < m_aBtns.GetCount(); i++)
+    {
+        if (IsWindow(*m_aBtns[i]) && GetDlgCtrlID(*m_aBtns[i]) == idBtn)
+        {
+            m_aBtns[i]->SetIcon(pszIconName, nIconAlign);
+            return;
+        }
+    }
+#ifdef _DEBUG
+    ttTrace("ttCMultiBtn::SetIcon was unable to find the button id: %d", idBtn);
+#endif
+}
+
 ttCShadeBtn* ttCMultiBtn::FindShadeBtn(int id)
 {
     ttASSERT_MSG(m_aBtns.GetCount(), "Calling FindShadeBtn without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
@@ -79,3 +94,5 @@ ttCShadeBtn* ttCMultiBtn::FindShadeBtn(int id)
     }
     return NULL;
 }
+
+#endif    // !defined(_WIN32)

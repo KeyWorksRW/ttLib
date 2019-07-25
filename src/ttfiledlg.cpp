@@ -8,9 +8,7 @@
 
 #include "pch.h"
 
-#ifndef _WINDOWS_
-    #error This code will only work on Windows
-#endif
+#if defined(_WIN32)
 
 #include "../include/ttfiledlg.h"
 
@@ -20,7 +18,7 @@ ttCFileDlg::ttCFileDlg(HWND hwndParent)
     m_idCancelIcon = (UINT) -1;
     m_bShadeBtns = false;
 
-    int cbStruct = sizeof(OPENFILENAME);
+    int cbStruct = sizeof(OPENFILENAMEA);
 
     // If we are running on Windows XP or higher, then make room for pvReserved, dwReserved, and FlagsEx.
     // That's why we allocate OPENFILENAME rather then just declaring it in our class
@@ -51,7 +49,7 @@ ttCFileDlg::~ttCFileDlg()
     ttFree(m_pofn);
 }
 
-bool ttCFileDlg::GetOpenFileName()
+bool ttCFileDlg::GetOpenName()
 {
     if (!::GetOpenFileNameA(m_pofn))
     {
@@ -67,7 +65,7 @@ bool ttCFileDlg::GetOpenFileName()
     return true;
 }
 
-bool ttCFileDlg::GetSaveFileName()
+bool ttCFileDlg::GetSaveName()
 {
     m_pofn->Flags &= ~OFN_FILEMUSTEXIST;
     m_pofn->Flags |= OFN_NOREADONLYRETURN | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
@@ -135,7 +133,7 @@ UINT_PTR CALLBACK ttpriv::OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */,
 {
     if (uMsg == WM_INITDIALOG)
     {
-        SetWindowLongPtr(hdlg, GWLP_USERDATA, ((OPENFILENAME*) lParam)->lCustData);
+        SetWindowLongPtrA(hdlg, GWLP_USERDATA, ((OPENFILENAME*) lParam)->lCustData);
         ttCFileDlg* pThis = (ttCFileDlg*) ((OPENFILENAME*) lParam)->lCustData;
 
         if (pThis->m_bShadeBtns)
@@ -194,7 +192,9 @@ void ttCFileDlg::SetInitialDir(const char* pszFolder)
     ttASSERT_MSG(pszFolder, "NULL pointer!");
 
     m_cszSetDir = pszFolder;
-    m_cszSetDir.GetFullPathName();  // probably not necessary, but doesn't hurt
+    m_cszSetDir.FullPathName();  // probably not necessary, but doesn't hurt
     ttForwardslashToBackslash(m_cszSetDir);
     m_pofn->lpstrInitialDir = m_cszSetDir;
 }
+
+#endif    // defined(_WIN32)

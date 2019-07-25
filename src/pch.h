@@ -2,15 +2,64 @@
 
 #pragma once
 
-// Okay to #define version numbers to require Vista on, but don't #define anything else -- need to be as
-// clean as we can to detect any conflicts with Windows header files.
+#if defined(_WIN32)
 
-#define WINVER          0x0600      // Windows Vista and Windows Server 2008 (use 0x0601 for Windows 7).
-#define _WIN32_WINNT    0x0600
-#define _WIN32_IE       0x0700
+    // reduce the number of Windows header files pulled in
+    #define NOATOM
+    #define NOCOMM
+    #define NODRIVERS
+    #define NOENHMETAFILE
+    #define NOEXTDEVMODEPROPSHEET
+    #define NOIME
+    #define NOKANJI
+    #define NOLOGERROR
+    #define NOMCX
+    #define NOPROFILER
+    #define NOSCALABLEFONT
+    #define NOSERVICE
+    #define NOSOUND
+    #define NOWINDOWSX
+    #define OEMRESOURCE
 
-#include <windows.h>
-#include <stdint.h>
-#include <inttypes.h>
+    #define STRICT
+    #define WIN32_LEAN_AND_MEAN
+    #define _CRT_SECURE_NO_WARNINGS
 
-#include "../include/ttlib.h"
+    // Minimum OS version is Windows 7. Any app linking to this library is expected to work normally on Windows 7 and up.
+
+    #define WINVER       0x0601     // Windows 7
+    #define _WIN32_WINNT 0x0600
+    #define _WIN32_IE    0x0700
+
+    #include <windows.h>
+    #include <stdlib.h>
+
+#else    // not defined(_WIN32), so wxWidgets is required
+
+    #define wxUSE_UNICODE     1
+    #define wxGUI             1
+    #define wxUSE_NO_MANIFEST 1
+
+    // We could just include <wx/wxprec.h>, however that's a bit overkill since we only need a fraction of the header files
+    // this header will pull in. Instead, we pull in just the required header files and then include individual header files
+    // as needed in the actual source files. This greatly speeds up generation of the precompiled header file.
+
+    #include "wx/defs.h"    // compiler detection; includes setup.h
+
+    #include "wx/chartype.h"
+
+    // The following are common enough that we include them here rather than in every (or most) source files
+
+    #include <wx/string.h>
+
+    #ifndef max
+        #define max(a ,b) (((a) > (b)) ? (a) : (b))
+    #endif
+
+    #ifndef min
+        #define min(a, b) (((a) < (b)) ? (a) : (b))
+    #endif
+
+#endif    // defined(_WIN32)
+
+#include "../include/ttlib.h"    // Master header file for ttLibwx

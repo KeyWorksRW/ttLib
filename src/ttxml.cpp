@@ -2063,7 +2063,7 @@ LOC_ATTRIBUTE:
                             return psz;
                         cChar = *psz;
                         *psz++ = 0;
-                        CharLower(a->pszName);  // XHTML DTD requires attributes to be lower case
+                        CharLowerA(a->pszName);  // XHTML DTD requires attributes to be lower case
                         if (!*psz)
                             return psz;
                         if (isSpace(cChar))

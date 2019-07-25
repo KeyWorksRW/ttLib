@@ -8,9 +8,7 @@
 
 #include "pch.h"
 
-#ifndef _WINDOWS_
-    #error This code will only work on Windows
-#endif
+#if defined(_WIN32)
 
 #include <VersionHelpers.h>
 
@@ -36,16 +34,14 @@ INT_PTR ttCDlg::DoModal(HWND hwndParent)
     if (hwndParent)
         m_hwndParent = hwndParent;
 
-    HWND hwndSave = tt::hwndMsgBoxParent;
     m_bModeless = false;
-    INT_PTR result = ::DialogBoxParam(tt::hinstResources, MAKEINTRESOURCE(m_idTemplate), m_hwndParent, (DLGPROC) ttpriv::DlgProc, (LPARAM) this);
-    tt::hwndMsgBoxParent = hwndSave;
+    INT_PTR result = ::DialogBoxParamA(tt::hinstResources, MAKEINTRESOURCEA(m_idTemplate), m_hwndParent, (DLGPROC) ttpriv::DlgProc, (LPARAM) this);
 
 #ifdef _DEBUG
     // If creation failed because there was no dialog resource, report that specific condition under _DEBUG
     if (result == -1)
     {
-        HRSRC hrsrc = FindResource(tt::hinstResources, MAKEINTRESOURCE(m_idTemplate), RT_DIALOG);
+        HRSRC hrsrc = FindResourceA(tt::hinstResources, MAKEINTRESOURCEA(m_idTemplate), (char*) RT_DIALOG);
         ttASSERT_MSG(hrsrc, "Missing dialog template");
         if (!hrsrc)
             return result;
@@ -62,17 +58,16 @@ HWND ttCDlg::DoModeless(HWND hwndParent)
     if (hwndParent)
         m_hwndParent = hwndParent;
     m_bModeless = true;
-    return ::CreateDialogParam(tt::hinstResources, MAKEINTRESOURCE(m_idTemplate), m_hwndParent, (DLGPROC) ttpriv::DlgProc, (LPARAM) this);
+    return ::CreateDialogParamA(tt::hinstResources, MAKEINTRESOURCEA(m_idTemplate), m_hwndParent, (DLGPROC) ttpriv::DlgProc, (LPARAM) this);
 }
 
 INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     if (msg == WM_INITDIALOG) // this is the only time that pThis will be NULL
     {
-        SetWindowLongPtr(hdlg, DWLP_USER, (LONG_PTR) lParam);
+        SetWindowLongPtrA(hdlg, DWLP_USER, (LONG_PTR) lParam);
         ttCDlg* pThis = (ttCDlg*) lParam;
         pThis->m_hwnd = hdlg;
-        tt::hwndMsgBoxParent = hdlg;
         if (!ttIsValidWindow(pThis->m_hwndParent))
             pThis->m_hwndParent = GetActiveWindow();
 
@@ -87,7 +82,7 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
         return TRUE;
     }
 
-    ttCDlg* pThis = (ttCDlg*) GetWindowLongPtr(hdlg, DWLP_USER);
+    ttCDlg* pThis = (ttCDlg*) GetWindowLongPtrA(hdlg, DWLP_USER);
     if (!pThis)
         return FALSE;
 
@@ -180,6 +175,17 @@ void ttCDlg::SetBtnIcon(int idBtn, int idIcon, UINT nIconAlign)
     m_pShadedBtns->SetIcon(idBtn, idIcon, nIconAlign);
 }
 
+void ttCDlg::SetBtnIcon(int idBtn, const char* pszIconName, UINT nIconAlign)
+{
+    if (!m_pShadedBtns)
+    {
+        EnableShadeBtns();
+        if (!m_pShadedBtns)
+            return;
+    }
+    m_pShadedBtns->SetIcon(idBtn, pszIconName, nIconAlign);
+}
+
 void ttCDlg::CenterWindow(bool bCenterOnDesktop)
 {
     RECT rc;
@@ -243,7 +249,7 @@ LRESULT ttCListView::AddString(const char* psz, LPARAM lParam)
         lvi.mask |= LVIF_PARAM;
         lvi.lParam = lParam;
     }
-    return (LRESULT) ::SendMessage(m_hwnd, LVM_INSERTITEMA, 0, (LPARAM) &lvi);
+    return (LRESULT) ::SendMessageA(m_hwnd, LVM_INSERTITEMA, 0, (LPARAM) &lvi);
 }
 
 LRESULT ttCListView::AddString(const wchar_t* pwsz, LPARAM lParam)
@@ -261,7 +267,7 @@ LRESULT ttCListView::AddString(const wchar_t* pwsz, LPARAM lParam)
         lvi.mask |= LVIF_PARAM;
         lvi.lParam = lParam;
     }
-    return (LRESULT) ::SendMessage(m_hwnd, LVM_INSERTITEMW, 0, (LPARAM) &lvi);
+    return (LRESULT) ::SendMessageW(m_hwnd, LVM_INSERTITEMW, 0, (LPARAM) &lvi);
 }
 
 BOOL ttCListView::AddSubString(int iItem, int iSubItem, const char* psz)
@@ -275,7 +281,7 @@ BOOL ttCListView::AddSubString(int iItem, int iSubItem, const char* psz)
     lvi.pszText = (char*) psz;
     lvi.iItem = iItem;
     lvi.iSubItem = iSubItem;
-    return (BOOL) ::SendMessage(m_hwnd, LVM_SETITEMA, 0, (LPARAM) &lvi);
+    return (BOOL) ::SendMessageA(m_hwnd, LVM_SETITEMA, 0, (LPARAM) &lvi);
 }
 
 BOOL ttCListView::AddSubString(int iItem, int iSubItem, const wchar_t* pwsz)
@@ -289,7 +295,7 @@ BOOL ttCListView::AddSubString(int iItem, int iSubItem, const wchar_t* pwsz)
     lvi.pszText = (wchar_t*) pwsz;
     lvi.iItem = iItem;
     lvi.iSubItem = iSubItem;
-    return (BOOL) ::SendMessage(m_hwnd, LVM_SETITEMW, 0, (LPARAM) &lvi);
+    return (BOOL) ::SendMessageW(m_hwnd, LVM_SETITEMW, 0, (LPARAM) &lvi);
 }
 
 void ttCListView::InsertColumn(int iColumn, const char* pszText, int width)
@@ -303,7 +309,7 @@ void ttCListView::InsertColumn(int iColumn, const char* pszText, int width)
     lvc.cx = width;
     lvc.pszText = (char*) pszText;
 
-    ::SendMessage(m_hwnd, LVM_INSERTCOLUMNA, (WPARAM) iColumn, (LPARAM) &lvc);
+    ::SendMessageA(m_hwnd, LVM_INSERTCOLUMNA, (WPARAM) iColumn, (LPARAM) &lvc);
 }
 
 void ttCListView::InsertColumn(int iColumn, const wchar_t* pszText, int width)
@@ -317,7 +323,7 @@ void ttCListView::InsertColumn(int iColumn, const wchar_t* pszText, int width)
     lvc.cx = width;
     lvc.pszText = (wchar_t*) pszText;
 
-    ::SendMessage(m_hwnd, LVM_INSERTCOLUMNW, (WPARAM) iColumn, (LPARAM) &lvc);
+    ::SendMessageW(m_hwnd, LVM_INSERTCOLUMNW, (WPARAM) iColumn, (LPARAM) &lvc);
 }
 
 LRESULT ttCListView::SetCurSel(int pos)
@@ -325,15 +331,15 @@ LRESULT ttCListView::SetCurSel(int pos)
     LVITEMA lvi;
     lvi.stateMask = 0x0F;
     lvi.state = LVIS_FOCUSED | LVIS_SELECTED;
-    return ::SendMessage(m_hwnd, LVM_SETITEMSTATE, pos, (LPARAM) &lvi);
+    return ::SendMessageA(m_hwnd, LVM_SETITEMSTATE, pos, (LPARAM) &lvi);
 }
 
 LRESULT ttCListView::SetCurSel(const char* pszItem)
 {
-    LV_FINDINFO lvfi;
+    LV_FINDINFOA lvfi;
     lvfi.flags = LVFI_STRING;
     lvfi.psz = pszItem;
-    auto pos = ::SendMessage(m_hwnd, LVM_FINDITEM, (WPARAM) -1, (LPARAM) &lvfi);
+    auto pos = ::SendMessageA(m_hwnd, LVM_FINDITEM, (WPARAM) -1, (LPARAM) &lvfi);
     return (pos != -1) ? SetCurSel((int) pos) : -1;
 }
 
@@ -361,9 +367,9 @@ static bool InitMonitorStubs()
     HMODULE hUser32 = GetModuleHandle(TEXT("USER32"));
 
     if (hUser32 &&
-            (*(FARPROC*)&s_pfnMonitorFromWindow   = GetProcAddress(hUser32,"MonitorFromWindow")) != NULL &&
-            (*(FARPROC*)&s_pfnMonitorFromPoint    = GetProcAddress(hUser32,"MonitorFromPoint")) != NULL &&
-            (*(FARPROC*)&s_pfnGetMonitorInfo      = GetProcAddress(hUser32,"GetMonitorInfoA")) != NULL)
+            (*(FARPROC*) &s_pfnMonitorFromWindow   = GetProcAddress(hUser32, "MonitorFromWindow")) != NULL &&
+            (*(FARPROC*) &s_pfnMonitorFromPoint    = GetProcAddress(hUser32, "MonitorFromPoint")) != NULL &&
+            (*(FARPROC*) &s_pfnGetMonitorInfo      = GetProcAddress(hUser32, "GetMonitorInfoA")) != NULL)
         return true;
 
     return false;
@@ -401,3 +407,5 @@ static BOOL ttKeyMonitorFromPoint(HMONITOR hMonitor, LPMONITORINFO lpmi)
         return TRUE;
     }
 }
+
+#endif    // defined(_WIN32)

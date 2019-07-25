@@ -128,7 +128,7 @@ DWORD __stdcall _ttMultiThread(void* pv)
 {
     ttCMultiThrd* pThis = (ttCMultiThrd*) pv;
     DWORD thrdID = GetCurrentThreadId();
-    ptrdiff_t pos = pThis->m_threadMap.FindKey(thrdID);
+    auto pos = pThis->m_threadMap.FindKey(thrdID);
     ttASSERT(pos >= 0); // theoretically impossible
     ttCMultiThrd::MULTI_THRD_INFO* pThrdInfo = pThis->m_threadMap.GetValueAt(pos);
 

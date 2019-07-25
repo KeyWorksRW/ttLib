@@ -13,5 +13,6 @@
 ### Issue Type:
 - [ ] Bug report
 - [ ] Feature request
+- [ ] Design change request
 - [ ] Other
 

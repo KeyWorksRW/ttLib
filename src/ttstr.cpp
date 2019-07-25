@@ -8,8 +8,12 @@
 
 #include "pch.h"
 
-#include "../include/ttdebug.h"     // ttASSERT macros
+#include "../include/ttdebug.h" // ttASSERT macros
 #include "../include/ttstr.h"   // ttCStr
+
+#if __cplusplus >= 201703L
+    #include <filesystem>
+#endif
 
 using namespace ttch;   // used for the CH_ constants
 
@@ -21,9 +25,6 @@ namespace ttpriv {
     #define _MAX_U64TOSTR_BASE10_COUNT (20 + 1)
 #endif
 
-// Note that the limit here of 64k is smaller then the kstr functions that use 16m (_KSTRMAX)
-
-#define MAX_STRING (64 * 1024)  // Use this to limit the length of a single string as a security precaution
 #define DEST_SIZE (ttSize(m_psz) - sizeof(char))
 
 void ttCStr::AppendFileName(const char* pszFile)
@@ -115,28 +116,38 @@ char* ttCStr::FindLastSlash()
 
 char* ttCStr::GetCWD()
 {
-#ifdef _WINDOWS_
+#if defined(_WIN32)
     ReSize(MAX_PATH);
     DWORD cb = GetCurrentDirectoryA(MAX_PATH, m_psz);
     m_psz[cb] = 0;  // in case GetCurrentDirectory() failed
 #else
-    resize(4096);
-    char* psz = getcwd(m_psz, 4096);
+    wxString str = wxGetCwd();
+    const char* psz = str.utf8_str();
     if (!psz)
-        m_psz[0] = 0;   // in case getcwd() failed
+        m_psz = ttStrDup("./");   // in case getcwd() failed
+    else
+        m_psz = ttStrDup(psz);
 #endif
     return m_psz;       // we leave the full buffer allocated in case you want to add a filename to the end
 }
 
-#ifdef _WINDOWS_
-
 void ttCStr::FullPathName()
 {
     ttASSERT(m_psz);
+#if (defined(_WIN32))    // not __cplusplus >= 201703L
     char szPath[MAX_PATH];
     ::GetFullPathNameA(m_psz, sizeof(szPath), szPath, NULL);
     ttStrDup(szPath, &m_psz);
+#elif __cplusplus >= 201703L  // the following code requires C++17 or later
+    std::filesystem::path path = (const char*) m_psz;
+    std::filesystem::path fullPath = std::filesystem::absolute(path);
+    ttFree(m_psz);
+    wxString str(fullPath.c_str());
+    m_psz = ttStrDup(str.utf8_str());
+#endif    // __cplusplus >= 201703L
 }
+
+#if defined(_WIN32)
 
 char* ttCStr::GetListBoxText(HWND hwnd, size_t sel)
 {
@@ -145,7 +156,7 @@ char* ttCStr::GetListBoxText(HWND hwnd, size_t sel)
     if (sel == (size_t) LB_ERR)
         m_psz = ttStrDup("");
     else {
-        size_t cb = ::SendMessage(hwnd, LB_GETTEXTLEN, sel, 0);
+        size_t cb = ::SendMessageA(hwnd, LB_GETTEXTLEN, sel, 0);
         ttASSERT(cb != (size_t) LB_ERR);
         if (cb != (size_t) LB_ERR)
         {
@@ -166,7 +177,7 @@ char* ttCStr::GetComboLBText(HWND hwnd, size_t sel)
     if (sel == (size_t) LB_ERR)
         m_psz = ttStrDup("");
     else {
-        size_t cb = ::SendMessage(hwnd, CB_GETLBTEXTLEN, sel, 0);
+        size_t cb = ::SendMessageA(hwnd, CB_GETLBTEXTLEN, sel, 0);
         ttASSERT(cb != (size_t) CB_ERR);
         if (cb != (size_t) CB_ERR)
         {
@@ -190,6 +201,9 @@ char* ttCStr::GetComboLBText(HWND hwnd, size_t sel)
 char* ttCStr::GetResString(size_t idString)
 {
     char szStringBuf[1024];
+
+    if (tt::hinstResources == nullptr)
+        tt::hinstResources = GetModuleHandle(NULL);
 
     if (LoadStringA(tt::hinstResources, (UINT) idString, szStringBuf, (int) sizeof(szStringBuf)) == 0)
     {
@@ -221,9 +235,9 @@ bool ttCStr::GetWndText(HWND hwnd)
     }
 
     int cb = GetWindowTextLengthA(hwnd);
-    ttASSERT_MSG(cb <= MAX_STRING, "String is over 64k in size!");
+    ttASSERT_MSG(cb <= (int) tt::MAX_STRING_LEN, "String is over 16 megs in size!");
 
-    if (cb == 0 || cb > MAX_STRING)
+    if (cb == 0 || cb > (int) tt::MAX_STRING_LEN)
     {
         m_psz = ttStrDup("");
         return false;
@@ -242,7 +256,7 @@ bool ttCStr::GetWndText(HWND hwnd)
     return true;
 }
 
-#endif  // _WINDOWS_
+#endif    // defined(_WIN32)
 
 void ttCStr::MakeLower()
 {
@@ -270,7 +284,7 @@ void ttCStr::MakeUpper()
     }
 }
 
-bool ttCStr::CopyWide(const wchar_t* pwsz)  // convert UNICODE to UTF8 and store it
+bool ttCStr::CopyWide(const wchar_t* pwsz)
 {
     if (m_psz)
     {
@@ -286,10 +300,9 @@ bool ttCStr::CopyWide(const wchar_t* pwsz)  // convert UNICODE to UTF8 and store
         return false;
     }
 
+#if defined(_WIN32)
     size_t cb = wcslen(pwsz);
-    ttASSERT_MSG(cb <= MAX_STRING, "String is over 64k in size!");
-
-    // BUGBUG: [randalphwa - 09-09-2018]    WideCharToMultiByte() only works on Windows -- need a portable way to convert
+    ttASSERT_MSG(cb <= tt::MAX_STRING_LEN, "String is over 16 megs in size!");
 
     int cbNew = WideCharToMultiByte(CP_UTF8, 0, pwsz, (int) cb, nullptr, 0, NULL, NULL);
     if (cbNew)
@@ -306,15 +319,19 @@ bool ttCStr::CopyWide(const wchar_t* pwsz)  // convert UNICODE to UTF8 and store
         m_psz = ttStrDup("");
         return false;
     }
+#else    // not defined(_WIN32)
+    wxString str(pwsz);
+    m_psz = ttStrDup(str.utf8_str());
+#endif    // defined(_WIN32)
 
     return true;
 }
 
 void ttCStr::ReSize(size_t cbNew)
 {
-    ttASSERT(cbNew <= MAX_STRING);
-    if (cbNew > MAX_STRING)
-        cbNew = MAX_STRING;
+    ttASSERT(cbNew <= tt::MAX_STRING_LEN);
+    if (cbNew > tt::MAX_STRING_LEN)
+        cbNew = tt::MAX_STRING_LEN;
 
     size_t curSize = m_psz ? ttSize(m_psz) : 0;
     if (cbNew != curSize)
@@ -395,8 +412,8 @@ void ttCStr::operator+=(const char* psz)
     else {
         size_t cbNew = ttStrByteLen(psz);
         size_t cbOld = ttStrByteLen(m_psz);
-        ttASSERT_MSG(cbNew + cbOld <= MAX_STRING, "String is over 64k in size!");
-        if (cbNew + cbOld > MAX_STRING)
+        ttASSERT_MSG(cbNew + cbOld <= tt::MAX_STRING_LEN, "String is over 16 megs in size!");
+        if (cbNew + cbOld > tt::MAX_STRING_LEN)
             return;     // ignore it if it's too large
         m_psz = (char*) ttReAlloc(m_psz, cbNew + cbOld);
         ttStrCat(m_psz, psz);
@@ -473,6 +490,19 @@ char* cdecl ttCStr::printf(size_t idFmtString, ...)
     return m_psz;
 }
 
+void cdecl ttCStr::WarningMsgBox(const char* pszFormat, ...)
+{
+    va_list argList;
+    va_start(argList, pszFormat);
+    ttVPrintf(&m_psz, pszFormat, argList);
+    va_end(argList);
+#if defined(_WIN32)
+    ttMsgBox(m_psz, MB_OK | MB_ICONWARNING);
+#else
+    wxMessageBox(m_psz, wxOK | wxICON_WARNING);
+#endif
+}
+
 int ttCStr::StrCat(const char* psz)
 {
     ttASSERT_MSG(psz, "NULL pointer!");
@@ -485,11 +515,11 @@ int ttCStr::StrCat(const char* psz)
     else {
         size_t cbNew = ttStrByteLen(psz);
         size_t cbOld = ttStrByteLen(m_psz);
-        ttASSERT_MSG(cbNew + cbOld <= MAX_STRING, "String is over 64k in size!");
-        if (cbNew + cbOld > MAX_STRING)
+        ttASSERT_MSG(cbNew + cbOld <= tt::MAX_STRING_LEN, "String is over 16 megs in size!");
+        if (cbNew + cbOld > tt::MAX_STRING_LEN)
             return EOVERFLOW;       // ignore it if it's too large
         m_psz = (char*) ttReAlloc(m_psz, cbNew + cbOld);
-        ::strcat_s(m_psz, cbNew + cbOld, psz);
+        ttStrCat(m_psz, cbNew + cbOld, psz);
     }
     return 0;
 }
@@ -506,8 +536,8 @@ int ttCStr::StrCopy(const char* psz)
     else {
         size_t cbNew = ttStrByteLen(psz);
         size_t cbOld = ttSize(m_psz);
-        ttASSERT_MSG(cbNew + cbOld <= MAX_STRING, "String is over 64k in size!");
-        if (cbNew + cbOld > MAX_STRING)
+        ttASSERT_MSG(cbNew + cbOld <= tt::MAX_STRING_LEN, "String is over 16 megs in size!");
+        if (cbNew + cbOld > tt::MAX_STRING_LEN)
             return EOVERFLOW;       // ignore it if it's too large
         ttStrDup(psz, &m_psz);
     }
@@ -559,18 +589,21 @@ char* ttCStr::GetString(const char* pszString, char chBegin, char chEnd)
         return nullptr;
 
     size_t cb = ttStrByteLen(pszString);
-    ttASSERT_MSG(cb <= MAX_STRING, "String is over 64k in size!");
+    ttASSERT_MSG(cb <= tt::MAX_STRING_LEN, "String is over 16 megs in size!");
 
-    if (cb == 0 || cb > MAX_STRING)
+    if (cb == 0 || cb > tt::MAX_STRING_LEN)
         return nullptr;
     else {
         m_psz = (char*) ttMalloc(cb);       // this won't return if it fails, so you will never get a nullptr on return
         *m_psz = 0;
     }
 
-    // step over any leading whitespace
-    while (ttIsWhitespace(*pszString))
-        ++pszString;
+    // step over any leading whitespace unless whitespace starts a separator
+    if (!ttIsWhitespace(chBegin))
+    {
+        while (ttIsWhitespace(*pszString))
+            ++pszString;
+    }
 
     if (*pszString == chBegin)
     {

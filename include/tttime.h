@@ -11,9 +11,7 @@
 #ifndef __TTLIB_KTIME_H__
 #define __TTLIB_KTIME_H__
 
-#ifndef _WINDOWS_
-    #error ttCTime can only be used when building for Windows. Use wxWidgets file-io for cross-platform functionality
-#endif
+#if defined(_WIN32)
 
 #include "ttstr.h"      // ttCStr
 #include "ttdebug.h"    // ttASSERT macros
@@ -38,13 +36,13 @@ public:
 
     const char* GetDateFormat(DWORD dwFlags = 0, LCID locale = LOCALE_USER_DEFAULT) {
                     char szBuf[256];
-                    ::GetDateFormat(locale, dwFlags, &m_tm, NULL, szBuf, sizeof(szBuf));
+                    ::GetDateFormatA(locale, dwFlags, &m_tm, NULL, szBuf, sizeof(szBuf));
                     m_cszDate = szBuf;
                     return m_cszDate;
                 }
     const char* GetTimeFormat(DWORD dwFlags = 0, LCID locale = LOCALE_USER_DEFAULT) {
                     char szBuf[256];
-                    ::GetTimeFormat(locale, dwFlags, &m_tm, NULL, szBuf, sizeof(szBuf));
+                    ::GetTimeFormatA(locale, dwFlags, &m_tm, NULL, szBuf, sizeof(szBuf));
                     m_cszTime = szBuf;
                     return m_cszTime;
                 }
@@ -89,4 +87,5 @@ protected:
     ttCStr m_cszShort;
 };
 
-#endif  // __TTLIB_KTIME_H__
+#endif    // !defined(_WIN32)
+#endif    // __TTLIB_KTIME_H__

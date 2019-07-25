@@ -17,7 +17,7 @@ ttCBaseThread::ttCBaseThread ()
 {
     m_hthrdWorker = NULL;
     m_bCancelThread = false;
-    m_bOleInitialized = false;
+    // m_bOleInitialized = false;
 };
 
 ttCBaseThread::~ttCBaseThread ()
@@ -55,6 +55,7 @@ void ttCBaseThread::WaitForThreadToComplete()
     }
 }
 
+#if 0
 void ttCBaseThread::InitializeThreadForOle()
 {
     HRESULT hr = ::CoInitialize(NULL);
@@ -65,14 +66,15 @@ void ttCBaseThread::InitializeThreadForOle()
         ttASSERT_HRESULT(hr, "CoInitialize Failed");
 #endif
 }
+#endif
 
 unsigned __stdcall ttpriv::_BaseThread(void* pv)
 {
     ttCBaseThread* pThis = (ttCBaseThread*) pv;
     pThis->DoThreadWork();
 
-    if (pThis->m_bOleInitialized)
-        ::CoUninitialize();
+//    if (pThis->m_bOleInitialized)
+//        ::CoUninitialize();
 
     return 0;
 }

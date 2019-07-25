@@ -10,9 +10,10 @@
 
 #pragma once
 
-#ifndef _WINDOWS_
-    #error This code will only work on Windows
-#endif
+#ifndef __TTLIB_TTCWIN_H__
+#define __TTLIB_TTCWIN_H__
+
+#if defined(_WIN32)
 
 #ifndef BEGIN_TTMSG_MAP
     #include "ttcasemap.h"  // Macros for mapping Windows messages to functions
@@ -51,8 +52,8 @@ public:
 
     // Class functions
 
-    LRESULT SendMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::SendMessage(*this, msg, wParam, lParam); }
-    LRESULT PostMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::PostMessage(*this, msg, wParam, lParam); }
+    LRESULT SendMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::SendMessageA(*this, msg, wParam, lParam); }
+    LRESULT PostMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::PostMessageA(*this, msg, wParam, lParam); }
 
     void ShowWindow(int nCmdShow = SW_SHOW) { ::ShowWindow(*this, nCmdShow); }
 
@@ -86,3 +87,6 @@ protected:
     WNDPROC      m_SubClassProc;    // previous window procedure before it was subclassed
     LRESULT      m_result;
 };
+
+#endif    // defined(_WIN32)
+#endif    // __TTLIB_TTCWIN_H__

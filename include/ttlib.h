@@ -11,17 +11,74 @@
 #ifndef __TTLIB_H__
 #define __TTLIB_H__
 
+#if !defined(_WX_DEFS_H_)
+    #include <stdint.h>     // needed for standard types
+#endif
+
 namespace tt
 {
     const size_t MAX_STRING_LEN = 0x00FFFFFF;   // strings limited to 16,777,215 bytes (16 megabytes)
+    extern const char*    pszMsgTitle;  // title for message boxes
+    extern const wchar_t* pwszMsgTitle; // title for message boxes
 
 #if defined(_WIN32)
-    extern HWND hwndMsgBoxParent;       // parent for MessageBox--if Abort is requested in ttASSERT, this window will receive a WM_CLOSE message prior to shut down
     extern HINSTANCE hinstResources;    // handle to use to load resources
-    extern const char* pszMsgTitle;     // title for message boxes
-    extern size_t LanguageOffset;       // language offset used to load other languages from .rc file
 #endif  // _WINDOWS_
 } // end of tt namespace
+
+namespace ttch {
+    const char CH_OPEN_PAREN =    '(';
+    const char CH_CLOSE_PAREN =   ')';
+    const char CH_COLON =         ':';
+    const char CH_SEMICOLON =     ';';
+    const char CH_START_QUOTE =   '`';
+    const char CH_SQUOTE =        '\'';
+    const char CH_END_QUOTE =     '\'';
+    const char CH_QUOTE =         '"';
+    const char CH_EQUAL =         '=';
+    const char CH_SPACE =         ' ';
+    const char CH_COMMA =         ',';
+    const char CH_LEFT_BRACKET =  '[';
+    const char CH_RIGHT_BRACKET = ']';
+    const char CH_TAB =           '\t';
+    const char CH_BACKSLASH =     '\\';
+    const char CH_FORWARDSLASH =  '/';
+
+    const char CHW_OPEN_PAREN =    L'(';
+    const char CHW_CLOSE_PAREN =   L')';
+    const char CHW_COLON =         L':';
+    const char CHW_SEMICOLON =     L';';
+    const char CHW_START_QUOTE =   L'`';
+    const char CHW_SQUOTE =        L'\'';
+    const char CHW_END_QUOTE =     L'\'';
+    const char CHW_QUOTE =         L'"';
+    const char CHW_EQUAL =         L'=';
+    const char CHW_SPACE =         L' ';
+    const char CHW_COMMA =         L',';
+    const char CHW_LEFT_BRACKET =  L'[';
+    const char CHW_RIGHT_BRACKET = L']';
+    const char CHW_TAB =           L'\t';
+    const char CHW_BACKSLASH =     L'\\';
+    const char CHW_FORWARDSLASH =  L'/';
+} // end of ttch namespace
+
+#if !defined(_XGET)
+    // This macro can be placed around static text that you want xgettext.exe to extract for translation using the
+    // "xgettext.exe -k_XGET" keyword option
+
+    #define _XGET(txt) txt
+#endif
+
+#if !defined(TRANSLATE)
+    // If using wxWidgets, then translate the string into a UTF8 string. Currently there is no mechanism for translating
+    // without wxWidgets, but the macro makes it possible to add that functionality later.
+
+    #if defined(_WX_DEFS_H_)
+        #define TRANSLATE(str) wxGetTranslation(str).utf8_str()
+    #else
+        #define TRANSLATE(str) str
+    #endif
+#endif
 
 class ttCStr;    // forward definition
 
@@ -85,7 +142,12 @@ inline  bool ttIsPunct(char ch) { return (ch == '.' || ch == ',' || ch == ';' ||
 inline  bool ttIsUTF8(char ch) { return ((ch & 0xC0) != 0x80); }    // is ch the start of a utf8 sequence?
 inline  bool ttIsWhitespace(char ch) { return ttStrChr(" \t\r\n\f", ch) ? true : false; };
 
-inline  bool ttChDir(const char* pszDir) { return (SetCurrentDirectoryA(pszDir) != FALSE); }
+#if defined(_WIN32)
+    inline bool ttChDir(const char* pszDir) { return (SetCurrentDirectoryA(pszDir) != FALSE); }
+#else
+    // #include <wx/filefn.h>
+    inline bool ttChDir(const wchar_t* pwszDir) { return (wxSetWorkingDirectory(pwszDir); }
+#endif
 
 ptrdiff_t ttAtoi(const char* psz);
 char*     ttHextoa(size_t val, char* pszDst, bool bUpperCase);
@@ -111,38 +173,12 @@ inline void ttSetAssertHandlerW(TTASSERTHANDLERW pFunc) { pttAssertHandlerW = pF
 
 void ttInitCaller(const char* pszTitle);
 
-#ifdef _WINDOWS_
+void ttSetMsgBoxTitle(const char* pszMsgTitle);
 
-// ttInitCaller is equivalent to calling setResInst(hinstRes), setMsgBoxParent(hwndParent) and setMsgBoxTitle(pszMsgTitle)
-[[deprecated]] void ttInitCaller(HINSTANCE hinstRes, HWND hwndParent, const char* pszMsgTitle); // apps should be calling ttInitCaller(pszTitle) instead
-
-inline HINSTANCE   ttGetResInst() { return tt::hinstResources; }
-inline void        ttSetResInst(HINSTANCE hinst) { tt::hinstResources = hinst; }
-inline void        ttSetMsgBoxParent(HWND hwnd) { tt::hwndMsgBoxParent = hwnd; }
-inline const char* ttGetMsgBoxTitle() { return tt::pszMsgTitle; }
-
-void        ttSetMsgBoxTitle(const char* pszMsgTitle);
-
-const char* ttGetResString(size_t idString);
-const char* ttLoadTxtResource(int idRes, uint32_t* pcbFile = nullptr, HINSTANCE hinst = tt::hinstResources);
-
-int         ttMsgBox(UINT idResource, UINT uType = MB_OK | MB_ICONWARNING);
-int         ttMsgBox(const char* pszMsg, UINT uType = MB_OK | MB_ICONWARNING);
-int cdecl   ttMsgBoxFmt(const char* pszFormat, UINT uType, ...);
-int cdecl   ttMsgBoxFmt(int idResource, UINT uType, ...);
-
-ptrdiff_t   ttCompareFileTime(FILETIME* pftSrc, FILETIME* pftDst);
-HFONT       ttCreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold = false, bool fItalics = false);
-
-inline int  ttRC_HEIGHT(const RECT* prc) { return prc->bottom - prc->top; };
-inline int  ttRC_HEIGHT(const RECT rc) { return rc.bottom - rc.top; };
-inline int  ttRC_WIDTH(const RECT* prc) { return prc->right - prc->left; };
-inline int  ttRC_WIDTH(const RECT rc) { return rc.right - rc.left; };
-
-inline bool ttIsPosInRect(const RECT* prc, int xPos, int yPos) { return (xPos >= prc->left && xPos <= prc->right && yPos >= prc->top && yPos <= prc->bottom); }
-inline bool ttIsValidWindow(HWND hwnd) { return (bool) (hwnd && IsWindow(hwnd)); };
-
-#endif  // _WINDOWS_
+#if defined(_WX_DEFS_H_)
+    inline void ttInitCaller(const wxString& str) { ttInitCaller((const char*) str.utf8_str()); }
+    inline void ttSetMsgBoxTitle(const wxString& str) { ttSetMsgBoxTitle((const char*) str.utf8_str()); }
+#endif    // defined(_WX_DEFS_H_)
 
 // ttPrintf/ttVPrintf provides a sub-set of the standard sprintf format codes, with automatic allocation of sufficient memory to hold
 // the result, along with some special format specifiers.
@@ -160,7 +196,7 @@ inline bool ttIsValidWindow(HWND hwnd) { return (bool) (hwnd && IsWindow(hwnd));
 //      %kI64d -- handles int64_t, adding commas if needed
 //      %kI64u -- handles uint64_t, adding commas if needed
 
-// The following are only valid when compiling for _WINDOWS_
+// The following are only valid when compiling for _WIN32
 
 //      %ke - formats a system message assuming the argument is an error number
 //      %kr - argument is a resource identifier to a string
@@ -187,6 +223,7 @@ wchar_t*  ttFindNonSpace(const wchar_t* psz);   // returns pointer to the next n
 wchar_t*  ttFindSpace(const wchar_t* psz);      // returns pointer to the next space character
 
 wchar_t*  ttStrDup(const wchar_t* pwsz);
+wchar_t*  ttStrDup(const wchar_t* psz, wchar_t** ppszDst);
 
 bool      ttIsSamePath(const wchar_t* pszFile1, const wchar_t* pszFile2);
 bool      ttIsSameStr(const wchar_t* psz1, const wchar_t* psz2);            // same as strcmp, but returns true/false
@@ -209,7 +246,12 @@ inline  bool   ttIsPunct(wchar_t ch) { return (ch == L'.' || ch == L',' || ch ==
 inline  bool   ttIsWhitespace(wchar_t ch) { return (ch == L' ' || ch == L'\t' || ch == L'\r' || ch == L'\n' || ch == L'\f') ? true : false; }
 inline  size_t ttStrByteLen(const wchar_t* pwsz) { return ttStrLen(pwsz) * sizeof(wchar_t) + sizeof(wchar_t); }
 
-inline  bool   ttChDir(const wchar_t* pwszDir) { return (SetCurrentDirectoryW(pwszDir) != FALSE); }
+#if defined(_WIN32)
+    inline  bool   ttChDir(const wchar_t* pwszDir) { return (SetCurrentDirectoryW(pwszDir) != FALSE); }
+#else
+    // #include <wx/filefn.h>
+    inline  bool   ttChDir(const wchar_t* pwszDir) { return (wxSetWorkingDirectory(pwszDir); }
+#endif
 
 bool      ttCreateDir(const wchar_t* pszDir);
 bool      ttDirExists(const wchar_t* pszFolder);
@@ -218,24 +260,34 @@ wchar_t*  ttFindExt(const wchar_t* pszPath, const wchar_t* pszExt);
 size_t    ttHashFromSz(const wchar_t* psz);
 size_t    ttHashFromURL(const wchar_t* pszURL);
 wchar_t*  ttStepOver(const wchar_t* pwsz);
+void      ttTrimRight(wchar_t* psz);
 
-namespace ttch {
-    const char CH_OPEN_PAREN =  '(';
-    const char CH_CLOSE_PAREN = ')';
-    const char CH_COLON =       ':';
-    const char CH_SEMICOLON =   ';';
-    const char CH_START_QUOTE = '`';
-    const char CH_SQUOTE =      '\'';
-    const char CH_END_QUOTE =   '\'';
-    const char CH_QUOTE =       '"';
-    const char CH_EQUAL =       '=';
-    const char CH_SPACE =       ' ';
-    const char CH_COMMA =       ',';
-    const char CH_LEFT_BRACKET = '[';
-    const char CH_RIGHT_BRACKET = ']';
-    const char CH_TAB =         '\t';
-    const char CH_BACKSLASH =    '\\';
-    const char CH_FORWARDSLASH = '/';
-} // end of ttch namespace
+#if defined(_WIN32)
 
-#endif  // __TTLIB_H__
+    // ttInitCaller is equivalent to calling setResInst(hinstRes), setMsgBoxParent(hwndParent) and setMsgBoxTitle(pszMsgTitle)
+    [[deprecated]] void ttInitCaller(HINSTANCE hinstRes, HWND hwndParent, const char* pszMsgTitle);
+
+    inline HINSTANCE   ttGetResInst() { return tt::hinstResources; }
+    inline void        ttSetResInst(HINSTANCE hinst) { tt::hinstResources = hinst; }
+
+    const char* ttGetResString(size_t idString);
+    const char* ttLoadTxtResource(int idRes, uint32_t* pcbFile = nullptr, HINSTANCE hinst = tt::hinstResources);
+
+    int         ttMsgBox(UINT idResource, UINT uType = MB_OK | MB_ICONWARNING);
+    int         ttMsgBox(const char* pszMsg, UINT uType = MB_OK | MB_ICONWARNING);
+    int cdecl   ttMsgBoxFmt(const char* pszFormat, UINT uType, ...);
+    int cdecl   ttMsgBoxFmt(int idResource, UINT uType, ...);
+
+    ptrdiff_t   ttCompareFileTime(FILETIME* pftSrc, FILETIME* pftDst);
+    HFONT       ttCreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold = false, bool fItalics = false);
+
+    inline int  ttRC_HEIGHT(const RECT* prc) { return prc->bottom - prc->top; };
+    inline int  ttRC_HEIGHT(const RECT rc) { return rc.bottom - rc.top; };
+    inline int  ttRC_WIDTH(const RECT* prc) { return prc->right - prc->left; };
+    inline int  ttRC_WIDTH(const RECT rc) { return rc.right - rc.left; };
+
+    inline bool ttIsPosInRect(const RECT* prc, int xPos, int yPos) { return (xPos >= prc->left && xPos <= prc->right && yPos >= prc->top && yPos <= prc->bottom); }
+    inline bool ttIsValidWindow(HWND hwnd) { return (bool) (hwnd && IsWindow(hwnd)); };
+
+#endif    // defined(_WIN32)
+#endif    // __TTLIB_H__

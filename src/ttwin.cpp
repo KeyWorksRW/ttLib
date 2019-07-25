@@ -18,15 +18,15 @@ LRESULT WINAPI ttpriv::ttCWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPa
 {
     if (msg == WM_CREATE)
     {
-        CREATESTRUCT* pcs = (CREATESTRUCT*) lParam;
+        CREATESTRUCTA* pcs = (CREATESTRUCTA*) lParam;
         void* pThis = (void*) pcs->lpCreateParams;
         if (pThis)
-            SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR) pThis);
+            SetWindowLongPtrA(hwnd, GWLP_USERDATA, (LONG_PTR) pThis);
     }
 
-    ttCWin* pThis = (ttCWin*) GetWindowLongPtr(hwnd, GWLP_USERDATA);
+    ttCWin* pThis = (ttCWin*) GetWindowLongPtrA(hwnd, GWLP_USERDATA);
     if (!pThis)
-        return DefWindowProc(hwnd, msg, wParam, lParam);
+        return DefWindowProcA(hwnd, msg, wParam, lParam);
 
     LRESULT lResult = 0;
     if (msg == WM_COMMAND && pThis->OnCmdCaseMap((int) LOWORD(wParam), (UINT) HIWORD(wParam), lResult))
@@ -35,9 +35,9 @@ LRESULT WINAPI ttpriv::ttCWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPa
         return lResult;
 
     if (pThis->m_SubClassProc)
-        return CallWindowProc(pThis->m_SubClassProc, hwnd, msg, wParam, lParam);
+        return CallWindowProcA(pThis->m_SubClassProc, hwnd, msg, wParam, lParam);
 
-    return DefWindowProc(hwnd, msg, wParam, lParam);
+    return DefWindowProcA(hwnd, msg, wParam, lParam);
 }
 
 ttCWin::ttCWin()
@@ -49,7 +49,7 @@ ttCWin::ttCWin()
 
     // We create this here so the caller can modify it before calling CreateWnd
 
-    m_pwc = new WNDCLASSEX;
+    m_pwc = new WNDCLASSEXA;
     memset(m_pwc, 0, sizeof(WNDCLASSEXA));
     m_pwc->cbSize = sizeof(WNDCLASSEXA);
     m_pwc->lpfnWndProc = ttpriv::ttCWinProc;

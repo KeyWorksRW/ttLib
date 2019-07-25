@@ -16,7 +16,7 @@
 class ttCCritSection
 {
 public:
-#ifdef _WINDOWS_
+#if defined(_WIN32)
 
     ttCCritSection()    {
         memset(&m_cs, 0, sizeof(CRITICAL_SECTION));
@@ -37,12 +37,12 @@ private:
 
     CRITICAL_SECTION m_cs;
 
-#else   // not _WINDOWS_
+#else    // not defined(_WIN32)
     wxCriticalSection m_cs;
 
     void Lock() { m_cs.Enter(); }
     void Unlock() { m_cs.Leave(); }
-#endif  // _WINDOWS_
+#endif    // defined(_WIN32)
 }; // end ttCCritSection
 
 /*

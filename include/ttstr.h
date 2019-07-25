@@ -28,7 +28,7 @@
 //      %kI64d -- handles int64_t, adding commas if needed
 //      %kI64u -- handles uint64_t, adding commas if needed
 
-// The following are only valid when compiling for _WINDOWS_
+// The following are only valid when compiling for _WIN32
 
 //      %ke - formats a system message assuming the argument is an error number
 //      %kr - argument is a resource identifier to a string
@@ -38,7 +38,8 @@
 #ifndef __TTLIB_CSTR_H__
 #define __TTLIB_CSTR_H__
 
-#include "ttheap.h" // ttCHeap
+#include "ttheap.h"     // ttCHeap
+#include "ttdebug.h"    // ttASSERT macros
 
 class ttCStr
 {
@@ -46,11 +47,14 @@ public:
     ttCStr(void)    { m_psz = nullptr; }
     ttCStr(size_t cb) { m_psz = (char*) ttMalloc(cb); }
     ttCStr(const char* psz) { m_psz = psz ? ttStrDup(psz) : nullptr; }
-    ttCStr(const wchar_t* pwsz) { m_psz = nullptr; if (pwsz) CopyWide(pwsz); }
     ttCStr(ttCStr& csz) { m_psz = csz.GetPtr() ? ttStrDup(csz) : nullptr; }
-#ifdef _WINDOWS_
+    ttCStr(const wchar_t* pwsz) { m_psz = nullptr; if (pwsz) CopyWide(pwsz); }
+#if defined(_WX_DEFS_H_)
+    ttCStr(const wxString& str) { m_psz = ttStrDup(str.utf8_str()); }
+ #endif
+#if defined(_WIN32)
     ttCStr(HWND hwnd) { m_psz = nullptr; GetWndText(hwnd); }
-#endif // _WINDOWS_
+#endif    // defined(_WIN32)
 
     ~ttCStr() { if (m_psz) ttFree(m_psz); }
 
@@ -72,8 +76,8 @@ public:
     bool    IsSameSubStr(const char* psz) { return ttIsSameSubStr(m_psz, psz); }
     bool    IsSameSubStrI(const char* psz) { return ttIsSameSubStrI(m_psz, psz); }
 
-    char*   FindExt() { return (char*) ttFindNonSpace(m_psz); }
-    char*   FindSpace() { return (char*) ttFindSpace(m_psz); }
+    char*   FindNonSpace() { return (char*) ttFindNonSpace(m_psz); }
+    char*   FindSpace()    { return (char*) ttFindSpace(m_psz); }
 
     ptrdiff_t Atoi() { return ttAtoi(m_psz); }
 
@@ -89,9 +93,9 @@ public:
     bool    IsNonEmpty() const { return (m_psz && *m_psz) ? true : false; }
     bool    IsNull() const { return (m_psz == nullptr); }
 
-    char* cdecl printf(size_t idFmtString, ...);    // retrieves the format string from the specified resource
+    bool    CopyWide(const wchar_t* pwsz); // convert UNICODE to UTF8 and store it
 
-    bool CopyWide(const wchar_t* pwsz); // convert UNICODE to UTF8 and store it
+    bool    ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCaseSensitive = false);
 
     // Filename handling methods
 
@@ -100,22 +104,20 @@ public:
     void    ChangeExtension(const char* pszExtension);
     char*   GetCWD();           // Caution: this will replace any current string
     void    RemoveExtension();
-    bool    ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCaseSensitive = false);
 
     char*   FindLastSlash();    // Handles any mix of '\' and '/' in the filename
     char*   FindExt() const;    // will return nullptr if no extension
 
-#ifdef _WINDOWS_
     void FullPathName();
-    void GetFullPathName() { FullPathName(); }
-#endif
+#if defined(_WIN32)
+[[deprecated]]    void GetFullPathName() { FullPathName(); }
+#endif    // defined(_WIN32)
 
     // UI retrieving methods
 
-#ifdef _WINDOWS_
+#if defined(_WIN32)
     char* GetResString(size_t idString);
     bool  GetWndText(HWND hwnd);
-    bool  GetWindowText(HWND hwnd) { return GetWndText(hwnd); } // Deal with macros that change this to GetWindowTextW or GetWindowTextA
 
     // The following will always return a pointer, but if an error occurred, it will point to an empty string
     char* GetListBoxText(HWND hwnd) { return GetListBoxText(hwnd, ::SendMessage(hwnd, LB_GETCURSEL, 0, 0)); }
@@ -123,7 +125,9 @@ public:
 
     char* GetComboLBText(HWND hwnd) { return GetListBoxText(hwnd, ::SendMessage(hwnd, CB_GETCURSEL, 0, 0)); }
     char* GetComboLBText(HWND hwnd, size_t sel);
-#endif  // _WINDOWS_
+
+    char* cdecl printf(size_t idFmtString, ...);    // retrieves the format string from the specified resource
+#endif    // defined(_WIN32)
 
     void    MakeLower();
     void    MakeUpper();
@@ -140,6 +144,7 @@ public:
 
     char* cdecl printf(const char* pszFormat, ...);         // Deletes any current string before printing
     char* cdecl printfAppend(const char* pszFormat, ...);   // Appends to the end of any current string
+    void  cdecl WarningMsgBox(const char* pszFormat, ...);     // displays the formatted string in a warning message box
 
     void    ReSize(size_t cb);
     size_t  SizeBuffer() { return ttSize(m_psz); }  // returns 0 if m_psz is null

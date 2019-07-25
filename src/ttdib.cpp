@@ -2,7 +2,7 @@
 // Name:      ttCDib
 // Purpose:   Class for handling Device Independent Bitmap
 // Author:    Davide Pizzolato
-// Copyright: Copyright (c) [2001] Davide Pizzolato
+// Copyright: Copyright (c) [2001-2019] Davide Pizzolato
 // Licence:   The Code Project Open License (see ../CPOL.md)
 /////////////////////////////////////////////////////////////////////////////
 
@@ -14,9 +14,7 @@
 
 #include "pch.h"
 
-#ifndef _WINDOWS_
-    #error This code will only work on Windows
-#endif
+#if defined(_WIN32)
 
 #include "../include/ttheap.h"
 #include "../include/ttdib.h"
@@ -483,3 +481,5 @@ void ttCDib::Clear(BYTE bval)
     if (hDib)
         memset(GetBits(), bval, m_bi.biSizeImage);
 }
+
+#endif    // defined(_WIN32)

@@ -26,7 +26,7 @@ void        ttSetAsserts(bool bDisable);                // enables disables all 
 __declspec(noreturn) void ttOOM(void);
 
 namespace tt {
-#ifdef _WINDOWS_
+#if defined(_WIN32)
     extern HWND hwndTrace;                  // handle to ttTrace main window (if it was running when ttTrace was called;
 
     extern const UINT WMP_TRACE_GENERAL; // WM_USER + 0x1f3;    // general message to send to ttTrace
@@ -36,9 +36,8 @@ namespace tt {
     extern const char* txtTraceClass;       // class name of window to send trace messages to
     extern const char* txtTraceShareName;   // name of shared memory to write to
 
-
     DWORD CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc, int line);
-#endif
+#endif    // defined(_WIN32)
 }
 
 #ifdef _DEBUG
@@ -57,10 +56,10 @@ namespace tt {
     #define ttDISABLE_ASSERTS ttSetAsserts(true)
     #define ttENABLE_ASSERTS  ttSetAsserts(false)
 
-#ifdef _WINDOWS_
+#if defined(_WIN32)
     #define ttASSERT_HRESULT(hr, pszMsg) { if (FAILED(hr)) ttAssertionMsg(pszMsg, __FILE__, __func__, __LINE__); }
     #define ttReportLastError() { ttdoReportLastError(__FILE__, __func__, __LINE__); }
-#endif
+#endif    // defined(_WIN32)
 
 #else   // not _DEBUG
 
@@ -78,10 +77,10 @@ namespace tt {
     #define ttDISABLE_ASSERTS
     #define ttENABLE_ASSERTS
 
-#ifdef _WINDOWS_
+#if defined(_WIN32)
     #define ttASSERT_HRESULT(hr, pszMsg)
     #define ttReportLastError()
-#endif
+#endif    // defined(_WIN32)
 
 #endif  // _DEBUG
 

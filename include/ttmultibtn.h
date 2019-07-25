@@ -8,9 +8,7 @@
 
 #pragma once
 
-#ifndef _WINDOWS_
-    #error This code will only work on Windows
-#endif
+#if defined(_WIN32)
 
 #include "ttarray.h"        // ttCArray
 
@@ -31,6 +29,7 @@ public:
     ~ttCMultiBtn();
 
     void SetIcon(int idBtn, int idIcon, UINT nIconAlign = BS_LEFT);
+    void SetIcon(int idBtn, const char* pszIconName, UINT nIconAlign = BS_LEFT);
     ttCShadeBtn* FindShadeBtn(int id);
 
     typedef enum {          // must be identical to ttCShadeBtn (ttshadebtn.h)
@@ -57,3 +56,5 @@ private:
     ttCArray<ttCShadeBtn*> m_aBtns;
     BTN_SHADE m_btnShade;
 };
+
+#endif    // defined(_WIN32)

@@ -88,7 +88,7 @@ bool ttAssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFunc
     char szBuf[2048];
     sprintf_s(szBuf, sizeof(szBuf), "%s\r\n\r\n%s (%s): line %u", pszMsg, pszFile, pszFunction, line);
 
-#ifdef _WINDOWS_
+#if defined(_WIN32)
 
     // wxWidgets does not have an equivalent of MB_ABORTRETRYIGNORE, nor will it work properly in a CONSOLE
     // application, so we just call directly into the Windws API.
@@ -107,19 +107,17 @@ bool ttAssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFunc
         return false;
     }
 
-    if (tt::hwndMsgBoxParent && IsWindow(tt::hwndMsgBoxParent))
-        SendMessage(tt::hwndMsgBoxParent, WM_CLOSE, 0, 0);  // attempt to give the application window a graceful way to shut down
-
     crtAssert.Unlock();
     ExitProcess((UINT) -1);
 
-#else   // not _WINDOWS_
-
-    asm volatile ("int $3");
+#else    // not defined(_WIN32)
+    int answer = wxMessageBox(szBuf, "Click Yes to break into debugger", wxYES_NO | wxICON_ERROR);
+    if (answer == wxYES)
+        wxTrap();
 
     crtAssert.Unlock();
     return false;
-#endif  // _WINDOWS_
+#endif    // defined(_WIN32)
 }
 
 bool ttAssertionMsg(const wchar_t* pwszMsg, const char* pszFile, const char* pszFunction, int line)
@@ -155,7 +153,7 @@ void ttSetAsserts(bool bDisable)
     ttdbg::bNoAssert = bDisable;
 }
 
-#ifdef _WINDOWS_
+#if defined(_WIN32)
 
 void ttdoReportLastError(const char* pszFile, const char* pszFunc, int line)
 {
@@ -238,7 +236,7 @@ void __cdecl ttTrace(const char* pszFormat, ...)
     ttStrCpy(g_pszTraceMap, 4093, csz);
     ttStrCat(g_pszTraceMap, 4094, "\r\n");
 
-    SendMessage(tt::hwndTrace, tt::WMP_TRACE_MSG, 0, 0);
+    SendMessageA(tt::hwndTrace, tt::WMP_TRACE_MSG, 0, 0);
 
     UnmapViewOfFile(g_pszTraceMap);
     g_pszTraceMap = nullptr;
@@ -249,7 +247,7 @@ void ttTraceClear()
     ttCCritLock lock(&g_csTrace);
     if (!ttIsValidWindow(tt::hwndTrace))
         return;
-    SendMessage(tt::hwndTrace, tt::WMP_CLEAR_TRACE, 0, 0);
+    SendMessageA(tt::hwndTrace, tt::WMP_CLEAR_TRACE, 0, 0);
 }
 
-#endif  // _WINDOWS_
+#endif    // defined(_WIN32)

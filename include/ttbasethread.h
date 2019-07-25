@@ -10,9 +10,7 @@
 
 #pragma once
 
-#ifndef _WINDOWS_
-    #error This code will only work on Windows
-#endif
+#if defined(_WIN32)
 
 namespace ttpriv {
     unsigned __stdcall _BaseThread(void* pv);
@@ -28,7 +26,7 @@ public:
 
     void StopThread();
     void StartThread();
-    void InitializeThreadForOle();  // Call this in doThreadWork() if you need Ole support
+//    void InitializeThreadForOle();  // Call this in doThreadWork() if you need Ole support
     void WaitForThreadToComplete();
 
     virtual void DoThreadWork() = NULL;     // Derived class MUST supply this!
@@ -44,7 +42,9 @@ protected:
     // Class members
 
     HANDLE  m_hthrdWorker;
-    bool    m_bOleInitialized;
+//    bool    m_bOleInitialized;
 
 
 }; // end ttCBaseThread
+
+#endif    // defined(_WIN32)

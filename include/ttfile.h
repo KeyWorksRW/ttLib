@@ -21,10 +21,10 @@
 #include "ttdebug.h"    // ttASSERT macros
 #include "ttstr.h"      // ttCStr
 
-#ifdef _WINDOWS_
+#if defined(_WIN32)
     #include <Wininet.h>
     #include <objidl.h> // for IStream interface
-#endif
+#endif    // defined(_WIN32)
 
 class ttCFile
 {
@@ -53,14 +53,15 @@ public:
 
     bool    ReadFile(const char* pszFile);  // ERROR_INVALID_NAME, ERROR_CANTOPEN, ERROR_SEEK_FAILURE, ERROR_CANTREAD
     bool    WriteFile(const char* pszFile); // ERROR_INVALID_NAME, ERROR_EMPTY_BUFFER, ERROR_CANTOPEN, ERROR_CANTWRITE
+    bool    ReadStrFile(const char* pszText); // read a string as if it was a file (makes a copy of the string).
 
-#ifdef _WINDOWS_
+#if defined(_WIN32)
     bool    ReadURL(const char* pszURL, HINTERNET hInternet = NULL);    // ERROR_INVALID_NAME, ERROR_SERVICE_DOES_NOT_EXIST if cannot access, ERROR_CANTOPEN if URL not found
     HRESULT ReadFile(IStream* pStream); // ERROR_INVALID_PARAMETER, ERROR_SEEK_FAILURE, ERROR_CANTREAD
     bool    ReadResource(DWORD idResource);
     size_t  GetURLFileSize() { return m_cbUrlFile; }
     HRESULT GetErrorResult() { return m_ioResult; }
-#endif
+#endif    // defined(_WIN32)
 
     bool    UnicodeToAnsi();    // convert loaded file from Unicode to Ansi. Will return false if file not read.
 
@@ -144,9 +145,9 @@ protected:
     char* m_pEnd;
 
     FILEIO_RESULT m_ioResult;
-#ifdef _WINDOWS_
+#if defined(_WIN32)
     HINTERNET m_hInternetSession;
-#endif
+#endif    // defined(_WIN32)
 
     char* m_pCopy;
 

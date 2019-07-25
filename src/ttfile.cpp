@@ -12,14 +12,14 @@
 
 #include "../include/ttfile.h"
 
-#ifdef _WINDOWS_
+#if defined(_WIN32)
     #define CHECK_URL_PTR(str)  { ttASSERT(str); if (!str || !str[0] || ttStrLen(str) >= INTERNET_MAX_URL_LENGTH) { m_ioResult = ERROR_BAD_NAME; return false; } }
 
     #pragma comment(lib, "Wininet.lib")
-#endif
+#endif    // defined(_WIN32)
 
 // Not unsafe in the way that we use it (first call it to get buffer size needed, then call again with correctly sized buffer)
-#define _CRT_SECURE_NO_DEPRECATE
+// #define _CRT_SECURE_NO_DEPRECATE
 #pragma warning(disable: 4996)  // 'wcstombs': This function or variable may be unsafe.
 
 // CB_END_PAD must be sufficient to allow for a CR/LF, and beginning/ending quotes without overflowing buffer
@@ -58,10 +58,10 @@ ttCFile::ttCFile(ptrdiff_t cb)
 
 ttCFile::~ttCFile()
 {
-#ifdef _WINDOWS_
+#if defined(_WIN32)
     if (m_hInternetSession)
         InternetCloseHandle(m_hInternetSession);
-#endif
+#endif    // defined(_WIN32)
     if (m_pbuf)
         ttFree(m_pbuf);
 }
@@ -106,7 +106,7 @@ bool ttCFile::WriteFile(const char* pszFile)
         return false;   // we refuse to write an empty file
     }
 
-    HANDLE hf = CreateFile(pszFile, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+    HANDLE hf = CreateFileA(pszFile, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
     if (hf == INVALID_HANDLE_VALUE)
     {
         m_ioResult = ERROR_CANT_OPEN;
@@ -128,7 +128,7 @@ bool ttCFile::ReadFile(const char* pszFile)
     m_pszFile = ttFindFilePortion(pszFile); // set this so Debugger will see it
 #endif
 
-    HANDLE hf = CreateFile(pszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+    HANDLE hf = CreateFileA(pszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
     if (hf == INVALID_HANDLE_VALUE)
     {
         m_ioResult = ERROR_CANT_OPEN;
@@ -163,8 +163,23 @@ bool ttCFile::ReadFile(const char* pszFile)
     return true;
 }
 
-#ifdef _WINDOWS_
-bool ttCFile::ReadURL(const char* pszURL, HINTERNET hInternet)  // _WINDOWS_ only
+bool ttCFile::ReadStrFile(const char* pszText)
+{
+    Delete();
+    ttASSERT_MSG(pszText, "NULL pointer!");
+    if (!pszText)
+        return false;
+
+    auto cb = ttStrByteLen(pszText);
+    AllocateBuffer(cb + CB_END_PAD);
+    memcpy(m_pbuf, pszText, cb);
+    m_pCurrent = m_pbuf + (cb - 1);
+    return true;
+}
+
+#if defined(_WIN32)
+
+bool ttCFile::ReadURL(const char* pszURL, HINTERNET hInternet)
 {
     Delete();
     m_cbUrlFile = 0;
@@ -223,7 +238,7 @@ bool ttCFile::ReadURL(const char* pszURL, HINTERNET hInternet)  // _WINDOWS_ onl
     return true;
 }
 
-__inline DWORD GetFileSize(IStream* pStream)    // _WINDOWS_ only
+DWORD GetFileSize(IStream* pStream)
 {
     LARGE_INTEGER liOffset;
     liOffset.LowPart = 0;
@@ -271,10 +286,10 @@ HRESULT ttCFile::ReadFile(IStream* pStream) // _WINDOWS_ only
     return hr;
 }
 
-bool ttCFile::ReadResource(DWORD idResource)    // _WINDOWS_ only
+bool ttCFile::ReadResource(DWORD idResource)
 {
     Delete();
-    HRSRC hrsrc  = FindResource(tt::hinstResources, MAKEINTRESOURCE(idResource), RT_RCDATA);
+    HRSRC hrsrc  = FindResourceA(tt::hinstResources, MAKEINTRESOURCEA(idResource), (char*) RT_RCDATA);
     ttASSERT(hrsrc);
     if (!hrsrc)
     {
@@ -299,7 +314,7 @@ bool ttCFile::ReadResource(DWORD idResource)    // _WINDOWS_ only
     return true;
 }
 
-#endif  // _WINDOWS_
+#endif    // defined(_WIN32)
 
 void ttCFile::WriteChar(char ch)
 {

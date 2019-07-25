@@ -11,9 +11,7 @@
 #include "../include/ttdebug.h" // ASSERTs
 #include "../include/ttheap.h"  // ttCHeap
 
-#ifndef _WINDOWS_
-    #error This code will only work on Windows
-#endif
+#if defined(_WIN32)
 
 ttCHeap tt::MainHeap;
 
@@ -140,27 +138,16 @@ char* ttCHeap::ttStrDup(const char* pszSrc, char** pszDst)
     return *pszDst;
 }
 
-#ifndef _INC_STDLIB
-    __declspec(noreturn) void __cdecl exit(int _Code);
-#endif
-
-// In _DEBUG builds, ttOOM() will provide an option to invoke a debugger before exiting. In non-debug builds it will simply exit.
-
-__declspec(noreturn) void ttOOM(void)
+wchar_t* ttCHeap::ttStrDup(const wchar_t* pszSrc, wchar_t** pszDst)
 {
-#ifdef _DEBUG
+    ttASSERT_MSG(pszSrc, "NULL pointer!");
 
-    int answer = MessageBoxA(GetActiveWindow(), "Out of Memory!!!", "Do you want to call DebugBreak()?", MB_YESNO | MB_ICONERROR);
-
-    if (answer == IDYES)
-        DebugBreak();
-    // Don't use GetCurrentWindowHandle() since that might only return an active window
-    if (tt::hwndMsgBoxParent && IsWindow(tt::hwndMsgBoxParent))
-        SendMessage(tt::hwndMsgBoxParent, WM_CLOSE, 0, 0);  // attempt to give the application window a graceful way to shut down
-
-#endif  // _DEBUG
-
-    exit(-1);
+    if (!pszSrc || !*pszSrc)
+        pszSrc = L"";
+    size_t cb = ttStrByteLen(pszSrc);
+    *pszDst = *pszDst ? (wchar_t*) HeapReAlloc(m_hHeap, 0, *pszDst, cb) : (wchar_t*) HeapAlloc(m_hHeap, 0, cb);
+    memcpy(*pszDst, pszSrc, cb);
+    return *pszDst;
 }
 
 void*    ttCalloc(size_t cb) { return tt::MainHeap.ttCalloc(cb); }
@@ -172,5 +159,8 @@ void*    ttReCalloc(void* pv, size_t cbNew) { return tt::MainHeap.ttReCalloc(pv,
 char*    ttStrDup(const char* psz) { return tt::MainHeap.ttStrDup(psz); }
 wchar_t* ttStrDup(const wchar_t* pwsz) { return tt::MainHeap.ttStrDup(pwsz); }
 char*    ttStrDup(const char* psz, char** ppszDst) { return tt::MainHeap.ttStrDup(psz, ppszDst); }
+wchar_t* ttStrDup(const wchar_t* psz, wchar_t** ppszDst) { return tt::MainHeap.ttStrDup(psz, ppszDst); }
 size_t   ttSize(const void* pv) { return tt::MainHeap.ttSize(pv); }
 bool     ttValidate(const void* pv) { return tt::MainHeap.ttValidate(pv); }
+
+#endif    // defined(_WIN32)

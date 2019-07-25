@@ -13,11 +13,12 @@
 
 // In a non-Windows build the classes will be serialized if the underlying ttMalloc() routines are serialed,
 // and the underlying CTTHeap destructor will FreeAlloc all memory allocated by this class (but because it will be
-// calling FreeAlloc() for every item allocated, it will be a lot slower then the _WINDOWS_ version).
+// calling FreeAlloc() for every item allocated, it will be a lot slower then the _WIN32 version).
 
 #include "pch.h"
 
-#include "../include/ttlist.h"  // ttCList, ttCDblList, ttCStrIntList
+#include "../include/ttlist.h"           // ttCList, ttCDblList, ttCStrIntList
+#include "../include/ttcritsection.h"    // ttCCritSection, ttCCritLock
 
 ttCList::ttCList(bool bSerialize) : ttCHeap(bSerialize)
 {
@@ -842,4 +843,76 @@ char* ttCStrIntList::GetKey(size_t pos) const
         return nullptr;
 
     return m_aptrs[pos].pszKey;
+}
+
+//////////////////////////////// ttCIntStrList  /////////////////////////////////
+
+// Unlike the above classes, this class does NOT use a sub-heap
+
+ttCIntStrList::ttCIntStrList(void)
+{
+    m_cAllocated = 0;
+    m_cItems = 0;
+    m_aData = nullptr;
+    m_pcrit = nullptr;
+}
+
+ttCIntStrList::~ttCIntStrList()
+{
+    Delete();
+    if (m_aData)
+        ttFree((void*) m_aData);
+    if (m_pcrit)
+        delete m_pcrit;
+}
+
+const char* ttCIntStrList::Add(size_t id, const char* psz)
+{
+    ttASSERT_MSG(psz, "NULL pointer!");
+    if (!psz)
+        return nullptr;
+
+    if (!m_pcrit)
+        m_pcrit = new ttCCritSection;
+    ttCCritLock lock(m_pcrit);
+
+    if (m_cItems + 1 > m_cAllocated)
+    {
+        m_cAllocated += 32;
+        m_aData = (KEYVAL_PAIR*) ttReAlloc(m_aData, m_cAllocated * sizeof(KEYVAL_PAIR));
+    }
+
+    m_aData[m_cItems].id = id;
+    m_aData[m_cItems].psz = ttStrDup(psz);
+
+    return m_aData[m_cItems++].psz;
+}
+
+const char* ttCIntStrList::Find(size_t id)
+{
+    if (!m_pcrit)
+        m_pcrit = new ttCCritSection;
+    ttCCritLock lock(m_pcrit);
+
+    for (size_t pos = 0; InRange(pos); ++pos)
+    {
+        if (m_aData[pos].id == id)
+            return m_aData[pos].psz;
+    }
+
+    return nullptr;
+}
+
+void ttCIntStrList::Delete()
+{
+    if (!m_pcrit)
+        m_pcrit = new ttCCritSection;
+    ttCCritLock lock(m_pcrit);
+
+    if (m_cItems == 0)
+        return; // we haven't added anything yet, so nothing to do!
+
+    for (size_t pos = 0; InRange(pos); ++pos)
+        ttFree((void*) m_aData[pos].psz);
+    m_cItems = 0;
 }

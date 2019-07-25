@@ -15,11 +15,9 @@
 
 // For the original, see article at https://www.codeproject.com/articles/1121/ttCShadeBtn
 
-#ifndef _WINDOWS_
-    #error This code will only work on Windows
-#endif
-
 #include "pch.h"
+
+#if defined(_WIN32)
 
 #include "../include/ttstr.h"       // ttCStr
 #include "../include/ttdebug.h"     // ttASSERT macros
@@ -85,18 +83,18 @@ ttCShadeBtn::~ttCShadeBtn()
     m_hwnd = NULL;
 }
 
-bool ttCShadeBtn::SetFont(LOGFONT* pNewStyle)
+bool ttCShadeBtn::SetFont(LOGFONTA* pNewStyle)
 {
     if (pNewStyle)
     {
         if (m_pLF == NULL)
-            m_pLF = (LOGFONT*) ttCalloc(sizeof(LOGFONT));
+            m_pLF = (LOGFONTA*) ttCalloc(sizeof(LOGFONTA));
         if (m_pLF)
         {
-            memcpy(m_pLF, pNewStyle, sizeof(LOGFONT));
+            memcpy(m_pLF, pNewStyle, sizeof(LOGFONTA));
             if (m_hFont)
                 DeleteObject(m_hFont);
-            m_hFont = CreateFontIndirect(m_pLF);
+            m_hFont = CreateFontIndirectA(m_pLF);
             return (m_hFont != NULL);
         }
     }
@@ -106,17 +104,17 @@ bool ttCShadeBtn::SetFont(LOGFONT* pNewStyle)
 bool ttCShadeBtn::SetFont(const char* pszFontName, long lSize, long lWeight, BYTE bItalic, BYTE bUnderline)
 {
     if (m_pLF == NULL)
-        m_pLF = (LOGFONT*) ttCalloc(sizeof(LOGFONT));
+        m_pLF = (LOGFONTA*) ttCalloc(sizeof(LOGFONTA));
     if (m_pLF)
     {
-        strncpy_s(m_pLF->lfFaceName, sizeof(m_pLF->lfFaceName), pszFontName, 31);
+        ttStrCpy(m_pLF->lfFaceName, sizeof(m_pLF->lfFaceName), pszFontName);
         m_pLF->lfHeight = lSize;
         m_pLF->lfWeight = lWeight;
         m_pLF->lfItalic = bItalic;
         m_pLF->lfUnderline = bUnderline;
         if (m_hFont)
             DeleteObject(m_hFont);
-        m_hFont = CreateFontIndirect(m_pLF);
+        m_hFont = CreateFontIndirectA(m_pLF);
         return (m_hFont != NULL);
     }
     return false;
@@ -166,20 +164,19 @@ void ttCShadeBtn::SetTextAlign(UINT nTextAlign)
     m_TextAlign |= (DT_SINGLELINE | DT_VCENTER);
 }
 
-void ttCShadeBtn::SetIcon(UINT nIcon, UINT nIconAlign, UINT nIconDown, UINT nIconHighLight)
+void ttCShadeBtn::SetIcon(HICON hIcon, UINT nIconAlign, UINT nIconDown, UINT nIconHighLight)
 {
-    if (m_hIconDown != m_hIcon && m_hIconDown)
-        DestroyIcon(m_hIconDown);
-    if (m_hIconHighLight != m_hIcon && m_hIconHighLight)
-        DestroyIcon(m_hIconHighLight);
-    if (m_hIcon)
-        DestroyIcon(m_hIcon);
-
-    m_hIcon = (HICON) ::LoadImage(tt::hinstResources, MAKEINTRESOURCE(nIcon), IMAGE_ICON, 0, 0, 0);
-    ttASSERT_MSG(m_hIcon, "Unable to load icon");
-    if (m_hIcon)                          // if success...
+    if (hIcon)
     {
+        if (m_hIconDown != m_hIcon && m_hIconDown)
+            DestroyIcon(m_hIconDown);
+        if (m_hIconHighLight != m_hIcon && m_hIconHighLight)
+            DestroyIcon(m_hIconHighLight);
+        if (m_hIcon)
+            DestroyIcon(m_hIcon);
+
         ICONINFO iinfo;                     // get icon info
+        m_hIcon = hIcon;
         GetIconInfo(m_hIcon, &iinfo);
         m_rcIconBox.left = m_rcIconBox.top = 0;
         m_rcIconBox.right = iinfo.xHotspot * 2;
@@ -213,7 +210,7 @@ void ttCShadeBtn::SetIcon(UINT nIcon, UINT nIconAlign, UINT nIconDown, UINT nIco
 
         if (nIconDown > 0)    // load down icon
         {
-            m_hIconDown = (HICON)::LoadImage(tt::hinstResources, MAKEINTRESOURCE(nIconDown), IMAGE_ICON, 0, 0, 0);
+            m_hIconDown = (HICON) ::LoadImageA(tt::hinstResources, MAKEINTRESOURCEA(nIconDown), IMAGE_ICON, 0, 0, 0);
             if (m_hIconDown == NULL)
                 m_hIconDown = m_hIcon;
         }
@@ -223,7 +220,7 @@ void ttCShadeBtn::SetIcon(UINT nIcon, UINT nIconAlign, UINT nIconDown, UINT nIco
 
         if (nIconHighLight > 0)   // load highlighted icon
         {
-            m_hIconHighLight = (HICON) ::LoadImage(tt::hinstResources, MAKEINTRESOURCE(nIconHighLight), IMAGE_ICON, 0, 0, 0);
+            m_hIconHighLight = (HICON) ::LoadImageA(tt::hinstResources, MAKEINTRESOURCEA(nIconHighLight), IMAGE_ICON, 0, 0, 0);
             if (m_hIconHighLight == NULL)
                 m_hIconHighLight = m_hIcon;
         }
@@ -231,6 +228,36 @@ void ttCShadeBtn::SetIcon(UINT nIcon, UINT nIconAlign, UINT nIconDown, UINT nIco
             m_hIconHighLight = m_hIcon; // reuse resource handle
         }
     }
+}
+
+void ttCShadeBtn::SetIcon(UINT nIcon, UINT nIconAlign, UINT nIconDown, UINT nIconHighLight)
+{
+    if (m_hIconDown != m_hIcon && m_hIconDown)
+        DestroyIcon(m_hIconDown);
+    if (m_hIconHighLight != m_hIcon && m_hIconHighLight)
+        DestroyIcon(m_hIconHighLight);
+    if (m_hIcon)
+        DestroyIcon(m_hIcon);
+
+    HICON hIcon = (HICON) ::LoadImage(tt::hinstResources, MAKEINTRESOURCE(nIcon), IMAGE_ICON, 0, 0, 0);
+    ttASSERT_MSG(hIcon, "Unable to load icon");
+    if (hIcon)
+        SetIcon(hIcon, nIconAlign, nIconDown, nIconHighLight);
+}
+
+void ttCShadeBtn::SetIcon(const char* pszIconName, UINT nIconAlign, UINT nIconDown, UINT nIconHighLight)
+{
+    if (m_hIconDown != m_hIcon && m_hIconDown)
+        DestroyIcon(m_hIconDown);
+    if (m_hIconHighLight != m_hIcon && m_hIconHighLight)
+        DestroyIcon(m_hIconHighLight);
+    if (m_hIcon)
+        DestroyIcon(m_hIcon);
+
+    HICON hIcon = (HICON) ::LoadImageA(tt::hinstResources, pszIconName, IMAGE_ICON, 0, 0, 0);
+    ttASSERT_MSG(hIcon, "Unable to load icon");
+    if (hIcon)
+        SetIcon(hIcon, nIconAlign, nIconDown, nIconHighLight);
 }
 
 void ttCShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, BYTE coloring, COLORREF color)
@@ -504,7 +531,7 @@ void ttCShadeBtn::OnPaint()
     HANDLE hBitmap = CreateCompatibleBitmap(hdcPaint, cx, cy);
     HBITMAP hOldBitmap = (HBITMAP) SelectObject(hdcMem, hBitmap); // select the destination for MemDC
 
-    cszCaption.GetWindowText(*this);                            // get button text
+    cszCaption.GetWndText(*this);                            // get button text
     SetBkMode(hdcMem, TRANSPARENT);
     // with MemDC we need to select the font...
 
@@ -555,10 +582,10 @@ void ttCShadeBtn::OnPaint()
             DrawEdge(hdcMem, &rcClient, EDGE_RAISED, BF_RECT);
         // paint the etched button text
         ::SetTextColor(hdcMem, GetSysColor(COLOR_3DHILIGHT));
-        ::DrawText(hdcMem, (const char*) cszCaption, -1, &tr, m_TextAlign);
+        ::DrawTextA(hdcMem, (const char*) cszCaption, -1, &tr, m_TextAlign);
         ::SetTextColor(hdcMem, GetSysColor(COLOR_GRAYTEXT));
         OffsetRect(&tr, -1, -1);
-        ::DrawText(hdcMem, (const char*) cszCaption, -1, &tr, m_TextAlign);
+        ::DrawTextA(hdcMem, (const char*) cszCaption, -1, &tr, m_TextAlign);
     }
     else {
         if (SendMessage(BM_GETSTATE) & BST_PUSHED) // SELECTED (DOWN) BUTTON
@@ -626,7 +653,7 @@ void ttCShadeBtn::OnPaint()
         }
         // paint the enabled button text
         ::SetTextColor(hdcMem, m_TextColor);
-        DrawText(hdcMem, (const char*) cszCaption, -1, &tr, m_TextAlign);
+        ::DrawTextA(hdcMem, (const char*) cszCaption, -1, &tr, m_TextAlign);
     }
 
     if (hOldFont)
@@ -664,3 +691,5 @@ void ttCShadeBtn::FillSolidRect(HDC hdc, int x, int y, int cx, int cy, COLORREF 
     RECT rect = { x, y, x + cx, y + cy };
     ::FillRect(hdc, &rect, (HBRUSH) (ULONG_PTR) clr);
 }
+
+#endif    // defined(_WIN32)

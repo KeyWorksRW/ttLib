@@ -11,9 +11,7 @@
 #include "../include/ttdebug.h"     // for ttASSERTS
 #include "../include/ttstr.h"   // ttCStr
 
-#ifndef _WINDOWS_
-    #error This code will only work on Windows
-#endif
+#if defined(_WIN32)
 
 bool ttFileExists(const char* pszFile)
 {
@@ -150,9 +148,9 @@ void ttConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszRe
         return;
     }
 
-    cszRoot.GetFullPathName();
+    cszRoot.FullPathName();
     ttCStr cszFile(pszFile);
-    cszFile.GetFullPathName();
+    cszFile.FullPathName();
 
     if (toupper(cszRoot[0]) != toupper(cszFile[0]))   // probably on a different drive, but clearly there's nothing relative about it
     {
@@ -310,3 +308,5 @@ bool ttIsValidFileChar(const char* psz, size_t pos)
     }
     return false;
 }
+
+#endif    // defined(_WIN32)

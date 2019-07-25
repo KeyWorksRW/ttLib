@@ -10,42 +10,21 @@
 
 #include "pch.h"        // precompiled header
 
-#ifndef _WINDOWS_
-    #error This code will only work on Windows
-#endif
+#if defined(_WIN32)
 
 #include "../include/ttcritsection.h"   // CCritSection, CCritLock
 #include "../include/ttstr.h"       // ttCStr
 #include "../include/ttdebug.h"         // ttASSERT macros
 
 namespace tt {
-    const char* pszMsgTitle;
-    HWND        hwndMsgBoxParent;
     HINSTANCE   hinstResources;     // Used to determine where to load resources from. If nullptr, it will us
-    size_t      LanguageOffset;     // language offset used to load other languages from .rc file
 }
 
-void ttInitCaller(HINSTANCE hinstRes, HWND hwnd, const char* pszTitle)
+void ttInitCaller(HINSTANCE hinstRes, HWND /* hwnd */, const char* pszTitle)
 {
-    tt::pszMsgTitle = ttStrDup(pszTitle ? pszTitle : "");
+    ttInitCaller(pszTitle);
 
-    tt::hinstResources = hinstRes;
-    tt::hwndMsgBoxParent = hwnd;
-}
-
-void ttInitCaller(const char* pszTitle)
-{
-#if defined(_WIN32)
-    tt::hinstResources = GetModuleHandle(NULL);
-#endif
-     ttSetMsgBoxTitle(pszTitle);
-}
-
-void ttSetMsgBoxTitle(const char* pszTitle)
-{
-    if (tt::pszMsgTitle)
-        ttFree((void*) tt::pszMsgTitle);
-    tt::pszMsgTitle = ttStrDup(pszTitle ? pszTitle : "");
+    tt::hinstResources = hinstRes;  // in the off chance it's different
 }
 
 // Note that these message boxes will work in a console app as well as a windowed app
@@ -93,7 +72,7 @@ HFONT ttCreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold, bool fIta
     SetMapMode(hdc, MM_TEXT);
 
     LOGFONTA lf;
-    ZeroMemory(&lf, sizeof(LOGFONT));
+    ZeroMemory(&lf, sizeof(LOGFONTA));
 
     int ratio = MulDiv(GetDeviceCaps(hdc, LOGPIXELSY), 100, 72);
     lf.lfHeight = MulDiv((int) cPt, ratio, 100);
@@ -158,7 +137,7 @@ ptrdiff_t ttCompareFileTime(FILETIME* pftSrc, FILETIME* pftDst)
 
 const char* ttLoadTxtResource(int idRes, uint32_t* pcbFile, HINSTANCE hinst)
 {
-    HRSRC hrsrc  = FindResource(hinst, MAKEINTRESOURCE(idRes), RT_RCDATA);
+    HRSRC hrsrc  = FindResourceA(hinst, MAKEINTRESOURCEA(idRes), (char*) RT_RCDATA);
     if (!hrsrc)
         return nullptr;
 
@@ -171,46 +150,20 @@ const char* ttLoadTxtResource(int idRes, uint32_t* pcbFile, HINSTANCE hinst)
     return (const char*) LockResource(hglb);    // This doesn't actually lock anything, it simply returns a pointer to the data
 }
 
-/*
-
-    Multiple language strings can be stored in the .rc file, and a language offset can be used to display them. For example:
-
-    Header file:
-
-        #define FRENCH_S_OFFSET 4096
-
-        #define IDS_ENG_HELLO   1024
-        #define IDS_FRN_HELLO   IDS_ENG_HELLO + FRENCH_S_OFFSET
-
-    Resource file:
-
-        IDS_ENG_HELLO "Hello"
-        IDS_FRN_HELLO "Bonjour"
-
-*/
-
 const char* ttGetResString(size_t idString)
 {
     static char szStringBuf[1024];
 
-    if (LoadStringA(tt::hinstResources, (UINT) (idString + tt::LanguageOffset), szStringBuf, (int) sizeof(szStringBuf)) == 0)
+    if (LoadStringA(tt::hinstResources, (UINT) idString, szStringBuf, (int) sizeof(szStringBuf)) == 0)
     {
-        // Is the English resource available?
-        if (tt::LanguageOffset && LoadStringA(tt::hinstResources, (UINT) idString, szStringBuf, sizeof(szStringBuf)) != 0)
-        {
 #ifdef _DEBUG
-            ttCStr strMsg;
-            strMsg.printf("Non-localized resource id: %zu", idString);
-            ttFAIL(strMsg);
-#endif
-            return (const char*) szStringBuf;
-        }
-#ifdef _DEBUG
-        ttCStr strMsg;
-        strMsg.printf("Invalid string id: %zu", idString);
-        ttFAIL(strMsg);
+        ttCStr cszMsg;
+        cszMsg.printf("Invalid string id: %u", (UINT) idString);
+        ttFAIL(cszMsg);
 #endif
         szStringBuf[0] = '\0';
     }
     return (const char*) szStringBuf;
 }
+
+#endif    // defined(_WIN32)

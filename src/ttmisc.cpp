@@ -8,8 +8,18 @@
 
 #include "pch.h"
 
-#include "../include/ttdebug.h"     // for ttASSERTS
+#include "../include/ttdebug.h" // for ttASSERTS
 #include "../include/ttstr.h"   // ttCStr
+#include "../include/ttwstr.h"  // ttCWStr
+
+#if defined(_WX_DEFS_H_)
+    #include <wx/msgdlg.h>          // wxMessageBox
+#endif
+
+namespace tt {
+    const char*    pszMsgTitle;  // utf8  title for message boxes
+    const wchar_t* pwszMsgTitle; // utf16 title for message boxes
+}
 
 size_t ttHashFromSz(const char* psz)
 {
@@ -20,18 +30,11 @@ size_t ttHashFromSz(const char* psz)
 
     // djb2 hash algorithm
 
-#if 1   // this is a djb2 hash algorithm
     size_t hash = 5381;
 
     while (*psz)
         hash = ((hash << 5) + hash) ^ (size_t) *psz++;
 
-#else   // sdbm hash algorithm
-    size_t hash = 0;
-
-    while (*psz)
-        hash = (size_t) *psz++ + (hash << 6) + (hash << 16) - hash;
-#endif
     return hash;
 }
 
@@ -66,4 +69,53 @@ size_t ttHashFromURL(const wchar_t* pszURL)
     ttBackslashToForwardslash(csz);
     csz.MakeLower();
     return ttHashFromSz(csz);
+}
+
+void ttInitCaller(const char* pszTitle)
+{
+#if defined(_WIN32)
+    tt::hinstResources = GetModuleHandle(NULL);
+#endif
+     ttSetMsgBoxTitle(pszTitle);
+}
+
+void ttSetMsgBoxTitle(const char* pszTitle)
+{
+    if (tt::pszMsgTitle)
+        ttFree((void*) tt::pszMsgTitle);
+    tt::pszMsgTitle = ttStrDup(pszTitle ? pszTitle : "");
+
+    if (tt::pwszMsgTitle)
+        ttFree((void*) tt::pwszMsgTitle);
+    if (!pszTitle)
+        tt::pwszMsgTitle = ttStrDup(L"");
+    else {
+        ttCWStr cwsz(pszTitle);
+        tt::pwszMsgTitle = ttStrDup((wchar_t*) cwsz);
+    }
+}
+
+#ifndef _INC_STDLIB
+    __declspec(noreturn) void __cdecl exit(int _Code);
+#endif
+
+__declspec(noreturn) void ttOOM(void)
+{
+#if defined(_DEBUG)
+#if defined(_WIN32)
+    int answer = MessageBoxA(GetActiveWindow(), "Out of Memory!!!", "Do you want to call DebugBreak()?", MB_YESNO | MB_ICONERROR);
+
+    if (answer == IDYES)
+        DebugBreak();
+#else
+    int answer = wxMessageBox("Do you want to call DebugBreak()?", "Out of Memory!!!", wxYES_NO | wxICON_ERROR);
+    if (answer == wxYES)
+        wxTrap();
+#endif
+#endif  // _DEBUG
+
+    // The advantage of exit() is functions registered by atexit() will be called, which might include deleting temporary
+    // files, or other data that might otherwise persist after the program is exited.
+
+    exit(-1);
 }

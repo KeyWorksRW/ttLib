@@ -1,17 +1,14 @@
 Options:
-    Project:     ttLibA       # project target name
-    PCH:         pch.h        # precompiled header
-    optimize:    space        # speed or space (default)
+    Project:     ttLib        # project target name
     exe_type:    lib          # [window | console | lib | dll]
+    PCH:         pch.h        # precompiled header
 
     64Bit:       true         # create 64-bit project as well as 32-bit project
-    TargetDir64: ../lib       # 64-bit target directory
+    TargetDir64: ../lib64       # 64-bit target directory
     32Bit:       true         # if true, build 32-bit target
-    TargetDir32: ../lib       # 32-bit target directory
+    TargetDir32: ../lib32       # 32-bit target directory
 
 Files:
-    pch.cpp
-
     ttfiledir.cpp       # file and directory handling
     ttmisc.cpp          # miscellaneous functions
     ttstrfuncs.cpp      # string handling and ttStr class
@@ -29,7 +26,7 @@ Files:
     ttwstr.cpp          # ttCWStr class
     ttxml.cpp           # ttCParseXML class
 
-# _WINDOWS_ only files
+# Windows only files
 
     ttdib.cpp           # ttCDib class
     ttdlg.cpp           # ttCDlg class

@@ -15,9 +15,7 @@
 
 #pragma once
 
-#ifndef _WINDOWS_
-    #error This code will only work on Windows
-#endif
+#if defined(_WIN32)
 
 // REVIEW: [randalphwa - 1/10/2019] This is a bug waiting to happen. Handles in Windows are FreeAllocd with DeleteObject().
 // HDIB looks like a GDI Object, and if it really was, it would be handed to DeleteObject(). A HANDLE in Windows is a
@@ -77,3 +75,5 @@ protected:
     DWORD m_LineWidth;
     WORD  m_nColors;
 };
+
+#endif    // defined(_WIN32)

@@ -11,9 +11,7 @@
 #ifndef __TTLIB_FINDFILE_H__
 #define __TTLIB_FINDFILE_H__
 
-#ifndef _WINDOWS_
-    #error ttCFindFile can only be used when compiling for Windows.
-#endif
+#if defined(_WIN32)
 
 /*
         Example usage:
@@ -97,4 +95,5 @@ protected:
     HANDLE m_hfind;
 };
 
-#endif  // __TTLIB_FINDFILE_H__
+#endif    // defined(_WIN32)
+#endif    // __TTLIB_FINDFILE_H__
