@@ -45,6 +45,16 @@ void ttCWStr::AppendFileName(const wchar_t* pszFile)
     *this += pszFile;
 }
 
+wchar_t* ttCWStr::FindExt() const
+{
+    wchar_t* psz = ttStrChrR(m_psz, '.');
+    if (!psz)
+        return nullptr;
+    if (psz == m_psz || *(psz - 1) == L'.' || psz[1] == L'\\' || psz[1] == L'/')   // ignore .file, ./file, and ../file
+        return nullptr;
+    return psz;
+}
+
 void ttCWStr::ChangeExtension(const wchar_t* pszExtension)
 {
     ttASSERT_NONEMPTY(pszExtension);
