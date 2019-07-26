@@ -17,9 +17,9 @@
         Example usage:
 
         ttCFindFile ff("*.*");
-        if (ff.isValid()) {
+        if (ff.IsValid()) {
             do {
-                if (ff.isDir())
+                if (ff.IsDir())
                     printf("Found the directory  %s\n", (const char*) ff);
                 else
                     printf("Found the file %s\n", (const char*) ff);
