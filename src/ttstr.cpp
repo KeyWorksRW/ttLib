@@ -67,6 +67,8 @@ void ttCStr::ChangeExtension(const char* pszExtension)
 char* ttCStr::FindExt() const
 {
     char* psz = ttStrChrR(m_psz, '.');
+    if (!psz)
+        return nullptr;
     if (psz == m_psz || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/')   // ignore .file, ./file, and ../file
         return nullptr;
     return psz;

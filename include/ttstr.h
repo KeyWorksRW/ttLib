@@ -60,7 +60,8 @@ public:
 
     // Method naming conventions are lower camel case when matching tt:: namespace functions
 
-    char*   FindExt(const char* pszExt) { return (char*) ttFindExt(m_psz, pszExt); }    // find filename extension
+    char*   FindExt(const char* pszExt) { return (char*) ttFindExt(m_psz, pszExt); } // find a specific filename extension
+    char*   FindExt() const;                                                         // find any extension
     char*   FindStr(const char* psz) { return ttStrStr(m_psz, psz); }
     char*   FindStrI(const char* psz) { return ttStrStrI(m_psz, psz); }
     char*   FindChar(char ch) { return ttStrChr(m_psz, ch); }
@@ -106,7 +107,6 @@ public:
     void    RemoveExtension();
 
     char*   FindLastSlash();    // Handles any mix of '\' and '/' in the filename
-    char*   FindExt() const;    // will return nullptr if no extension
 
     void FullPathName();
 #if defined(_WIN32)
