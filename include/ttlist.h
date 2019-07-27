@@ -33,7 +33,7 @@ public:
 
     // SetFlags() will not change any previously added strings
 
-    void SetFlags(size_t flags);    // any combination of FLG_PREVENT_DUPLICATES | FLG_IGNORE_CASE | FLG_URL_STRINGS
+    void SetFlags(size_t flags);    // any combination of FLG_ADD_DUPLICATES | FLG_IGNORE_CASE | FLG_URL_STRINGS
     void AllowDuplicates() { SetFlags(FLG_ADD_DUPLICATES); }
 
     size_t  Add(const char* psz);
