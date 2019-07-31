@@ -662,3 +662,21 @@ char* ttCStr::GetQuotedString(const char* pszQuote)
             return GetString(pszQuote, '[', ']');
     }
 }
+
+bool ttCStr::GetEnv(const char* pszName)
+{
+    ttASSERT_NONEMPTY(pszName);
+
+    size_t cbEnv = 0;
+    if (getenv_s(&cbEnv, nullptr, 0, pszName) == 0 && cbEnv > 0 && cbEnv < (8 * 1024))     // an environment variable larger then 8k is almost certainly bogus and a security risk to use
+    {
+        ReSize(cbEnv + 1);
+        if (getenv_s(&cbEnv, m_psz, cbEnv, pszName) == 0)
+        {
+            TrimRight();
+            return true;
+        }
+    }
+
+    return false;
+}

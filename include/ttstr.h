@@ -132,6 +132,8 @@ public:
     void    MakeLower();
     void    MakeUpper();
 
+    bool    GetEnv(const char* pszName);    // makes a copy of the specified environment variable
+
     // if the first non whitespace character in pszString == chBegin, get everthing between chBegin and chEnd, otherwise get everything after the whitespace
 
     char*   GetString(const char* pszString, char chBegin, char chEnd);
