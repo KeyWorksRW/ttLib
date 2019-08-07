@@ -1,22 +1,24 @@
 # Directories to ignore
+bin/
 bin32/
 bin64/
+lib/
 lib32/
-lib64
+lib64/
+bld/
 build/
-bldMSW/
-bldMAC/
-bldUNIX/
 
+.private/
 archive/
 backup/
-.private/
 
-# General file extensions to ignore
+# File extensions to ignore
 *.backup
 *.bak
 *.bat
 *.btm
+*.chm
+*.cmd
 *.db
 *.dll
 *.exe
@@ -25,7 +27,6 @@ backup/
 *.ilk
 *.ini
 *.lib
-*.ninja
 *.obj
 *.ocx
 *.opendb
@@ -57,59 +58,101 @@ backup/
 *.sublime-project
 *.sublime-workspace
 
-# Visual Studio files and folders
-# Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
-.vs/
-Backup*/
-_UpgradeReport_Files/
-ipch/
-
-*.VC.VC.opendb
-*.VC.db
-*.aps
-*.cachefile
-*.coverage
-*.coveragexml
-*.filters
-*_h.h
-*_i.c
-*.iobj
-*.ipdb
-*.log
-*.meta
-*.ncb
-*.opensdf
-*.opt
-*_p.c
-*.pgc
-*.pgd
-*.plg
-*.psess
-*.rsp
-*.sap
-*.sbr
-*.scc
-*.sdf
-*.sln
-*.sln.docstates
-*.sln.docstates
-*.suo
-*.svclog
-*.tlb
-*.tlh
-*.tli
-*.tmp
-*.tmp_proj
-*.user
-*.userosscache
-*.vbw
-*.vcproj
-*.vcxproj
-*.vsp
-*.vspscc
-*.vspx
-*.vssscc
-
 # VSCode files
 .vscode/
 *.code-workspace
+
+# Visual Studio files and folders
+# Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.sln
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# Visual Studio 2015/2017 cache/options directory
+.vs/
+
+# Build Results of an ATL Project
+[Dd]ebugPS/
+[Rr]eleasePS/
+dlldata.c
+
+# Files built by Visual Studio
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.meta
+*.obj
+*.iobj
+*.pch
+*.pdb
+*.ipdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*_wpftmp.csproj
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+# Visual C++ cache files
+ipch/
+*.aps
+*.ncb
+*.opendb
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db
+*.VC.VC.opendb
+
+# Visual Studio profiler
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+# Visual Studio Trace Files
+*.e2e
+
+# Visual Studio code coverage results
+*.coverage
+*.coveragexml
+
+# Visual Studio cache files
+# files ending in .cache can be ignored
+*.[Cc]ache
+# but keep track of directories ending in .cache
+!?*.[Cc]ache/
+
+# MSBuild Binary and Structured Log
+*.binlog
