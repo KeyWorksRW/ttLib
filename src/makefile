@@ -39,18 +39,9 @@ bits=64 # \
 cmplr=msvc # \
 !endif #\
 #\
-!ifdef private # \
-bdir=.private/build # \
+bdir=bld # \
 BldScript=$(bdir)/$(cmplr)Build$(bits).ninja # \
 BldScriptD=$(bdir)/$(cmplr)Build$(bits)D.ninja # \
-bldninja=MakeNinja -privBuild #\
-!else # \
-bdir=build # \
-BldScript=$(bdir)/$(cmplr)Build$(bits).ninja # \
-BldScriptD=$(bdir)/$(cmplr)Build$(bits)D.ninja # \
-bldninja= #\
-!endif # \
-
 # \
 !else
 ######### Following section is for GNU make and variants #########
@@ -71,17 +62,9 @@ ifndef cmplr
     cmplr=clang
 endif
 
-ifdef private
-    bdir=.private/build
-    BldScript=$(bdir)/$(cmplr)Build$(bits).ninja
-    BldScriptD=$(bdir)/$(cmplr)Build$(bits)D.ninja
-    bldninja=MakeNinja -privBuild
-else
-    bdir=build
-    BldScript=$(bdir)/$(cmplr)Build$(bits).ninja
-    BldScriptD=$(bdir)/$(cmplr)Build$(bits)D.ninja
-    bldninja=
-endif
+bdir=bld
+BldScript=$(bdir)/$(cmplr)Build$(bits).ninja
+BldScriptD=$(bdir)/$(cmplr)Build$(bits)D.ninja
 
 # \
 !endif
@@ -90,20 +73,12 @@ endif
 
 release: $(BldScript) ttLib
 
-# This command will only be run if private=1 is set on the command line
-$(BldScript): .srcfiles
-	$(bldninja)
-
 ttLib:
 	ninja -f $(BldScript)
 
 ########## debug section ##########
 
 debug: $(BldScriptD) ttLibD
-
-# This command will only be run if private=1 is set on the command line
-$(BldScriptD): .srcfiles
-	$(bldninja)
 
 ttLibD:
 	ninja -f $(BldScriptD)
@@ -115,27 +90,35 @@ locale:
 
 ########## clean release section ##########
 
-clean:
+clean: $(BldScript)
 	ninja -f $(BldScript) -t clean
 
 ########## clean debug section ##########
 
-cleanD:
+cleanD: $(BldScriptD)
 	ninja -f $(BldScriptD) -t clean
 
 ########## special ninja diagnostics ##########
 
-commandsD:
+commandsD: $(BldScriptD)
 	ninja -f $(BldScriptD) -t commands
 
-commandsR:
+commandsR: $(BldScript)
 	ninja -f $(BldScript) -t commands
 
-targetsD:
+targetsD: $(BldScriptD)
 	ninja -f $(BldScriptD) -t targets depth 2
 
-targetsR:
+targetsR: $(BldScript)
 	ninja -f $(BldScript) -t targets depth 2
 
-deps:
+deps: $(BldScript)
 	ninja -f $(BldScript) -t deps
+
+########## Creates or updates ninja file if needed ##########
+
+$(BldScript): .srcfiles.yaml
+	ttBld.exe -u$(cmplr)$(bits)
+
+$(BldScriptD): .srcfiles.yaml
+	ttBld.exe -u$(cmplr)$(bits)D
