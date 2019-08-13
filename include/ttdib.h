@@ -32,48 +32,48 @@ public:
 
     // Class functions
 
-    void     BlendPalette(COLORREF cr,long perc);
-    void     Clear(BYTE bval=0);
-    void     Clone(ttCDib *src);
+    void     BlendPalette(COLORREF cr, long perc);
+    void     Clear(BYTE bval = 0);
+    void     Clone(ttCDib* src);
     HDIB     Create(DWORD dwWidth, DWORD dwHeight, WORD wBitCount);
     long     Draw(HDC pDC, long xoffset, long yoffset);
-    WORD     GetBitCount() {return m_bi.biBitCount;};
+    WORD     GetBitCount() { return m_bi.biBitCount; };
     BYTE*    GetBits();
-    DWORD    GetHeight() {return m_bi.biHeight;};
-    DWORD    GetLineWidth() {return m_LineWidth;};
+    DWORD    GetHeight() { return m_bi.biHeight; };
+    DWORD    GetLineWidth() { return m_LineWidth; };
     BYTE     GetNearestIndex(RGBQUAD c);
-    WORD     GetNumColors() {return m_nColors;};
+    WORD     GetNumColors() { return m_nColors; };
     RGBQUAD  GetPaletteIndex(BYTE idx);
     WORD     GetPaletteSize();
-    RGBQUAD  GetPixelColor(long x,long y);
-    BYTE     GetPixelIndex(long x,long y);
+    RGBQUAD  GetPixelColor(long x, long y);
+    BYTE     GetPixelIndex(long x, long y);
     long     GetSize();
-    DWORD    GetWidth() {return m_bi.biWidth;};
+    DWORD    GetWidth() { return m_bi.biWidth; };
     RGBQUAD  HSLtoRGB(COLORREF cHSLColor);
     RGBQUAD  HSLtoRGB(RGBQUAD lHSLColor);
     bool     IsValid() { return (hDib != NULL); }
     RGBQUAD  RGB2RGBQUAD(COLORREF cr);
-    COLORREF RGBQUAD2RGB (RGBQUAD c);
+    COLORREF RGBQUAD2RGB(RGBQUAD c);
     RGBQUAD  RGBtoHSL(RGBQUAD lRGBColor);
     void     SetGrayPalette();
     void     SetPaletteIndex(BYTE idx, BYTE r, BYTE g, BYTE b);
     void     SetPaletteIndex(BYTE idx, COLORREF cr);
     void     SetPaletteIndex(BYTE idx, RGBQUAD c);
-    void     SetPixelColor(long x,long y,COLORREF cr);
-    void     SetPixelColor(long x,long y,RGBQUAD c);
-    void     SetPixelIndex(long x,long y,BYTE i);
+    void     SetPixelColor(long x, long y, COLORREF cr);
+    void     SetPixelColor(long x, long y, RGBQUAD c);
+    void     SetPixelIndex(long x, long y, BYTE i);
     long     Stretch(HDC pDC, long xoffset, long yoffset, long xsize, long ysize);
 
 protected:
     bool IsWin30Dib();
-    WORD HueToRGB(WORD n1,WORD n2,WORD hue);
+    WORD HueToRGB(WORD n1, WORD n2, WORD hue);
 
     // Class members
 
-    HDIB hDib;
+    HDIB             hDib;
     BITMAPINFOHEADER m_bi;
-    DWORD m_LineWidth;
-    WORD  m_nColors;
+    DWORD            m_LineWidth;
+    WORD             m_nColors;
 };
 
-#endif    // defined(_WIN32)
+#endif  // defined(_WIN32)

@@ -63,7 +63,7 @@ HWND ttCDlg::DoModeless(HWND hwndParent)
 
 INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    if (msg == WM_INITDIALOG) // this is the only time that pThis will be NULL
+    if (msg == WM_INITDIALOG)  // this is the only time that pThis will be NULL
     {
         SetWindowLongPtrA(hdlg, DWLP_USER, (LONG_PTR) lParam);
         ttCDlg* pThis = (ttCDlg*) lParam;
@@ -86,7 +86,8 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
     if (!pThis)
         return FALSE;
 
-    if (msg == WM_DESTROY) {
+    if (msg == WM_DESTROY)
+    {
         if (pThis->m_pShadedBtns)
         {
             delete pThis->m_pShadedBtns;
@@ -100,7 +101,7 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 #endif
     }
 
-    LRESULT lResult = 0;    // This is passed by reference to OnCmdCaseMap
+    LRESULT lResult = 0;  // This is passed by reference to OnCmdCaseMap
     if (msg == WM_COMMAND && pThis->OnCmdCaseMap((int) LOWORD(wParam), (int) HIWORD(wParam), lResult))
         return lResult;
 
@@ -110,31 +111,31 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
     switch (msg)
     {
         case WM_COMMAND:
+        {
+            switch (LOWORD(wParam))
             {
-                switch (LOWORD(wParam))
-                {
-                    case IDOK:
-                        pThis->m_bInitializing = false;
-                        pThis->OnOK();
-                        if (pThis->m_bCancelEnd)
-                            pThis->m_bCancelEnd = false;
-                        else
-                            pThis->CloseDialog(IDOK);   // do NOT call EndDialog--it will fail if this is a modeless dialog
-                        break;
+                case IDOK:
+                    pThis->m_bInitializing = false;
+                    pThis->OnOK();
+                    if (pThis->m_bCancelEnd)
+                        pThis->m_bCancelEnd = false;
+                    else
+                        pThis->CloseDialog(IDOK);  // do NOT call EndDialog--it will fail if this is a modeless dialog
+                    break;
 
-                    case IDCANCEL:
-                        pThis->OnCancel();
-                        if (pThis->m_bCancelEnd)
-                            pThis->m_bCancelEnd = false;
-                        else
-                            pThis->CloseDialog(IDCANCEL);
-                        break;
+                case IDCANCEL:
+                    pThis->OnCancel();
+                    if (pThis->m_bCancelEnd)
+                        pThis->m_bCancelEnd = false;
+                    else
+                        pThis->CloseDialog(IDCANCEL);
+                    break;
 
-                    default:
-                        break;
-                }
+                default:
+                    break;
             }
-            break;
+        }
+        break;
     }
 
     return 0;
@@ -200,11 +201,11 @@ void ttCDlg::CenterWindow(bool bCenterOnDesktop)
         SystemParametersInfo(SPI_GETWORKAREA, 0, &rc, 0);
 
     int left = rc.left + (ttRC_WIDTH(rc) - cx) / 2;
-    int top  = rc.top + (ttRC_HEIGHT(rc) - cy) / 2;
+    int top = rc.top + (ttRC_HEIGHT(rc) - cy) / 2;
 
     // Make certain the dialog doesn't spawn between two monitors
 
-    RECT rcDesktop;
+    RECT     rcDesktop;
     HMONITOR hmon = ttKeyMonitorFromWindow(*this, MONITOR_DEFAULTTOPRIMARY);
     if (hmon)
     {
@@ -214,11 +215,13 @@ void ttCDlg::CenterWindow(bool bCenterOnDesktop)
         {
             CopyRect(&rcDesktop, &mi.rcWork);
         }
-        else {
+        else
+        {
             SystemParametersInfo(SPI_GETWORKAREA, 0, &rcDesktop, 0);
         }
     }
-    else {
+    else
+    {
         SystemParametersInfo(SPI_GETWORKAREA, 0, &rcDesktop, 0);
     }
 
@@ -243,13 +246,13 @@ LRESULT ttCListView::AddString(const char* psz, LPARAM lParam)
     ZeroMemory(&lvi, sizeof(lvi));
     lvi.mask = LVIF_TEXT;
     lvi.pszText = (char*) psz;
-    lvi.iItem = 0x7fffffff;     // ensure the item is appended
+    lvi.iItem = 0x7fffffff;  // ensure the item is appended
     if (lParam != -1)
     {
         lvi.mask |= LVIF_PARAM;
         lvi.lParam = lParam;
     }
-    return (LRESULT) ::SendMessageA(m_hwnd, LVM_INSERTITEMA, 0, (LPARAM) &lvi);
+    return (LRESULT)::SendMessageA(m_hwnd, LVM_INSERTITEMA, 0, (LPARAM) &lvi);
 }
 
 LRESULT ttCListView::AddString(const wchar_t* pwsz, LPARAM lParam)
@@ -267,7 +270,7 @@ LRESULT ttCListView::AddString(const wchar_t* pwsz, LPARAM lParam)
         lvi.mask |= LVIF_PARAM;
         lvi.lParam = lParam;
     }
-    return (LRESULT) ::SendMessageW(m_hwnd, LVM_INSERTITEMW, 0, (LPARAM) &lvi);
+    return (LRESULT)::SendMessageW(m_hwnd, LVM_INSERTITEMW, 0, (LPARAM) &lvi);
 }
 
 BOOL ttCListView::AddSubString(int iItem, int iSubItem, const char* psz)
@@ -281,7 +284,7 @@ BOOL ttCListView::AddSubString(int iItem, int iSubItem, const char* psz)
     lvi.pszText = (char*) psz;
     lvi.iItem = iItem;
     lvi.iSubItem = iSubItem;
-    return (BOOL) ::SendMessageA(m_hwnd, LVM_SETITEMA, 0, (LPARAM) &lvi);
+    return (BOOL)::SendMessageA(m_hwnd, LVM_SETITEMA, 0, (LPARAM) &lvi);
 }
 
 BOOL ttCListView::AddSubString(int iItem, int iSubItem, const wchar_t* pwsz)
@@ -295,7 +298,7 @@ BOOL ttCListView::AddSubString(int iItem, int iSubItem, const wchar_t* pwsz)
     lvi.pszText = (wchar_t*) pwsz;
     lvi.iItem = iItem;
     lvi.iSubItem = iSubItem;
-    return (BOOL) ::SendMessageW(m_hwnd, LVM_SETITEMW, 0, (LPARAM) &lvi);
+    return (BOOL)::SendMessageW(m_hwnd, LVM_SETITEMW, 0, (LPARAM) &lvi);
 }
 
 void ttCListView::InsertColumn(int iColumn, const char* pszText, int width)
@@ -345,16 +348,16 @@ LRESULT ttCListView::SetCurSel(const char* pszItem)
 
 ///////////////////// Monitor Code /////////////////////////////////////////
 
-static HMONITOR (WINAPI* s_pfnMonitorFromWindow)(HWND, DWORD);
-static HMONITOR (WINAPI* s_pfnMonitorFromPoint)(POINT, DWORD);
-static BOOL     (WINAPI* s_pfnGetMonitorInfo)(HMONITOR, LPMONITORINFO);
+static HMONITOR(WINAPI* s_pfnMonitorFromWindow)(HWND, DWORD);
+static HMONITOR(WINAPI* s_pfnMonitorFromPoint)(POINT, DWORD);
+static BOOL(WINAPI* s_pfnGetMonitorInfo)(HMONITOR, LPMONITORINFO);
 
 #ifndef xPRIMARY_MONITOR
-#define xPRIMARY_MONITOR ((HMONITOR)0x12340042)
+#define xPRIMARY_MONITOR ((HMONITOR) 0x12340042)
 #endif
 
 #ifndef MONITORINFOF_PRIMARY
-#define MONITORINFOF_PRIMARY        0x00000001
+#define MONITORINFOF_PRIMARY 0x00000001
 #endif
 
 static bool InitMonitorStubs()
@@ -367,9 +370,9 @@ static bool InitMonitorStubs()
     HMODULE hUser32 = GetModuleHandle(TEXT("USER32"));
 
     if (hUser32 &&
-            (*(FARPROC*) &s_pfnMonitorFromWindow   = GetProcAddress(hUser32, "MonitorFromWindow")) != NULL &&
-            (*(FARPROC*) &s_pfnMonitorFromPoint    = GetProcAddress(hUser32, "MonitorFromPoint")) != NULL &&
-            (*(FARPROC*) &s_pfnGetMonitorInfo      = GetProcAddress(hUser32, "GetMonitorInfoA")) != NULL)
+        (*(FARPROC*) & s_pfnMonitorFromWindow = GetProcAddress(hUser32, "MonitorFromWindow")) != NULL &&
+        (*(FARPROC*) & s_pfnMonitorFromPoint = GetProcAddress(hUser32, "MonitorFromPoint")) != NULL &&
+        (*(FARPROC*) & s_pfnGetMonitorInfo = GetProcAddress(hUser32, "GetMonitorInfoA")) != NULL)
         return true;
 
     return false;
@@ -397,15 +400,16 @@ static BOOL ttKeyMonitorFromPoint(HMONITOR hMonitor, LPMONITORINFO lpmi)
 {
     if (InitMonitorStubs())
         return s_pfnGetMonitorInfo(hMonitor, lpmi);
-    else {
+    else
+    {
         SystemParametersInfo(SPI_GETWORKAREA, 0, &lpmi->rcWork, 0);
         lpmi->rcMonitor.left = 0;
-        lpmi->rcMonitor.top  = 0;
-        lpmi->rcMonitor.right  = GetSystemMetrics(SM_CXSCREEN);
+        lpmi->rcMonitor.top = 0;
+        lpmi->rcMonitor.right = GetSystemMetrics(SM_CXSCREEN);
         lpmi->rcMonitor.bottom = GetSystemMetrics(SM_CYSCREEN);
         lpmi->dwFlags = MONITORINFOF_PRIMARY;
         return TRUE;
     }
 }
 
-#endif    // defined(_WIN32)
+#endif  // defined(_WIN32)

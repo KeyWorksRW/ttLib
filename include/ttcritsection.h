@@ -18,11 +18,13 @@ class ttCCritSection
 public:
 #if defined(_WIN32)
 
-    ttCCritSection()    {
+    ttCCritSection()
+    {
         memset(&m_cs, 0, sizeof(CRITICAL_SECTION));
         InitializeCriticalSection(&m_cs);
     };
-    ~ttCCritSection() {
+    ~ttCCritSection()
+    {
         DeleteCriticalSection(&m_cs);
     };
 
@@ -32,18 +34,17 @@ public:
     // Class functions
 
 private:
-
     // Class members
 
     CRITICAL_SECTION m_cs;
 
-#else    // not defined(_WIN32)
+#else   // not defined(_WIN32)
     wxCriticalSection m_cs;
 
     void Lock() { m_cs.Enter(); }
     void Unlock() { m_cs.Leave(); }
-#endif    // defined(_WIN32)
-}; // end ttCCritSection
+#endif  // defined(_WIN32)
+};      // end ttCCritSection
 
 /*
     Designed to keep a Critical Section locked until the destructor is called
@@ -63,19 +64,23 @@ private:
 class ttCCritLock
 {
 public:
-    ttCCritLock(ttCCritSection* pcs) {
-        if (!pcs) {
+    ttCCritLock(ttCCritSection* pcs)
+    {
+        if (!pcs)
+        {
             m_pcs = nullptr;
             return;
         }
         m_pcs = pcs;
         pcs->Lock();
     }
-    ~ttCCritLock() {
+    ~ttCCritLock()
+    {
         if (m_pcs)
             m_pcs->Unlock();
     }
-    void Unlock() {
+    void Unlock()
+    {
         if (!m_pcs)
             return;
         m_pcs->Unlock();

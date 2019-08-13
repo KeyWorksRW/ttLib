@@ -8,16 +8,17 @@
 
 // All the functions in this module will ONLY work on a Windows OS
 
-#include "pch.h"        // precompiled header
+#include "pch.h"  // precompiled header
 
 #if defined(_WIN32)
 
-#include "../include/ttcritsection.h"   // CCritSection, CCritLock
-#include "../include/ttstr.h"       // ttCStr
-#include "../include/ttdebug.h"         // ttASSERT macros
+#include "../include/ttcritsection.h"  // CCritSection, CCritLock
+#include "../include/ttstr.h"          // ttCStr
+#include "../include/ttdebug.h"        // ttASSERT macros
 
-namespace tt {
-    HINSTANCE   hinstResources;     // Used to determine where to load resources from. If nullptr, it will us
+namespace tt
+{
+    HINSTANCE hinstResources;  // Used to determine where to load resources from. If nullptr, it will us
 }
 
 void ttInitCaller(HINSTANCE hinstRes, HWND /* hwnd */, const char* pszTitle)
@@ -43,7 +44,7 @@ int ttMsgBox(UINT idResource, UINT uType)
 
 int __cdecl ttMsgBoxFmt(const char* pszFormat, UINT uType, ...)
 {
-    ttCStr csz;
+    ttCStr  csz;
     va_list argList;
     va_start(argList, uType);
     ttVPrintf(csz.GetPPtr(), pszFormat, argList);
@@ -57,7 +58,7 @@ int __cdecl ttMsgBoxFmt(int idResource, UINT uType, ...)
     ttCStr cszTmp;
     cszTmp.GetResString(idResource);
 
-    ttCStr csz;
+    ttCStr  csz;
     va_list argList;
     va_start(argList, uType);
     ttVPrintf(csz.GetPPtr(), cszTmp, argList);
@@ -132,12 +133,12 @@ ptrdiff_t ttCompareFileTime(FILETIME* pftSrc, FILETIME* pftDst)
     else if (diff > 2)
         return 1;
 
-    return 0;   // Note that we do NOT check milliseconds
+    return 0;  // Note that we do NOT check milliseconds
 }
 
 const char* ttLoadTxtResource(int idRes, uint32_t* pcbFile, HINSTANCE hinst)
 {
-    HRSRC hrsrc  = FindResourceA(hinst, MAKEINTRESOURCEA(idRes), (char*) RT_RCDATA);
+    HRSRC hrsrc = FindResourceA(hinst, MAKEINTRESOURCEA(idRes), (char*) RT_RCDATA);
     if (!hrsrc)
         return nullptr;
 
@@ -147,7 +148,7 @@ const char* ttLoadTxtResource(int idRes, uint32_t* pcbFile, HINSTANCE hinst)
     HGLOBAL hglb = LoadResource(hinst, hrsrc);
     if (!hglb)
         return nullptr;
-    return (const char*) LockResource(hglb);    // This doesn't actually lock anything, it simply returns a pointer to the data
+    return (const char*) LockResource(hglb);  // This doesn't actually lock anything, it simply returns a pointer to the data
 }
 
 const char* ttGetResString(size_t idString)
@@ -166,4 +167,4 @@ const char* ttGetResString(size_t idString)
     return (const char*) szStringBuf;
 }
 
-#endif    // defined(_WIN32)
+#endif  // defined(_WIN32)

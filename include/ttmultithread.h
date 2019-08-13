@@ -43,25 +43,26 @@ public:
     bool isCancelled() { return m_bCanceled; }  // true if threads are being aborted
     void CancelThreads();
 
-    void InitializeThreads(size_t nThreads = 0);        // 0 means create as many threads as there are CPUs
-    void StartThread(void* pvData1, void* pvData2);     // will not return until an available thread is found
+    void InitializeThreads(size_t nThreads = 0);     // 0 means create as many threads as there are CPUs
+    void StartThread(void* pvData1, void* pvData2);  // will not return until an available thread is found
 
-    size_t GetAvailableThreads();       // returns currently available threads
+    size_t GetAvailableThreads();  // returns currently available threads
 
-    void WaitForThreadsToComplete();    // waits for all threads to finish, then returns
+    void WaitForThreadsToComplete();  // waits for all threads to finish, then returns
 
 protected:
-    size_t  m_cThreads;
+    size_t m_cThreads;
 
     bool m_bEndThreads;
     bool m_bCanceled;
 
-    typedef struct {
+    typedef struct
+    {
         HANDLE hThread;
         HANDLE hsemStart;
         HANDLE hsemDone;
-        void* pvData1;  // additional data passed to the worker thread
-        void* pvData2;  // additional data passed to the worker thread
+        void*  pvData1;  // additional data passed to the worker thread
+        void*  pvData2;  // additional data passed to the worker thread
         bool   bDone;
     } MULTI_THRD_INFO;
 
@@ -69,7 +70,7 @@ protected:
 
     friend DWORD __stdcall _ttMultiThread(void* pv);
     MULTI_THRD_INFO* m_aThrdInfo;
-    HANDLE* m_ahsemDone;
+    HANDLE*          m_ahsemDone;
 };
 
 #endif  // __TTLIB_MULTITHREAD_H__

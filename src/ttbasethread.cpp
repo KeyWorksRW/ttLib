@@ -10,17 +10,17 @@
 
 #include <process.h>
 
-#include "../include/ttbasethread.h"    // ttCBaseThread
-#include "../include/ttdebug.h"         // ttASSERT macros
+#include "../include/ttbasethread.h"  // ttCBaseThread
+#include "../include/ttdebug.h"       // ttASSERT macros
 
-ttCBaseThread::ttCBaseThread ()
+ttCBaseThread::ttCBaseThread()
 {
     m_hthrdWorker = NULL;
     m_bCancelThread = false;
     // m_bOleInitialized = false;
 };
 
-ttCBaseThread::~ttCBaseThread ()
+ttCBaseThread::~ttCBaseThread()
 {
     StopThread();
 };
@@ -29,7 +29,7 @@ void ttCBaseThread::StartThread()
 {
     ttASSERT(m_hthrdWorker == NULL);
     if (m_hthrdWorker)
-        return;     // thread has already been started
+        return;  // thread has already been started
 
     m_hthrdWorker = (HANDLE) _beginthreadex(NULL, 0, ttpriv::_BaseThread, this, 0, NULL);
 }
@@ -73,8 +73,8 @@ unsigned __stdcall ttpriv::_BaseThread(void* pv)
     ttCBaseThread* pThis = (ttCBaseThread*) pv;
     pThis->DoThreadWork();
 
-//    if (pThis->m_bOleInitialized)
-//        ::CoUninitialize();
+    //    if (pThis->m_bOleInitialized)
+    //        ::CoUninitialize();
 
     return 0;
 }

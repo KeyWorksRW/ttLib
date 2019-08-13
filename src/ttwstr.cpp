@@ -8,19 +8,20 @@
 
 #include "pch.h"
 
-#include <direct.h>     // for _getcwd
+#include <direct.h>  // for _getcwd
 
-#include "../include/ttdebug.h"     // for ttASSERTS
+#include "../include/ttdebug.h"  // for ttASSERTS
 #include "../include/ttwstr.h"
-#include "../include/ttstr.h"       // ttCStr
+#include "../include/ttstr.h"  // ttCStr
 
 #ifndef _MAX_U64TOSTR_BASE10_COUNT
-    #define _MAX_U64TOSTR_BASE10_COUNT (20 + 1)
+#define _MAX_U64TOSTR_BASE10_COUNT (20 + 1)
 #endif
 
-using namespace ttch;   // used for the CH_ constants
+using namespace ttch;  // used for the CH_ constants
 
-namespace ttpriv {
+namespace ttpriv
+{
     void AddCommasToNumber(wchar_t* pszNum, wchar_t* pszDst, size_t cbDst);
 }
 
@@ -35,9 +36,9 @@ void ttCWStr::AppendFileName(const wchar_t* pszFile)
     if (!pszFile || !*pszFile)
         return;
 
-    if (!m_psz)                       // no folder or drive to append to, so leave as is without adding slash
+    if (!m_psz)  // no folder or drive to append to, so leave as is without adding slash
     {
-        m_psz = ttStrDup(pszFile);      // REVIEW: [ralphw - 06-03-2018] We could prefix this with ".\"
+        m_psz = ttStrDup(pszFile);  // REVIEW: [ralphw - 06-03-2018] We could prefix this with ".\"
         return;
     }
 
@@ -50,7 +51,7 @@ wchar_t* ttCWStr::FindExt() const
     wchar_t* psz = ttStrChrR(m_psz, '.');
     if (!psz)
         return nullptr;
-    if (psz == m_psz || *(psz - 1) == L'.' || psz[1] == L'\\' || psz[1] == L'/')   // ignore .file, ./file, and ../file
+    if (psz == m_psz || *(psz - 1) == L'.' || psz[1] == L'\\' || psz[1] == L'/')  // ignore .file, ./file, and ../file
         return nullptr;
     return psz;
 }
@@ -66,7 +67,7 @@ void ttCWStr::ChangeExtension(const wchar_t* pszExtension)
         m_psz = ttStrDup(L"");
 
     wchar_t* pszEnd = ttStrChrR(m_psz, L'.');
-    if (pszEnd && pszEnd[1] != CHW_FORWARDSLASH && pszEnd[1] != CHW_BACKSLASH)    // handle "./foo" -- don't assume the leading period is an extension if there's a folder seperator after it
+    if (pszEnd && pszEnd[1] != CHW_FORWARDSLASH && pszEnd[1] != CHW_BACKSLASH)  // handle "./foo" -- don't assume the leading period is an extension if there's a folder seperator after it
         *pszEnd = 0;
 
     if (*pszExtension != L'.')
@@ -76,12 +77,12 @@ void ttCWStr::ChangeExtension(const wchar_t* pszExtension)
 
 void ttCWStr::RemoveExtension()
 {
-     if (m_psz)
-     {
+    if (m_psz)
+    {
         wchar_t* psz = ttStrChrR(m_psz, L'.');
         if (psz)
         {
-            if (psz == m_psz || *(psz - 1) == L'.' || psz[1] == L'\\' || psz[1] == L'/')   // ignore .file, ./file, and ../file
+            if (psz == m_psz || *(psz - 1) == L'.' || psz[1] == L'\\' || psz[1] == L'/')  // ignore .file, ./file, and ../file
                 return;
             *psz = 0;
         }
@@ -96,7 +97,7 @@ void ttCWStr::AddTrailingSlash()
         return;
     }
     wchar_t* pszLastSlash = FindLastSlash();
-    if (!pszLastSlash || pszLastSlash[1])   // only add if there was no slash or there was something after the slash
+    if (!pszLastSlash || pszLastSlash[1])  // only add if there was no slash or there was something after the slash
         *this += L"/";
 }
 
@@ -108,13 +109,13 @@ wchar_t* ttCWStr::FindLastSlash()
         return nullptr;
 
     wchar_t* pszLastBackSlash = ttStrChrR(m_psz, L'\\');
-    wchar_t* pszLastFwdSlash  = ttStrChrR(m_psz, L'/');
+    wchar_t* pszLastFwdSlash = ttStrChrR(m_psz, L'/');
     if (!pszLastBackSlash)
         return pszLastFwdSlash ? pszLastFwdSlash : nullptr;
     else if (!pszLastFwdSlash)
         return pszLastBackSlash ? pszLastBackSlash : nullptr;
     else
-        return pszLastFwdSlash > pszLastBackSlash ? pszLastFwdSlash : pszLastBackSlash;     // Impossible for them to be equal
+        return pszLastFwdSlash > pszLastBackSlash ? pszLastFwdSlash : pszLastBackSlash;  // Impossible for them to be equal
 }
 
 wchar_t* ttCWStr::GetCWD()
@@ -124,14 +125,14 @@ wchar_t* ttCWStr::GetCWD()
     DWORD cb = GetCurrentDirectoryW(MAX_PATH, m_psz);
     m_psz[cb] = 0;  // in case GetCurrentDirectory() failed
 #else
-    wxString str = wxGetCwd();
+    wxString    str = wxGetCwd();
     const char* psz = str.wc_str();
     if (!psz)
-        m_psz = ttStrDup(L"./");   // in case getcwd() failed
+        m_psz = ttStrDup(L"./");  // in case getcwd() failed
     else
         m_psz = ttStrDup(psz);
 #endif
-    return m_psz;       // we leave the full buffer allocated in case you want to add a filename to the end
+    return m_psz;  // we leave the full buffer allocated in case you want to add a filename to the end
 }
 
 #if defined(_WIN32)
@@ -151,14 +152,17 @@ wchar_t* ttCWStr::GetListBoxText(HWND hwnd, size_t sel)
         ttFree(m_psz);
     if (sel == (size_t) LB_ERR)
         m_psz = ttStrDup(L"");
-    else {
+    else
+    {
         size_t cb = ::SendMessageW(hwnd, LB_GETTEXTLEN, sel, 0);
         ttASSERT(cb != (size_t) LB_ERR);
-        if (cb != (size_t) LB_ERR) {
+        if (cb != (size_t) LB_ERR)
+        {
             m_psz = (wchar_t*) ttMalloc(cb + 1);
             ::SendMessageW(hwnd, LB_GETTEXT, sel, (LPARAM) m_psz);
         }
-        else {
+        else
+        {
             m_psz = ttStrDup(L"");
         }
     }
@@ -171,7 +175,8 @@ wchar_t* ttCWStr::GetComboLBText(HWND hwnd, size_t sel)
         ttFree(m_psz);
     if (sel == (size_t) LB_ERR)
         m_psz = ttStrDup(L"");
-    else {
+    else
+    {
         size_t cb = ::SendMessageW(hwnd, CB_GETLBTEXTLEN, sel, 0);
         ttASSERT(cb != (size_t) CB_ERR);
         if (cb != (size_t) CB_ERR)
@@ -179,7 +184,8 @@ wchar_t* ttCWStr::GetComboLBText(HWND hwnd, size_t sel)
             m_psz = (wchar_t*) ttMalloc(cb + 1);
             ::SendMessageW(hwnd, CB_GETLBTEXT, sel, (LPARAM) m_psz);
         }
-        else {
+        else
+        {
             m_psz = ttStrDup(L"");
         }
     }
@@ -206,7 +212,8 @@ const wchar_t* ttCWStr::GetResString(size_t idString)
             ttFree(m_psz);
         m_psz = ttStrDup(L"");
     }
-    else {
+    else
+    {
         if (m_psz)
             ttFree(m_psz);
         m_psz = ttStrDup(szStringBuf);
@@ -218,8 +225,8 @@ bool ttCWStr::GetWndText(HWND hwnd)
 {
     if (m_psz)
     {
-         ttFree(m_psz);
-         m_psz = nullptr;
+        ttFree(m_psz);
+        m_psz = nullptr;
     }
 
     ttASSERT_MSG(hwnd && IsWindow(hwnd), "Invalid window handle");
@@ -251,7 +258,7 @@ bool ttCWStr::GetWndText(HWND hwnd)
     return true;
 }
 
-#endif    // defined(_WIN32)
+#endif  // defined(_WIN32)
 
 void ttCWStr::MakeLower()
 {
@@ -282,7 +289,7 @@ void ttCWStr::MakeUpper()
 bool ttCWStr::CopyNarrow(const char* psz)
 {
     if (m_psz)
-         ttFree(m_psz);
+        ttFree(m_psz);
 
     ttASSERT_NONEMPTY(psz);
 
@@ -311,10 +318,10 @@ bool ttCWStr::CopyNarrow(const char* psz)
         m_psz = ttStrDup(L"");
         return false;
     }
-#else    // not defined(_WIN32)
+#else   // not defined(_WIN32)
     wxString str(psz);
     m_psz = ttStrDup(str.wc_str());
-#endif    // defined(_WIN32)
+#endif  // defined(_WIN32)
 
     return true;
 }
@@ -361,12 +368,13 @@ void ttCWStr::operator+=(const wchar_t* psz)
         m_psz = ttStrDup(psz && *psz ? psz : L"");
     else if (!psz || !*psz)
         m_psz = ttStrDup(L"");
-    else {
+    else
+    {
         size_t cbNew = ttStrByteLen(psz);
         size_t cbOld = ttStrByteLen(m_psz);
         ttASSERT_MSG(cbNew + cbOld <= tt::MAX_STRING_LEN, "String is over 16 megs in size!");
         if (cbNew + cbOld > tt::MAX_STRING_LEN)
-            return;     // ignore it if it's too large
+            return;  // ignore it if it's too large
         m_psz = (wchar_t*) ttReAlloc(m_psz, cbNew + cbOld);
         memcpy(m_psz + ((cbOld - sizeof(wchar_t)) / sizeof(wchar_t)), psz, cbNew);
     }
@@ -379,7 +387,8 @@ void ttCWStr::operator+=(wchar_t ch)
     szTmp[1] = 0;
     if (!m_psz)
         m_psz = ttStrDup(szTmp);
-    else {
+    else
+    {
         m_psz = (wchar_t*) ttReAlloc(m_psz, ttStrByteLen(m_psz));
         ttStrCat(m_psz, DEST_SIZE, szTmp);
     }
@@ -446,22 +455,22 @@ const wchar_t* ttCWStr::ProcessKFmt(const wchar_t* pszEnd, va_list* pargList)
     szwBuf[0] = L'\0';
     switch (*pszEnd)
     {
-        case 'n':   // 'n' is deprecated, 'd' should be used instead
+        case 'n':  // 'n' is deprecated, 'd' should be used instead
         case 'd':
             ttItoa((int) va_arg(*pargList, int), szwBuf, sizeof(szwBuf));
             ttpriv::AddCommasToNumber(szwBuf, szwBuf, sizeof(szwBuf));
             break;
 
-        case 'I':   // 64-bit version of 'd' and 'u' that works in 32-bit builds
+        case 'I':  // 64-bit version of 'd' and 'u' that works in 32-bit builds
             if (ttIsSameSubStrI(pszEnd, L"I64d"))
                 ttItoa(va_arg(*pargList, int64_t), szwBuf, sizeof(szwBuf));
             else if (ttIsSameSubStrI(pszEnd, L"I64u"))
                 ttUtoa(va_arg(*pargList, uint64_t), szwBuf, sizeof(szwBuf));
             ttpriv::AddCommasToNumber(szwBuf, szwBuf, sizeof(szwBuf));
-            pszEnd += 3;    // skip over I64 portion, then count normally
+            pszEnd += 3;  // skip over I64 portion, then count normally
             break;
 
-        case 't':   // use for size_t parameters, this will handle both 32 and 64 bit compilations
+        case 't':  // use for size_t parameters, this will handle both 32 and 64 bit compilations
             ttUtoa(va_arg(*pargList, size_t), szwBuf, sizeof(szwBuf));
             ttpriv::AddCommasToNumber(szwBuf, szwBuf, sizeof(szwBuf));
             break;
@@ -472,14 +481,16 @@ const wchar_t* ttCWStr::ProcessKFmt(const wchar_t* pszEnd, va_list* pargList)
             break;
 
         case 's':
-            if (va_arg(*pargList, int) != 1) {
+            if (va_arg(*pargList, int) != 1)
+            {
                 szwBuf[0] = 's';
                 szwBuf[1] = '\0';
             }
             break;
 
         case 'S':
-            if (va_arg(*pargList, _int64) != 1) {
+            if (va_arg(*pargList, _int64) != 1)
+            {
                 szwBuf[0] = 's';
                 szwBuf[1] = '\0';
             }
@@ -487,36 +498,36 @@ const wchar_t* ttCWStr::ProcessKFmt(const wchar_t* pszEnd, va_list* pargList)
 
 #if defined(_WIN32)
         case 'r':
-            {
-                ttCWStr cszRes;
-                cszRes.GetResString(va_arg(*pargList, int));
-                ttStrCpy(szwBuf, sizeof(szwBuf), cszRes);
-            }
-            break;
-
+        {
+            ttCWStr cszRes;
+            cszRes.GetResString(va_arg(*pargList, int));
+            ttStrCpy(szwBuf, sizeof(szwBuf), cszRes);
+        }
+        break;
 
         case 'e':
-            {
-                wchar_t* pszMsg;
+        {
+            wchar_t* pszMsg;
 
-                FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                    NULL, va_arg(*pargList, int), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                    (wchar_t*) &pszMsg, 0, NULL);
-                ttStrCpy(szwBuf, sizeof(szwBuf), pszMsg);
-                LocalFree((HLOCAL) pszMsg);
-            }
-            break;
-#endif    // defined(_WIN32)
+            FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+                           NULL, va_arg(*pargList, int), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                           (wchar_t*) &pszMsg, 0, NULL);
+            ttStrCpy(szwBuf, sizeof(szwBuf), pszMsg);
+            LocalFree((HLOCAL) pszMsg);
+        }
+        break;
+#endif  // defined(_WIN32)
 
         case 'q':
-            try {
+            try
+            {
                 const wchar_t* psz = va_arg(*pargList, const wchar_t*);
-                size_t cb = ttStrLen(m_psz) + ttStrLen(psz) + (3 * sizeof(wchar_t));
+                size_t         cb = ttStrLen(m_psz) + ttStrLen(psz) + (3 * sizeof(wchar_t));
                 if (cb > ttSize(m_psz))
                 {
                     cb >>= 7;
                     cb <<= 7;
-                    cb += 0x80; // round up to 128
+                    cb += 0x80;  // round up to 128
                     m_psz = (wchar_t*) ttReAlloc(m_psz, cb);
                 }
                 ttStrCat(m_psz, L"\042");
@@ -537,7 +548,7 @@ const wchar_t* ttCWStr::ProcessKFmt(const wchar_t* pszEnd, va_list* pargList)
         {
             cb >>= 7;
             cb <<= 7;
-            cb += 0x80; // round up to 128
+            cb += 0x80;  // round up to 128
             m_psz = (wchar_t*) ttReAlloc(m_psz, cb);
         }
         ttStrCat(m_psz, DEST_SIZE - cbCur, szwBuf);
@@ -552,9 +563,9 @@ void ttpriv::AddCommasToNumber(wchar_t* pszNum, wchar_t* pszDst, size_t cbDst)
 {
     size_t cchDst = cbDst / sizeof(wchar_t);
     if (pszDst != pszNum)
-        ttStrCpy(pszDst, cbDst, pszNum);    // copy the number, performa all additional work in-place in the destination buffer
+        ttStrCpy(pszDst, cbDst, pszNum);  // copy the number, performa all additional work in-place in the destination buffer
 
-    size_t cchNum = ttStrLen(pszDst);   // needs to be signed because it can go negative
+    size_t cchNum = ttStrLen(pszDst);  // needs to be signed because it can go negative
     if (cchNum < 4)
     {
         ttASSERT(cchNum * sizeof(wchar_t) < cbDst);
@@ -576,7 +587,7 @@ void ttpriv::AddCommasToNumber(wchar_t* pszNum, wchar_t* pszDst, size_t cbDst)
         cchStart += 3;
     while (cchStart < cchNum)
     {
-        memmove(pszDst + cchStart + 1, pszDst + cchStart, ttStrByteLen(pszDst + cchStart) + sizeof(wchar_t));   // make space for a comma
+        memmove(pszDst + cchStart + 1, pszDst + cchStart, ttStrByteLen(pszDst + cchStart) + sizeof(wchar_t));  // make space for a comma
         pszDst[cchStart] = ',';
         ++cchNum;       // track that we added a comma for loop comparison
         cchStart += 4;  // 3 numbers plus the comma
@@ -592,12 +603,13 @@ int ttCWStr::StrCat(const wchar_t* psz)
 
     if (!m_psz)
         m_psz = ttStrDup(psz);
-    else {
+    else
+    {
         size_t cbNew = ttStrByteLen(psz);
         size_t cbOld = ttStrByteLen(m_psz);
         ttASSERT_MSG(cbNew + cbOld <= tt::MAX_STRING_LEN, "String is over 16 megs in size!");
         if (cbNew + cbOld > tt::MAX_STRING_LEN)
-            return EOVERFLOW;       // ignore it if it's too large
+            return EOVERFLOW;  // ignore it if it's too large
         m_psz = (wchar_t*) ttReAlloc(m_psz, cbNew + cbOld);
         ttStrCat(m_psz, cbNew + cbOld, psz);
     }
@@ -613,12 +625,13 @@ int ttCWStr::StrCopy(const wchar_t* psz)
 
     if (!m_psz)
         m_psz = ttStrDup(psz);
-    else {
+    else
+    {
         size_t cbNew = ttStrByteLen(psz);
         size_t cbOld = ttSize(m_psz);
         ttASSERT_MSG(cbNew + cbOld <= tt::MAX_STRING_LEN, "String is over 16 megs in size!");
         if (cbNew + cbOld > tt::MAX_STRING_LEN)
-            return EOVERFLOW;       // ignore it if it's too large
+            return EOVERFLOW;  // ignore it if it's too large
         ttStrDup(psz, &m_psz);
     }
     return 0;
@@ -676,21 +689,21 @@ bool ttCWStr::ReplaceStr(const wchar_t* pszOldText, const wchar_t* pszNewText, b
     size_t cbOld = ttStrLen(pszOldText);
     size_t cbNew = ttStrLen(pszNewText);
 
-    if (cbNew == 0)           // delete the old text since new text is empty
+    if (cbNew == 0)  // delete the old text since new text is empty
     {
-        wchar_t* pszEnd = m_psz + ttStrByteLen(m_psz);
+        wchar_t*  pszEnd = m_psz + ttStrByteLen(m_psz);
         ptrdiff_t cb = pszEnd - pszPos;
         memmove(pszPos, pszPos + cbOld, cb);
         m_psz = (wchar_t*) ttReAlloc(m_psz, ttStrByteLen(m_psz));
     }
     else if (cbNew == cbOld)
     {
-        while (*pszNewText)   // copy and return
+        while (*pszNewText)  // copy and return
             *pszPos++ = *pszNewText++;
     }
     else if (cbNew > cbOld)
     {
-        while (cbOld--)   // replace the old, insert what's left
+        while (cbOld--)  // replace the old, insert what's left
             *pszPos++ = *pszNewText++;
 
         ttCWStr cszTrail(pszPos);
@@ -699,13 +712,13 @@ bool ttCWStr::ReplaceStr(const wchar_t* pszOldText, const wchar_t* pszNewText, b
         *this += pszNewText;
         *this += (wchar_t*) cszTrail;
     }
-    else                  // new text is shorter
+    else  // new text is shorter
     {
         cbOld -= cbNew;
         while (cbNew--)
             *pszPos++ = *pszNewText++;
 
-        wchar_t* pszEnd = m_psz + ttStrByteLen(m_psz);
+        wchar_t*  pszEnd = m_psz + ttStrByteLen(m_psz);
         ptrdiff_t cb = pszEnd - pszPos;
         memmove(pszPos, pszPos + cbOld, cb);
         m_psz = (wchar_t*) ttReAlloc(m_psz, ttStrByteLen(m_psz));
@@ -717,7 +730,7 @@ wchar_t* ttCWStr::GetString(const wchar_t* pszString, wchar_t chBegin, wchar_t c
 {
     ttASSERT_NONEMPTY(pszString);
 
-    Delete();   // current string, if any, should be deleted no matter what
+    Delete();  // current string, if any, should be deleted no matter what
 
     if (!pszString || !*pszString)
         return nullptr;
@@ -727,8 +740,9 @@ wchar_t* ttCWStr::GetString(const wchar_t* pszString, wchar_t chBegin, wchar_t c
 
     if (cb == 0 || cb > tt::MAX_STRING_LEN)
         return nullptr;
-    else {
-        m_psz = (wchar_t*) ttMalloc(cb);       // this won't return if it fails, so you will never get a nullptr on return
+    else
+    {
+        m_psz = (wchar_t*) ttMalloc(cb);  // this won't return if it fails, so you will never get a nullptr on return
         *m_psz = 0;
     }
 
@@ -746,16 +760,17 @@ wchar_t* ttCWStr::GetString(const wchar_t* pszString, wchar_t chBegin, wchar_t c
         while (*pszString != chEnd && *pszString)
             ++pszString;
         wcsncpy(m_psz, pszStart, pszString - pszStart);
-        m_psz[pszString - pszStart] = 0;    // make certain it is null terminated
+        m_psz[pszString - pszStart] = 0;  // make certain it is null terminated
     }
-    else {  // if the string didn't start with chBegin, just copy the string
+    else
+    {  // if the string didn't start with chBegin, just copy the string
         ttStrCpy(m_psz, ttSize(m_psz), pszString);
         pszString += cb;
     }
 
     // If there is a significant size difference, then ReAllocate the memory
 
-    if (cb > 32)    // don't bother ReAllocating if total allocation is 32 bytes or less
+    if (cb > 32)  // don't bother ReAllocating if total allocation is 32 bytes or less
         m_psz = (wchar_t*) ttReAlloc(m_psz, ttStrByteLen(m_psz));
     return m_psz;
 }
@@ -764,12 +779,13 @@ wchar_t* ttCWStr::GetQuotedString(const wchar_t* pszQuote)
 {
     ttASSERT_NONEMPTY(pszQuote);
 
-    if (!pszQuote || !*pszQuote) {
-        Delete();   // any current string should be deleted no matter what
+    if (!pszQuote || !*pszQuote)
+    {
+        Delete();  // any current string should be deleted no matter what
         return nullptr;
     }
 
-    while (ttIsWhitespace(*pszQuote)) // step over any leading whitespace
+    while (ttIsWhitespace(*pszQuote))  // step over any leading whitespace
         ++pszQuote;
 
     switch (*pszQuote)
@@ -781,16 +797,16 @@ wchar_t* ttCWStr::GetQuotedString(const wchar_t* pszQuote)
         case L'\'':  // CH_SQUOTE
             return GetString(pszQuote, CH_SQUOTE, CH_SQUOTE);
 
-        case L'`':   // CH_START_QUOTE
+        case L'`':  // CH_START_QUOTE
             return GetString(pszQuote, CH_START_QUOTE, CH_END_QUOTE);
 
         case L'<':
             return GetString(pszQuote, '<', '>');
 
-        case L'[':   // CH_LEFT_BRACKET
+        case L'[':  // CH_LEFT_BRACKET
             return GetString(pszQuote, '[', ']');
 
-        case L'(':   // CH_OPEN_PAREN
+        case L'(':  // CH_OPEN_PAREN
             return GetString(pszQuote, '[', ']');
     }
 }

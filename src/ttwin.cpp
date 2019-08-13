@@ -8,9 +8,9 @@
 
 #include "pch.h"
 
-#include "../include/ttdebug.h"     // ttASSERT macros
-#include "../include/ttstr.h"       // ttCStr
-#include "../include/ttwin.h"       // ttCWin
+#include "../include/ttdebug.h"  // ttASSERT macros
+#include "../include/ttstr.h"    // ttCStr
+#include "../include/ttwin.h"    // ttCWin
 
 // This is the Window procedure used by all windows that ttCWin created or subclassed.
 
@@ -19,7 +19,7 @@ LRESULT WINAPI ttpriv::ttCWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPa
     if (msg == WM_CREATE)
     {
         CREATESTRUCTA* pcs = (CREATESTRUCTA*) lParam;
-        void* pThis = (void*) pcs->lpCreateParams;
+        void*          pThis = (void*) pcs->lpCreateParams;
         if (pThis)
             SetWindowLongPtrA(hwnd, GWLP_USERDATA, (LONG_PTR) pThis);
     }
@@ -54,7 +54,7 @@ ttCWin::ttCWin()
     m_pwc->cbSize = sizeof(WNDCLASSEXA);
     m_pwc->lpfnWndProc = ttpriv::ttCWinProc;
     m_pwc->style = CS_HREDRAW | CS_VREDRAW;
-    m_pwc->hbrBackground = (HBRUSH) (LONG_PTR) (COLOR_WINDOW + 1);
+    m_pwc->hbrBackground = (HBRUSH)(LONG_PTR)(COLOR_WINDOW + 1);
     m_pwc->hCursor = LoadCursor(NULL, IDC_ARROW);
 }
 
@@ -70,7 +70,7 @@ bool ttCWin::SetClassName(const char* pszClassName)
 {
     ttASSERT_NONEMPTY(pszClassName);
 
-    if (!pszClassName || !*pszClassName || ttStrLen(pszClassName) > 256)    // Windows limits class names to 256 characters
+    if (!pszClassName || !*pszClassName || ttStrLen(pszClassName) > 256)  // Windows limits class names to 256 characters
         return false;
 
     if (m_pszClassName)
@@ -83,7 +83,8 @@ bool ttCWin::SetClassName(const char* pszClassName)
 
 bool ttCWin::CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWND hwndParent, RECT* prcPosition, HMENU hmenu)
 {
-    if (m_pwc) {    // means the class hasn't been registered yet
+    if (m_pwc)
+    {  // means the class hasn't been registered yet
         if (!m_pszClassName)
         {
             // attempt to make a unique class name
@@ -105,12 +106,12 @@ bool ttCWin::CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWN
 
     if (prcPosition != NULL)
         m_hwnd = ::CreateWindowExA(dwExStyle, m_pszClassName, pszTitle, dwStyle,
-            prcPosition->left, prcPosition->top, ttRC_WIDTH(prcPosition), ttRC_HEIGHT(prcPosition),
-            hwndParent, hmenu, m_hinst, (void*) this);
+                                   prcPosition->left, prcPosition->top, ttRC_WIDTH(prcPosition), ttRC_HEIGHT(prcPosition),
+                                   hwndParent, hmenu, m_hinst, (void*) this);
     else
         m_hwnd = ::CreateWindowExA(dwExStyle, m_pszClassName, pszTitle, dwStyle,
-            CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-            hwndParent, hmenu, m_hinst, (void*) this);
+                                   CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+                                   hwndParent, hmenu, m_hinst, (void*) this);
 
     return ttIsValidWindow(m_hwnd);
 }
@@ -149,7 +150,7 @@ bool ttCWin::AttachWnd(HWND hwnd)
             delete m_pwc;
             m_pwc = nullptr;
         }
-        SetClassName(cszClassName); // we store the name separately from m_pwc
+        SetClassName(cszClassName);  // we store the name separately from m_pwc
     }
     m_hwndParent = GetParent(hwnd);
 

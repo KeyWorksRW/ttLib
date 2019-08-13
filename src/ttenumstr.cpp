@@ -8,8 +8,8 @@
 
 #include "pch.h"
 
-#include "../include/ttdebug.h"     // ttASSERT macros
-#include "../include/ttenumstr.h"   // ttCEnumStr
+#include "../include/ttdebug.h"    // ttASSERT macros
+#include "../include/ttenumstr.h"  // ttCEnumStr
 
 ttCEnumStr::ttCEnumStr()
 {
@@ -74,21 +74,24 @@ bool ttCEnumStr::Enum(const char** ppszCurrent)
             *ppszCurrent = m_pszCur;
         return true;
     }
-    else {
+    else
+    {
         if (!m_pszEnd)
         {
             if (ppszCurrent)
                 *ppszCurrent = nullptr;
             return false;
         }
-        else {
+        else
+        {
             *m_pszEnd = m_chSeparator;
-            do {    // handle doubled characters, or characters with only space between them (";;" or "; ;")
+            do
+            {  // handle doubled characters, or characters with only space between them (";;" or "; ;")
                 m_pszCur = ttFindNonSpace(m_pszEnd + 1);
                 m_pszEnd = ttStrChr(m_pszCur, m_chSeparator);
-            } while(*m_pszCur == m_chSeparator && m_pszEnd);
+            } while (*m_pszCur == m_chSeparator && m_pszEnd);
 
-            if (*m_pszCur == m_chSeparator)   // means we got to the end with no more separators
+            if (*m_pszCur == m_chSeparator)  // means we got to the end with no more separators
             {
                 if (ppszCurrent)
                     *ppszCurrent = nullptr;
@@ -97,7 +100,7 @@ bool ttCEnumStr::Enum(const char** ppszCurrent)
             if (m_pszEnd)
                 *m_pszEnd = 0;
 
-            if (m_pszCur && !m_pszCur[0])   // Don't return empty string -- this can happen when a original string ends without a separator
+            if (m_pszCur && !m_pszCur[0])  // Don't return empty string -- this can happen when a original string ends without a separator
                 return Enum(ppszCurrent);
 
             if (ppszCurrent)

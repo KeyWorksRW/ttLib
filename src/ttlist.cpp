@@ -17,10 +17,11 @@
 
 #include "pch.h"
 
-#include "../include/ttlist.h"           // ttCList, ttCDblList, ttCStrIntList
-#include "../include/ttcritsection.h"    // ttCCritSection, ttCCritLock
+#include "../include/ttlist.h"         // ttCList, ttCDblList, ttCStrIntList
+#include "../include/ttcritsection.h"  // ttCCritSection, ttCCritLock
 
-ttCList::ttCList(bool bSerialize) : ttCHeap(bSerialize)
+ttCList::ttCList(bool bSerialize)
+    : ttCHeap(bSerialize)
 {
     m_cAllocated = 0;
     m_cItems = 0;
@@ -30,7 +31,8 @@ ttCList::ttCList(bool bSerialize) : ttCHeap(bSerialize)
     m_flags = 0;
 }
 
-ttCList::ttCList(HANDLE hHeap) : ttCHeap(hHeap)
+ttCList::ttCList(HANDLE hHeap)
+    : ttCHeap(hHeap)
 {
     m_cAllocated = 0;
     m_cItems = 0;
@@ -72,7 +74,7 @@ void ttCList::SetFlags(size_t flags)
 {
     m_flags = flags;
     if (m_flags & FLG_ADD_DUPLICATES)
-        m_HashPair.Delete();    // Can't use a hash list if duplicates are allowed
+        m_HashPair.Delete();  // Can't use a hash list if duplicates are allowed
 }
 
 size_t ttCList::Add(const char* pszKey)
@@ -84,7 +86,7 @@ size_t ttCList::Add(const char* pszKey)
     if (isNoDuplicates())
     {
         ttCStr cszKey;
-        char* pszNormalized = NormalizeString(pszKey, cszKey);  // return will point to either pszKey or cszKey
+        char*  pszNormalized = NormalizeString(pszKey, cszKey);  // return will point to either pszKey or cszKey
 
         size_t hash = ttHashFromSz(pszNormalized);
         size_t pos = m_HashPair.GetVal(hash);
@@ -94,9 +96,9 @@ size_t ttCList::Add(const char* pszKey)
             m_HashPair.Add(hash, m_cItems);
     }
 
-    if (m_cItems + 1 >= m_cAllocated) // the +1 is paranoia -- it shouldn't really be necessary
+    if (m_cItems + 1 >= m_cAllocated)  // the +1 is paranoia -- it shouldn't really be necessary
     {
-        m_cAllocated += 32; // add room for 32 strings at a time
+        m_cAllocated += 32;  // add room for 32 strings at a time
         m_aptrs = (char**) (m_aptrs ? ttReAlloc(m_aptrs, m_cAllocated * sizeof(char*)) : ttMalloc(m_cAllocated * sizeof(char*)));
     }
     m_aptrs[m_cItems] = ttStrDup(pszKey);
@@ -112,14 +114,14 @@ size_t ttCList::GetPos(const char* pszKey) const
     if (isNoDuplicates())
     {
         ttCStr cszKey;
-        char* pszNormalized = NormalizeString(pszKey, cszKey);  // return will point to either pszKey or cszKey
+        char*  pszNormalized = NormalizeString(pszKey, cszKey);  // return will point to either pszKey or cszKey
         return m_HashPair.GetVal(pszNormalized);
     }
 
     if (m_flags & FLG_IGNORE_CASE || m_flags & FLG_URL_STRINGS)
     {
         ttCStr cszKey;
-        char* pszNormalized = NormalizeString(pszKey, cszKey);  // return will point to either pszKey or cszKey
+        char*  pszNormalized = NormalizeString(pszKey, cszKey);  // return will point to either pszKey or cszKey
 
         ttCStr cszList;
         for (size_t pos = 0; pos < m_cItems; ++pos)
@@ -163,7 +165,7 @@ void ttCList::Remove(size_t pos)
                 --phshPair[posHsh].val;
         }
         ttCStr cszKey;
-        char* pszNormalized = NormalizeString(m_aptrs[pos], cszKey);    // return will point to either pszKey or cszKey
+        char*  pszNormalized = NormalizeString(m_aptrs[pos], cszKey);  // return will point to either pszKey or cszKey
         m_HashPair.Remove(pszNormalized);
     }
 
@@ -182,15 +184,17 @@ void ttCList::Remove(const char* psz)
 void ttCList::Delete()
 {
     if (m_cItems == 0)
-        return; // we haven't added anything yet, so nothing to do!
+        return;  // we haven't added anything yet, so nothing to do!
     if (m_bCreated && m_hHeap && m_hHeap != GetProcessHeap())
     {
         HeapDestroy(m_hHeap);
         m_hHeap = HeapCreate(m_bSerialize ? 0 : HEAP_NO_SERIALIZE, 4096, 0);
         m_bCreated = true;
     }
-    else {  // if we didn't create the heap ourselves, then we need to delete each individual item
-        for (size_t pos = 0; pos < m_cItems; ++pos) {
+    else
+    {  // if we didn't create the heap ourselves, then we need to delete each individual item
+        for (size_t pos = 0; pos < m_cItems; ++pos)
+        {
             ttFree((void*) m_aptrs[pos]);
         }
         ttFree((void*) m_aptrs);
@@ -219,7 +223,7 @@ void ttCList::Replace(size_t pos, const char* pszKey)
     if (isNoDuplicates())
     {
         ttCStr cszKey;
-        char* pszNormalized = NormalizeString(pszKey, cszKey);
+        char*  pszNormalized = NormalizeString(pszKey, cszKey);
         m_HashPair.Add(pszNormalized, pos);
     }
 }
@@ -236,8 +240,8 @@ void ttCList::Swap(size_t posA, size_t posB)
     {
         // We have to "normalize" the strings (deal with case-insensitive, forward/back slash conversion) before CHashPair can find them
         ttCStr cszA, cszB;
-        char* pszNormalizedA = NormalizeString(m_aptrs[posA], cszA);
-        char* pszNormalizedB = NormalizeString(m_aptrs[posB], cszB);
+        char*  pszNormalizedA = NormalizeString(m_aptrs[posA], cszA);
+        char*  pszNormalizedB = NormalizeString(m_aptrs[posB], cszB);
 
         m_HashPair.SetVal(pszNormalizedA, posA);
         m_HashPair.SetVal(pszNormalizedB, posB);
@@ -252,9 +256,9 @@ void ttCList::InsertAt(size_t pos, const char* pszKey)
         return;
     }
 
-    if (m_cItems + 1 >= m_cAllocated)     // the +1 is paranoia -- it shouldn't really be necessary
+    if (m_cItems + 1 >= m_cAllocated)  // the +1 is paranoia -- it shouldn't really be necessary
     {
-        m_cAllocated += 32; // add room for 32 strings at a time
+        m_cAllocated += 32;  // add room for 32 strings at a time
         m_aptrs = (char**) (m_aptrs ? ttReAlloc(m_aptrs, m_cAllocated * sizeof(char*)) : ttMalloc(m_cAllocated * sizeof(char*)));
     }
     memmove((void*) (m_aptrs + pos + 1), (void*) (m_aptrs + pos), (m_cItems - pos + 1) * sizeof(char*));
@@ -269,7 +273,7 @@ void ttCList::InsertAt(size_t pos, const char* pszKey)
         }
 
         ttCStr cszKey;
-        char* pszNormalized = NormalizeString(pszKey, cszKey);
+        char*  pszNormalized = NormalizeString(pszKey, cszKey);
         m_HashPair.Add(pszNormalized, pos);
     }
 
@@ -280,7 +284,8 @@ void ttCList::InsertAt(size_t pos, const char* pszKey)
 void ttCList::Sort()
 {
     qsorti(0, m_cItems - 1);
-    if (isNoDuplicates()) {
+    if (isNoDuplicates())
+    {
         for (size_t pos = 0; pos < m_cItems; ++pos)
             m_HashPair.Add(m_aptrs[pos], pos);  // It already exists, this will just update the associated position
     }
@@ -304,7 +309,7 @@ char* ttCList::NormalizeString(const char* pszString, ttCStr& cszKey) const
     if (m_flags & FLG_IGNORE_CASE || m_flags & FLG_URL_STRINGS)
     {
         cszKey = pszString;
-        cszKey.MakeLower(); // FLG_URL_STRINGS are always case-insensitive
+        cszKey.MakeLower();  // FLG_URL_STRINGS are always case-insensitive
         if (m_flags & FLG_URL_STRINGS)
             ttBackslashToForwardslash(cszKey);
         return cszKey;
@@ -328,7 +333,7 @@ void ttCList::qsorti(ptrdiff_t low, ptrdiff_t high)
             pos--;
     }
     if (pos < low)
-        return; // it's already sorted
+        return;  // it's already sorted
 
     swap(low, (low + high) / 2);
 
@@ -364,7 +369,7 @@ void ttCList::qsortCol(ptrdiff_t low, ptrdiff_t high)
             pos--;
     }
     if (pos < low)
-        return; // it's already sorted
+        return;  // it's already sorted
 
     swap(low, (low + high) / 2);
 
@@ -384,7 +389,8 @@ void ttCList::qsortCol(ptrdiff_t low, ptrdiff_t high)
 
 /////////////////////   ttCDblList      //////////////////////////
 
-ttCDblList::ttCDblList(bool bSerialize) : ttCHeap(bSerialize)
+ttCDblList::ttCDblList(bool bSerialize)
+    : ttCHeap(bSerialize)
 {
     m_cAllocated = 0;
     m_cItems = 0;
@@ -402,7 +408,7 @@ ttCDblList::~ttCDblList()
 void ttCDblList::Delete()
 {
     if (m_cItems == 0)
-        return; // we haven't added anything yet, so nothing to do!
+        return;  // we haven't added anything yet, so nothing to do!
 
     if (m_bCreated && m_hHeap && m_hHeap != GetProcessHeap())
     {
@@ -410,7 +416,8 @@ void ttCDblList::Delete()
         m_hHeap = HeapCreate(m_bSerialize ? 0 : HEAP_NO_SERIALIZE, 4096, 0);
         m_bCreated = true;
     }
-    else {  // if we didn't create the heap ourselves, then we need to delete each individual item
+    else
+    {  // if we didn't create the heap ourselves, then we need to delete each individual item
         for (size_t pos = 0; pos < m_cItems; ++pos)
         {
             ttFree((void*) m_aptrs[pos].pszKey);
@@ -440,7 +447,7 @@ void ttCDblList::Add(const char* pszKey, const char* pszVal)
     ttASSERT_NONEMPTY(pszKey);
     ttASSERT_MSG(pszVal, "NULL pointer!");  // it's okay to add an empty val string as long as it isn't a null pointer
 
-    if (!pszKey || !*pszKey || !pszVal )
+    if (!pszKey || !*pszKey || !pszVal)
         return;
 
     if (m_pHashLookup)
@@ -454,7 +461,7 @@ void ttCDblList::Add(const char* pszKey, const char* pszVal)
 
     if (m_cItems >= m_cAllocated)
     {
-        m_cAllocated += 32; // add room for 32 strings at a time
+        m_cAllocated += 32;  // add room for 32 strings at a time
         m_aptrs = (DBLPTRS*) (m_aptrs ? ttReAlloc(m_aptrs, m_cAllocated * sizeof(DBLPTRS)) : ttMalloc(m_cAllocated * sizeof(DBLPTRS)));
     }
     m_aptrs[m_cItems].pszKey = ttStrDup(pszKey);
@@ -478,7 +485,8 @@ bool ttCDblList::FindKey(const char* pszKey, size_t* ppos) const
             }
         }
     }
-    else {
+    else
+    {
         for (size_t i = 0; i < m_cItems; i++)
         {
             if (ttIsSameStr(m_aptrs[i].pszKey, pszKey))
@@ -509,7 +517,8 @@ bool ttCDblList::FindVal(const char* pszVal, size_t* ppos) const
             }
         }
     }
-    else {
+    else
+    {
         for (size_t i = 0; i < m_cItems; i++)
         {
             if (ttIsSameStr(m_aptrs[i].pszVal, pszVal))
@@ -552,7 +561,8 @@ char* ttCDblList::GetMatchingVal(const char* pszKey) const
                 return m_aptrs[pos].pszVal;
         }
     }
-    else {
+    else
+    {
         for (size_t pos = 0; pos < m_cItems; ++pos)
         {
             if (ttIsSameStr(m_aptrs[pos].pszKey, pszKey))
@@ -611,7 +621,8 @@ void ttCDblList::qsorti(ptrdiff_t low, ptrdiff_t high)
             else
                 pos--;
         }
-        else {
+        else
+        {
             if (strcmp(m_aptrs[pos].pszVal, m_aptrs[pos + 1].pszVal) > 0)
                 break;
             else
@@ -619,7 +630,7 @@ void ttCDblList::qsorti(ptrdiff_t low, ptrdiff_t high)
         }
     }
     if (pos < low)
-        return; // it's already sorted
+        return;  // it's already sorted
 
     swap(low, (low + high) / 2);
 
@@ -631,7 +642,8 @@ void ttCDblList::qsorti(ptrdiff_t low, ptrdiff_t high)
             if (strcmp(m_aptrs[pos].pszKey, m_aptrs[low].pszKey) < 0)
                 swap(++end, pos);
         }
-        else {
+        else
+        {
             if (strcmp(m_aptrs[pos].pszVal, m_aptrs[low].pszVal) < 0)
                 swap(++end, pos);
         }
@@ -646,7 +658,8 @@ void ttCDblList::qsorti(ptrdiff_t low, ptrdiff_t high)
 
 //////////////////////////////// ttCStrIntList  /////////////////////////////////
 
-ttCStrIntList::ttCStrIntList(bool bSerialize) : ttCHeap(bSerialize)
+ttCStrIntList::ttCStrIntList(bool bSerialize)
+    : ttCHeap(bSerialize)
 {
     m_cAllocated = 0;
     m_cItems = 0;
@@ -659,7 +672,7 @@ ttCStrIntList::ttCStrIntList(bool bSerialize) : ttCHeap(bSerialize)
 void ttCStrIntList::Add(const char* pszKey, ptrdiff_t newVal)
 {
     ttASSERT_NONEMPTY(pszKey);
-    if (!pszKey || !*pszKey )
+    if (!pszKey || !*pszKey)
         return;
 
     for (size_t pos = 0; pos < m_cItems; ++pos)
@@ -670,7 +683,7 @@ void ttCStrIntList::Add(const char* pszKey, ptrdiff_t newVal)
             for (ptrdiff_t valPos = 1; valPos <= cItems; ++valPos)
             {
                 if (newVal == m_aptrs[pos].pVal[valPos])
-                    return; // we've already added this value
+                    return;  // we've already added this value
             }
             // newVal not found, so add it
             ++cItems;
@@ -685,7 +698,7 @@ void ttCStrIntList::Add(const char* pszKey, ptrdiff_t newVal)
 
     if (m_cItems >= m_cAllocated)
     {
-        m_cAllocated += 32; // add room for 32 strings at a time
+        m_cAllocated += 32;  // add room for 32 strings at a time
         m_aptrs = (DBLPTRS*) (m_aptrs ? ttReAlloc(m_aptrs, m_cAllocated * sizeof(DBLPTRS)) : ttMalloc(m_cAllocated * sizeof(DBLPTRS)));
     }
     m_aptrs[m_cItems].pszKey = ttStrDup(pszKey);
@@ -698,7 +711,7 @@ void ttCStrIntList::Add(const char* pszKey, ptrdiff_t newVal)
 void ttCStrIntList::Delete()
 {
     if (m_cItems == 0)
-        return; // we haven't added anything yet, so nothing to do!
+        return;  // we haven't added anything yet, so nothing to do!
 
     if (m_bCreated && m_hHeap && m_hHeap != GetProcessHeap())
     {
@@ -706,7 +719,8 @@ void ttCStrIntList::Delete()
         m_hHeap = HeapCreate(m_bSerialize ? 0 : HEAP_NO_SERIALIZE, 4096, 0);
         m_bCreated = true;
     }
-    else {  // if we didn't create the heap ourselves, then we need to delete each individual item
+    else
+    {  // if we didn't create the heap ourselves, then we need to delete each individual item
         for (size_t pos = 0; pos < m_cItems; ++pos)
         {
             ttFree((void*) m_aptrs[pos].pszKey);
@@ -779,7 +793,7 @@ ptrdiff_t ttCStrIntList::GetValCount(size_t pos) const
 {
     ttASSERT(InRange(pos));
     if (!InRange(pos))
-        return 0;   // there isn't a way to indicate an error other then the ASSERT in _DEBUG builds
+        return 0;  // there isn't a way to indicate an error other then the ASSERT in _DEBUG builds
     return m_aptrs[pos].pVal[0];
 }
 
@@ -819,7 +833,7 @@ bool ttCStrIntList::BeginEnum(const char* pszKey)
 {
     if (!FindKey(pszKey, &m_posEnumKey))
     {
-        m_posEnumKey = (size_t) -1; // flag it as invalid
+        m_posEnumKey = (size_t) -1;  // flag it as invalid
         return false;
     }
     m_posEnumVal = 1;
@@ -828,7 +842,7 @@ bool ttCStrIntList::BeginEnum(const char* pszKey)
 
 bool ttCStrIntList::Enum(ptrdiff_t* pVal)
 {
-    if (m_posEnumKey >= m_cItems)   // this will also catch -1 as the value (since m_posEnumKey is unsigned)
+    if (m_posEnumKey >= m_cItems)  // this will also catch -1 as the value (since m_posEnumKey is unsigned)
         return false;
     if (m_posEnumVal > m_aptrs[m_posEnumKey].pVal[0])
         return false;
@@ -910,7 +924,7 @@ void ttCIntStrList::Delete()
     ttCCritLock lock(m_pcrit);
 
     if (m_cItems == 0)
-        return; // we haven't added anything yet, so nothing to do!
+        return;  // we haven't added anything yet, so nothing to do!
 
     for (size_t pos = 0; InRange(pos); ++pos)
         ttFree((void*) m_aData[pos].psz);

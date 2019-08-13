@@ -6,10 +6,10 @@
 // License:   Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
-#include "pch.h"        // precompiled header
+#include "pch.h"  // precompiled header
 
-#include "../include/ttdebug.h"     // for ttASSERTS
-#include "../include/ttstr.h"   // ttCStr
+#include "../include/ttdebug.h"  // for ttASSERTS
+#include "../include/ttstr.h"    // ttCStr
 
 #if defined(_WIN32)
 
@@ -130,9 +130,9 @@ void ttConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszRe
     }
 
     ttCStr cszRoot(pszRoot);
-    if (ttIsValidFileChar(pszFile, 0) && ttIsValidFileChar(pszFile, 1))   // this would mean we were only passed a filename
+    if (ttIsValidFileChar(pszFile, 0) && ttIsValidFileChar(pszFile, 1))  // this would mean we were only passed a filename
     {
-        if (ttFileExists(cszRoot))                                      // if the root included a filename, then remove it now
+        if (ttFileExists(cszRoot))  // if the root included a filename, then remove it now
         {
             char* pszFilePortion = (char*) ttFindFilePortion(cszRoot);
             if (pszFilePortion)
@@ -152,13 +152,13 @@ void ttConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszRe
     ttCStr cszFile(pszFile);
     cszFile.FullPathName();
 
-    if (toupper(cszRoot[0]) != toupper(cszFile[0]))   // probably on a different drive, but clearly there's nothing relative about it
+    if (toupper(cszRoot[0]) != toupper(cszFile[0]))  // probably on a different drive, but clearly there's nothing relative about it
     {
         cszResult = cszFile;
         return;
     }
 
-    ttBackslashToForwardslash(cszRoot); // slashes need to be the same for valid comparisons
+    ttBackslashToForwardslash(cszRoot);  // slashes need to be the same for valid comparisons
     ttBackslashToForwardslash(cszFile);
 
     // We might have been passed a filename as the root, remove the filename portion if that's the case
@@ -169,17 +169,18 @@ void ttConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszRe
         if (pszFilePortion)
             *pszFilePortion = 0;
     }
-    cszRoot.AddTrailingSlash(); // it is imperative that we end with a slash
+    cszRoot.AddTrailingSlash();  // it is imperative that we end with a slash
 
     size_t pos;
-    char* pszLastSlash = nullptr;
+    char*  pszLastSlash = nullptr;
 
-    for (pos = 0; cszRoot[pos] && tolower(cszRoot[pos]) == tolower(cszFile[pos]); ++pos) {
+    for (pos = 0; cszRoot[pos] && tolower(cszRoot[pos]) == tolower(cszFile[pos]); ++pos)
+    {
         if (cszRoot[pos] == '/')
             pszLastSlash = cszRoot.GetPtr() + pos;
     }
 
-    if (!pszLastSlash[1]) // did the entire path match?
+    if (!pszLastSlash[1])  // did the entire path match?
     {
         cszResult = cszFile.GetPtr() + pos;
         return;
@@ -204,7 +205,6 @@ void ttConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszRe
     //  c:/foo/bar/src/ c:/foo/bar/inc/file.h >> ../inc/file.h
     //             ^ pos
 
-
     //  c:/foo/bar/src/ c:/foo/inc/file.h     >> ../../inc/file.h
     //         ^ pos
 
@@ -213,12 +213,13 @@ void ttConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszRe
     size_t posDiff = pszLastSlash - cszRoot.GetPtr();
     ttASSERT(ttStrChr(pszLastSlash, '/'));  // we should never be pointing to the last slash
 
-    do {
+    do
+    {
         while (*pszLastSlash != '/')
             ++pszLastSlash;
         cszResult += "../";
         ++pszLastSlash;
-    } while(*pszLastSlash);
+    } while (*pszLastSlash);
 
     cszResult += (cszFile.GetPtr() + posDiff);
 }
@@ -259,10 +260,10 @@ char* ttFindFilePortion(const char* pszPath)
 
     char* psz;
 #ifdef _WINDOWS_
-    psz = ttStrChrR(pszPath, '\\'); // Paths usually have back slashes under Windows
+    psz = ttStrChrR(pszPath, '\\');  // Paths usually have back slashes under Windows
     if (psz)
         pszPath = psz + 1;
-#endif  // _WINDOWS_
+#endif                              // _WINDOWS_
     psz = ttStrChrR(pszPath, '/');  // forward slashes are valid on all OS, so check that too
     if (psz)
         return psz + 1;
@@ -275,7 +276,7 @@ char* ttFindFilePortion(const char* pszPath)
 char* ttFindExtPortion(const char* pszPath)
 {
     char* psz = ttStrChrR(pszPath, '.');
-    if (psz && !(psz == pszPath || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/'))   // ignore .file, ./file, and ../file
+    if (psz && !(psz == pszPath || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/'))  // ignore .file, ./file, and ../file
         return psz;
     else
         return nullptr;
@@ -283,15 +284,16 @@ char* ttFindExtPortion(const char* pszPath)
 
 bool ttIsValidFileChar(const char* psz, size_t pos)
 {
-    if (psz) {
+    if (psz)
+    {
         switch (psz[pos])
         {
             case '.':
                 if (pos == 0 && (psz[1] == 0 || psz[1] == '.'))
-                    return false;   // "." and ".." are folders, not a filename
+                    return false;  // "." and ".." are folders, not a filename
                 else if (pos == 1 && psz[0] == '.')
-                    return false;   // ".." is a folder, not a filename
-                return true;        // valid if not above two exceptions
+                    return false;  // ".." is a folder, not a filename
+                return true;       // valid if not above two exceptions
 
             case '<':
             case '>':
@@ -309,4 +311,4 @@ bool ttIsValidFileChar(const char* psz, size_t pos)
     return false;
 }
 
-#endif    // defined(_WIN32)
+#endif  // defined(_WIN32)

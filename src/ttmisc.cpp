@@ -8,18 +8,19 @@
 
 #include "pch.h"
 
-#include "../include/ttdebug.h" // for ttASSERTS
-#include "../include/ttstr.h"   // ttCStr
-#include "../include/ttwstr.h"  // ttCWStr
+#include "../include/ttdebug.h"  // for ttASSERTS
+#include "../include/ttstr.h"    // ttCStr
+#include "../include/ttwstr.h"   // ttCWStr
 
 #if defined(_WX_DEFS_H_)
-    #include <wx/msgdlg.h>          // wxMessageBox
+#include <wx/msgdlg.h>  // wxMessageBox
 #endif
 
-namespace tt {
-    const char*    pszMsgTitle;  // utf8  title for message boxes
-    const wchar_t* pwszMsgTitle; // utf16 title for message boxes
-}
+namespace tt
+{
+    const char*    pszMsgTitle;   // utf8  title for message boxes
+    const wchar_t* pwszMsgTitle;  // utf16 title for message boxes
+}  // namespace tt
 
 size_t ttHashFromSz(const char* psz)
 {
@@ -76,7 +77,7 @@ void ttInitCaller(const char* pszTitle)
 #if defined(_WIN32)
     tt::hinstResources = GetModuleHandle(NULL);
 #endif
-     ttSetMsgBoxTitle(pszTitle);
+    ttSetMsgBoxTitle(pszTitle);
 }
 
 void ttSetMsgBoxTitle(const char* pszTitle)
@@ -89,14 +90,15 @@ void ttSetMsgBoxTitle(const char* pszTitle)
         ttFree((void*) tt::pwszMsgTitle);
     if (!pszTitle)
         tt::pwszMsgTitle = ttStrDup(L"");
-    else {
+    else
+    {
         ttCWStr cwsz(pszTitle);
         tt::pwszMsgTitle = ttStrDup((wchar_t*) cwsz);
     }
 }
 
 #ifndef _INC_STDLIB
-    __declspec(noreturn) void __cdecl exit(int _Code);
+__declspec(noreturn) void __cdecl exit(int _Code);
 #endif
 
 __declspec(noreturn) void ttOOM(void)

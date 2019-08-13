@@ -8,21 +8,22 @@
 
 #include "pch.h"
 
-#include "../include/ttdebug.h" // ttASSERT macros
-#include "../include/ttstr.h"   // ttCStr
+#include "../include/ttdebug.h"  // ttASSERT macros
+#include "../include/ttstr.h"    // ttCStr
 
 #if __cplusplus >= 201703L
-    #include <filesystem>
+#include <filesystem>
 #endif
 
-using namespace ttch;   // used for the CH_ constants
+using namespace ttch;  // used for the CH_ constants
 
-namespace ttpriv {
+namespace ttpriv
+{
     void AddCommasToNumber(char* pszNum, char* pszDst, size_t cbDst);
 }
 
 #ifndef _MAX_U64TOSTR_BASE10_COUNT
-    #define _MAX_U64TOSTR_BASE10_COUNT (20 + 1)
+#define _MAX_U64TOSTR_BASE10_COUNT (20 + 1)
 #endif
 
 #define DEST_SIZE (ttSize(m_psz) - sizeof(char))
@@ -34,9 +35,9 @@ void ttCStr::AppendFileName(const char* pszFile)
     if (!pszFile || !*pszFile)
         return;
 
-    if (!m_psz)                       // no folder or drive to append to, so leave as is without adding slash
+    if (!m_psz)  // no folder or drive to append to, so leave as is without adding slash
     {
-        m_psz = ttStrDup(pszFile);      // REVIEW: [ralphw - 06-03-2018] We could prefix this with ".\"
+        m_psz = ttStrDup(pszFile);  // REVIEW: [ralphw - 06-03-2018] We could prefix this with ".\"
         return;
     }
 
@@ -56,8 +57,8 @@ void ttCStr::ChangeExtension(const char* pszExtension)
         m_psz = ttStrDup("");
 
     char* psz = ttStrChrR(m_psz, '.');
-    if (psz && !(psz == m_psz || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/')) // ignore .file, ./file, and ../file
-        *psz = 0;   // remove the extension if none of the above is true
+    if (psz && !(psz == m_psz || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/'))  // ignore .file, ./file, and ../file
+        *psz = 0;                                                                        // remove the extension if none of the above is true
 
     if (*pszExtension != '.')
         *this += ".";
@@ -69,19 +70,19 @@ char* ttCStr::FindExt() const
     char* psz = ttStrChrR(m_psz, '.');
     if (!psz)
         return nullptr;
-    if (psz == m_psz || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/')   // ignore .file, ./file, and ../file
+    if (psz == m_psz || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/')  // ignore .file, ./file, and ../file
         return nullptr;
     return psz;
 }
 
 void ttCStr::RemoveExtension()
 {
-     if (m_psz)
-     {
+    if (m_psz)
+    {
         char* psz = ttStrChrR(m_psz, '.');
         if (psz)
         {
-            if (psz == m_psz || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/')   // ignore .file, ./file, and ../file
+            if (psz == m_psz || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/')  // ignore .file, ./file, and ../file
                 return;
             *psz = 0;
         }
@@ -90,12 +91,13 @@ void ttCStr::RemoveExtension()
 
 void ttCStr::AddTrailingSlash()
 {
-    if (!m_psz) {
+    if (!m_psz)
+    {
         m_psz = ttStrDup("/");
         return;
     }
     const char* pszLastSlash = FindLastSlash();
-    if (!pszLastSlash || pszLastSlash[1])   // only add if there was no slash or there was something after the slash
+    if (!pszLastSlash || pszLastSlash[1])  // only add if there was no slash or there was something after the slash
         *this += "/";
 }
 
@@ -107,13 +109,13 @@ char* ttCStr::FindLastSlash()
         return nullptr;
 
     char* pszLastBackSlash = ttStrChrR(m_psz, '\\');
-    char* pszLastFwdSlash  = ttStrChrR(m_psz, '/');
+    char* pszLastFwdSlash = ttStrChrR(m_psz, '/');
     if (!pszLastBackSlash)
         return pszLastFwdSlash ? pszLastFwdSlash : nullptr;
     else if (!pszLastFwdSlash)
         return pszLastBackSlash ? pszLastBackSlash : nullptr;
     else
-        return pszLastFwdSlash > pszLastBackSlash ? pszLastFwdSlash : pszLastBackSlash;     // Impossible for them to be equal
+        return pszLastFwdSlash > pszLastBackSlash ? pszLastFwdSlash : pszLastBackSlash;  // Impossible for them to be equal
 }
 
 char* ttCStr::GetCWD()
@@ -123,20 +125,20 @@ char* ttCStr::GetCWD()
     DWORD cb = GetCurrentDirectoryA(MAX_PATH, m_psz);
     m_psz[cb] = 0;  // in case GetCurrentDirectory() failed
 #else
-    wxString str = wxGetCwd();
+    wxString    str = wxGetCwd();
     const char* psz = str.utf8_str();
     if (!psz)
-        m_psz = ttStrDup("./");   // in case getcwd() failed
+        m_psz = ttStrDup("./");  // in case getcwd() failed
     else
         m_psz = ttStrDup(psz);
 #endif
-    return m_psz;       // we leave the full buffer allocated in case you want to add a filename to the end
+    return m_psz;  // we leave the full buffer allocated in case you want to add a filename to the end
 }
 
 void ttCStr::FullPathName()
 {
     ttASSERT(m_psz);
-#if (defined(_WIN32))    // not __cplusplus >= 201703L
+#if (defined(_WIN32))  // not __cplusplus >= 201703L
     char szPath[MAX_PATH];
     ::GetFullPathNameA(m_psz, sizeof(szPath), szPath, NULL);
     ttStrDup(szPath, &m_psz);
@@ -146,7 +148,7 @@ void ttCStr::FullPathName()
     ttFree(m_psz);
     wxString str(fullPath.c_str());
     m_psz = ttStrDup(str.utf8_str());
-#endif    // __cplusplus >= 201703L
+#endif                        // __cplusplus >= 201703L
 }
 
 #if defined(_WIN32)
@@ -157,7 +159,8 @@ char* ttCStr::GetListBoxText(HWND hwnd, size_t sel)
         ttFree(m_psz);
     if (sel == (size_t) LB_ERR)
         m_psz = ttStrDup("");
-    else {
+    else
+    {
         size_t cb = ::SendMessageA(hwnd, LB_GETTEXTLEN, sel, 0);
         ttASSERT(cb != (size_t) LB_ERR);
         if (cb != (size_t) LB_ERR)
@@ -165,7 +168,8 @@ char* ttCStr::GetListBoxText(HWND hwnd, size_t sel)
             m_psz = (char*) ttMalloc(cb + 1);
             ::SendMessageA(hwnd, LB_GETTEXT, sel, (LPARAM) m_psz);
         }
-        else {
+        else
+        {
             m_psz = ttStrDup("");
         }
     }
@@ -178,7 +182,8 @@ char* ttCStr::GetComboLBText(HWND hwnd, size_t sel)
         ttFree(m_psz);
     if (sel == (size_t) LB_ERR)
         m_psz = ttStrDup("");
-    else {
+    else
+    {
         size_t cb = ::SendMessageA(hwnd, CB_GETLBTEXTLEN, sel, 0);
         ttASSERT(cb != (size_t) CB_ERR);
         if (cb != (size_t) CB_ERR)
@@ -186,7 +191,8 @@ char* ttCStr::GetComboLBText(HWND hwnd, size_t sel)
             m_psz = (char*) ttMalloc(cb + 1);
             ::SendMessageA(hwnd, CB_GETLBTEXT, sel, (LPARAM) m_psz);
         }
-        else {
+        else
+        {
             m_psz = ttStrDup("");
         }
     }
@@ -216,7 +222,8 @@ char* ttCStr::GetResString(size_t idString)
             ttFree(m_psz);
         m_psz = ttStrDup("");
     }
-    else {
+    else
+    {
         ttStrDup(szStringBuf, &m_psz);
     }
     return m_psz;
@@ -224,9 +231,10 @@ char* ttCStr::GetResString(size_t idString)
 
 bool ttCStr::GetWndText(HWND hwnd)
 {
-    if (m_psz) {
-         ttFree(m_psz);
-         m_psz = nullptr;
+    if (m_psz)
+    {
+        ttFree(m_psz);
+        m_psz = nullptr;
     }
 
     ttASSERT_MSG(hwnd && IsWindow(hwnd), "Invalid window handle");
@@ -258,7 +266,7 @@ bool ttCStr::GetWndText(HWND hwnd)
     return true;
 }
 
-#endif    // defined(_WIN32)
+#endif  // defined(_WIN32)
 
 void ttCStr::MakeLower()
 {
@@ -321,10 +329,10 @@ bool ttCStr::CopyWide(const wchar_t* pwsz)
         m_psz = ttStrDup("");
         return false;
     }
-#else    // not defined(_WIN32)
+#else   // not defined(_WIN32)
     wxString str(pwsz);
     m_psz = ttStrDup(str.utf8_str());
-#endif    // defined(_WIN32)
+#endif  // defined(_WIN32)
 
     return true;
 }
@@ -357,21 +365,21 @@ bool ttCStr::ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCa
     size_t cbOld = ttStrLen(pszOldText);
     size_t cbNew = ttStrLen(pszNewText);
 
-    if (cbNew == 0)           // delete the old text since new text is empty
+    if (cbNew == 0)  // delete the old text since new text is empty
     {
-        char* pszEnd = m_psz + ttStrByteLen(m_psz);
+        char*     pszEnd = m_psz + ttStrByteLen(m_psz);
         ptrdiff_t cb = pszEnd - pszPos;
         memmove(pszPos, pszPos + cbOld, cb);
         m_psz = (char*) ttReAlloc(m_psz, ttStrByteLen(m_psz));
     }
     else if (cbNew == cbOld)
     {
-        while (*pszNewText)   // copy and return
+        while (*pszNewText)  // copy and return
             *pszPos++ = *pszNewText++;
     }
     else if (cbNew > cbOld)
     {
-        while (cbOld--)   // replace the old, insert what's left
+        while (cbOld--)  // replace the old, insert what's left
             *pszPos++ = *pszNewText++;
 
         ttCStr cszTrail(pszPos);
@@ -380,13 +388,13 @@ bool ttCStr::ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCa
         *this += pszNewText;
         *this += (char*) cszTrail;
     }
-    else                  // new text is shorter
+    else  // new text is shorter
     {
         cbOld -= cbNew;
         while (cbNew--)
             *pszPos++ = *pszNewText++;
 
-        char* pszEnd = m_psz + ttStrByteLen(m_psz);
+        char*     pszEnd = m_psz + ttStrByteLen(m_psz);
         ptrdiff_t cb = pszEnd - pszPos;
         memmove(pszPos, pszPos + cbOld, cb);
         m_psz = (char*) ttReAlloc(m_psz, ttStrByteLen(m_psz));
@@ -410,13 +418,14 @@ void ttCStr::operator+=(const char* psz)
     if (!m_psz)
         m_psz = ttStrDup(psz && *psz ? psz : "");
     else if (!psz || !*psz)
-        return;     // nothing to add
-    else {
+        return;  // nothing to add
+    else
+    {
         size_t cbNew = ttStrByteLen(psz);
         size_t cbOld = ttStrByteLen(m_psz);
         ttASSERT_MSG(cbNew + cbOld <= tt::MAX_STRING_LEN, "String is over 16 megs in size!");
         if (cbNew + cbOld > tt::MAX_STRING_LEN)
-            return;     // ignore it if it's too large
+            return;  // ignore it if it's too large
         m_psz = (char*) ttReAlloc(m_psz, cbNew + cbOld);
         ttStrCat(m_psz, psz);
     }
@@ -429,8 +438,9 @@ void ttCStr::operator+=(char ch)
     szTmp[1] = 0;
     if (!m_psz)
         m_psz = ttStrDup(szTmp);
-    else {
-        m_psz = (char*) ttReAlloc(m_psz, ttStrByteLen(m_psz) + sizeof(char));   // include room for ch
+    else
+    {
+        m_psz = (char*) ttReAlloc(m_psz, ttStrByteLen(m_psz) + sizeof(char));  // include room for ch
         ttStrCat(m_psz, DEST_SIZE, szTmp);
     }
 }
@@ -460,7 +470,7 @@ char ttCStr::operator[](size_t pos)
 
 char* cdecl ttCStr::printfAppend(const char* pszFormat, ...)
 {
-    ttCStr csz;
+    ttCStr  csz;
     va_list argList;
     va_start(argList, pszFormat);
     ttVPrintf(&csz.m_psz, pszFormat, argList);
@@ -514,12 +524,13 @@ int ttCStr::StrCat(const char* psz)
 
     if (!m_psz)
         m_psz = ttStrDup(psz);
-    else {
+    else
+    {
         size_t cbNew = ttStrByteLen(psz);
         size_t cbOld = ttStrByteLen(m_psz);
         ttASSERT_MSG(cbNew + cbOld <= tt::MAX_STRING_LEN, "String is over 16 megs in size!");
         if (cbNew + cbOld > tt::MAX_STRING_LEN)
-            return EOVERFLOW;       // ignore it if it's too large
+            return EOVERFLOW;  // ignore it if it's too large
         m_psz = (char*) ttReAlloc(m_psz, cbNew + cbOld);
         ttStrCat(m_psz, cbNew + cbOld, psz);
     }
@@ -535,12 +546,13 @@ int ttCStr::StrCopy(const char* psz)
 
     if (!m_psz)
         m_psz = ttStrDup(psz);
-    else {
+    else
+    {
         size_t cbNew = ttStrByteLen(psz);
         size_t cbOld = ttSize(m_psz);
         ttASSERT_MSG(cbNew + cbOld <= tt::MAX_STRING_LEN, "String is over 16 megs in size!");
         if (cbNew + cbOld > tt::MAX_STRING_LEN)
-            return EOVERFLOW;       // ignore it if it's too large
+            return EOVERFLOW;  // ignore it if it's too large
         ttStrDup(psz, &m_psz);
     }
     return 0;
@@ -585,7 +597,7 @@ char* ttCStr::GetString(const char* pszString, char chBegin, char chEnd)
 {
     ttASSERT_NONEMPTY(pszString);
 
-    Delete();   // current string, if any, should be deleted no matter what
+    Delete();  // current string, if any, should be deleted no matter what
 
     if (!pszString || !*pszString)
         return nullptr;
@@ -595,8 +607,9 @@ char* ttCStr::GetString(const char* pszString, char chBegin, char chEnd)
 
     if (cb == 0 || cb > tt::MAX_STRING_LEN)
         return nullptr;
-    else {
-        m_psz = (char*) ttMalloc(cb);       // this won't return if it fails, so you will never get a nullptr on return
+    else
+    {
+        m_psz = (char*) ttMalloc(cb);  // this won't return if it fails, so you will never get a nullptr on return
         *m_psz = 0;
     }
 
@@ -614,16 +627,17 @@ char* ttCStr::GetString(const char* pszString, char chBegin, char chEnd)
         while (*pszString != chEnd && *pszString)
             pszString = ttNextChar(pszString);
         strncpy_s(m_psz, DEST_SIZE, pszStart, pszString - pszStart);
-        m_psz[pszString - pszStart] = 0;    // make certain it is null terminated
+        m_psz[pszString - pszStart] = 0;  // make certain it is null terminated
     }
-    else {  // if the string didn't start with chBegin, so just copy the string
+    else
+    {  // if the string didn't start with chBegin, so just copy the string
         ttStrCpy(m_psz, ttSize(m_psz), pszString);
         pszString += cb;
     }
 
     // If there is a significant size difference, then ReAllocate the memory
 
-    if (cb > 32)    // don't bother ReAllocating if total allocation is 32 bytes or less
+    if (cb > 32)  // don't bother ReAllocating if total allocation is 32 bytes or less
         m_psz = (char*) ttReAlloc(m_psz, ttStrByteLen(m_psz));
     return m_psz;
 }
@@ -632,33 +646,34 @@ char* ttCStr::GetQuotedString(const char* pszQuote)
 {
     ttASSERT_NONEMPTY(pszQuote);
 
-    if (!pszQuote || !*pszQuote) {
-        Delete();   // any current string should be deleted no matter what
+    if (!pszQuote || !*pszQuote)
+    {
+        Delete();  // any current string should be deleted no matter what
         return nullptr;
     }
 
-    while (ttIsWhitespace(*pszQuote)) // step over any leading whitespace
+    while (ttIsWhitespace(*pszQuote))  // step over any leading whitespace
         ++pszQuote;
 
     switch (*pszQuote)
     {
         default:
-        case '"':   // CH_QUOTE
+        case '"':  // CH_QUOTE
             return GetString(pszQuote, CH_QUOTE, CH_QUOTE);
 
         case '\'':  // CH_SQUOTE
             return GetString(pszQuote, CH_SQUOTE, CH_SQUOTE);
 
-        case '`':   // CH_START_QUOTE
+        case '`':  // CH_START_QUOTE
             return GetString(pszQuote, CH_START_QUOTE, CH_END_QUOTE);
 
         case '<':
             return GetString(pszQuote, '<', '>');
 
-        case '[':   // CH_LEFT_BRACKET
+        case '[':  // CH_LEFT_BRACKET
             return GetString(pszQuote, '[', ']');
 
-        case '(':   // CH_OPEN_PAREN
+        case '(':  // CH_OPEN_PAREN
             return GetString(pszQuote, '[', ']');
     }
 }
@@ -668,7 +683,7 @@ bool ttCStr::GetEnv(const char* pszName)
     ttASSERT_NONEMPTY(pszName);
 
     size_t cbEnv = 0;
-    if (getenv_s(&cbEnv, nullptr, 0, pszName) == 0 && cbEnv > 0 && cbEnv < (8 * 1024))     // an environment variable larger then 8k is almost certainly bogus and a security risk to use
+    if (getenv_s(&cbEnv, nullptr, 0, pszName) == 0 && cbEnv > 0 && cbEnv < (8 * 1024))  // an environment variable larger then 8k is almost certainly bogus and a security risk to use
     {
         ReSize(cbEnv + 1);
         if (getenv_s(&cbEnv, m_psz, cbEnv, pszName) == 0)

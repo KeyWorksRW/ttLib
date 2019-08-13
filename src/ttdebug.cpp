@@ -6,38 +6,38 @@
 // License:   Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
-#include "pch.h"    // precompiled header
+#include "pch.h"  // precompiled header
 
 #include <stdio.h>
 
-#include "../include/ttdebug.h"         // ttASSERT macros
-#include "../include/ttstr.h"           // ttCStr
-#include "../include/ttcritsection.h"   // CCritSection
+#include "../include/ttdebug.h"        // ttASSERT macros
+#include "../include/ttstr.h"          // ttCStr
+#include "../include/ttcritsection.h"  // CCritSection
 
-bool (_cdecl *pttAssertHandlerA)(const char* pszMsg, const char* pszFile, const char* pszFunction, int line) = nullptr;
-bool (_cdecl *pttAssertHandlerW)(const wchar_t* pszMsg, const char* pszFile, const char* pszFunction, int line) = nullptr;
+bool(_cdecl* pttAssertHandlerA)(const char* pszMsg, const char* pszFile, const char* pszFunction, int line) = nullptr;
+bool(_cdecl* pttAssertHandlerW)(const wchar_t* pszMsg, const char* pszFile, const char* pszFunction, int line) = nullptr;
 
 const UINT tt::WMP_TRACE_GENERAL = WM_USER + 0x1f3;
-const UINT tt::WMP_TRACE_MSG   = WM_USER + 0x1f5;
-const UINT tt::WMP_CLEAR_TRACE = WM_USER + 0x1f9;       // clears the ttTrace window
+const UINT tt::WMP_TRACE_MSG = WM_USER + 0x1f5;
+const UINT tt::WMP_CLEAR_TRACE = WM_USER + 0x1f9;  // clears the ttTrace window
 
-    // DO NOT CHANGE THESE TWO NAMES! Multiple applications expect these names and will no longer send trace messages if you change them.
+// DO NOT CHANGE THESE TWO NAMES! Multiple applications expect these names and will no longer send trace messages if you change them.
 
-const char* tt::txtTraceClass     = "KeyViewMsgs";
+const char* tt::txtTraceClass = "KeyViewMsgs";
 const char* tt::txtTraceShareName = "hhw_share";
-HWND tt::hwndTrace = NULL;
+HWND        tt::hwndTrace = NULL;
 
 namespace ttdbg
 {
     ttCCritSection crtAssert;
-    bool bNoAssert = false;     // Setting this to true will cause AssertionMsg to return without doing anything
-    bool bNoRecurse = false;
+    bool           bNoAssert = false;  // Setting this to true will cause AssertionMsg to return without doing anything
+    bool           bNoRecurse = false;
 
-    HANDLE hTraceMapping = NULL;
+    HANDLE         hTraceMapping = NULL;
     ttCCritSection g_csTrace;
-    char* g_pszTraceMap = nullptr;
-    DWORD g_cLastTickCheck = 0;     // used to determine whether to check for hwndTrace again
-}
+    char*          g_pszTraceMap = nullptr;
+    DWORD          g_cLastTickCheck = 0;  // used to determine whether to check for hwndTrace again
+}  // namespace ttdbg
 
 #if 0
 // [randalphwa - 3/5/2019] We don't currently expose this, but if a caller needs access to these variables, they could
@@ -110,14 +110,14 @@ bool ttAssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFunc
     crtAssert.Unlock();
     ExitProcess((UINT) -1);
 
-#else    // not defined(_WIN32)
+#else   // not defined(_WIN32)
     int answer = wxMessageBox(szBuf, "Click Yes to break into debugger", wxYES_NO | wxICON_ERROR);
     if (answer == wxYES)
         wxTrap();
 
     crtAssert.Unlock();
     return false;
-#endif    // defined(_WIN32)
+#endif  // defined(_WIN32)
 }
 
 bool ttAssertionMsg(const wchar_t* pwszMsg, const char* pszFile, const char* pszFunction, int line)
@@ -130,7 +130,7 @@ bool ttAssertionMsg(const wchar_t* pwszMsg, const char* pszFile, const char* psz
 
     crtAssert.Lock();
     bool bResult;
-    {   // use a brace so that cszMsg gets deleted before we release the critical section
+    {  // use a brace so that cszMsg gets deleted before we release the critical section
         ttCStr cszMsg;
 
         // We special case a null or empty pszMsg -- ttASSERT_NONEMPTY(ptr) takes advantage of this
@@ -160,8 +160,8 @@ void ttdoReportLastError(const char* pszFile, const char* pszFunc, int line)
     char* pszMsg;
 
     FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-        NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        (LPTSTR) &pszMsg, 0, NULL);
+                  NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                  (LPTSTR) &pszMsg, 0, NULL);
 
     ttAssertionMsg(pszMsg, pszFile, pszFunc, line);
 
@@ -195,7 +195,7 @@ void __cdecl ttTrace(const char* pszFormat, ...)
         // Trace could be called a lot, and we don't really want to be searching for the window constantly.
 
         DWORD cCurTick = GetTickCount();
-        cCurTick /= 1000;   // convert to seconds
+        cCurTick /= 1000;  // convert to seconds
 
         if (g_cLastTickCheck == 0 || cCurTick > g_cLastTickCheck + 5)
         {
@@ -208,7 +208,7 @@ void __cdecl ttTrace(const char* pszFormat, ...)
         }
     }
 
-    ttCStr csz;
+    ttCStr  csz;
     va_list argList;
     va_start(argList, pszFormat);
     ttVPrintf(csz.GetPPtr(), pszFormat, argList);
@@ -250,4 +250,4 @@ void ttTraceClear()
     SendMessageA(tt::hwndTrace, tt::WMP_CLEAR_TRACE, 0, 0);
 }
 
-#endif    // defined(_WIN32)
+#endif  // defined(_WIN32)

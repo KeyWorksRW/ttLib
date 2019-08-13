@@ -11,7 +11,7 @@
 #include "../include/tthashpair.h"  // ttCHashPair
 #include "../include/ttheap.h"      // memory allocation routines
 
-#define GROWTH_MALLOC  16
+#define GROWTH_MALLOC 16
 
 ttCHashPair::ttCHashPair(size_t EstimatedMembers)
 {
@@ -20,7 +20,8 @@ ttCHashPair::ttCHashPair(size_t EstimatedMembers)
         m_cAllocated = 0;
         m_aData = nullptr;
     }
-    else {
+    else
+    {
         m_aData = (HASH_PAIR*) ttMalloc(EstimatedMembers * sizeof(HASH_PAIR));
         m_cAllocated = EstimatedMembers;
     }
@@ -61,7 +62,7 @@ void ttCHashPair::Add(size_t hash, size_t val)
     }
 
     HASH_PAIR* pInsert = FindInsertionPoint(hash);
-    if (pInsert->hash == hash)    // If hash is already added, update the value
+    if (pInsert->hash == hash)  // If hash is already added, update the value
     {
         pInsert->val = val;
         return;
@@ -126,7 +127,8 @@ size_t ttCHashPair::GetVal(size_t hash) const
                 pHigh = pMid - 1;
                 num = num & 1 ? half : half - 1;
             }
-            else {
+            else
+            {
                 pLow = pMid + 1;
                 num = half;
             }
@@ -142,11 +144,11 @@ size_t ttCHashPair::GetVal(size_t hash) const
 ttCHashPair::HASH_PAIR* ttCHashPair::FindInsertionPoint(size_t hash) const
 {
     if (m_aData[0].hash > hash)
-        return &m_aData[0]; // insert at beginning
+        return &m_aData[0];  // insert at beginning
 
     HASH_PAIR* pHigh = m_aData + (m_cItems - 1);
     if (pHigh->hash < hash)
-        return pHigh + 1;   // insert at end
+        return pHigh + 1;  // insert at end
 
     HASH_PAIR* pLow = m_aData;
     HASH_PAIR* pMid;
@@ -159,15 +161,16 @@ ttCHashPair::HASH_PAIR* ttCHashPair::FindInsertionPoint(size_t hash) const
         {
             pMid = pLow + (num & 1 ? half : (half - 1));
             if (pMid->hash == hash)
-                return pMid;    // already added
+                return pMid;  // already added
             if (pMid->hash > hash)
             {
                 pHigh = pMid - 1;
                 if (pHigh->hash < hash)
-                    return pMid;    // insert at end
+                    return pMid;  // insert at end
                 num = num & 1 ? half : half - 1;
             }
-            else {
+            else
+            {
                 pLow = pMid + 1;
                 num = half;
             }
@@ -200,7 +203,8 @@ ttCHashPair::HASH_PAIR* ttCHashPair::GetHashPair(size_t hash) const
                 pHigh = pMid - 1;
                 num = num & 1 ? half : half - 1;
             }
-            else {
+            else
+            {
                 pLow = pMid + 1;
                 num = half;
             }

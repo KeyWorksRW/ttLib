@@ -8,8 +8,8 @@
 
 #include "pch.h"
 
-#include "../include/ttdebug.h"         // ttASSERT macros
-#include "../include/ttmultithread.h"   // ttCMultiThrd
+#include "../include/ttdebug.h"        // ttASSERT macros
+#include "../include/ttmultithread.h"  // ttCMultiThrd
 
 DWORD __stdcall _ttMultiThread(void* pv);
 
@@ -28,8 +28,8 @@ ttCMultiThrd::~ttCMultiThrd()
         m_bEndThreads = true;
         for (size_t iThread = 0; iThread < m_cThreads; iThread++)
         {
-            ReleaseSemaphore(m_aThrdInfo[iThread].hsemStart, 1, NULL);      // thread can't exit until you let it start
-            WaitForSingleObject(m_aThrdInfo[iThread].hThread, INFINITE);    // wait for thread to terminate
+            ReleaseSemaphore(m_aThrdInfo[iThread].hsemStart, 1, NULL);    // thread can't exit until you let it start
+            WaitForSingleObject(m_aThrdInfo[iThread].hThread, INFINITE);  // wait for thread to terminate
             CloseHandle(m_aThrdInfo[iThread].hsemStart);
             CloseHandle(m_aThrdInfo[iThread].hsemDone);
             CloseHandle(m_aThrdInfo[iThread].hThread);
@@ -39,7 +39,7 @@ ttCMultiThrd::~ttCMultiThrd()
         ttFree(m_ahsemDone);
 }
 
-void ttCMultiThrd::InitializeThreads(size_t cThreads)   // 0 means create as many threads as there are CPUs
+void ttCMultiThrd::InitializeThreads(size_t cThreads)  // 0 means create as many threads as there are CPUs
 {
     SYSTEM_INFO si;
     GetSystemInfo(&si);
@@ -48,7 +48,7 @@ void ttCMultiThrd::InitializeThreads(size_t cThreads)   // 0 means create as man
     ttASSERT(cThreads <= (size_t) cpus);
     ttASSERT_MSG(!m_cThreads, "You cannot call InitializeThreads more then once!");
     if (m_cThreads)
-        return; // already initialized
+        return;  // already initialized
 
     if (cThreads == 0)
         cThreads = (size_t) cpus;
@@ -61,10 +61,10 @@ void ttCMultiThrd::InitializeThreads(size_t cThreads)   // 0 means create as man
     for (size_t iThread = 0; iThread < cThreads; iThread++)
     {
         m_aThrdInfo[iThread].hsemStart = CreateSemaphore(NULL, 0, 1, NULL);
-        m_aThrdInfo[iThread].hsemDone  = CreateSemaphore(NULL, 1, 1, NULL);
+        m_aThrdInfo[iThread].hsemDone = CreateSemaphore(NULL, 1, 1, NULL);
         DWORD thrdID;
         // REVIEW: [ralphw - 05-20-2018] Should switch to _beginthreadex() for portability
-        m_aThrdInfo[iThread].hThread  = (HANDLE) CreateThread(NULL, 0, _ttMultiThread, (LPVOID) this, 0, &thrdID);
+        m_aThrdInfo[iThread].hThread = (HANDLE) CreateThread(NULL, 0, _ttMultiThread, (LPVOID) this, 0, &thrdID);
         ttASSERT(m_aThrdInfo[iThread].hThread);
         if (!m_aThrdInfo[iThread].hThread)
         {
@@ -127,9 +127,9 @@ size_t ttGetCPUCount()
 DWORD __stdcall _ttMultiThread(void* pv)
 {
     ttCMultiThrd* pThis = (ttCMultiThrd*) pv;
-    DWORD thrdID = GetCurrentThreadId();
-    auto pos = pThis->m_threadMap.FindKey(thrdID);
-    ttASSERT(pos >= 0); // theoretically impossible
+    DWORD         thrdID = GetCurrentThreadId();
+    auto          pos = pThis->m_threadMap.FindKey(thrdID);
+    ttASSERT(pos >= 0);  // theoretically impossible
     ttCMultiThrd::MULTI_THRD_INFO* pThrdInfo = pThis->m_threadMap.GetValueAt(pos);
 
     for (;;)

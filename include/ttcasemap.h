@@ -54,6 +54,7 @@
 #ifndef __TTLIB_TTMSG_MAP_H__
 #define __TTLIB_TTMSG_MAP_H__
 
+// clang-format off
 #ifndef GET_X_LPARAM
     #define GET_X_LPARAM(lp) ((int) (short) LOWORD(lp))
     #define GET_Y_LPARAM(lp) ((int) (short) HIWORD(lp))
@@ -980,6 +981,7 @@
 #define TTMSG_ANY(msg, func) \
     case msg: \
         lResult = func(wParam, lParam); \
-        return true; \
+        return true;
 
+// clang-format on
 #endif  // not __TTLIB_TTMSG_MAP_H__

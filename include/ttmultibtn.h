@@ -10,13 +10,14 @@
 
 #if defined(_WIN32)
 
-#include "ttarray.h"        // ttCArray
+#include "ttarray.h"  // ttCArray
 
 #ifdef _MSC_VER
-    #pragma warning(disable: 26495) // m_btnShade is uninitialized (r.w.: which is fine, it's not used until Initialize is called which sets it)
-#endif // _MSC_VER
+#pragma warning(disable : 26495)  // m_btnShade is uninitialized (r.w.: which is fine, it's not used until Initialize is called which sets it)
+#endif                            // _MSC_VER
 
-namespace ttpriv {
+namespace ttpriv
+{
     BOOL WINAPI EnumBtnProc(HWND hwnd, LPARAM lval);
 }
 
@@ -25,14 +26,15 @@ class ttCShadeBtn;
 class ttCMultiBtn
 {
 public:
-    ttCMultiBtn() { }
+    ttCMultiBtn() {}
     ~ttCMultiBtn();
 
-    void SetIcon(int idBtn, int idIcon, UINT nIconAlign = BS_LEFT);
-    void SetIcon(int idBtn, const char* pszIconName, UINT nIconAlign = BS_LEFT);
+    void         SetIcon(int idBtn, int idIcon, UINT nIconAlign = BS_LEFT);
+    void         SetIcon(int idBtn, const char* pszIconName, UINT nIconAlign = BS_LEFT);
     ttCShadeBtn* FindShadeBtn(int id);
 
-    typedef enum {          // must be identical to ttCShadeBtn (ttshadebtn.h)
+    typedef enum
+    {  // must be identical to ttCShadeBtn (ttshadebtn.h)
         SHS_NOISE = 0,
         SHS_DIAGSHADE = 1,
         SHS_HSHADE = 2,
@@ -54,7 +56,7 @@ private:
     // Class members
 
     ttCArray<ttCShadeBtn*> m_aBtns;
-    BTN_SHADE m_btnShade;
+    BTN_SHADE              m_btnShade;
 };
 
-#endif    // defined(_WIN32)
+#endif  // defined(_WIN32)

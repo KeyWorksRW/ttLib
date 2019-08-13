@@ -15,49 +15,50 @@
 #ifndef __TTLIB_STRLIST_H__
 #define __TTLIB_STRLIST_H__
 
-#include "ttheap.h"     // ttCHeap
-#include "tthashpair.h" // ttCHashPair
-#include "ttstr.h"      // ttCStr
+#include "ttheap.h"      // ttCHeap
+#include "tthashpair.h"  // ttCHashPair
+#include "ttstr.h"       // ttCStr
 
 class ttCList : public ttCHeap
 {
 public:
-    ttCList(bool bSerialize = true);        // true makes the class thread safe
+    ttCList(bool bSerialize = true);  // true makes the class thread safe
     ttCList(HANDLE hHeap);
 
-    enum {
-        FLG_ADD_DUPLICATES  = 1 << 0,   // add the string even if it has already been added
-        FLG_IGNORE_CASE     = 1 << 1,
-        FLG_URL_STRINGS     = 1 << 2,   // string case is ignored, '\' and '/' are considered the same
+    enum
+    {
+        FLG_ADD_DUPLICATES = 1 << 0,  // add the string even if it has already been added
+        FLG_IGNORE_CASE = 1 << 1,
+        FLG_URL_STRINGS = 1 << 2,  // string case is ignored, '\' and '/' are considered the same
     };
 
     // SetFlags() will not change any previously added strings
 
-    void SetFlags(size_t flags);    // any combination of FLG_ADD_DUPLICATES | FLG_IGNORE_CASE | FLG_URL_STRINGS
+    void SetFlags(size_t flags);  // any combination of FLG_ADD_DUPLICATES | FLG_IGNORE_CASE | FLG_URL_STRINGS
     void AllowDuplicates() { SetFlags(FLG_ADD_DUPLICATES); }
 
-    size_t  Add(const char* psz);
-    bool    Find(const char* psz) const { return InRange(GetPos(psz)); }
-    size_t  GetPos(const char* psz) const;  // returns -1 if not found
-    void    InsertAt(size_t pos, const char* psz);
-    void    Remove(const char* psz);
-    void    Remove(size_t pos);
-    void    Replace(size_t pos, const char* psz);
-    void    Swap(size_t posA, size_t posB);
+    size_t Add(const char* psz);
+    bool   Find(const char* psz) const { return InRange(GetPos(psz)); }
+    size_t GetPos(const char* psz) const;  // returns -1 if not found
+    void   InsertAt(size_t pos, const char* psz);
+    void   Remove(const char* psz);
+    void   Remove(size_t pos);
+    void   Replace(size_t pos, const char* psz);
+    void   Swap(size_t posA, size_t posB);
 
-    size_t  GetCount() const { return m_cItems; }
-    bool    IsEmpty() const { return m_cItems == 0; }
-    bool    InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
-    void    Delete();   // deletes all strings
+    size_t GetCount() const { return m_cItems; }
+    bool   IsEmpty() const { return m_cItems == 0; }
+    bool   InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
+    void   Delete();  // deletes all strings
 
-    char*   Get(size_t pos) const;  // zero-based index, will return nullptr if pos >= GetCount()
+    char* Get(size_t pos) const;  // zero-based index, will return nullptr if pos >= GetCount()
 
     // CSimpleArray/CAtlArray equivalents
 
-    size_t  GetSize() const { return GetCount(); }
-    void    RemoveAll() { Delete(); }
-    void    RemoveAt(size_t pos) { Remove(pos); }
-    void    SetAt(size_t pos, const char* psz) { Replace(pos, psz); }
+    size_t GetSize() const { return GetCount(); }
+    void   RemoveAll() { Delete(); }
+    void   RemoveAt(size_t pos) { Remove(pos); }
+    void   SetAt(size_t pos, const char* psz) { Replace(pos, psz); }
 
     const char* GetAt(size_t pos) const { return Get(pos); }
 
@@ -75,10 +76,10 @@ public:
 
     void  BeginEnum() { m_enum = 0; }
     bool  Enum();
-    char* EnumValue();  // returns pointer to last enumerated string, or nullptr if no string found
-    bool  Enum(const char** ppszResult);    // use this if you want to receive a pointer to the string
+    char* EnumValue();                    // returns pointer to last enumerated string, or nullptr if no string found
+    bool  Enum(const char** ppszResult);  // use this if you want to receive a pointer to the string
 
-    void Sort();                // sort strings into alphabetical order
+    void Sort();  // sort strings into alphabetical order
 
     // Use the following with caution! All strings MUST have at least iColumn characters!
 
@@ -87,7 +88,7 @@ public:
     void  operator+=(const char* psz) { Add(psz); }
     char* operator[](size_t pos) const { return Get(pos); }
 
-    char** GetArray() { return m_aptrs; }   // use with EXTREME caution, provided primarily for testing
+    char** GetArray() { return m_aptrs; }  // use with EXTREME caution, provided primarily for testing
 
 protected:
     inline void swap(ptrdiff_t pos1, ptrdiff_t pos2)
@@ -116,7 +117,7 @@ protected:
     size_t m_SortColumn;
 
     ttCHashPair m_HashPair;
-    bool   m_bSerialize;
+    bool        m_bSerialize;
 };
 
 // Holds a pair of strings, referenced as Key and Val. Note that unlike ttCList, the default behaviour is to allow
@@ -125,28 +126,28 @@ protected:
 class ttCDblList : public ttCHeap
 {
 public:
-    void IgnoreCase() { m_bIgnoreCase = true; } // ignore case when searching for keys or values
-    void PreventDuplicateKeys();                // key won't be added if it already exists
+    void IgnoreCase() { m_bIgnoreCase = true; }  // ignore case when searching for keys or values
+    void PreventDuplicateKeys();                 // key won't be added if it already exists
 
     ttCDblList(bool bSerialize = false);
     ~ttCDblList();
 
     void Add(const char* pszKey, const char* pszVal);
 
-    bool    FindKey(const char* pszKey, size_t* ppos = nullptr) const;
-    bool    FindVal(const char* pszVal, size_t* ppos = nullptr) const;
-    char*   GetKeyAt(size_t pos) const;
-    char*   GetValAt(size_t pos) const;
-    char*   GetMatchingVal(const char* pszKey) const;
+    bool  FindKey(const char* pszKey, size_t* ppos = nullptr) const;
+    bool  FindVal(const char* pszVal, size_t* ppos = nullptr) const;
+    char* GetKeyAt(size_t pos) const;
+    char* GetValAt(size_t pos) const;
+    char* GetMatchingVal(const char* pszKey) const;
 
-    char*   GetValueAt(size_t pos) const { return GetValAt(pos); }  // to match CSimpleArray::GetValueAt
+    char* GetValueAt(size_t pos) const { return GetValAt(pos); }  // to match CSimpleArray::GetValueAt
 
-    void    Replace(size_t pos, const char* pszKey, const char* pszVal);
+    void Replace(size_t pos, const char* pszKey, const char* pszVal);
 
-    size_t  GetCount() const { return m_cItems; }
-    bool    IsEmpty() const { return m_cItems == 0; }
-    bool    InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
-    void    Delete();   // deletes all strings
+    size_t GetCount() const { return m_cItems; }
+    bool   IsEmpty() const { return m_cItems == 0; }
+    bool   InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
+    void   Delete();  // deletes all strings
 
     void SortKeys();
     void SortVals();
@@ -163,7 +164,8 @@ protected:
     }
     void qsorti(ptrdiff_t low, ptrdiff_t high);
 
-    typedef struct {
+    typedef struct
+    {
         char* pszKey;
         char* pszVal;
     } DBLPTRS;
@@ -186,14 +188,15 @@ protected:
 class ttCStrIntList : public ttCHeap
 {
 public:
-    typedef struct {
+    typedef struct
+    {
         char*      pszKey;
         ptrdiff_t* pVal;
     } DBLPTRS;
 
     ttCStrIntList(bool bSerialize = false);
 
-    void IgnoreCase() { m_bIgnoreCase = true; } // ignore case when searching for keys
+    void IgnoreCase() { m_bIgnoreCase = true; }  // ignore case when searching for keys
 
     /*
         If the string already exists, but the Val doesn't, Add() will add the Val to the array of Vals
@@ -204,18 +207,18 @@ public:
         Add("my key", 2);   // Now both 1 and 2 are associated with "my key"
     */
 
-    void    Add(const char* pszKey, ptrdiff_t newVal);
-    bool    Add(size_t posKey, ptrdiff_t newVal);   // Add vals to an existing key
-    bool    FindKey(const char* pszKey, size_t* ppos = nullptr) const;
-    size_t  GetCount() const { return m_cItems; }   // returns the number of keys actually added (duplicates are not added)
-    bool    InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
+    void   Add(const char* pszKey, ptrdiff_t newVal);
+    bool   Add(size_t posKey, ptrdiff_t newVal);  // Add vals to an existing key
+    bool   FindKey(const char* pszKey, size_t* ppos = nullptr) const;
+    size_t GetCount() const { return m_cItems; }  // returns the number of keys actually added (duplicates are not added)
+    bool   InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
 
-    void    Delete();   // deletes all strings
+    void Delete();  // deletes all strings
 
     // To get all the numbers, either use Enum() or call these GetVal routines. Be aware that any pointer to
     // the values is only valid for as long as no additional values are added to the key
 
-    bool GetValCount(const char* pszKey, ptrdiff_t* pVal) const;
+    bool      GetValCount(const char* pszKey, ptrdiff_t* pVal) const;
     ptrdiff_t GetValCount(size_t posKey) const;
 
     bool  GetVal(const char* pszKey, ptrdiff_t* pVal, size_t posVal = 0) const;
@@ -256,33 +259,34 @@ protected:
 // This class is primarily designed for use with localized id/string pairs, which is why it doesn't have as much
 // functionality as the other string list classes.
 
-class ttCCritSection;   // forward definition
+class ttCCritSection;  // forward definition
 
 class ttCIntStrList
 {
 public:
-    ttCIntStrList(void);     // Until issue #43 (https://github.com/KeyWorksRW/keyBld/issues/43) gets implemented
+    ttCIntStrList(void);  // Until issue #43 (https://github.com/KeyWorksRW/keyBld/issues/43) gets implemented
     ~ttCIntStrList();
 
-    const char* Add(size_t id, const char* psz);   // returns pointer to the duplicated string, not the original
+    const char* Add(size_t id, const char* psz);  // returns pointer to the duplicated string, not the original
     const char* Find(size_t id);
-    size_t      GetCount() const { return m_cItems; }   // returns the number of unique id/string pairs added (duplicates ids are not added)
+    size_t      GetCount() const { return m_cItems; }  // returns the number of unique id/string pairs added (duplicates ids are not added)
 
-    void Delete();   // resets the list to empty state (frees all string memory).
+    void Delete();  // resets the list to empty state (frees all string memory).
 
     bool InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
 
 private:
-    typedef struct {
-        size_t id;
+    typedef struct
+    {
+        size_t      id;
         const char* psz;
     } KEYVAL_PAIR;
 
     // Class members
 
-    size_t m_cItems;
-    size_t m_cAllocated;
-    KEYVAL_PAIR* m_aData;
+    size_t          m_cItems;
+    size_t          m_cAllocated;
+    KEYVAL_PAIR*    m_aData;
     ttCCritSection* m_pcrit;
 };
 

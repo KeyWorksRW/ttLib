@@ -6,10 +6,10 @@
 // License:   Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
-#include "pch.h"        // precompiled header
+#include "pch.h"  // precompiled header
 
-#include "../include/ttdebug.h" // ASSERTs
-#include "../include/ttheap.h"  // ttCHeap
+#include "../include/ttdebug.h"  // ASSERTs
+#include "../include/ttheap.h"   // ttCHeap
 
 #if defined(_WIN32)
 
@@ -31,14 +31,14 @@ ttCHeap tt::MainHeap;
 ttCHeap::ttCHeap()
 {
     m_hHeap = GetProcessHeap();
-    m_bCreated = false; // prevent deleting heap in destructor
+    m_bCreated = false;  // prevent deleting heap in destructor
 }
 
 ttCHeap::ttCHeap(bool bSerialize)
 {
     m_hHeap = HeapCreate(bSerialize ? 0 : HEAP_NO_SERIALIZE, 4096, 0);
     ttASSERT_MSG(m_hHeap, "Unable to create heap");
-    if (m_hHeap == nullptr)   // if we can't create a new heap, switch to the process heap
+    if (m_hHeap == nullptr)  // if we can't create a new heap, switch to the process heap
     {
         m_bCreated = false;
         m_hHeap = GetProcessHeap();
@@ -51,7 +51,7 @@ ttCHeap::ttCHeap(HANDLE hHeap)
 {
     ttASSERT(hHeap);
     m_hHeap = hHeap;
-    m_bCreated = false; // prevent deleting heap in destructor
+    m_bCreated = false;  // prevent deleting heap in destructor
 }
 
 ttCHeap::~ttCHeap()
@@ -108,7 +108,7 @@ char* ttCHeap::ttStrDup(const char* psz)
         psz = "";
 
     size_t cb = ttStrByteLen(psz);
-    char* pszDst = (char*) ttMalloc(cb);
+    char*  pszDst = (char*) ttMalloc(cb);
     memcpy(pszDst, psz, cb);
     return pszDst;
 }
@@ -120,7 +120,7 @@ wchar_t* ttCHeap::ttStrDup(const wchar_t* pwsz)
     if (!pwsz || !*pwsz)
         pwsz = L"";
 
-    size_t cb = ttStrByteLen(pwsz);
+    size_t   cb = ttStrByteLen(pwsz);
     wchar_t* pwszDst = (wchar_t*) ttMalloc(cb);
     memcpy(pwszDst, pwsz, cb);
     return pwszDst;
@@ -150,17 +150,53 @@ wchar_t* ttCHeap::ttStrDup(const wchar_t* pszSrc, wchar_t** pszDst)
     return *pszDst;
 }
 
-void*    ttCalloc(size_t cb) { return tt::MainHeap.ttCalloc(cb); }
-void*    ttCalloc(size_t num, size_t cb) { return tt::MainHeap.ttCalloc(num * cb); } // for compatability with C++ standard library
-void     ttFree(void* pv) { tt::MainHeap.ttFree(pv); }
-void*    ttMalloc(size_t cb) { return tt::MainHeap.ttMalloc(cb); }
-void*    ttReAlloc(void* pv, size_t cbNew) { return tt::MainHeap.ttReAlloc(pv, cbNew); }
-void*    ttReCalloc(void* pv, size_t cbNew) { return tt::MainHeap.ttReCalloc(pv, cbNew); }
-char*    ttStrDup(const char* psz) { return tt::MainHeap.ttStrDup(psz); }
-wchar_t* ttStrDup(const wchar_t* pwsz) { return tt::MainHeap.ttStrDup(pwsz); }
-char*    ttStrDup(const char* psz, char** ppszDst) { return tt::MainHeap.ttStrDup(psz, ppszDst); }
-wchar_t* ttStrDup(const wchar_t* psz, wchar_t** ppszDst) { return tt::MainHeap.ttStrDup(psz, ppszDst); }
-size_t   ttSize(const void* pv) { return tt::MainHeap.ttSize(pv); }
-bool     ttValidate(const void* pv) { return tt::MainHeap.ttValidate(pv); }
+void* ttCalloc(size_t cb)
+{
+    return tt::MainHeap.ttCalloc(cb);
+}
+void* ttCalloc(size_t num, size_t cb)
+{
+    return tt::MainHeap.ttCalloc(num * cb);
+}  // for compatability with C++ standard library
+void ttFree(void* pv)
+{
+    tt::MainHeap.ttFree(pv);
+}
+void* ttMalloc(size_t cb)
+{
+    return tt::MainHeap.ttMalloc(cb);
+}
+void* ttReAlloc(void* pv, size_t cbNew)
+{
+    return tt::MainHeap.ttReAlloc(pv, cbNew);
+}
+void* ttReCalloc(void* pv, size_t cbNew)
+{
+    return tt::MainHeap.ttReCalloc(pv, cbNew);
+}
+char* ttStrDup(const char* psz)
+{
+    return tt::MainHeap.ttStrDup(psz);
+}
+wchar_t* ttStrDup(const wchar_t* pwsz)
+{
+    return tt::MainHeap.ttStrDup(pwsz);
+}
+char* ttStrDup(const char* psz, char** ppszDst)
+{
+    return tt::MainHeap.ttStrDup(psz, ppszDst);
+}
+wchar_t* ttStrDup(const wchar_t* psz, wchar_t** ppszDst)
+{
+    return tt::MainHeap.ttStrDup(psz, ppszDst);
+}
+size_t ttSize(const void* pv)
+{
+    return tt::MainHeap.ttSize(pv);
+}
+bool ttValidate(const void* pv)
+{
+    return tt::MainHeap.ttValidate(pv);
+}
 
-#endif    // defined(_WIN32)
+#endif  // defined(_WIN32)

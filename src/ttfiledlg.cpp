@@ -54,7 +54,7 @@ bool ttCFileDlg::GetOpenName()
     if (!::GetOpenFileNameA(m_pofn))
     {
 #ifdef _DEBUG
-        DWORD error = CommDlgExtendedError();   // Will be 0 if the user cancelled, else it's an actual error
+        DWORD error = CommDlgExtendedError();  // Will be 0 if the user cancelled, else it's an actual error
         ttASSERT_MSG(error == 0, "An error occurred in the Open dialog box");
 #endif
         return false;
@@ -73,7 +73,7 @@ bool ttCFileDlg::GetSaveName()
     if (!::GetSaveFileNameA(m_pofn))
     {
 #ifdef _DEBUG
-        DWORD error = CommDlgExtendedError();   // Will be 0 if the user cancelled, else it's an actual error
+        DWORD error = CommDlgExtendedError();  // Will be 0 if the user cancelled, else it's an actual error
         ttASSERT_MSG(error == 0, "An error occurred in the Open dialog box");
 #endif
         return false;
@@ -85,7 +85,7 @@ bool ttCFileDlg::GetSaveName()
 void ttCFileDlg::FixExtension()
 {
     if (ttStrChr(m_cszFileName, '.'))
-        return; // we have an extension, return
+        return;  // we have an extension, return
 
     const char* psz = m_pofn->lpstrFilter;
     for (DWORD i = 1; i < m_pofn->nFilterIndex; i++)
@@ -147,7 +147,7 @@ UINT_PTR CALLBACK ttpriv::OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */,
 
         if (!IsRectEmpty(&pThis->m_rcPosition))
             pThis->m_bRepositionWindow = true;
-#if 0   // REVIEW: [randalphwa - 09-03-2018] enable this if we add CenterWindow()
+#if 0  // REVIEW: [randalphwa - 09-03-2018] enable this if we add CenterWindow()
         else
             CenterWindow(GetParent(GetParent(hdlg)), GetParent(hdlg));
 #endif
@@ -157,26 +157,26 @@ UINT_PTR CALLBACK ttpriv::OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */,
     if (uMsg == WM_NOTIFY)
     {
         OFNOTIFY* ofn = (OFNOTIFY*) lParam;
-        switch (ofn->hdr.code) {
-
-            // We cannot reposition the window during the CDN_INITDONE or WM_INITDIALOG messages because the
-            // dialog will not be drawn correctly, and cannot be resized (system determines dialog
-            // size/layout after this message is processed). It also doesn't work to hide the window and
-            // display it later because the system will show the window after we tell it to be hidden. So
-            // instead, we track the last notification message we receive before the dialog is displayed, and
-            // set the dialog size/position there.
+        switch (ofn->hdr.code)
+        {
+                // We cannot reposition the window during the CDN_INITDONE or WM_INITDIALOG messages because the
+                // dialog will not be drawn correctly, and cannot be resized (system determines dialog
+                // size/layout after this message is processed). It also doesn't work to hide the window and
+                // display it later because the system will show the window after we tell it to be hidden. So
+                // instead, we track the last notification message we receive before the dialog is displayed, and
+                // set the dialog size/position there.
 
             case CDN_FOLDERCHANGE:
+            {
+                ttCFileDlg* pThis = (ttCFileDlg*) GetWindowLongPtr(hdlg, GWLP_USERDATA);
+                if (pThis->m_bRepositionWindow)
                 {
-                    ttCFileDlg* pThis = (ttCFileDlg*) GetWindowLongPtr(hdlg, GWLP_USERDATA);
-                    if (pThis->m_bRepositionWindow)
-                    {
-                        pThis->m_bRepositionWindow = false;
-                        MoveWindow(GetParent(hdlg), pThis->m_rcPosition.left, pThis->m_rcPosition.top,
-                            ttRC_WIDTH(pThis->m_rcPosition), ttRC_HEIGHT(pThis->m_rcPosition), FALSE);
-                    }
+                    pThis->m_bRepositionWindow = false;
+                    MoveWindow(GetParent(hdlg), pThis->m_rcPosition.left, pThis->m_rcPosition.top,
+                               ttRC_WIDTH(pThis->m_rcPosition), ttRC_HEIGHT(pThis->m_rcPosition), FALSE);
                 }
-                break;
+            }
+            break;
         }
     }
     else if (uMsg == WM_DESTROY)
@@ -197,4 +197,4 @@ void ttCFileDlg::SetInitialDir(const char* pszFolder)
     m_pofn->lpstrInitialDir = m_cszSetDir;
 }
 
-#endif    // defined(_WIN32)
+#endif  // defined(_WIN32)

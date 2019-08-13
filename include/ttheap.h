@@ -37,8 +37,8 @@ class ttCHeap
 {
 public:
     ttCHeap();
-    ttCHeap(bool bSerialize);   // Creates a sub-heap. Use true for thread safe, false for speed (but not thread safe)
-    ttCHeap(HANDLE hHeap);      // Pass in a heap handle or another ttCHeap class (which will call the HANDLE() operator)
+    ttCHeap(bool bSerialize);  // Creates a sub-heap. Use true for thread safe, false for speed (but not thread safe)
+    ttCHeap(HANDLE hHeap);     // Pass in a heap handle or another ttCHeap class (which will call the HANDLE() operator)
 
     ~ttCHeap();
 
@@ -52,30 +52,39 @@ public:
     void* ttReAlloc(void* pv, size_t cb);
     void* ttReCalloc(void* pv, size_t cb);
 
-    void  ttFree(void* pv) { if (pv) HeapFree(m_hHeap, 0, pv); }
-    void  ttDelete(void* pv) { if (pv) HeapFree(m_hHeap, 0, pv); }  // identical to ttFree
+    void ttFree(void* pv)
+    {
+        if (pv)
+            HeapFree(m_hHeap, 0, pv);
+    }
+    void ttDelete(void* pv)
+    {
+        if (pv)
+            HeapFree(m_hHeap, 0, pv);
+    }  // identical to ttFree
 
     char*    ttStrDup(const char* psz);
     wchar_t* ttStrDup(const wchar_t* pwsz);
 
-    char*    ttStrDup(const char* psz, char** ppszDst);      // allocates/ReAllocates *ppszDst
+    char*    ttStrDup(const char* psz, char** ppszDst);  // allocates/ReAllocates *ppszDst
     wchar_t* ttStrDup(const wchar_t* psz, wchar_t** ppszDst);
 
-    size_t  ttSize(const void* pv) { return pv ? HeapSize(m_hHeap, 0, pv) : 0; }
-    bool    ttValidate(const void* pv) { return HeapValidate(m_hHeap, 0, pv); }
+    size_t ttSize(const void* pv) { return pv ? HeapSize(m_hHeap, 0, pv) : 0; }
+    bool   ttValidate(const void* pv) { return HeapValidate(m_hHeap, 0, pv); }
 
     operator HANDLE() const { return m_hHeap; }
 
 protected:
     // Class members
 
-    HANDLE  m_hHeap;
-    bool    m_bCreated;
-}; // end ttCHeap
+    HANDLE m_hHeap;
+    bool   m_bCreated;
+};  // end ttCHeap
 
-namespace tt {
-    extern ttCHeap MainHeap;    // this uses the process heap rather then a sub-heap
+namespace tt
+{
+    extern ttCHeap MainHeap;  // this uses the process heap rather then a sub-heap
 }
 
-#endif    // defined(_WIN32)
-#endif    // __TTLIB_TTHEAP_H__
+#endif  // defined(_WIN32)
+#endif  // __TTLIB_TTHEAP_H__

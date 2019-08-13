@@ -12,7 +12,8 @@
 
 #if defined(_WIN32)
 
-namespace ttpriv {
+namespace ttpriv
+{
     unsigned __stdcall _BaseThread(void* pv);
 }
 
@@ -26,25 +27,23 @@ public:
 
     void StopThread();
     void StartThread();
-//    void InitializeThreadForOle();  // Call this in doThreadWork() if you need Ole support
+    //    void InitializeThreadForOle();  // Call this in doThreadWork() if you need Ole support
     void WaitForThreadToComplete();
 
-    virtual void DoThreadWork() = NULL;     // Derived class MUST supply this!
+    virtual void DoThreadWork() = 0;  // Derived class MUST supply this!
     virtual void SetCancelThreadPending() { m_bCancelThread = true; }
     virtual bool IsCancelThreadPending() { return m_bCancelThread; }
 
-    bool    m_bCancelThread;
+    bool m_bCancelThread;
 
 protected:
-
     friend unsigned __stdcall ttpriv::_BaseThread(void* pv);
 
     // Class members
 
-    HANDLE  m_hthrdWorker;
-//    bool    m_bOleInitialized;
+    HANDLE m_hthrdWorker;
+    //    bool    m_bOleInitialized;
 
+};  // end ttCBaseThread
 
-}; // end ttCBaseThread
-
-#endif    // defined(_WIN32)
+#endif  // defined(_WIN32)

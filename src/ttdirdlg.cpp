@@ -10,8 +10,8 @@
 
 #include "pch.h"
 
-#include "../include/ttdirdlg.h"    // ttCDirDlg
-#include "../include/ttdebug.h"     // ttASSERT macros
+#include "../include/ttdirdlg.h"  // ttCDirDlg
+#include "../include/ttdebug.h"   // ttASSERT macros
 
 #pragma comment(lib, "ole32.lib")
 
@@ -22,8 +22,8 @@ ttCDirDlg::ttCDirDlg()
 
 bool ttCDirDlg::GetFolderName(HWND hwndParent)
 {
-    IFileOpenDialog *pfd;
-    auto hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd));
+    IFileOpenDialog* pfd;
+    auto             hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd));
     if (FAILED(hr))
     {
         ttASSERT_HRESULT(hr, "Could not create IFileOpenDialog interface");
@@ -39,17 +39,17 @@ bool ttCDirDlg::GetFolderName(HWND hwndParent)
     if (m_cwszStartingDir.IsNonEmpty())
     {
         pfd->ClearClientData();
-        IShellItem *psiFolder;
+        IShellItem* psiFolder;
         hr = SHCreateItemFromParsingName(m_cwszStartingDir, NULL, IID_PPV_ARGS(&psiFolder));
         if (SUCCEEDED(hr))
             pfd->SetDefaultFolder(psiFolder);
-     }
-     if (SUCCEEDED(hr))
-     {
+    }
+    if (SUCCEEDED(hr))
+    {
         hr = pfd->Show(hwndParent);
         if (SUCCEEDED(hr))  // Get the selection from the user.
         {
-            IShellItem *psiResult = NULL;
+            IShellItem* psiResult = NULL;
             hr = pfd->GetResult(&psiResult);
             if (SUCCEEDED(hr))
             {
@@ -67,4 +67,3 @@ bool ttCDirDlg::GetFolderName(HWND hwndParent)
     pfd->Release();
     return (SUCCEEDED(hr) ? true : false);
 }
-

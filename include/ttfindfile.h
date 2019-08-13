@@ -30,19 +30,23 @@
 class ttCFindFile : public WIN32_FIND_DATAA
 {
 public:
-    ttCFindFile(void) { m_hfind = INVALID_HANDLE_VALUE; } // With this constructor, call NewPattern(...) to initialize
-    ttCFindFile(const char* pszFilePattern) { m_hfind = FindFirstFileExA(pszFilePattern, FindExInfoBasic, this, FindExSearchNameMatch, nullptr, FIND_FIRST_EX_LARGE_FETCH);
+    ttCFindFile(void) { m_hfind = INVALID_HANDLE_VALUE; }  // With this constructor, call NewPattern(...) to initialize
+    ttCFindFile(const char* pszFilePattern)
+    {
+        m_hfind = FindFirstFileExA(pszFilePattern, FindExInfoBasic, this, FindExSearchNameMatch, nullptr, FIND_FIRST_EX_LARGE_FETCH);
 #ifdef _DEBUG
         m_pszFilename = cFileName;
 #endif
     }
-    ~ttCFindFile() {
+    ~ttCFindFile()
+    {
         if (m_hfind != INVALID_HANDLE_VALUE)
             FindClose(m_hfind);
     }
 
     bool NextFile() { return FindNextFileA(m_hfind, this) ? true : false; }
-    bool NewPattern(const char* pszFilePattern) {
+    bool NewPattern(const char* pszFilePattern)
+    {
         if (m_hfind != INVALID_HANDLE_VALUE)
             FindClose(m_hfind);
         m_hfind = FindFirstFileExA(pszFilePattern, FindExInfoBasic, this, FindExSearchNameMatch, nullptr, FIND_FIRST_EX_LARGE_FETCH);
@@ -59,33 +63,33 @@ public:
     bool IsTemporary() const { return (dwFileAttributes & FILE_ATTRIBUTE_TEMPORARY) ? true : false; }
     bool IsValid() const { return (m_hfind != INVALID_HANDLE_VALUE) ? true : false; }
 
-    DWORD GetAttributes() { return dwFileAttributes; }
+    DWORD   GetAttributes() { return dwFileAttributes; }
     int64_t GetFullFileSize() { return (((int64_t) nFileSizeHigh) << 32) + (int64_t) nFileSizeLow; }
 
     const char* GetFileName() { return cFileName; }
 
-    char*   FindExtPortion() { return (char*) ttFindExtPortion(cFileName); }    // find filename extension
-    char*   FindChar(char ch) { return ttStrChr(cFileName, ch); }
-    char*   FindLastChar(char ch) { return ttStrChrR(cFileName, ch); }
+    char* FindExtPortion() { return (char*) ttFindExtPortion(cFileName); }  // find filename extension
+    char* FindChar(char ch) { return ttStrChr(cFileName, ch); }
+    char* FindLastChar(char ch) { return ttStrChrR(cFileName, ch); }
 
-    size_t  StrByteLen() { return ttStrByteLen(cFileName); }    // length of string in bytes including 0 terminator
-    size_t  StrLen() { return ttStrLen(cFileName); }        // number of characters (use strByteLen() for buffer size calculations)
+    size_t StrByteLen() { return ttStrByteLen(cFileName); }  // length of string in bytes including 0 terminator
+    size_t StrLen() { return ttStrLen(cFileName); }          // number of characters (use strByteLen() for buffer size calculations)
 
-    bool    IsSameStr(const char* psz) { return ttIsSameStr(cFileName, psz); }
-    bool    IsSameStrI(const char* psz) { return ttIsSameStrI(cFileName, psz); }
-    bool    IsSameSubStr(const char* psz) { return ttIsSameSubStr(cFileName, psz); }
-    bool    IsSameSubStrI(const char* psz) { return ttIsSameSubStrI(cFileName, psz); }
+    bool IsSameStr(const char* psz) { return ttIsSameStr(cFileName, psz); }
+    bool IsSameStrI(const char* psz) { return ttIsSameStrI(cFileName, psz); }
+    bool IsSameSubStr(const char* psz) { return ttIsSameSubStr(cFileName, psz); }
+    bool IsSameSubStrI(const char* psz) { return ttIsSameSubStrI(cFileName, psz); }
 
-    bool    IsEmpty() const { return (!IsValid() || !*cFileName)  ? true : false; }
-    bool    IsNonEmpty() const { return (IsValid() && *cFileName) ? true : false; }
+    bool IsEmpty() const { return (!IsValid() || !*cFileName) ? true : false; }
+    bool IsNonEmpty() const { return (IsValid() && *cFileName) ? true : false; }
 
     operator char*() const { return (char*) cFileName; }
     operator DWORD() const { return dwFileAttributes; }
 
     // Note that the two == operators are case insensitive since filenames on Windows are case insensitive
 
-    bool operator == (const char* psz) { return (IsEmpty()) ? false : ttIsSameStrI(cFileName, psz); } // isSameStr will check for psz == null
-    bool operator == (char* psz) { return (IsEmpty()) ? false : ttIsSameStrI(cFileName, psz); }      // isSameStr will check for psz == null
+    bool operator==(const char* psz) { return (IsEmpty()) ? false : ttIsSameStrI(cFileName, psz); }  // isSameStr will check for psz == null
+    bool operator==(char* psz) { return (IsEmpty()) ? false : ttIsSameStrI(cFileName, psz); }        // isSameStr will check for psz == null
 
 protected:
 #ifdef _DEBUG
@@ -95,5 +99,5 @@ protected:
     HANDLE m_hfind;
 };
 
-#endif    // defined(_WIN32)
-#endif    // __TTLIB_FINDFILE_H__
+#endif  // defined(_WIN32)
+#endif  // __TTLIB_FINDFILE_H__

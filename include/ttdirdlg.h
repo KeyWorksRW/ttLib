@@ -10,8 +10,8 @@
 
 #include <shlobj.h>
 
-#include "ttstr.h"      // ttCStr
-#include "ttwstr.h"     // ttCWStr
+#include "ttstr.h"   // ttCStr
+#include "ttwstr.h"  // ttCWStr
 
 class ttCDirDlg
 {
@@ -30,7 +30,7 @@ public:
 protected:
     // Class members
 
-    ttCWStr m_cwszTitle;    // defaults to "Select a Folder"
+    ttCWStr m_cwszTitle;  // defaults to "Select a Folder"
     ttCWStr m_cwszStartingDir;
     ttCStr  m_cszDirName;
 };
