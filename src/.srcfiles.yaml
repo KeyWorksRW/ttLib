@@ -15,20 +15,21 @@ Options:
     TargetDir32: ../lib32     # 32-bit target directory
 
 Files:
-    ttfiledir.cpp       # file and directory handling
-    ttmisc.cpp          # miscellaneous functions
-    ttstrfuncs.cpp      # string handling and ttStr class
     ttbasethread.cpp    # ttCBaseThread class
+    ttconsole.cpp       # class that sets/restores console foreground color
     ttdebug.cpp         # debug and assertion handling
     ttdirdlg.cpp        # dialog for selecting a directory
     ttenumstr.cpp       # ttCEnumStr class
     ttfile.cpp          # ttCFile class
+    ttfiledir.cpp       # file and directory handling
     tthashpair.cpp      # ttCHashPair
     ttheap.cpp          # ttCHeap class
     ttlist.cpp          # ttCList class
+    ttmisc.cpp          # miscellaneous functions
     ttmultithread.cpp   # ttCMultiThrd class
     ttprintf.cpp        # printf
     ttstr.cpp           # ttCStr class
+    ttstrfuncs.cpp      # string handling and ttStr class
     ttwstr.cpp          # ttCWStr class
     ttxml.cpp           # ttCParseXML class
 
