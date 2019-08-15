@@ -70,8 +70,7 @@ public:
 
     ~ttCStr()
     {
-        if (m_psz)
-            ttFree(m_psz);
+        Delete();
     }
 
     // Method naming conventions are lower camel case when matching tt:: namespace functions
@@ -116,21 +115,17 @@ public:
 
     // Filename handling methods
 
-    void  AppendFileName(const char* pszFile);
+    char* AppendFileName(const char* pszFile);   // returns pointer to full string
+    char* ReplaceFilename(const char* pszFile);  // returns pointer to full string
+
+    void ChangeExtension(const char* pszExtension);
+    void RemoveExtension();
+
     void  AddTrailingSlash();  // adds a trailing forward slash if string doesn't already end with '/' or '\'
-    void  ChangeExtension(const char* pszExtension);
+    char* FindLastSlash();     // Handles any mix of '\' and '/' in the filename
+
+    void  FullPathName();
     char* GetCWD();  // Caution: this will replace any current string
-    void  RemoveExtension();
-
-    char* FindLastSlash();  // Handles any mix of '\' and '/' in the filename
-
-    void FullPathName();
-#if defined(_WIN32)
-    [[deprecated]] void GetFullPathName()
-    {
-        FullPathName();
-    }
-#endif  // defined(_WIN32)
 
     // UI retrieving methods
 
@@ -225,7 +220,7 @@ public:
         cszTo.TransferTo(&m_psz);
     }
 
-protected:
+private:
     // Class members
 
     char* m_psz;
