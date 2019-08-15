@@ -28,22 +28,57 @@ namespace ttpriv
 
 #define DEST_SIZE (ttSize(m_psz) - sizeof(char))
 
-void ttCStr::AppendFileName(const char* pszFile)
+char* ttCStr::AppendFileName(const char* pszFile)
 {
     ttASSERT_NONEMPTY(pszFile);
 
     if (!pszFile || !*pszFile)
-        return;
+        return m_psz;
 
     if (!m_psz)  // no folder or drive to append to, so leave as is without adding slash
     {
         m_psz = ttStrDup(pszFile);  // REVIEW: [ralphw - 06-03-2018] We could prefix this with ".\"
-        return;
+        return m_psz;
     }
 
     if (*m_psz)
         AddTrailingSlash();
     *this += pszFile;
+    return m_psz;
+}
+
+char* ttCStr::ReplaceFilename(const char* pszFile)
+{
+    ttASSERT_NONEMPTY(pszFile);
+
+    if (!pszFile || !*pszFile)
+        return m_psz;
+
+    if (m_psz)
+    {
+        char* pszOld = ttFindFilePortion(m_psz);
+        if (pszOld)
+        {
+            size_t cbNew = ttStrByteLen(pszFile);
+            if (ttStrLen(pszOld) >= cbNew)
+            {
+                ttStrCpy(pszOld, pszFile);
+                return m_psz;
+            }
+
+            *pszOld = 0;
+            m_psz = (char*) ttReAlloc(m_psz, cbNew + ttStrByteLen(m_psz));
+            // realloc may have changed the m_psz pointer, so we can't just copy to pszOld
+            ttStrCat(m_psz, pszFile);
+            return m_psz;
+        }
+        return AppendFileName(pszFile);  // Since we didn't have a filename, append to the end
+    }
+    else
+    {
+        m_psz = ttStrDup(pszFile);  // REVIEW: [ralphw - 06-03-2018] We could prefix this with ".\"
+        return m_psz;
+    }
 }
 
 void ttCStr::ChangeExtension(const char* pszExtension)
@@ -343,9 +378,14 @@ void ttCStr::ReSize(size_t cbNew)
     if (cbNew > tt::MAX_STRING_LEN)
         cbNew = tt::MAX_STRING_LEN;
 
+#if defined(_WIN32)
     size_t curSize = m_psz ? ttSize(m_psz) : 0;
     if (cbNew != curSize)
         m_psz = m_psz ? (char*) ttReAlloc(m_psz, cbNew) : (char*) ttMalloc(cbNew);
+#else
+    // until ttHeap gets ported, we won't know if malloc_size() for Mac or malloc_usable_size() for Unix is available
+    m_psz = m_psz ? (char*) ttReAlloc(m_psz, cbNew) : (char*) ttMalloc(cbNew);
+#endif
 }
 
 bool ttCStr::ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCaseSensitive)
