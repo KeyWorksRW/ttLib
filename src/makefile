@@ -71,14 +71,14 @@ BldScriptD=$(bdir)/$(cmplr)Build$(bits)D.ninja
 
 ########## release section ##########
 
-release: $(BldScript) ttLib
+release: ttLib
 
 ttLib:
 	ninja -f $(BldScript)
 
 ########## debug section ##########
 
-debug: $(BldScriptD) ttLibD
+debug: ttLibD
 
 ttLibD:
 	ninja -f $(BldScriptD)
@@ -90,35 +90,27 @@ locale:
 
 ########## clean release section ##########
 
-clean: $(BldScript)
+clean:
 	ninja -f $(BldScript) -t clean
 
 ########## clean debug section ##########
 
-cleanD: $(BldScriptD)
+cleanD:
 	ninja -f $(BldScriptD) -t clean
 
 ########## special ninja diagnostics ##########
 
-commandsD: $(BldScriptD)
+commandsD:
 	ninja -f $(BldScriptD) -t commands
 
-commandsR: $(BldScript)
+commandsR:
 	ninja -f $(BldScript) -t commands
 
-targetsD: $(BldScriptD)
+targetsD:
 	ninja -f $(BldScriptD) -t targets depth 2
 
-targetsR: $(BldScript)
+targetsR:
 	ninja -f $(BldScript) -t targets depth 2
 
-deps: $(BldScript)
+deps:
 	ninja -f $(BldScript) -t deps
-
-########## Creates or updates ninja file if needed ##########
-
-$(BldScript): .srcfiles.yaml
-	ttBld.exe -u$(cmplr)$(bits)
-
-$(BldScriptD): .srcfiles.yaml
-	ttBld.exe -u$(cmplr)$(bits)D
