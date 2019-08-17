@@ -15,6 +15,10 @@
 #include <filesystem>
 #endif
 
+#if defined(wxGUI)
+#include <wx/msgdlg.h>
+#endif
+
 using namespace ttch;  // used for the CH_ constants
 
 namespace ttpriv
@@ -155,7 +159,7 @@ char* ttCStr::FindLastSlash()
 
 char* ttCStr::GetCWD()
 {
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(wxGUI)
     ReSize(MAX_PATH);
     DWORD cb = GetCurrentDirectoryA(MAX_PATH, m_psz);
     m_psz[cb] = 0;  // in case GetCurrentDirectory() failed
@@ -173,7 +177,7 @@ char* ttCStr::GetCWD()
 void ttCStr::FullPathName()
 {
     ttASSERT(m_psz);
-#if (defined(_WIN32))  // not __cplusplus >= 201703L
+#if (defined(_WIN32)) && !defined(wxGUI)
     char szPath[MAX_PATH];
     ::GetFullPathNameA(m_psz, sizeof(szPath), szPath, NULL);
     ttStrDup(szPath, &m_psz);
@@ -185,123 +189,6 @@ void ttCStr::FullPathName()
     m_psz = ttStrDup(str.utf8_str());
 #endif                        // __cplusplus >= 201703L
 }
-
-#if defined(_WIN32)
-
-char* ttCStr::GetListBoxText(HWND hwnd, size_t sel)
-{
-    if (m_psz)
-        ttFree(m_psz);
-    if (sel == (size_t) LB_ERR)
-        m_psz = ttStrDup("");
-    else
-    {
-        size_t cb = ::SendMessageA(hwnd, LB_GETTEXTLEN, sel, 0);
-        ttASSERT(cb != (size_t) LB_ERR);
-        if (cb != (size_t) LB_ERR)
-        {
-            m_psz = (char*) ttMalloc(cb + 1);
-            ::SendMessageA(hwnd, LB_GETTEXT, sel, (LPARAM) m_psz);
-        }
-        else
-        {
-            m_psz = ttStrDup("");
-        }
-    }
-    return m_psz;
-}
-
-char* ttCStr::GetComboLBText(HWND hwnd, size_t sel)
-{
-    if (m_psz)
-        ttFree(m_psz);
-    if (sel == (size_t) LB_ERR)
-        m_psz = ttStrDup("");
-    else
-    {
-        size_t cb = ::SendMessageA(hwnd, CB_GETLBTEXTLEN, sel, 0);
-        ttASSERT(cb != (size_t) CB_ERR);
-        if (cb != (size_t) CB_ERR)
-        {
-            m_psz = (char*) ttMalloc(cb + 1);
-            ::SendMessageA(hwnd, CB_GETLBTEXT, sel, (LPARAM) m_psz);
-        }
-        else
-        {
-            m_psz = ttStrDup("");
-        }
-    }
-    return m_psz;
-}
-
-/*
-    tt::hinstResources is typically set by InitCaller() and determines where to load resources from. If you need to load the resources
-    from a DLL, then first call:
-
-        tt::hinstResources = LoadLibrary("dll name");
-*/
-
-char* ttCStr::GetResString(size_t idString)
-{
-    char szStringBuf[1024];
-
-    if (tt::hinstResources == nullptr)
-        tt::hinstResources = GetModuleHandle(NULL);
-
-    if (LoadStringA(tt::hinstResources, (UINT) idString, szStringBuf, (int) sizeof(szStringBuf)) == 0)
-    {
-        ttCStr strMsg;
-        strMsg.printf("Invalid string id: %zu", idString);
-        ttFAIL(strMsg);
-        if (m_psz)
-            ttFree(m_psz);
-        m_psz = ttStrDup("");
-    }
-    else
-    {
-        ttStrDup(szStringBuf, &m_psz);
-    }
-    return m_psz;
-}
-
-bool ttCStr::GetWndText(HWND hwnd)
-{
-    if (m_psz)
-    {
-        ttFree(m_psz);
-        m_psz = nullptr;
-    }
-
-    ttASSERT_MSG(hwnd && IsWindow(hwnd), "Invalid window handle");
-    if (!hwnd || !IsWindow(hwnd))
-    {
-        m_psz = ttStrDup("");
-        return false;
-    }
-
-    int cb = GetWindowTextLengthA(hwnd);
-    ttASSERT_MSG(cb <= (int) tt::MAX_STRING_LEN, "String is over 16 megs in size!");
-
-    if (cb == 0 || cb > (int) tt::MAX_STRING_LEN)
-    {
-        m_psz = ttStrDup("");
-        return false;
-    }
-
-    char* psz = (char*) ttMalloc(cb + sizeof(char));
-    cb = ::GetWindowTextA(hwnd, psz, cb + sizeof(char));
-    if (cb == 0)
-    {
-        m_psz = ttStrDup("");
-        ttFree(psz);
-        return false;
-    }
-    else
-        m_psz = psz;
-    return true;
-}
-
-#endif  // defined(_WIN32)
 
 void ttCStr::MakeLower()
 {
@@ -345,7 +232,7 @@ bool ttCStr::CopyWide(const wchar_t* pwsz)
         return false;
     }
 
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(wxGUI)
     size_t cb = wcslen(pwsz);
     ttASSERT_MSG(cb <= tt::MAX_STRING_LEN, "String is over 16 megs in size!");
 
@@ -548,10 +435,10 @@ void cdecl ttCStr::WarningMsgBox(const char* pszFormat, ...)
     va_start(argList, pszFormat);
     ttVPrintf(&m_psz, pszFormat, argList);
     va_end(argList);
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(wxGUI)
     ttMsgBox(m_psz, MB_OK | MB_ICONWARNING);
 #else
-    wxMessageBox(m_psz, wxOK | wxICON_WARNING);
+    wxMessageBox(m_psz, wxMessageBoxCaptionStr, wxOK | wxICON_WARNING);
 #endif
 }
 
@@ -735,3 +622,122 @@ bool ttCStr::GetEnv(const char* pszName)
 
     return false;
 }
+
+///////////////////////////// Windows-only code /////////////////////////////////
+
+#if defined(_WIN32)
+
+char* ttCStr::GetListBoxText(HWND hwnd, size_t sel)
+{
+    if (m_psz)
+        ttFree(m_psz);
+    if (sel == (size_t) LB_ERR)
+        m_psz = ttStrDup("");
+    else
+    {
+        size_t cb = ::SendMessageA(hwnd, LB_GETTEXTLEN, sel, 0);
+        ttASSERT(cb != (size_t) LB_ERR);
+        if (cb != (size_t) LB_ERR)
+        {
+            m_psz = (char*) ttMalloc(cb + 1);
+            ::SendMessageA(hwnd, LB_GETTEXT, sel, (LPARAM) m_psz);
+        }
+        else
+        {
+            m_psz = ttStrDup("");
+        }
+    }
+    return m_psz;
+}
+
+char* ttCStr::GetComboLBText(HWND hwnd, size_t sel)
+{
+    if (m_psz)
+        ttFree(m_psz);
+    if (sel == (size_t) LB_ERR)
+        m_psz = ttStrDup("");
+    else
+    {
+        size_t cb = ::SendMessageA(hwnd, CB_GETLBTEXTLEN, sel, 0);
+        ttASSERT(cb != (size_t) CB_ERR);
+        if (cb != (size_t) CB_ERR)
+        {
+            m_psz = (char*) ttMalloc(cb + 1);
+            ::SendMessageA(hwnd, CB_GETLBTEXT, sel, (LPARAM) m_psz);
+        }
+        else
+        {
+            m_psz = ttStrDup("");
+        }
+    }
+    return m_psz;
+}
+
+/*
+    tt::hinstResources is typically set by InitCaller() and determines where to load resources from. If you need to load the resources
+    from a DLL, then first call:
+
+        tt::hinstResources = LoadLibrary("dll name");
+*/
+
+char* ttCStr::GetResString(size_t idString)
+{
+    char szStringBuf[1024];
+
+    if (tt::hinstResources == nullptr)
+        tt::hinstResources = GetModuleHandle(NULL);
+
+    if (LoadStringA(tt::hinstResources, (UINT) idString, szStringBuf, (int) sizeof(szStringBuf)) == 0)
+    {
+        ttCStr strMsg;
+        strMsg.printf("Invalid string id: %zu", idString);
+        ttFAIL(strMsg);
+        if (m_psz)
+            ttFree(m_psz);
+        m_psz = ttStrDup("");
+    }
+    else
+    {
+        ttStrDup(szStringBuf, &m_psz);
+    }
+    return m_psz;
+}
+
+bool ttCStr::GetWndText(HWND hwnd)
+{
+    if (m_psz)
+    {
+        ttFree(m_psz);
+        m_psz = nullptr;
+    }
+
+    ttASSERT_MSG(hwnd && IsWindow(hwnd), "Invalid window handle");
+    if (!hwnd || !IsWindow(hwnd))
+    {
+        m_psz = ttStrDup("");
+        return false;
+    }
+
+    int cb = GetWindowTextLengthA(hwnd);
+    ttASSERT_MSG(cb <= (int) tt::MAX_STRING_LEN, "String is over 16 megs in size!");
+
+    if (cb == 0 || cb > (int) tt::MAX_STRING_LEN)
+    {
+        m_psz = ttStrDup("");
+        return false;
+    }
+
+    char* psz = (char*) ttMalloc(cb + sizeof(char));
+    cb = ::GetWindowTextA(hwnd, psz, cb + sizeof(char));
+    if (cb == 0)
+    {
+        m_psz = ttStrDup("");
+        ttFree(psz);
+        return false;
+    }
+    else
+        m_psz = psz;
+    return true;
+}
+
+#endif  // defined(_WIN32)

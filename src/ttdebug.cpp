@@ -14,6 +14,10 @@
 #include "../include/ttstr.h"          // ttCStr
 #include "../include/ttcritsection.h"  // CCritSection
 
+#if defined(wxGUI)
+#include <wx/msgdlg.h>
+#endif
+
 bool(_cdecl* pttAssertHandlerA)(const char* pszMsg, const char* pszFile, const char* pszFunction, int line) = nullptr;
 bool(_cdecl* pttAssertHandlerW)(const wchar_t* pszMsg, const char* pszFile, const char* pszFunction, int line) = nullptr;
 
@@ -88,7 +92,7 @@ bool ttAssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFunc
     char szBuf[2048];
     sprintf_s(szBuf, sizeof(szBuf), "%s\r\n\r\n%s (%s): line %u", pszMsg, pszFile, pszFunction, line);
 
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(wxGUI)
 
     // wxWidgets does not have an equivalent of MB_ABORTRETRYIGNORE, nor will it work properly in a CONSOLE
     // application, so we just call directly into the Windws API.
@@ -110,14 +114,15 @@ bool ttAssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFunc
     crtAssert.Unlock();
     ExitProcess((UINT) -1);
 
-#else   // not defined(_WIN32)
+#else   // not defined(_WIN32) || defined(wxGUI)
+    // this is the debug version, so we don't translate
     int answer = wxMessageBox(szBuf, "Click Yes to break into debugger", wxYES_NO | wxICON_ERROR);
     if (answer == wxYES)
         wxTrap();
 
     crtAssert.Unlock();
     return false;
-#endif  // defined(_WIN32)
+#endif  // defined(_WIN32) && !defined(wxGUI)
 }
 
 bool ttAssertionMsg(const wchar_t* pwszMsg, const char* pszFile, const char* pszFunction, int line)
@@ -152,6 +157,8 @@ void ttSetAsserts(bool bDisable)
 {
     ttdbg::bNoAssert = bDisable;
 }
+
+/////////////////////// Windows-only code ////////////////////////////////
 
 #if defined(_WIN32)
 
@@ -223,23 +230,23 @@ void __cdecl ttTrace(const char* pszFormat, ...)
             return;
         }
     }
-    if (!g_pszTraceMap)
+    if (!ttdbg::g_pszTraceMap)
     {
-        g_pszTraceMap = (char*) MapViewOfFile(hTraceMapping, FILE_MAP_WRITE, 0, 0, 0);
-        if (!g_pszTraceMap)
+        ttdbg::g_pszTraceMap = (char*) MapViewOfFile(hTraceMapping, FILE_MAP_WRITE, 0, 0, 0);
+        if (!ttdbg::g_pszTraceMap)
         {
             tt::hwndTrace = NULL;
             return;
         }
     }
 
-    ttStrCpy(g_pszTraceMap, 4093, csz);
-    ttStrCat(g_pszTraceMap, 4094, "\r\n");
+    ttStrCpy(ttdbg::g_pszTraceMap, 4092, csz);
+    ttStrCat(ttdbg::g_pszTraceMap, 4094, "\r\n");
 
     SendMessageA(tt::hwndTrace, tt::WMP_TRACE_MSG, 0, 0);
 
-    UnmapViewOfFile(g_pszTraceMap);
-    g_pszTraceMap = nullptr;
+    UnmapViewOfFile(ttdbg::g_pszTraceMap);
+    ttdbg::g_pszTraceMap = nullptr;
 }
 
 void ttTraceClear()

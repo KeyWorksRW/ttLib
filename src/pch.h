@@ -2,8 +2,15 @@
 
 #pragma once
 
+// Platform testing can be done in one of two ways when building on Windows. You can uncomment the PTEST line below, and
+// this will cause some functionality to switch to non-Windows. You can also uncomment the wxGUI line which should turn
+// even more (if not all) _WIN32 functionality, using the wxWidgets versions instead.
+
+// #define PTEST
+// #define wxGUI 1
+
 // clang-format off
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(wxGUI)
 
     // reduce the number of Windows header files pulled in
     #define NOATOM
@@ -28,26 +35,35 @@
 
     // Minimum OS version is Windows 7. Any app linking to this library is expected to work normally on Windows 7 and up.
 
-    #define WINVER       0x0601     // Windows 7
+    #define WINVER       0x0601  // Windows 7
     #define _WIN32_WINNT 0x0600
     #define _WIN32_IE    0x0700
 
     #include <windows.h>
     #include <stdlib.h>
 
-#else    // not defined(_WIN32), so wxWidgets is required
+#else
 
     #define wxUSE_UNICODE     1
-    #define wxGUI             1
     #define wxUSE_NO_MANIFEST 1
 
     // We could just include <wx/wxprec.h>, however that's a bit overkill since we only need a fraction of the header files
     // this header will pull in. Instead, we pull in just the required header files and then include individual header files
     // as needed in the actual source files. This greatly speeds up generation of the precompiled header file.
 
-    #include "wx/defs.h"    // compiler detection; includes setup.h
-
+    #include "wx/defs.h"
     #include "wx/chartype.h"
+
+    #if defined(__WINDOWS__)
+        #include "wx/msw/wrapwin.h"
+        #include "wx/msw/private.h"
+    #endif
+
+    #if defined(__WXMSW__)
+        #include "wx/msw/wrapcctl.h"
+        #include "wx/msw/wrapcdlg.h"
+        #include "wx/msw/missing.h"
+    #endif
 
     // The following are common enough that we include them here rather than in every (or most) source files
 
@@ -65,8 +81,3 @@
 // clang-format on
 
 #include "../include/ttlib.h"  // Master header file for ttLibwx
-
-// Uncomment the following to do non-Windows platform testing while building on Windows. Some, but not all conditionals will check
-// for this and use alternate code.
-
-// #define PTEST

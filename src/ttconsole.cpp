@@ -12,7 +12,8 @@
 
 ttConsoleColor::ttConsoleColor(int clr)
 {
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(PTEST)
+    // save the current color on Windows. Not needed for ansi-enabled consoles which use reset
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
     m_defAttributes = (uint16_t) csbi.wAttributes;
@@ -28,14 +29,15 @@ ttConsoleColor::~ttConsoleColor()
 
 void ttConsoleColor::SetColor(int clr)
 {
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(PTEST)
     auto hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
     CONSOLE_SCREEN_BUFFER_INFO csbi;
 
     GetConsoleScreenBufferInfo(hConsole, &csbi);
     SetConsoleTextAttribute(hConsole, (csbi.wAttributes & 0xFFF0) | (WORD) clr);  // Foreground colors take up the least significant byte
-#else
+
+#else   // following section uses ANSI escape codes
     const char* pszClr;
 
     switch (clr)
@@ -94,12 +96,12 @@ void ttConsoleColor::SetColor(int clr)
     }
 
     printf(pszClr);
-#endif
+#endif  // defined(_WIN32) && !defined(PTEST)
 }
 
 void ttConsoleColor::ResetColor()
 {
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(PTEST)
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD) m_defAttributes);
 #else
     printf("\033[0m");
