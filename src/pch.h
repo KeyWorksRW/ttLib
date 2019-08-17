@@ -2,6 +2,7 @@
 
 #pragma once
 
+// clang-format off
 #if defined(_WIN32)
 
     // reduce the number of Windows header files pulled in
@@ -60,6 +61,12 @@
         #define min(a, b) (((a) < (b)) ? (a) : (b))
     #endif
 
-#endif    // defined(_WIN32)
+#endif  // defined(_WIN32)
+// clang-format on
 
-#include "../include/ttlib.h"    // Master header file for ttLibwx
+#include "../include/ttlib.h"  // Master header file for ttLibwx
+
+// Uncomment the following to do non-Windows platform testing while building on Windows. Some, but not all conditionals will check
+// for this and use alternate code.
+
+// #define PTEST
