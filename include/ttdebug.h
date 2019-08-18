@@ -37,7 +37,7 @@ namespace tt
     extern const char* txtTraceClass;      // class name of window to send trace messages to
     extern const char* txtTraceShareName;  // name of shared memory to write to
 
-    DWORD CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc, int line);
+    int CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc, int line);
 #endif  // defined(_WIN32)
 }  // namespace tt
 
