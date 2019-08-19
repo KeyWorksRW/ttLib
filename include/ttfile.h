@@ -124,6 +124,7 @@ public:
 
     void MakeCopy();
     void RestoreCopy();
+    char* GetCopy() { return m_pCopy; }
 
     void AllocateMoreMemory(size_t cbMore = 16 * 1024);
 
