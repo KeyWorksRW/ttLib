@@ -51,7 +51,8 @@ void ttCMultiBtn::Initialize(HWND hwndParent, BTN_SHADE shade)
 
 void ttCMultiBtn::SetIcon(int idBtn, int idIcon, UINT nIconAlign)
 {
-    ttASSERT_MSG(m_aBtns.GetCount(), "Calling SetIcon without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
+    ttASSERT_MSG(m_aBtns.GetCount(),
+                 "Calling SetIcon without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
 
     for (size_t i = 0; i < m_aBtns.GetCount(); i++)
     {
@@ -68,7 +69,8 @@ void ttCMultiBtn::SetIcon(int idBtn, int idIcon, UINT nIconAlign)
 
 void ttCMultiBtn::SetIcon(int idBtn, const char* pszIconName, UINT nIconAlign)
 {
-    ttASSERT_MSG(m_aBtns.GetCount(), "Calling SetIcon without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
+    ttASSERT_MSG(m_aBtns.GetCount(),
+                 "Calling SetIcon without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
 
     for (size_t i = 0; i < m_aBtns.GetCount(); i++)
     {
@@ -85,7 +87,8 @@ void ttCMultiBtn::SetIcon(int idBtn, const char* pszIconName, UINT nIconAlign)
 
 ttCShadeBtn* ttCMultiBtn::FindShadeBtn(int id)
 {
-    ttASSERT_MSG(m_aBtns.GetCount(), "Calling FindShadeBtn without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
+    ttASSERT_MSG(m_aBtns.GetCount(),
+                 "Calling FindShadeBtn without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
 
     for (size_t i = 0; i < m_aBtns.GetCount(); i++)
     {

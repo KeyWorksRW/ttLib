@@ -2,9 +2,9 @@
 
 #pragma once
 
-// Platform testing can be done in one of two ways when building on Windows. You can uncomment the PTEST line below, and
-// this will cause some functionality to switch to non-Windows. You can also uncomment the wxGUI line which should turn
-// even more (if not all) _WIN32 functionality, using the wxWidgets versions instead.
+// Platform testing can be done in one of two ways when building on Windows. You can uncomment the PTEST line below,
+// and this will cause some functionality to switch to non-Windows. You can also uncomment the wxGUI line which should
+// turn even more (if not all) _WIN32 functionality, using the wxWidgets versions instead.
 
 // #define PTEST
 // #define wxGUI 1
@@ -47,9 +47,10 @@
     #define wxUSE_UNICODE     1
     #define wxUSE_NO_MANIFEST 1
 
-    // We could just include <wx/wxprec.h>, however that's a bit overkill since we only need a fraction of the header files
-    // this header will pull in. Instead, we pull in just the required header files and then include individual header files
-    // as needed in the actual source files. This greatly speeds up generation of the precompiled header file.
+    // We could just include <wx/wxprec.h>, however that's a bit overkill since we only need a fraction of the header
+    // files this header will pull in. Instead, we pull in just the required header files and then include individual
+    // header files as needed in the actual source files. This greatly speeds up generation of the precompiled header
+    // file.
 
     #include "wx/defs.h"
     #include "wx/chartype.h"

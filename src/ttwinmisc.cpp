@@ -39,7 +39,8 @@ int ttMsgBox(UINT idResource, UINT uType)
 {
     ttCStr strRes;
     strRes.GetResString(idResource);
-    return MessageBoxA(GetActiveWindow(), strRes.IsNonEmpty() ? (char*) strRes : "missing resource id", (tt::pszMsgTitle ? tt::pszMsgTitle : ""), uType);
+    return MessageBoxA(GetActiveWindow(), strRes.IsNonEmpty() ? (char*) strRes : "missing resource id",
+                       (tt::pszMsgTitle ? tt::pszMsgTitle : ""), uType);
 }
 
 int __cdecl ttMsgBoxFmt(const char* pszFormat, UINT uType, ...)
@@ -92,8 +93,8 @@ HFONT ttCreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold, bool fIta
     return hfont;
 }
 
-// The system API CompareFileTime() will say write access time was different if the files are only 2 seconds apart -- which they can be on networked or FAT drives.
-// We roll our own to account for this.
+// The system API CompareFileTime() will say write access time was different if the files are only 2 seconds apart --
+// which they can be on networked or FAT drives. We roll our own to account for this.
 
 ptrdiff_t ttCompareFileTime(FILETIME* pftSrc, FILETIME* pftDst)
 {

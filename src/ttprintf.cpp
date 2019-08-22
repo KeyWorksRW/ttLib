@@ -191,7 +191,9 @@ void ttVPrintf(char** ppszDst, const char* pszFormat, va_list argList)
         else if (*pszEnd == 'd' || *pszEnd == 'i')
         {
 #if defined(_WIN64) || defined(__x86_64__) || defined(__ppc64__)
-            // note that we don't have to do any special processing if not compiling 64-bit app, as size_t will be same as int
+            // note that we don't have to do any special processing if not compiling 64-bit app, as size_t will be same
+            // as int
+
             if (bSize_t)
                 ttItoa(va_arg(argList, _int64), szNumBuf, sizeof(szNumBuf) - 1);
             else
@@ -285,7 +287,10 @@ void ttVPrintf(char** ppszDst, const char* pszFormat, va_list argList)
 
             if (!psz || psz <= (const char*) 0xFFFF
 #if defined(_WIN32)
-                || IsBadReadPtr(psz, 1)  // IsBadReadPtr() is technically obsolete, but it prevents a crash if caller forgets to supply enough parameters.
+                // IsBadReadPtr() is technically obsolete, but it prevents a crash if caller forgets to supply enough
+                // parameters.
+
+                || IsBadReadPtr(psz, 1)
 #endif                                   // defined(_WIN32)
             )
             {
@@ -316,8 +321,8 @@ void ttVPrintf(char** ppszDst, const char* pszFormat, va_list argList)
         }
         else
         {
-            // This is a potential security risk since we don't know what size of argument to retrieve from va_arg(). We simply
-            // print the rest of the format string and don't pop any arguments off.
+            // This is a potential security risk since we don't know what size of argument to retrieve from va_arg().
+            // We simply print the rest of the format string and don't pop any arguments off.
 
             ttFAIL("Invalid format string for printf");
 #ifdef _DEBUG
@@ -441,8 +446,8 @@ char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargLi
     return (char*) (pszEnd + 1);
 }
 
-// pszNum and pszDst can be the same or different. They need to be different if the pszNum buffer is only large enough to
-// hold the number and not the commas.
+// pszNum and pszDst can be the same or different. They need to be different if the pszNum buffer is only large enough
+// to hold the number and not the commas.
 
 void ttpriv::AddCommasToNumber(char* pszNum, char* pszDst, size_t cbDst)
 {

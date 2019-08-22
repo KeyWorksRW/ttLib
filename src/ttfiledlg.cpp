@@ -37,7 +37,8 @@ ttCFileDlg::ttCFileDlg(HWND hwndParent)
     m_pofn->lpstrFile = m_cszFileName;
     m_pofn->nMaxFile = MAX_PATH;
     m_pofn->lpfnHook = ttpriv::OFNHookProc;
-    m_pofn->Flags = OFN_ENABLESIZING | OFN_EXPLORER | OFN_ENABLEHOOK | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_DONTADDTORECENT;
+    m_pofn->Flags = OFN_ENABLESIZING | OFN_EXPLORER | OFN_ENABLEHOOK | OFN_FILEMUSTEXIST |
+                    OFN_HIDEREADONLY | OFN_DONTADDTORECENT;
     m_pofn->lCustData = (LPARAM) this;
 
     m_bRepositionWindow = false;

@@ -54,7 +54,8 @@ size_t ttHashFromSz(const wchar_t* psz)
     return hash;
 }
 
-// Unlike a "regular" hash, this version treats forward and backslashes identically, as well as upper and lower-case letters
+// Unlike a "regular" hash, this version treats forward and backslashes identically, as well as upper and lower-case
+// letters
 
 size_t ttHashFromURL(const char* pszURL)
 {
@@ -105,7 +106,8 @@ __declspec(noreturn) void ttOOM(void)
 {
 #if defined(_DEBUG)
 #if defined(_WIN32)
-    int answer = MessageBoxA(GetActiveWindow(), "Out of Memory!!!", "Do you want to call DebugBreak()?", MB_YESNO | MB_ICONERROR);
+    int answer = MessageBoxA(GetActiveWindow(), "Out of Memory!!!", "Do you want to call DebugBreak()?",
+                             MB_YESNO | MB_ICONERROR);
 
     if (answer == IDYES)
         DebugBreak();
@@ -116,8 +118,8 @@ __declspec(noreturn) void ttOOM(void)
 #endif
 #endif  // _DEBUG
 
-    // The advantage of exit() is functions registered by atexit() will be called, which might include deleting temporary
-    // files, or other data that might otherwise persist after the program is exited.
+    // The advantage of exit() is functions registered by atexit() will be called, which might include deleting
+    // temporary files, or other data that might otherwise persist after the program is exited.
 
     exit(-1);
 }

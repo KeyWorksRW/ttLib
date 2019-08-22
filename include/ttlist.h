@@ -6,9 +6,10 @@
 // License:   Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
-// All the classes here use their own private heap. The advantage of this approach is that none of the individual allocations need to be FreeAllocd -- the entire heap is destroyed
-// when the class destructor is called. By default, all the classes use a non-serialized private heap -- which means multiple threads need to use a crit section if accessing
-// a shared class.
+// All the classes here use their own private heap. The advantage of this approach is that none of the individual
+// allocations need to be FreeAllocd -- the entire heap is destroyed when the class destructor is called. By default,
+// all the classes use a non-serialized private heap -- which means multiple threads need to use a crit section if
+// accessing a shared class.
 
 #pragma once
 

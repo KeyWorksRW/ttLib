@@ -192,7 +192,8 @@ void ttCShadeBtn::SetIcon(HICON hIcon, UINT nIconAlign, UINT nIconDown, UINT nIc
         {
             case BS_RIGHT:
                 m_hIconAlign = BS_RIGHT;
-                OffsetRect(&m_rcIconBox, x - iinfo.xHotspot * 2 - m_FocusRectMargin, max(0, (long) (y / 2 - iinfo.yHotspot)));
+                OffsetRect(&m_rcIconBox, x - iinfo.xHotspot * 2 - m_FocusRectMargin,
+                           max(0, (long) (y / 2 - iinfo.yHotspot)));
                 break;
             case BS_LEFT:
                 m_hIconAlign = BS_LEFT;
@@ -200,7 +201,8 @@ void ttCShadeBtn::SetIcon(HICON hIcon, UINT nIconAlign, UINT nIconDown, UINT nIc
                 break;
             default:
                 m_hIconAlign = BS_CENTER;
-                OffsetRect(&m_rcIconBox, max(0, (long) (x / 2 - iinfo.xHotspot)), max(0, (long) (y / 2 - 2 * iinfo.yHotspot)));
+                OffsetRect(&m_rcIconBox, max(0, (long) (x / 2 - iinfo.xHotspot)),
+                           max(0, (long) (y / 2 - 2 * iinfo.yHotspot)));
         }
 
         // release icon mask bitmaps (Orioli Alessandro <aorioli@temaweb.it>)
@@ -222,7 +224,8 @@ void ttCShadeBtn::SetIcon(HICON hIcon, UINT nIconAlign, UINT nIconDown, UINT nIc
 
         if (nIconHighLight > 0)  // load highlighted icon
         {
-            m_hIconHighLight = (HICON)::LoadImageA(tt::hinstResources, MAKEINTRESOURCEA(nIconHighLight), IMAGE_ICON, 0, 0, 0);
+            m_hIconHighLight = (HICON)::LoadImageA(tt::hinstResources,
+                                                   MAKEINTRESOURCEA(nIconHighLight), IMAGE_ICON, 0, 0, 0);
             if (m_hIconHighLight == NULL)
                 m_hIconHighLight = m_hIcon;
         }
@@ -527,7 +530,8 @@ void ttCShadeBtn::OnPaint()
     int cx = abs(rcClient.right - rcClient.left);
     int cy = abs(rcClient.bottom - rcClient.top);
     // get text box position
-    RECT tr = { rcClient.left + m_FocusRectMargin + 2, rcClient.top, rcClient.right - m_FocusRectMargin - 2, rcClient.bottom };
+    RECT tr = { rcClient.left + m_FocusRectMargin + 2,
+                rcClient.top, rcClient.right - m_FocusRectMargin - 2, rcClient.bottom };
 
     HDC hdcMem;  // create a memory DC to avoid flicker
     hdcMem = CreateCompatibleDC(hdcPaint);
@@ -579,7 +583,9 @@ void ttCShadeBtn::OnPaint()
 
         if (m_hIcon)  // draw the icon
         {
-            ::DrawState(hdcMem, NULL, NULL, (LPARAM) m_hIcon, NULL, m_rcIconBox.left, m_rcIconBox.top, abs(m_rcIconBox.right - m_rcIconBox.left),
+            ::DrawState(hdcMem, NULL, NULL,
+                        (LPARAM) m_hIcon, NULL, m_rcIconBox.left, m_rcIconBox.top,
+                        abs(m_rcIconBox.right - m_rcIconBox.left),
                         abs(m_rcIconBox.bottom - m_rcIconBox.top), DST_ICON | DSS_DISABLED);
         }
         // if needed, draw the standard 3D rectangular border
@@ -605,7 +611,8 @@ void ttCShadeBtn::OnPaint()
             {
                 if (m_IsPushLike)
                     OffsetRect(&m_rcIconBox, 1, 1);
-                ::DrawState(hdcMem, NULL, NULL, (LPARAM) m_hIcon, NULL, m_rcIconBox.left, m_rcIconBox.top, abs(m_rcIconBox.right - m_rcIconBox.left),
+                ::DrawState(hdcMem, NULL, NULL, (LPARAM) m_hIcon, NULL, m_rcIconBox.left, m_rcIconBox.top,
+                            abs(m_rcIconBox.right - m_rcIconBox.left),
                             abs(m_rcIconBox.bottom - m_rcIconBox.top), DST_ICON | DSS_NORMAL);
                 if (m_IsPushLike)
                     OffsetRect(&m_rcIconBox, -1, -1);
@@ -630,7 +637,8 @@ void ttCShadeBtn::OnPaint()
                 ::FillRect(hdcMem, &rcClient, (HBRUSH)(ULONG_PTR) GetSysColor(COLOR_BTNFACE));
 
             if (m_hIcon)  //draw the icon
-                ::DrawState(hdcMem, NULL, NULL, (LPARAM) m_hIcon, NULL, m_rcIconBox.left, m_rcIconBox.top, abs(m_rcIconBox.right - m_rcIconBox.left),
+                ::DrawState(hdcMem, NULL, NULL, (LPARAM) m_hIcon, NULL, m_rcIconBox.left, m_rcIconBox.top,
+                            abs(m_rcIconBox.right - m_rcIconBox.left),
                             abs(m_rcIconBox.bottom - m_rcIconBox.top), DST_ICON | DSS_NORMAL);
             // if needed, draw the standard 3D rectangular border
             if (m_Border && (m_flat == FALSE))

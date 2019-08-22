@@ -14,7 +14,7 @@
 
 #ifdef _MSC_VER
 #pragma warning(disable : 26495)  // m_btnShade is uninitialized (r.w.: which is fine, it's not used until Initialize is called which sets it)
-#endif                            // _MSC_VER
+#endif
 
 namespace ttpriv
 {

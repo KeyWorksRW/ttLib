@@ -13,8 +13,9 @@
         // Insert a TTMSG macro for every message you want to process
     END_TTMSG_MAP()
 
-    All macros return true to indicate that you handled the message and that the default window/dialog procedure should not be called.
-    If the message requires a non-zero return, the called function will have a return type of LRESULT. Otherwise, the return type is void.
+    All macros return true to indicate that you handled the message and that the default window/dialog procedure should
+    not be called. If the message requires a non-zero return, the called function will have a return type of LRESULT.
+    Otherwise, the return type is void.
 
     For each macro you process you will need to declare a matching function. For example:
 
@@ -28,14 +29,14 @@
 
     Additional Notes:
 
-        TTMSG(msg, func) can be used to process any message. However, any macros placed below TTMSG() will not be called if they are
-        checking for the same msg as TTMSG().
+        TTMSG(msg, func) can be used to process any message. However, any macros placed below TTMSG() will not be
+        called if they are checking for the same msg as TTMSG().
 
-        TTMSG_COMMAND(id, func) can be used to process any WM_COMMAND message. However, any of the other macros that handle
-        WM_COMMAND will not be called unless placed BEFORE you call this macro.
+        TTMSG_COMMAND(id, func) can be used to process any WM_COMMAND message. However, any of the other macros that
+        handle WM_COMMAND will not be called unless placed BEFORE you call this macro.
 
-    If you have a large number of menu commands to handle, you can use the following to convert them into a switch statement instead
-    of multiple if statements which may result in better compiler optimization.
+    If you have a large number of menu commands to handle, you can use the following to convert them into a switch
+    statement instead of multiple if statements which may result in better compiler optimization.
 
     BEGIN_TTMSG_MAP()
         BEGIN_TTCMD_SWITCH()

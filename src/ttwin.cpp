@@ -81,7 +81,8 @@ bool ttCWin::SetClassName(const char* pszClassName)
     return true;
 }
 
-bool ttCWin::CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWND hwndParent, RECT* prcPosition, HMENU hmenu)
+bool ttCWin::CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWND hwndParent,
+                       RECT* prcPosition, HMENU hmenu)
 {
     if (m_pwc)
     {  // means the class hasn't been registered yet
@@ -106,7 +107,8 @@ bool ttCWin::CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWN
 
     if (prcPosition != NULL)
         m_hwnd = ::CreateWindowExA(dwExStyle, m_pszClassName, pszTitle, dwStyle,
-                                   prcPosition->left, prcPosition->top, ttRC_WIDTH(prcPosition), ttRC_HEIGHT(prcPosition),
+                                   prcPosition->left, prcPosition->top,
+                                   ttRC_WIDTH(prcPosition), ttRC_HEIGHT(prcPosition),
                                    hwndParent, hmenu, m_hinst, (void*) this);
     else
         m_hwnd = ::CreateWindowExA(dwExStyle, m_pszClassName, pszTitle, dwStyle,

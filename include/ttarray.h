@@ -36,7 +36,9 @@ public:
         if (m_cItems >= m_cAllocated)
         {
             m_cAllocated += 8;  // allocate room for 8 items at a time
-            m_aData = (T*) (m_aData ? ttReAlloc(m_aData, m_cAllocated * sizeof(T)) : ttMalloc(m_cAllocated * sizeof(T)));
+            m_aData = (T*) (m_aData ?
+                                ttReAlloc(m_aData, m_cAllocated * sizeof(T)) :
+                                ttMalloc(m_cAllocated * sizeof(T)));
         }
         m_aData[m_cItems++] = t;
     }
@@ -46,7 +48,9 @@ public:
         if (m_cItems >= m_cAllocated)
         {
             m_cAllocated += 8;  // allocate room for 8 items at a time
-            m_aData = (T*) (m_aData ? ttReAlloc(m_aData, m_cAllocated * sizeof(T)) : ttMalloc(m_cAllocated * sizeof(T)));
+            m_aData = (T*) (m_aData ?
+                                ttReAlloc(m_aData, m_cAllocated * sizeof(T)) :
+                                ttMalloc(m_cAllocated * sizeof(T)));
         }
         return m_cItems++;
     }

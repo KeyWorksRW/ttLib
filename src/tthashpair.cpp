@@ -68,8 +68,8 @@ void ttCHashPair::Add(size_t hash, size_t val)
         return;
     }
 
-    // The array of pairs is larger then the actual number of members in use, so if the insertion point is at the end of the array,
-    // then all we have to do is set the hash/val pair.
+    // The array of pairs is larger then the actual number of members in use, so if the insertion point is at the end
+    // of the array, then all we have to do is set the hash/val pair.
 
     size_t cbMove = (m_aData + m_cItems) - pInsert;
     if (cbMove)

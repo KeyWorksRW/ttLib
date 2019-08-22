@@ -99,7 +99,9 @@ size_t ttCList::Add(const char* pszKey)
     if (m_cItems + 1 >= m_cAllocated)  // the +1 is paranoia -- it shouldn't really be necessary
     {
         m_cAllocated += 32;  // add room for 32 strings at a time
-        m_aptrs = (char**) (m_aptrs ? ttReAlloc(m_aptrs, m_cAllocated * sizeof(char*)) : ttMalloc(m_cAllocated * sizeof(char*)));
+        m_aptrs = (char**) (m_aptrs ?
+                                ttReAlloc(m_aptrs, m_cAllocated * sizeof(char*)) :
+                                ttMalloc(m_cAllocated * sizeof(char*)));
     }
     m_aptrs[m_cItems] = ttStrDup(pszKey);
     return m_cItems++;
@@ -238,7 +240,9 @@ void ttCList::Swap(size_t posA, size_t posB)
 
     if (isNoDuplicates())
     {
-        // We have to "normalize" the strings (deal with case-insensitive, forward/back slash conversion) before CHashPair can find them
+        // We have to "normalize" the strings (deal with case-insensitive, forward/back slash conversion) before
+        // CHashPair can find them
+
         ttCStr cszA, cszB;
         char*  pszNormalizedA = NormalizeString(m_aptrs[posA], cszA);
         char*  pszNormalizedB = NormalizeString(m_aptrs[posB], cszB);
@@ -259,7 +263,9 @@ void ttCList::InsertAt(size_t pos, const char* pszKey)
     if (m_cItems + 1 >= m_cAllocated)  // the +1 is paranoia -- it shouldn't really be necessary
     {
         m_cAllocated += 32;  // add room for 32 strings at a time
-        m_aptrs = (char**) (m_aptrs ? ttReAlloc(m_aptrs, m_cAllocated * sizeof(char*)) : ttMalloc(m_cAllocated * sizeof(char*)));
+        m_aptrs = (char**) (m_aptrs ?
+                                ttReAlloc(m_aptrs, m_cAllocated * sizeof(char*)) :
+                                ttMalloc(m_cAllocated * sizeof(char*)));
     }
     memmove((void*) (m_aptrs + pos + 1), (void*) (m_aptrs + pos), (m_cItems - pos + 1) * sizeof(char*));
 
@@ -462,7 +468,9 @@ void ttCDblList::Add(const char* pszKey, const char* pszVal)
     if (m_cItems >= m_cAllocated)
     {
         m_cAllocated += 32;  // add room for 32 strings at a time
-        m_aptrs = (DBLPTRS*) (m_aptrs ? ttReAlloc(m_aptrs, m_cAllocated * sizeof(DBLPTRS)) : ttMalloc(m_cAllocated * sizeof(DBLPTRS)));
+        m_aptrs = (DBLPTRS*) (m_aptrs ?
+                                  ttReAlloc(m_aptrs, m_cAllocated * sizeof(DBLPTRS)) :
+                                  ttMalloc(m_cAllocated * sizeof(DBLPTRS)));
     }
     m_aptrs[m_cItems].pszKey = ttStrDup(pszKey);
     m_aptrs[m_cItems++].pszVal = ttStrDup(pszVal);
@@ -699,7 +707,9 @@ void ttCStrIntList::Add(const char* pszKey, ptrdiff_t newVal)
     if (m_cItems >= m_cAllocated)
     {
         m_cAllocated += 32;  // add room for 32 strings at a time
-        m_aptrs = (DBLPTRS*) (m_aptrs ? ttReAlloc(m_aptrs, m_cAllocated * sizeof(DBLPTRS)) : ttMalloc(m_cAllocated * sizeof(DBLPTRS)));
+        m_aptrs = (DBLPTRS*) (m_aptrs ?
+                                  ttReAlloc(m_aptrs, m_cAllocated * sizeof(DBLPTRS)) :
+                                  ttMalloc(m_cAllocated * sizeof(DBLPTRS)));
     }
     m_aptrs[m_cItems].pszKey = ttStrDup(pszKey);
     m_aptrs[m_cItems].pVal = (ptrdiff_t*) ttMalloc(2 * sizeof(ptrdiff_t));

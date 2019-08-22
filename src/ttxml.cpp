@@ -640,8 +640,10 @@ ttCXMLBranch* ttCParseXML::GraftBranch(ttCXMLBranch* pParent, XMLENTITY eType)
         return NULL;                                 // Must have a parent.
     if (pParent->cChildren == pParent->cChildSpace)  //Out of pointer space.
     {
-        ttCXMLBranch** t = (ttCXMLBranch**) ttReAlloc(pParent->aChildren, sizeof(ttCXMLBranch*) * (pParent->cChildSpace + GROW_SIZE));  // Grow pointer space.
-        if (t)                                                                                                                          //Reallocation succeeded.
+        ttCXMLBranch** t = (ttCXMLBranch**) ttReAlloc(pParent->aChildren,
+                                                      sizeof(ttCXMLBranch*) * (pParent->cChildSpace + GROW_SIZE));  // Grow pointer space.
+
+        if (t)  //Reallocation succeeded.
         {
             pParent->aChildren = t;
             pParent->cChildSpace += GROW_SIZE;  //Update the available space.
@@ -1046,7 +1048,8 @@ void ttCParseXML::AddAttribute(ttCXMLBranch* pBranch, const char* pszName, const
 
     if (pBranch->cAttributes == pBranch->cAttributeSpace)  // Out of space, so grow.
     {
-        XMLATTR** t = (XMLATTR**) ttReAlloc(pBranch->aAttributes, sizeof(ttCXMLBranch*) * (pBranch->cAttributeSpace + iGrow));
+        XMLATTR** t = (XMLATTR**) ttReAlloc(pBranch->aAttributes,
+                                            sizeof(ttCXMLBranch*) * (pBranch->cAttributeSpace + iGrow));
         if (t)
         {
             pBranch->aAttributes = t;
@@ -1077,9 +1080,9 @@ ttCXMLBranch* ttCParseXML::AddDataChild(ttCXMLBranch* pParent, const char* pszNa
     return pSubChild;
 }
 
-// Note that we do NOT FreeAlloc the memory for this node, since we don't have a pointer to CKeyXML that handles memory management
-// If the caller needs to FreeAlloc this memory, he should FreeAlloc the pointer to the deleted child and its attributes either before or
-// after this call.
+// Note that we do NOT FreeAlloc the memory for this node, since we don't have a pointer to CKeyXML that handles memory
+// management If the caller needs to FreeAlloc this memory, he should FreeAlloc the pointer to the deleted child and
+// its attributes either before or after this call.
 
 bool ttCXMLBranch::RemoveChildAt(size_t i)
 {
@@ -1454,7 +1457,8 @@ char* ttCParseXML::ParseXmlString(char* psz, ttCXMLBranch* pRoot)
                         ++psz;
                         Push(ENTITY_COMMENT);    // Graft a new branch on the tree.
                         pBranch->pszData = psz;  // Save the offset.
-                        while (*psz != 0 && *(psz + 1) && *(psz + 2) && !((IsDash(*psz) && IsDash(*(psz + 1))) && IsLeave(*(psz + 2))))
+                        while (*psz != 0 && *(psz + 1) && *(psz + 2) &&
+                               !((IsDash(*psz) && IsDash(*(psz + 1))) && IsLeave(*(psz + 2))))
                             ++psz;  // Scan for terminating '-->'.
                         if (*psz == 0)
                             return psz;
@@ -1472,7 +1476,8 @@ char* ttCParseXML::ParseXmlString(char* psz, ttCXMLBranch* pRoot)
                     }
                     else
                     {
-                        while (*psz != 0 && *(psz + 1) != 0 && *(psz + 2) != 0 && !((IsDash(*psz) && IsDash(*(psz + 1))) && IsLeave(*(psz + 2))))
+                        while (*psz != 0 && *(psz + 1) != 0 && *(psz + 2) != 0 &&
+                               !((IsDash(*psz) && IsDash(*(psz + 1))) && IsLeave(*(psz + 2))))
                             ++psz;  // Scan for terminating '-->'.
                         if (*psz == 0)
                             return psz;
@@ -1511,7 +1516,8 @@ char* ttCParseXML::ParseXmlString(char* psz, ttCXMLBranch* pRoot)
                                                     {
                                                         Push(ENTITY_INCLUDE);    // Graft a new branch on the tree.
                                                         pBranch->pszData = psz;  // Save the offset.
-                                                        while (!(IsRightBracket(*psz) && IsRightBracket(*(psz + 1)) && IsLeave(*(psz + 2))))
+                                                        while (!(IsRightBracket(*psz) && IsRightBracket(*(psz + 1)) &&
+                                                                 IsLeave(*(psz + 2))))
                                                             ++psz;  // Scan for terminating ']]>'.
                                                         if (IsRightBracket(*psz))
                                                         {
@@ -2130,8 +2136,11 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
                         ++psz;
                         Push(ENTITY_COMMENT);    // Graft a new branch on the tree.
                         pBranch->pszData = psz;  // Save the offset.
-                        while (*psz != 0 && *(psz + 1) && *(psz + 2) && !((IsDash(*psz) && IsDash(*(psz + 1))) && IsLeave(*(psz + 2))))
+                        while (*psz != 0 && *(psz + 1) && *(psz + 2) &&
+                               !((IsDash(*psz) && IsDash(*(psz + 1))) && IsLeave(*(psz + 2))))
+                        {
                             ++psz;  // Scan for terminating '-->'.
+                        }
                         if (*psz == 0)
                             return psz;
                         *psz = 0;  // Zero-terminate this segment at the first terminating '-'.
@@ -2143,7 +2152,8 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
                     }
                     else
                     {
-                        while (*psz != 0 && *(psz + 1) != 0 && *(psz + 2) != 0 && !((IsDash(*psz) && IsDash(*(psz + 1))) && IsLeave(*(psz + 2))))
+                        while (*psz != 0 && *(psz + 1) != 0 && *(psz + 2) != 0 &&
+                               !((IsDash(*psz) && IsDash(*(psz + 1))) && IsLeave(*(psz + 2))))
                             ++psz;  // Scan for terminating '-->'.
                         if (*psz == 0)
                             return psz;
@@ -2182,7 +2192,8 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
                                                     {
                                                         Push(ENTITY_INCLUDE);    // Graft a new branch on the tree.
                                                         pBranch->pszData = psz;  // Save the offset.
-                                                        while (!(IsRightBracket(*psz) && IsRightBracket(*(psz + 1)) && IsLeave(*(psz + 2))))
+                                                        while (!(IsRightBracket(*psz) && IsRightBracket(*(psz + 1)) &&
+                                                                 IsLeave(*(psz + 2))))
                                                             ++psz;  // Scan for terminating ']]>'.
                                                         if (IsRightBracket(*psz))
                                                         {
@@ -2593,8 +2604,8 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
                                     goto LOC_ATTRIBUTE;  // Go scan for additional attributes.
                                 }
                             }
-                            else
-                            {                       // HTML attributes don't have to be quoted if they don't have any spaces
+                            else  // HTML attributes don't have to be quoted if they don't have any spaces
+                            {
                                 a->pszValue = psz;  // Save the offset.
                                 psz = SkipAttrSymbol(psz);
                                 char chSave = *psz;
@@ -2692,8 +2703,8 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
                                     goto LOC_PCDATA;
                                 }
 
-                                // The <form> element cannot be nested, so if we are looking at a </form> then only allow it
-                                // if we are within a <form> section.
+                                // The <form> element cannot be nested, so if we are looking at a </form> then only
+                                // allow it if we are within a <form> section.
 
                                 if (elemClose == ELEMENT_FORM && pBranch->element != ELEMENT_FORM)
                                 {
@@ -2709,10 +2720,11 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
                                     }
                                 }
 
-                                // Some end tags automatically close any open child tags. We check for unclosed child tags here
-                                // and force them closed
+                                // Some end tags automatically close any open child tags. We check for unclosed child
+                                // tags here and force them closed
 
-                                if (pBranch->element != elemClose && pBranch->parent && DoesEndTagCloseChildren(elemClose))
+                                if (pBranch->element != elemClose && pBranch->parent &&
+                                    DoesEndTagCloseChildren(elemClose))
                                 {
                                     do
                                     {
@@ -2748,11 +2760,11 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
                     pBranch->pszData = psz;    // Save the offset.
                     ScanUntil(IsEnter(*psz));  //'...<'
 
-                    // HTML script can contain '<' and other characters. We don't want to parse each and every one of those, so
-                    // instead when we encounter a '<' character, we look to see if the next non-space character begins a /script
-                    // string, and if so, we assume that is the end of the script. Theoretically, a script could have a quoted
-                    // end script tag, e.g., document.write("</script") -- but that's unlikely enough that we shouldn't have to
-                    // worry about it.
+                    // HTML script can contain '<' and other characters. We don't want to parse each and every one of
+                    // those, so instead when we encounter a '<' character, we look to see if the next non-space
+                    // character begins a /script string, and if so, we assume that is the end of the script.
+                    // Theoretically, a script could have a quoted end script tag, e.g., document.write("</script") --
+                    // but that's unlikely enough that we shouldn't have to worry about it.
 
                     while (bInScriptSection)
                     {
@@ -2807,8 +2819,9 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
                                     CloseElement == ELEMENT_MENU)
                                 {
                                     Pop();
-                                    // You cannot have a nested LI -- if found, it means the previous nested item auto-close the
-                                    // list item.
+                                    // You cannot have a nested LI -- if found, it means the previous nested item
+                                    // auto-close the list item.
+
                                     while (pBranch->GetElementTag() == ELEMENT_LI)
                                         Pop();
                                 }

@@ -13,8 +13,8 @@
 
 #if defined(_WIN32)
 
-// This dialog class has no base requirements other than compiling for Windows. It can be used whether your app is using
-// ATL, WTL, wxWidgets, or is just a console app that needs a dialog box.
+// This dialog class has no base requirements other than compiling for Windows. It can be used whether your app is
+// using ATL, WTL, wxWidgets, or is just a console app that needs a dialog box.
 
 // Classes are also provided for some dialog controls: ttCComboBox, ttCListBox, ttCListView
 
@@ -66,7 +66,8 @@ public:
     int  GetControlTextLength(int id) const { return ::GetWindowTextLengthA(GetDlgItem(id)); }
     BOOL GetControlRect(int id, RECT* prc) const { return ::GetWindowRect(GetDlgItem(id), prc); }
 
-    void GetControlText(int id, char* pszText, int cchMax = MAX_PATH) const { (void) ::GetWindowTextA(GetDlgItem(id), pszText, cchMax); }
+    void GetControlText(int id, char* pszText, int cchMax = MAX_PATH) const { (void) ::GetWindowTextA(GetDlgItem(id),
+                                                                                                      pszText, cchMax); }
     void GetControlText(int id, ttCStr* pcsz) const { pcsz->GetWndText(GetDlgItem(id)); }
     void SetControlText(int id, const char* pszText) const
     {
@@ -74,7 +75,8 @@ public:
         (void) ::SetWindowTextA(GetDlgItem(id), pszText);
     }
 
-    void GetControlText(int id, wchar_t* pwszText, int cchMax = MAX_PATH) const { (void) ::GetWindowTextW(GetDlgItem(id), pwszText, cchMax); }
+    void GetControlText(int id, wchar_t* pwszText, int cchMax = MAX_PATH) const { (void) ::GetWindowTextW(GetDlgItem(id),
+                                                                                                          pwszText, cchMax); }
     void GetControlText(int id, ttCWStr* pcsz) const { pcsz->GetWndText(GetDlgItem(id)); }
     void SetControlText(int id, const wchar_t* pwszText) const
     {
@@ -291,8 +293,10 @@ public:
         return SendMessageW(CB_FINDSTRING, (WPARAM) iStart, (LPARAM) pwszPrefix);
     }
 
-    LRESULT SelectString(const char* pszString, int iStart = -1) const { return SendMessageA(CB_SELECTSTRING, (WPARAM) iStart, (LPARAM) pszString); }
-    LRESULT SelectString(const wchar_t* pwszString, int iStart = -1) const { return SendMessageW(CB_SELECTSTRING, (WPARAM) iStart, (LPARAM) pwszString); }
+    LRESULT SelectString(const char* pszString, int iStart = -1) const { return SendMessageA(CB_SELECTSTRING, (WPARAM) iStart,
+                                                                                             (LPARAM) pszString); }
+    LRESULT SelectString(const wchar_t* pwszString, int iStart = -1) const { return SendMessageW(CB_SELECTSTRING, (WPARAM) iStart,
+                                                                                                 (LPARAM) pwszString); }
 
     void SetFont(HFONT hfont) { SendMessageA(WM_SETFONT, (WPARAM) hfont); }
 
@@ -349,9 +353,9 @@ public:
     LRESULT GetTextLength(int index = -1) const { return SendMessageA(LB_GETTEXTLEN, (index == -1) ? GetCurSel() : index); }
 
     LRESULT GetText(char* psz, int index = -1) const { return SendMessageA(LB_GETTEXT, (index == -1) ? GetCurSel() : index, (LPARAM) psz); }
-    LRESULT GetText(wchar_t* pwsz, int index = -1) const { return SendMessageW(LB_GETTEXT, (index == -1) ? GetCurSel() : index, (LPARAM) pwsz); }  // wide char version
+    LRESULT GetText(wchar_t* pwsz, int index = -1) const { return SendMessageW(LB_GETTEXT, (index == -1) ? GetCurSel() : index, (LPARAM) pwsz); }
     void    GetText(ttCStr* pcsz, int index = -1) const { pcsz->GetListBoxText(*this, (index == -1) ? GetCurSel() : index); }
-    void    GetText(ttCWStr* pcsz, int index = -1) const { pcsz->GetListBoxText(*this, (index == -1) ? GetCurSel() : index); }  // wide char version
+    void    GetText(ttCWStr* pcsz, int index = -1) const { pcsz->GetListBoxText(*this, (index == -1) ? GetCurSel() : index); }
 
     LRESULT GetCount() const { return SendMessage(LB_GETCOUNT); }
     LRESULT GetSelCount() const
@@ -410,16 +414,21 @@ public:
     LRESULT GetItemData(WPARAM index) const { return SendMessage(LB_GETITEMDATA, index); }
     LRESULT SetItemData(WPARAM index, int data) const { return SendMessage(LB_SETITEMDATA, index, data); }
 
-    LRESULT GetItemRect(RECT* prc, WPARAM index = (WPARAM) -1) const { return SendMessage(LB_GETITEMRECT, ((index == (WPARAM) -1) ? GetCurSel() : index), (LPARAM) prc); }
+    LRESULT GetItemRect(RECT* prc, WPARAM index = (WPARAM) -1) const
+    {
+        return SendMessage(LB_GETITEMRECT, ((index == (WPARAM) -1) ? GetCurSel() : index), (LPARAM) prc);
+    }
 
     LRESULT GetCurSel() const
     {  // works on single selection listbox only
-        ttASSERT_MSG(!(GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)), "GetCurSel() only works on single selection listbox");
+        ttASSERT_MSG(!(GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)),
+                     "GetCurSel() only works on single selection listbox");
         return SendMessage(LB_GETCURSEL);
     }
     LRESULT SetCurSel(WPARAM index = 0) const
     {  // works on single selection listbox only
-        ttASSERT_MSG(!(GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)), "SetCurSel() only works on single selection listbox");
+        ttASSERT_MSG(!(GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)),
+                     "SetCurSel() only works on single selection listbox");
         return SendMessage(LB_SETCURSEL, index);
     }
     LRESULT GetTopIndex(void) const { return SendMessage(LB_GETTOPINDEX); }
@@ -428,12 +437,14 @@ public:
     // For multi-select list boxes
     LRESULT GetSel(WPARAM index) const
     {
-        ttASSERT_MSG((GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)), "GetSel() only works on multiple-select list box");
+        ttASSERT_MSG((GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)),
+                     "GetSel() only works on multiple-select list box");
         return SendMessage(LB_GETSEL, index);
     }
     void SetSel(int index, BOOL fSelect = TRUE) const
     {
-        ttASSERT_MSG((GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)), "SetSel() only works on multiple-select list box");
+        ttASSERT_MSG((GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)),
+                     "SetSel() only works on multiple-select list box");
         (void) SendMessage(LB_SETSEL, fSelect, MAKELPARAM(index, 0));
     }
 
@@ -443,12 +454,14 @@ public:
     LRESULT FindPrefix(const wchar_t* pwszPrefix, int iStart = -1) const { return SendMessageW(LB_FINDSTRING, iStart, (LPARAM) pwszPrefix); }
     LRESULT SelectString(const char* pszString, int iStart = -1) const
     {  // works on single selection listbox only
-        ttASSERT_MSG(!(GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)), "SelectString only works on single-selection listbox");
+        ttASSERT_MSG(!(GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)),
+                     "SelectString only works on single-selection listbox");
         return SendMessageA(LB_SELECTSTRING, iStart, (LPARAM) pszString);
     }
     LRESULT SelectString(const wchar_t* pwszString, int iStart = -1) const
     {  // works on single selection listbox only
-        ttASSERT_MSG(!(GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)), "SelectString only works on single-selection listbox");
+        ttASSERT_MSG(!(GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)),
+                     "SelectString only works on single-selection listbox");
         return SendMessageW(LB_SELECTSTRING, iStart, (LPARAM) pwszString);
     }
 

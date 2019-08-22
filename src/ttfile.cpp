@@ -82,8 +82,8 @@ ttCFile::~ttCFile()
         ttFree(m_pbuf);
 }
 
-// Memory allocation is always rounded up to the nearest 4K boundary. I.e., if you request 1 byte or 4095 bytes, what will actually
-// be allocated is 4096 bytes.
+// Memory allocation is always rounded up to the nearest 4K boundary. I.e., if you request 1 byte or 4095 bytes, what
+// will actually be allocated is 4096 bytes.
 
 void ttCFile::AllocateBuffer(size_t cbInitial)
 {
@@ -216,7 +216,10 @@ bool ttCFile::ReadURL(const char* pszURL, HINTERNET hInternet)
             return false;
         }
     }
-    HINTERNET hURL = ::InternetOpenUrlA(hInternet ? hInternet : m_hInternetSession, pszURL, NULL, 0, INTERNET_FLAG_RELOAD, 0);
+    HINTERNET hURL = ::InternetOpenUrlA(hInternet ?
+                                            hInternet :
+                                            m_hInternetSession,
+                                        pszURL, NULL, 0, INTERNET_FLAG_RELOAD, 0);
     if (!hURL)
     {
         m_ioResult = ERROR_CANT_OPEN;
@@ -516,7 +519,9 @@ bool ttCFile::ReplaceStr(const char* pszOldText, const char* pszNewText, bool fC
     if (cbNew == 0)  // delete the old text since new text is empty
     {
         ptrdiff_t cb = m_pCurrent - pszPos;
-        ttASSERT_MSG(cb > 0, "m_pCurrent does not appear to be pointing to the end of the buffer. Did you call ReadLine()? You can't use ReplaceStr() if you called ReadLine()");
+        ttASSERT_MSG(cb > 0,
+                     "m_pCurrent does not appear to be pointing to the end of the buffer."
+                     " Did you call ReadLine()? You can't use ReplaceStr() if you called ReadLine()");
         memmove(pszPos, pszPos + cbOld, cb);
         m_pCurrent -= cbOld;
         ttASSERT_MSG(!*m_pCurrent, "m_pCurrent did not get changed correctly");
@@ -547,7 +552,8 @@ bool ttCFile::ReplaceStr(const char* pszOldText, const char* pszNewText, bool fC
             *pszPos++ = *pszNewText++;
         }
         ptrdiff_t cb = m_pCurrent - pszPos;
-        ttASSERT_MSG(cb > 0, "m_pCurrent does not appear to be pointing to the end of the buffer. Did you call ReadLine()? You can't use ReplaceStr() if you called ReadLine()");
+        ttASSERT_MSG(cb > 0, "m_pCurrent does not appear to be pointing to the end of the buffer."
+                             " Did you call ReadLine()? You can't use ReplaceStr() if you called ReadLine()");
         memmove(pszPos, pszPos + cbOld, cb);
         m_pCurrent -= cbOld;
         ttASSERT_MSG(!*m_pCurrent, "m_pCurrent did not get changed correctly");
@@ -610,8 +616,8 @@ bool ttCFile::UnicodeToAnsi()
     return true;
 }
 
-// Add a single EOL to the current buffer. Do this by first backing up over any trailing whitespace. Then see if we already
-// have a EOL, and if not, add one.
+// Add a single EOL to the current buffer. Do this by first backing up over any trailing whitespace. Then see if we
+// already have a EOL, and if not, add one.
 
 void ttCFile::AddSingleLF()
 {
@@ -662,7 +668,8 @@ char* ttCFile::GetParsedYamlLine()
     if (ttIsSameSubStrI(pszLine, "%YAML"))
         return nullptr;
 
-    if (ttIsEmpty(pszLine) || pszLine[0] == '#' || (pszLine[0] == '-' && pszLine[1] == '-' && pszLine[2] == '-'))  // ignore empty, comment or divider lines
+    // ignore empty, comment or divider lines
+    if (ttIsEmpty(pszLine) || pszLine[0] == '#' || (pszLine[0] == '-' && pszLine[1] == '-' && pszLine[2] == '-'))
         return nullptr;
 
     char* pszComment = ttStrChr(pszLine, '#');  // strip off any comments

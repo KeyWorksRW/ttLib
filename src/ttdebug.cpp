@@ -25,7 +25,8 @@ const UINT tt::WMP_TRACE_GENERAL = WM_USER + 0x1f3;
 const UINT tt::WMP_TRACE_MSG = WM_USER + 0x1f5;
 const UINT tt::WMP_CLEAR_TRACE = WM_USER + 0x1f9;  // clears the ttTrace window
 
-// DO NOT CHANGE THESE TWO NAMES! Multiple applications expect these names and will no longer send trace messages if you change them.
+// DO NOT CHANGE THESE TWO NAMES! Multiple applications expect these names and will no longer send trace messages if
+// you change them.
 
 const char* tt::txtTraceClass = "KeyViewMsgs";
 const char* tt::txtTraceShareName = "hhw_share";
@@ -45,8 +46,8 @@ namespace ttdbg
 
 #if 0
 // [randalphwa - 3/5/2019] We don't currently expose this, but if a caller needs access to these variables, they could
-// copy this section into their own code to gain access. Alternatively, we could put it in ttdebug.h--I just don't think
-// it's going to be used often enough, and I'd rather not have clutter in ttdebug.h that almost no one will use.
+// copy this section into their own code to gain access. Alternatively, we could put it in ttdebug.h--I just don't
+// think it's going to be used often enough, and I'd rather not have clutter in ttdebug.h that almost no one will use.
 
 namespace ttdbg
 {

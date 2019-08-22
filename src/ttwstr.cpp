@@ -67,7 +67,8 @@ void ttCWStr::ChangeExtension(const wchar_t* pszExtension)
         m_psz = ttStrDup(L"");
 
     wchar_t* pszEnd = ttStrChrR(m_psz, L'.');
-    if (pszEnd && pszEnd[1] != CHW_FORWARDSLASH && pszEnd[1] != CHW_BACKSLASH)  // handle "./foo" -- don't assume the leading period is an extension if there's a folder seperator after it
+    // handle "./foo" -- don't assume the leading period is an extension if there's a folder seperator after it
+    if (pszEnd && pszEnd[1] != CHW_FORWARDSLASH && pszEnd[1] != CHW_BACKSLASH)
         *pszEnd = 0;
 
     if (*pszExtension != L'.')
@@ -193,8 +194,8 @@ wchar_t* ttCWStr::GetComboLBText(HWND hwnd, size_t sel)
 }
 
 /*
-    tt::hinstResources is typically set by InitCaller() and determines where to load resources from. If you need to load the resources
-    from a DLL, then first call:
+    tt::hinstResources is typically set by InitCaller() and determines where to load resources from. If you need to
+    load the resources from a DLL, then first call:
 
         tt::hinstResources = LoadLibrary("dll name");
 */

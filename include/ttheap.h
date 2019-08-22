@@ -26,8 +26,8 @@
         {
             MyClass() : ttCHeap(true) { } // true to make MyClass thread-safe
 
-    Now all of the ttMalloc/ttReAlloc/ttReCalloc routines below will be allocated on the sub-heap, and do not need to be
-    specifically FreeAllocd in the destructor.
+    Now all of the ttMalloc/ttReAlloc/ttReCalloc routines below will be allocated on the sub-heap, and do not need to
+    be specifically FreeAllocd in the destructor.
 
     Constructing ttCHeap using another heap takes advantage of the sub-heap above by elimintating the need to
     individually free every memory allocation in the destructor.

@@ -47,13 +47,15 @@ namespace tt
     #define ttASSERT_MSG(exp, pszMsg) { if (!(exp)) ttAssertionMsg(pszMsg, __FILE__, __func__, __LINE__); }
     #define ttFAIL(pszMsg) ttAssertionMsg(pszMsg, __FILE__, __func__, __LINE__)
 
-    #define ttVERIFY(exp) (void)((!!(exp)) || ttAssertionMsg(#exp, __FILE__, __func__, __LINE__))       // this still executes the expression in non-DEBUG build, it just doesn't check result
+    // this still executes the expression in non-DEBUG build, it just doesn't check result
+    #define ttVERIFY(exp) (void)((!!(exp)) || ttAssertionMsg(#exp, __FILE__, __func__, __LINE__))
 
     #define ttTRACE(msg) ttTrace(msg)
     #define ttTRACE_CLEAR() ttTraceClear();
 
     // checks for both ptr == NULL and *ptr == NULL
-    #define ttASSERT_NONEMPTY(ptr) { if (!ptr || !*ptr) ttAssertionMsg(ptr, __FILE__, __func__, __LINE__); }    // AssertionMsg figures out if it's nullptr or just empty
+    // AssertionMsg figures out if it's nullptr or just empty
+    #define ttASSERT_NONEMPTY(ptr) { if (!ptr || !*ptr) ttAssertionMsg(ptr, __FILE__, __func__, __LINE__); }
 
     #define ttDISABLE_ASSERTS ttSetAsserts(true)
     #define ttENABLE_ASSERTS  ttSetAsserts(false)

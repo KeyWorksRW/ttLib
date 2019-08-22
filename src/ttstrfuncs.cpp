@@ -918,7 +918,8 @@ char* ttHextoa(size_t val, char* pszDst, bool bUpperCase)
     if (!pszDst)
     {
         if (!szBuf)
-            szBuf = (char*) ttMalloc(sizeof(size_t) * sizeof(char) + sizeof(char) * 4);  // extra room for null termination and general paranoia
+            // extra room for null termination and general paranoia
+            szBuf = (char*) ttMalloc(sizeof(size_t) * sizeof(char) + sizeof(char) * 4);
         pszDst = szBuf;
     }
     char* pszRet = pszDst;
@@ -1003,7 +1004,8 @@ wchar_t* ttHextoa(size_t val, wchar_t* pszDst, bool bUpperCase)
     if (!pszDst)
     {
         if (!szBuf)
-            szBuf = (wchar_t*) ttMalloc(sizeof(size_t) * sizeof(wchar_t) + sizeof(wchar_t) * 4);  // extra room for null termination and general paranoia
+            // extra room for null termination and general paranoia
+            szBuf = (wchar_t*) ttMalloc(sizeof(size_t) * sizeof(wchar_t) + sizeof(wchar_t) * 4);
         pszDst = szBuf;
     }
     wchar_t* pszRet = pszDst;

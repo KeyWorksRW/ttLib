@@ -11,20 +11,20 @@
 #ifndef __TTLIB_MULTITHREAD_H__
 #define __TTLIB_MULTITHREAD_H__
 
-// This class creates a pool of threads which are created with a call to IniatializeThreads(nThreads)
-// specifying how many threads you want. The threads will exist until this class's destructor is called.
+// This class creates a pool of threads which are created with a call to IniatializeThreads(nThreads) specifying how
+// many threads you want. The threads will exist until this class's destructor is called.
 
 // Inherit from this class and supply a doThreadWork(pvData1, pvData2) function.
 
-// To use a thread, call StartThread(pvData1, pvData2) -- this will in turn call doThreadWork(pvData1, pvData2) with the same
-// parameters you passed to StartThread.
+// To use a thread, call StartThread(pvData1, pvData2) -- this will in turn call doThreadWork(pvData1, pvData2) with
+// the same parameters you passed to StartThread.
 
-// Call GetAvailableThreads() to see how many threads are currently available (keeping in mind that this is simply a snapshot --
-// by the time this function returns, other threads may have completed their work).
+// Call GetAvailableThreads() to see how many threads are currently available (keeping in mind that this is simply a
+// snapshot -- by the time this function returns, other threads may have completed their work).
 
-// Call WaitForThreadsToComplete() to wait for all threads to finish normally, or call CancelThreads() to
-// finish threads early (this requires you to check for isCancelled() in your doThreadWork function).
-// CancelThreads cancels the current task and the puts the thread back into the pool
+// Call WaitForThreadsToComplete() to wait for all threads to finish normally, or call CancelThreads() to finish
+// threads early (this requires you to check for isCancelled() in your doThreadWork function). CancelThreads cancels
+// the current task and the puts the thread back into the pool
 
 // a try/catch section is placed around the call to doThreadWork
 

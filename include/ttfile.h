@@ -11,7 +11,8 @@
 
 // If a file is not read, the caller can write lines or strings and when done, write the entire file
 
-// Note that this class only supports ANSI/UTF8 -- it will fail miserably if passed UNICODE strings. Call UnicodeToAnsi() if you read a Unicode file.
+// Note that this class only supports ANSI/UTF8 -- it will fail miserably if passed UNICODE strings. Call
+// UnicodeToAnsi() if you read a Unicode file.
 
 #pragma once
 
@@ -76,7 +77,10 @@ public:
     char* GetLnPtr() { return m_pszLine; }
     bool  IsEndOfFile() const { return (!m_pCurrent || !*m_pCurrent) ? true : false; }
 
-    char* GetParsedYamlLine();  // returns nullptr if blank, comment, section diveder, or %YAML line. Otherwises returns pointer to first non-space character, stripped of comment and trailing space
+    // returns nullptr if blank, comment, section diveder, or %YAML line. Otherwises returns pointer to first non-space
+    // character, stripped of comment and trailing space
+
+    char* GetParsedYamlLine();
 
     void WriteStr(const char* psz);
     void WriteChar(char ch);
@@ -118,9 +122,9 @@ public:
             m_pCurrent = psz;
     }
 
-    // Calling readLine() will modify the contents -- which means you can't compare two ttCFile objects if you parsed one
-    // with readLine(). To allow for this, call MakeCopy() after you have read the file into memory, and RestoreCopy() if
-    // you need to reset the file contents to they way they were before readLine() was called.
+    // Calling readLine() will modify the contents -- which means you can't compare two ttCFile objects if you parsed
+    // one with readLine(). To allow for this, call MakeCopy() after you have read the file into memory, and
+    // RestoreCopy() if you need to reset the file contents to they way they were before readLine() was called.
 
     void MakeCopy();
     void RestoreCopy();

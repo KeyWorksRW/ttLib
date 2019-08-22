@@ -610,7 +610,8 @@ bool ttCStr::GetEnv(const char* pszName)
     ttASSERT_NONEMPTY(pszName);
 
     size_t cbEnv = 0;
-    if (getenv_s(&cbEnv, nullptr, 0, pszName) == 0 && cbEnv > 0 && cbEnv < (8 * 1024))  // an environment variable larger then 8k is almost certainly bogus and a security risk to use
+    // an environment variable larger then 8k is almost certainly bogus and a security risk to use
+    if (getenv_s(&cbEnv, nullptr, 0, pszName) == 0 && cbEnv > 0 && cbEnv < (8 * 1024))
     {
         ReSize(cbEnv + 1);
         if (getenv_s(&cbEnv, m_psz, cbEnv, pszName) == 0)
@@ -674,8 +675,8 @@ char* ttCStr::GetComboLBText(HWND hwnd, size_t sel)
 }
 
 /*
-    tt::hinstResources is typically set by InitCaller() and determines where to load resources from. If you need to load the resources
-    from a DLL, then first call:
+    tt::hinstResources is typically set by InitCaller() and determines where to load resources from. If you need to
+    load the resources from a DLL, then first call:
 
         tt::hinstResources = LoadLibrary("dll name");
 */

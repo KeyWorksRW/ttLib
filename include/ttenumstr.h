@@ -7,8 +7,9 @@
 /////////////////////////////////////////////////////////////////////////////
 
 /*
-    This class is used to enumerate through substrings that are separated by a single character (typically a semicolon).
-    The following example uses this to parse through each of the directories in an INCLUDE environment variable:
+    This class is used to enumerate through substrings that are separated by a single character (typically a
+    semicolon). The following example uses this to parse through each of the directories in an INCLUDE environment
+    variable:
 
         ttCEnumStr enumstr("c:/sdk/include;c:/github/wxwidgets/include/wx", ';');
         while (enumstr.Enum())

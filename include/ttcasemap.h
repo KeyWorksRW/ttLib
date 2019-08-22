@@ -578,7 +578,7 @@
         func((UINT) wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)); \
         return true;
 
-// void OnLBtnDblClk(UINT flagVKeys, int xPos, int yPos);   // flagVKeys indicates which virtual keys are pressed (Ctrl, Shift, etc.)
+// void OnLBtnDblClk(UINT flagVKeys, int xPos, int yPos);  // flagVKeys indicates which virtual keys are pressed (Ctrl, Shift, etc.)
 #define TTMSG_WM_LBUTTONDBLCLK(func) \
     case WM_LBUTTONDBLCLK: \
         func((UINT) wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)); \

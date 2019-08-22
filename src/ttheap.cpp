@@ -21,8 +21,8 @@ ttCHeap tt::MainHeap;
         2) bool -> creates a sub-heap, the parameter indicates if the sub-heap should be thread-safe or not
         3) heap handle -> uses another sub-heap, sub-heap is not FreeAllocd in destructor
 
-        #3 is typically used when you want a master ttCHeap class that will share it's sub-heap with all child ttCHeap classes, and
-        FreeAlloc the entire sub-heap at once.
+        #3 is typically used when you want a master ttCHeap class that will share it's sub-heap with all child ttCHeap
+        classes, and FreeAlloc the entire sub-heap at once.
 
             ttCHeap master(true);
             ttCHeap child(master);  // this invokes master::HANDLE() and from then on use master's sub-heap
