@@ -37,7 +37,7 @@ public:
         m_bCallersHeap = false;
         m_pHeap = new ttCHeap(true);
     }
-    ttCMap(ttCHeap pCallerHeap)
+    ttCMap(ttCHeap* pCallerHeap)
     {
         ttASSERT_MSG(pCallerHeap, "NULL pointer!");
         m_cAllocated = 0;
