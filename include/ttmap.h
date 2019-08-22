@@ -34,11 +34,22 @@ public:
         m_cAllocated = 0;
         m_cItems = 0;
         m_aMapPairs = nullptr;
+        m_bCallersHeap = false;
         m_pHeap = new ttCHeap(true);
+    }
+    ttCMap(ttCHeap pCallerHeap)
+    {
+        ttASSERT_MSG(pCallerHeap, "NULL pointer!");
+        m_cAllocated = 0;
+        m_cItems = 0;
+        m_aMapPairs = nullptr;
+        m_bCallersHeap = true;
+        m_pHeap = pCallerHeap;
     }
     ~ttCMap()
     {
-        delete m_pHeap;
+        if (!m_bCallersHeap)
+            delete m_pHeap;
     }
 
     // Public functions
@@ -113,11 +124,12 @@ public:
 private:
     // Class members
 
-    int m_cItems;
-    int m_cAllocated;
-
     ttCHeap*  m_pHeap;
     MAP_PAIR* m_aMapPairs;
+
+    int  m_cItems;
+    int  m_cAllocated;
+    bool m_bCallersHeap;
 };
 
 #endif  // __TTLIB_TTMAP_H__
