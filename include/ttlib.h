@@ -132,11 +132,11 @@ void   ttAddTrailingSlash(char* pszPath);
 void   ttBackslashToForwardslash(char* pszPath);  // converts all backslashes in the string to forward slashes
 void   ttConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszResult);
 bool   ttCreateDir(const char* pszDir);
-char*  ttFindNonSpace(const char* psz);  // returns pointer to the next non-space character
-char*  ttFindSpace(const char* psz);     // returns pointer to the next space character
+char*  ttFindNonSpace(const char* psz);  // returns pointer to the next non-whitespace character
+char*  ttFindSpace(const char* psz);     // returns pointer to the next whitespace character
 void   ttForwardslashToBackslash(char* pszPath);
 size_t ttHashFromSz(const char* psz);      // creates a hash number from an string
-size_t ttHashFromURL(const char* pszURL);  // creates a hash number from a url or filename--'/' and '\' are considered the same, letter case doesn't matter
+size_t ttHashFromURL(const char* pszURL);  // creates a hash number from a url or filename ('/' and '\' are considered the same, letter case doesn't matter)
 char*  ttNextChar(const char* psz);        // handles UTF8 strings
 char*  ttStepOver(const char* psz);        // equivalent to FindNonSpace(FindSpace(psz))
 void   ttTrimRight(char* psz);
