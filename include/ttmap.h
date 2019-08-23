@@ -119,7 +119,7 @@ public:
     // be FreeAllocd automatically when the heap is destroyed in ttCMap's destructor
 
     void  ttMalloc(size_t cb) { return m_pHeap->ttMalloc(cb); }
-    char* ttStrdup(const char* psz) { return m_pHeap->ttStrdup(psz); }
+    char* ttStrDup(const char* psz) { return m_pHeap->ttStrDup(psz); }
 
 private:
     // Class members
