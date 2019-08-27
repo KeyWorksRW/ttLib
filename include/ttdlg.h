@@ -71,7 +71,6 @@ public:
     void GetControlText(int id, ttCStr* pcsz) const { pcsz->GetWndText(GetDlgItem(id)); }
     void SetControlText(int id, const char* pszText) const
     {
-        ttASSERT(pszText);
         (void) ::SetWindowTextA(GetDlgItem(id), pszText ? pszText : "");
     }
 
@@ -80,7 +79,6 @@ public:
     void GetControlText(int id, ttCWStr* pcsz) const { pcsz->GetWndText(GetDlgItem(id)); }
     void SetControlText(int id, const wchar_t* pwszText) const
     {
-        ttASSERT(pwszText);
         (void) ::SetWindowTextW(GetDlgItem(id), pwszText ? pwszText : L"");
     }
 
