@@ -9,23 +9,26 @@
 #pragma once
 
 #ifndef IDDLG_PREFERENCES
-	#include "resource.h"
+#include "resource.h"
 #endif
 
-#include <ttdlg.h>	// ttCDlg, ttCComboBox, ttCListBox, ttCListView
+#include <ttdlg.h>  // ttCDlg, ttCComboBox, ttCListBox, ttCListView
 
 class CPreferences : public ttCDlg
 {
 public:
-	CPreferences() : ttCDlg(IDDLG_PREFERENCES) { }
+    CPreferences()
+        : ttCDlg(IDDLG_PREFERENCES)
+    {
+    }
 
-	BEGIN_TTMSG_MAP()
-	END_TTMSG_MAP()
+    BEGIN_TTMSG_MAP()
+    END_TTMSG_MAP()
 
-	// Class functions
+    // Class functions
 
-	void OnBegin(void);
-	void OnOK(void);
+    void OnBegin(void);
+    void OnOK(void);
 
 protected:
 };

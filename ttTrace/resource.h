@@ -2,6 +2,7 @@
 // Microsoft Developer Studio generated include file.
 // Used by tttrace.rc
 //
+// clang-format off
 #define IDR_MAINFRAME                   128
 #define IDD_ABOUTBOX                    129
 #define IDDLG_PREFERENCES				130
@@ -23,3 +24,4 @@
 #define _APS_NEXT_SYMED_VALUE           131
 #endif
 #endif
+// clang-format on

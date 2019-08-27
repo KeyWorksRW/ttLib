@@ -8,24 +8,23 @@
 
 #pragma once
 
-#include <ttwtlmsgs.h>	// Macros for mapping Windows messages to functions
+#include <ttwtlmsgs.h>  // Macros for mapping Windows messages to functions
 
 class CTraceView : public CWindowImpl<CTraceView, CRichEditCtrl>
 {
 public:
-	DECLARE_WND_SUPERCLASS(NULL, CRichEditCtrl::GetWndClassName())
+    DECLARE_WND_SUPERCLASS(NULL, CRichEditCtrl::GetWndClassName())
 
-	BOOL PreTranslateMessage(MSG* pMsg);
+    BOOL PreTranslateMessage(MSG* pMsg);
 
-	BEGIN_MSG_MAP(CTraceView)
-		MSG_WM_CREATE(OnCreate)
-	END_MSG_MAP()
+    BEGIN_MSG_MAP(CTraceView)
+        MSG_WM_CREATE(OnCreate)
+    END_MSG_MAP()
 
     // Class functions
-
 
 protected:
     // Msg handlers
 
-	LRESULT OnCreate(CREATESTRUCT* /* pcs */);
+    LRESULT OnCreate(CREATESTRUCT* /* pcs */);
 };

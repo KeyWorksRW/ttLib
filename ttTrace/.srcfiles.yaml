@@ -1,0 +1,29 @@
+# Requires ttBld.exe version 1.0.0 or higher to process
+
+Options:
+    Project:     ttTrace      # project name
+    Pch:         pch.h        # "none" or name of header file to use for precompilation
+    Exe_type:    window       # [window | console | lib | dll]
+    Optimize:    space        # [space | speed] optimization to use in release builds
+    Warn:        4            # [1-4] warning level
+    Crt_rel:     static       # [static | dll] type of CRT to link to in release builds
+    Crt_dbg:     dll          # [static | dll] type of CRT to link to in debug builds
+
+    64Bit:       true         # create 64-bit project
+    TargetDir64: ../bin64     # 64-bit target directory
+    32Bit:       true         # if true, build 32-bit target
+    TargetDir32: ../bin32     # 32-bit target directory
+
+# Before making pulblic, change ../../ttLib to ../ttLib to use sub module instead of actual repository
+
+    IncDirs:     ../include;../WTL                 # additional directories for header files
+    BuildLibs:   ../src       # libraries that need to be built (added to makefile generation)
+
+Files:
+    pch.cpp
+    trace.rc
+
+    init.cpp
+    traceview.cpp
+    mainfrm.cpp
+    prefs.cpp
