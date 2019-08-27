@@ -72,7 +72,7 @@ public:
     void SetControlText(int id, const char* pszText) const
     {
         ttASSERT(pszText);
-        (void) ::SetWindowTextA(GetDlgItem(id), pszText);
+        (void) ::SetWindowTextA(GetDlgItem(id), pszText ? pszText : "");
     }
 
     void GetControlText(int id, wchar_t* pwszText, int cchMax = MAX_PATH) const { (void) ::GetWindowTextW(GetDlgItem(id),
@@ -81,10 +81,11 @@ public:
     void SetControlText(int id, const wchar_t* pwszText) const
     {
         ttASSERT(pwszText);
-        (void) ::SetWindowTextW(GetDlgItem(id), pwszText);
+        (void) ::SetWindowTextW(GetDlgItem(id), pwszText ? pwszText : L"");
     }
 
-    void SetTitle(const char* pszTitle) { ::SetWindowTextA(*this, pszTitle); }
+    void SetTitle(const char* pszTitle) { ::SetWindowTextA(*this, pszTitle ? pszTitle : ""); }
+    void SetTitle(const wchar_t* pszTitle) { ::SetWindowTextW(*this, pszTitle ? pszTitle : L""); }
 
     ptrdiff_t GetControlInteger(int id) const;
     void      SetControlInteger(int id, ptrdiff_t val) const;
@@ -205,7 +206,7 @@ public:
     {
         ttASSERT(m_hwnd);
         ttASSERT(psz);
-        (void) ::SetWindowTextA(m_hwnd, psz);
+        (void) ::SetWindowTextA(m_hwnd, psz ? psz : "");
     }
 
     inline int GetText(wchar_t* pwsz, int cchMax = MAX_PATH) const
@@ -218,7 +219,7 @@ public:
     {
         ttASSERT(m_hwnd);
         ttASSERT(pwsz);
-        (void) ::SetWindowTextW(m_hwnd, pwsz);
+        (void) ::SetWindowTextW(m_hwnd, pwsz ? pwsz : L"");
     }
 
     LRESULT GetCount() const { return SendMessage(CB_GETCOUNT); }
@@ -228,12 +229,12 @@ public:
     LRESULT Add(const char* psz) const
     {
         ttASSERT(psz);
-        return SendMessageA(CB_ADDSTRING, 0, (LPARAM) psz);
+        return psz ? SendMessageA(CB_ADDSTRING, 0, (LPARAM) psz) : CB_ERR;
     }
     LRESULT Add(const wchar_t* pwsz) const
     {
         ttASSERT(pwsz);
-        return SendMessageW(CB_ADDSTRING, 0, (LPARAM) pwsz);
+        return pwsz ? SendMessageW(CB_ADDSTRING, 0, (LPARAM) pwsz) : CB_ERR;
     }
     LRESULT Add(int val) const
     {
@@ -244,22 +245,22 @@ public:
     LRESULT AddString(const char* psz) const
     {
         ttASSERT(psz);
-        return SendMessageA(CB_ADDSTRING, 0, (LPARAM) psz);
+        return psz ? SendMessageA(CB_ADDSTRING, 0, (LPARAM) psz) : CB_ERR;
     }
     LRESULT AddString(const wchar_t* pwsz) const
     {
         ttASSERT(pwsz);
-        return SendMessageW(CB_ADDSTRING, 0, (LPARAM) pwsz);
+        return pwsz ? SendMessageW(CB_ADDSTRING, 0, (LPARAM) pwsz) : CB_ERR;
     }
     LRESULT InsertString(int index, const char* psz) const
     {
         ttASSERT(psz);
-        return SendMessageA(CB_INSERTSTRING, index, (LPARAM) psz);
+        return psz ? SendMessageA(CB_INSERTSTRING, index, (LPARAM) psz) : CB_ERR;
     }
     LRESULT InsertString(int index, const wchar_t* pwsz) const
     {
         ttASSERT(pwsz);
-        return SendMessageW(CB_INSERTSTRING, index, (LPARAM) pwsz);
+        return pwsz ? SendMessageW(CB_INSERTSTRING, index, (LPARAM) pwsz) : CB_ERR;
     }
     LRESULT DeleteString(WPARAM index) const { return SendMessage(CB_DELETESTRING, index); }
 
@@ -275,28 +276,32 @@ public:
     LRESULT FindString(const char* pszString, int iStart = -1) const
     {
         ttASSERT(pszString);
-        return SendMessageA(CB_FINDSTRINGEXACT, (WPARAM) iStart, (LPARAM) pszString);
+        return pszString ? SendMessageA(CB_FINDSTRINGEXACT, (WPARAM) iStart, (LPARAM) pszString) : CB_ERR;
     }
     LRESULT FindString(const wchar_t* pwszString, int iStart = -1) const
     {
         ttASSERT(pwszString);
-        return SendMessageW(CB_FINDSTRINGEXACT, (WPARAM) iStart, (LPARAM) pwszString);
+        return pwszString ? SendMessageW(CB_FINDSTRINGEXACT, (WPARAM) iStart, (LPARAM) pwszString) : CB_ERR;
     }
     LRESULT FindPrefix(const char* pszPrefix, int iStart = -1) const
     {
         ttASSERT(pszPrefix);
-        return SendMessageA(CB_FINDSTRING, (WPARAM) iStart, (LPARAM) pszPrefix);
+        return pszPrefix ? SendMessageA(CB_FINDSTRING, (WPARAM) iStart, (LPARAM) pszPrefix) : CB_ERR;
     }
     LRESULT FindPrefix(const wchar_t* pwszPrefix, int iStart = -1) const
     {
         ttASSERT(pwszPrefix);
-        return SendMessageW(CB_FINDSTRING, (WPARAM) iStart, (LPARAM) pwszPrefix);
+        return pwszPrefix ? SendMessageW(CB_FINDSTRING, (WPARAM) iStart, (LPARAM) pwszPrefix) : CB_ERR;
     }
 
-    LRESULT SelectString(const char* pszString, int iStart = -1) const { return SendMessageA(CB_SELECTSTRING, (WPARAM) iStart,
-                                                                                             (LPARAM) pszString); }
-    LRESULT SelectString(const wchar_t* pwszString, int iStart = -1) const { return SendMessageW(CB_SELECTSTRING, (WPARAM) iStart,
-                                                                                                 (LPARAM) pwszString); }
+    LRESULT SelectString(const char* pszString, int iStart = -1) const
+    {
+        return pszString ? SendMessageA(CB_SELECTSTRING, (WPARAM) iStart, (LPARAM) pszString) : CB_ERR;
+    }
+    LRESULT SelectString(const wchar_t* pwszString, int iStart = -1) const
+    {
+        return pwszString ? SendMessageW(CB_SELECTSTRING, (WPARAM) iStart, (LPARAM) pwszString) : CB_ERR;
+    }
 
     void SetFont(HFONT hfont) { SendMessageA(WM_SETFONT, (WPARAM) hfont); }
 
@@ -309,12 +314,14 @@ public:
     void operator+=(const char* psz) const
     {
         ttASSERT(psz);
-        SendMessageA(CB_ADDSTRING, 0, (LPARAM) psz);
+        if (psz)
+            SendMessageA(CB_ADDSTRING, 0, (LPARAM) psz);
     }
     void operator+=(const wchar_t* pwsz) const
     {
         ttASSERT(pwsz);
-        SendMessageW(CB_ADDSTRING, 0, (LPARAM) pwsz);
+        if (pwsz)
+            SendMessageW(CB_ADDSTRING, 0, (LPARAM) pwsz);
     }
 
     operator HWND() const { return m_hwnd; }
@@ -379,12 +386,12 @@ public:
     LRESULT Add(const char* psz) const
     {
         ttASSERT(psz);
-        return SendMessageA(LB_ADDSTRING, 0, (LPARAM) psz);
+        return psz ? SendMessageA(LB_ADDSTRING, 0, (LPARAM) psz) : LB_ERR;
     }
     LRESULT Add(const wchar_t* pwsz) const
     {
         ttASSERT(pwsz);
-        return SendMessageW(LB_ADDSTRING, 0, (LPARAM) pwsz);
+        return pwsz ? SendMessageW(LB_ADDSTRING, 0, (LPARAM) pwsz) : LB_ERR;
     }
     LRESULT Add(const char* psz, LPARAM data) const
     {
@@ -397,15 +404,29 @@ public:
     LRESULT Add(const wchar_t* pwsz, LPARAM data) const
     {
         ttASSERT(pwsz);
+        if (!pwsz)
+            return LB_ERR;
         LRESULT index = SendMessageW(LB_ADDSTRING, 0, (LPARAM) pwsz);
         if (index != LB_ERR)
             SendMessageW(LB_SETITEMDATA, index, data);
         return index;
     }
-    LRESULT AddString(const char* psz) const { return SendMessageA(LB_ADDSTRING, 0, (LPARAM) psz); }
-    LRESULT AddString(const wchar_t* pwsz) const { return SendMessageW(LB_ADDSTRING, 0, (LPARAM) pwsz); }
-    LRESULT InsertString(int index, const char* psz) const { return SendMessageA(LB_INSERTSTRING, index, (LPARAM) psz); }
-    LRESULT InsertString(int index, const wchar_t* pwsz) const { return SendMessageW(LB_INSERTSTRING, index, (LPARAM) pwsz); }
+    LRESULT AddString(const char* psz) const
+    {
+        return psz ? SendMessageA(LB_ADDSTRING, 0, (LPARAM) psz) : LB_ERR;
+    }
+    LRESULT AddString(const wchar_t* pwsz) const
+    {
+        return pwsz ? SendMessageW(LB_ADDSTRING, 0, (LPARAM) pwsz) : LB_ERR;
+    }
+    LRESULT InsertString(int index, const char* psz) const
+    {
+        return psz ? SendMessageA(LB_INSERTSTRING, index, (LPARAM) psz) : LB_ERR;
+    }
+    LRESULT InsertString(int index, const wchar_t* pwsz) const
+    {
+        return pwsz ? SendMessageW(LB_INSERTSTRING, index, (LPARAM) pwsz) : LB_ERR;
+    }
 
     LRESULT DeleteString(ptrdiff_t index) const { return SendMessage(LB_DELETESTRING, index); }
 
@@ -448,10 +469,22 @@ public:
         (void) SendMessage(LB_SETSEL, fSelect, MAKELPARAM(index, 0));
     }
 
-    LRESULT FindString(const char* pszString, int iStart = -1) const { return SendMessageA(LB_FINDSTRINGEXACT, iStart, (LPARAM) pszString); }
-    LRESULT FindString(const wchar_t* pwszString, int iStart = -1) const { return SendMessageW(LB_FINDSTRINGEXACT, iStart, (LPARAM) pwszString); }
-    LRESULT FindPrefix(const char* pszPrefix, int iStart = -1) const { return SendMessageA(LB_FINDSTRING, iStart, (LPARAM) pszPrefix); }
-    LRESULT FindPrefix(const wchar_t* pwszPrefix, int iStart = -1) const { return SendMessageW(LB_FINDSTRING, iStart, (LPARAM) pwszPrefix); }
+    LRESULT FindString(const char* pszString, int iStart = -1) const
+    {
+        return pszString ? SendMessageA(LB_FINDSTRINGEXACT, iStart, (LPARAM) pszString) : LB_ERR;
+    }
+    LRESULT FindString(const wchar_t* pwszString, int iStart = -1) const
+    {
+        return pwszString ? SendMessageW(LB_FINDSTRINGEXACT, iStart, (LPARAM) pwszString) : LB_ERR;
+    }
+    LRESULT FindPrefix(const char* pszPrefix, int iStart = -1) const
+    {
+        return pszPrefix ? SendMessageA(LB_FINDSTRING, iStart, (LPARAM) pszPrefix) : LB_ERR;
+    }
+    LRESULT FindPrefix(const wchar_t* pwszPrefix, int iStart = -1) const
+    {
+        return pwszPrefix ? SendMessageW(LB_FINDSTRING, iStart, (LPARAM) pwszPrefix) : LB_ERR;
+    }
     LRESULT SelectString(const char* pszString, int iStart = -1) const
     {  // works on single selection listbox only
         ttASSERT_MSG(!(GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)),
