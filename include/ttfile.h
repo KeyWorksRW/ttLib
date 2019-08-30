@@ -146,6 +146,8 @@ public:
     }
     char operator[](int pos) { return m_pszLine[pos]; }
 
+    // Use with great caution! Only affects the above operators, and is changed by the next ReadLine() call.
+    void SetLnPtr(char* pszLine) { m_pszLine = pszLine; }
     char* m_pszLine;  // default line pointer when calling readLine(nullptr)
 
 protected:
