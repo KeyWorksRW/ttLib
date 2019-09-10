@@ -24,6 +24,7 @@ Files:
     ttfiledir.cpp       # file and directory handling
     tthashpair.cpp      # ttCHashPair
     ttheap.cpp          # ttCHeap class
+    ttlinefile.cpp      # Line-oriented file class
     ttlist.cpp          # ttCList class
     ttmisc.cpp          # miscellaneous functions
     ttmultithread.cpp   # ttCMultiThrd class
