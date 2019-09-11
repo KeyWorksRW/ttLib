@@ -106,7 +106,7 @@ void ttCLineFile::InsertLine(int line, const char* pszLine)
     if (line > m_cLines)
         throw;
 
-    if (m_cLines + 1 > m_cAllocPtrs)
+    if (m_cLines + 1 >= m_cAllocPtrs)
     {
         m_cAllocPtrs += 256;
         m_aptrs = (LINE_PTRS*) this->ttReCalloc(m_aptrs, m_cAllocPtrs * sizeof(LINE_PTRS));
