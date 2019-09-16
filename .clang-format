@@ -41,7 +41,7 @@ BreakBeforeTernaryOperators: false
 BreakConstructorInitializersBeforeComma: false
 BreakConstructorInitializers: BeforeComma
 BreakStringLiterals: true
-ColumnLimit: 0
+ColumnLimit: 120
 CommentPragmas:  '^ IWYU pragma:'
 CompactNamespaces: false
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
@@ -71,7 +71,7 @@ MacroBlockEnd:   'END_TTMSG_MAP|wxEND_EVENT_TABLE|END_MSG_MAP'
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: All
 PointerAlignment: Left
-ReflowComments:  false
+ReflowComments:  true
 SortIncludes:    false
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: true
@@ -93,4 +93,5 @@ Standard:        Cpp11
 TabWidth:        4
 UseTab:          Never
 ...
-
+# IndentPPDirectives: BeforeHash
+# AlignConsecutiveMacros: true
