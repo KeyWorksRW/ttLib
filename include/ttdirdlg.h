@@ -30,7 +30,8 @@ public:
 protected:
     // Class members
 
-    ttCWStr m_cwszTitle;  // defaults to "Select a Folder"
+    // Windows default title is "Select a Folder"
+    ttCWStr m_cwszTitle;
     ttCWStr m_cwszStartingDir;
     ttCStr  m_cszDirName;
 };

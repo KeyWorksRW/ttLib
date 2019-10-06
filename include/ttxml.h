@@ -51,9 +51,9 @@ namespace tt
         DOCTYPE_HTML_TRANSITIONAL,
     };
 
+    // clang-format off
     enum HTML_ELEMENT : size_t
     {
-        // clang-format off
         ELEMENT_UNKNOWN,    // < Unknown tag!
         ELEMENT_A,          // < A
         ELEMENT_ABBR,       // < ABBR
@@ -190,25 +190,23 @@ namespace tt
         ELEMENT_PAGE,
 
         //  Note: we could add MAML elements next if it made parsing easier
-        // clang-format on
     };
 
-    // clang-format off
     enum XMLENTITY : size_t
     {
-        ENTITY_NULL,                        // An undifferentiated entity.
-        ENTITY_ROOT,                        // A document tree's absolute root.
-        ENTITY_ELEMENT,                     // E.g. '<...>'
-        ENTITY_PCDATA,                      // E.g. '>...<'
-        ENTITY_CDATA,                       // E.g. '<![CDATA[...]]>'
-        ENTITY_COMMENT,                     // E.g. '<!--...-->'
-        ENTITY_PI,                          // E.g. '<?...?>'
-        ENTITY_INCLUDE,                     // E.g. '<![INCLUDE[...]]>'
-        ENTITY_DOCTYPE,                     // E.g. '<!DOCTYPE ...>'.
-        ENTITY_DTD_ENTITY,                  // E.g. '<!ENTITY ...>'.
-        ENTITY_DTD_ATTLIST,                 // E.g. '<!ATTLIST ...>'.
-        ENTITY_DTD_ELEMENT,                 // E.g. '<!ELEMENT ...>'.
-        ENTITY_DTD_NOTATION                 // E.g. '<!NOTATION ...>'.
+        ENTITY_NULL,         // An undifferentiated entity.
+        ENTITY_ROOT,         // A document tree's absolute root.
+        ENTITY_ELEMENT,      // E.g. '<...>'
+        ENTITY_PCDATA,       // E.g. '>...<'
+        ENTITY_CDATA,        // E.g. '<![CDATA[...]]>'
+        ENTITY_COMMENT,      // E.g. '<!--...-->'
+        ENTITY_PI,           // E.g. '<?...?>'
+        ENTITY_INCLUDE,      // E.g. '<![INCLUDE[...]]>'
+        ENTITY_DOCTYPE,      // E.g. '<!DOCTYPE ...>'.
+        ENTITY_DTD_ENTITY,   // E.g. '<!ENTITY ...>'.
+        ENTITY_DTD_ATTLIST,  // E.g. '<!ATTLIST ...>'.
+        ENTITY_DTD_ELEMENT,  // E.g. '<!ELEMENT ...>'.
+        ENTITY_DTD_NOTATION  // E.g. '<!NOTATION ...>'.
     };
     // clang-format on
 
@@ -258,17 +256,18 @@ public:
     // Class functions
 
     ttCXMLBranch* FindFirstElement(tt::HTML_ELEMENT element);
-    ttCXMLBranch* FindNextElement(tt::HTML_ELEMENT element);  // Must call FindFirstElement() before this
+    // Must call FindFirstElement() before this
+    ttCXMLBranch* FindNextElement(tt::HTML_ELEMENT element);
 
     ttCXMLBranch* FindFirstElement(const char* pszName);
-    ttCXMLBranch* FindNextElement(const char* pszName);  // Must call FindFirstElement() before this
+    // Must call FindFirstElement() before this
+    ttCXMLBranch* FindNextElement(const char* pszName);
 
     // Use GetAttribute() for the current branch, FindFirstAttribute to find a child branch containing the specified
     // attribute/value
-
-    ttCXMLBranch* FindFirstAttribute(
-        const char* pszAttribute,
-        const char* pszValue = nullptr);  // find first attribute with specified name and (optional) value
+    //
+    // find first attribute with specified name and (optional) value
+    ttCXMLBranch* FindFirstAttribute(const char* pszAttribute, const char* pszValue = nullptr);
 
     const char*  GetAttribute(const char* pszName) const;
     tt::XMLATTR* GetAttributeAt(size_t i)
@@ -320,7 +319,8 @@ public:
 
     void SetDocType(size_t type = tt::DOCTYPE_XHTML_STRICT);
 
-    HRESULT ParseXmlFile(const char* pszFile);  // returns S_OK if read, STG_E_FILENOTFOUND if not found
+    // Returns S_OK if read, STG_E_FILENOTFOUND if not found
+    HRESULT ParseXmlFile(const char* pszFile);
     HRESULT ParseHtmlFile(const char* pszFile);
     char*   ParseXmlString(char* pszXmlString, ttCXMLBranch* pRoot = nullptr);
     char*   ParseHtmlString(char* szXmlString, ttCXMLBranch* pRoot = nullptr);
@@ -350,7 +350,8 @@ public:
     ttCXMLBranch* AddDataChild(ttCXMLBranch* pParent, const char* pszName, const char* pszData);
     ttCXMLBranch* GraftBranch(ttCXMLBranch* pParent, tt::XMLENTITY eType = tt::ENTITY_ELEMENT);
 
-    const char* GetTitle()  // if an HTML/XHTML file was parsed, this will return the title (if any)
+    // If an HTML/XHTML file was parsed, this will return the title (if any)
+    const char* GetTitle()
     {
         if (m_pTitleBranch && m_pTitleBranch->GetChildrenCount())
         {
@@ -368,7 +369,8 @@ public:
     ttCXMLBranch* GetObjectTag(size_t pos) { return m_aObjectTags[pos]; }
 
     char* AllocateBuffer(size_t cb) { return (char*) ttMalloc(cb); }
-    void AllocateStringBuffers(ttCXMLBranch* pBranch = nullptr);  // convert all strings to separately allocated buffers
+    // Convert all strings to separately allocated buffers
+    void AllocateStringBuffers(ttCXMLBranch* pBranch = nullptr);
     void FreeBuffer(char* pszBuffer) { ttFree(pszBuffer); }
     bool isAllocatedStrings() { return m_bAllocatedStrings; }
 

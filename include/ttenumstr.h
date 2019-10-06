@@ -19,7 +19,9 @@
 #pragma once
 
 #include "ttstr.h"  // ttCStr
+#include "ttlib.h"
 
+// Enumerate through substrings in a string
 class ttCEnumStr
 {
 public:
@@ -28,18 +30,21 @@ public:
 
     // Class functions
 
-    bool Enum(const char** ppszCurrent =
-                  nullptr);                  // if no more substrings, *ppszCurrent (if non-null) will be set to nullptr
-    void ResetEnum(char chSeparator = ';');  // Call this to reset the enumeration to the beginning of the master string
+    // If no more substrings, *ppszCurrent (if non-null) will be set to nullptr
+    bool Enum(const char** ppszCurrent = nullptr);
+    // Call this to reset the enumeration to the beginning of the master string
+    void ResetEnum(char chSeparator = ';');
     void SetNewStr(const char* psz, char chSeparator = ';');
 
-    char* GetCurrent() const { return m_pszCur; }  // value is undefined if Enum() returned false
-          operator char*() const { return m_pszCur; }
+    // Value is undefined if Enum() returned false
+    char* GetCurrent() const { return m_pszCur; }
+
+    operator char*() const { return m_pszCur; }
 
     bool operator==(const char* psz) { return ttIsSameStr(m_pszCur, psz); }
     bool operator==(char* psz) { return ttIsSameStr(m_pszCur, psz); }
 
-protected:
+private:
     // Class members
 
     char*  m_pszCur;

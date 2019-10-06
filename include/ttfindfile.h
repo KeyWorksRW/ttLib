@@ -10,6 +10,15 @@
 
 #if defined(_WIN32)
 
+    #include <fileapi.h>
+    #include <stdint.h>
+
+    #include "ttlib.h"
+
+    #if !defined(INVALID_HANDLE_VALUE)
+        #define INVALID_HANDLE_VALUE ((HANDLE)(LONG_PTR) -1)
+    #endif
+
 /*
         Example usage:
 
@@ -24,6 +33,7 @@
         }
 */
 
+// Header-only class for locating one or more files
 class ttCFindFile : public WIN32_FIND_DATAA
 {
 public:
@@ -71,11 +81,11 @@ public:
     char* FindChar(char ch) { return ttStrChr(cFileName, ch); }
     char* FindLastChar(char ch) { return ttStrChrR(cFileName, ch); }
 
-    size_t StrByteLen() { return ttStrByteLen(cFileName); }  // length of string in bytes including 0 terminator
-    size_t StrLen()
-    {
-        return ttStrLen(cFileName);
-    }  // number of characters (use strByteLen() for buffer size calculations)
+    // length of string in bytes including 0 terminator
+    size_t StrByteLen() { return ttStrByteLen(cFileName); }
+
+    // number of characters (use strByteLen() for buffer size calculations)
+    size_t StrLen() { return ttStrLen(cFileName); }
 
     bool IsSameStr(const char* psz) { return ttIsSameStr(cFileName, psz); }
     bool IsSameStrI(const char* psz) { return ttIsSameStrI(cFileName, psz); }
@@ -90,16 +100,10 @@ public:
 
     // Note that the two == operators are case insensitive since filenames on Windows are case insensitive
 
-    bool operator==(const char* psz)
-    {
-        return (IsEmpty()) ? false : ttIsSameStrI(cFileName, psz);
-    }  // isSameStr will check for psz == null
-    bool operator==(char* psz)
-    {
-        return (IsEmpty()) ? false : ttIsSameStrI(cFileName, psz);
-    }  // isSameStr will check for psz == null
+    bool operator==(const char* psz) { return (IsEmpty()) ? false : ttIsSameStrI(cFileName, psz); }
+    bool operator==(char* psz) { return (IsEmpty()) ? false : ttIsSameStrI(cFileName, psz); }
 
-protected:
+private:
     #ifdef _DEBUG
     char* m_pszFilename;
     #endif

@@ -25,6 +25,7 @@ namespace ttpriv
     UINT_PTR CALLBACK OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */, LPARAM lParam);
 }
 
+// Wrapper around Windows GetOpenFileName() API
 class ttCFileDlg
 {
 public:
@@ -40,7 +41,8 @@ public:
 
     void AddToRecent() { m_pofn->Flags &= ~OFN_DONTADDTORECENT; }
     void SetFilter(int idResource);
-    void SetFilter(const char* pszFilters);  // separate filters with '|' character
+    // separate filters with '|' character
+    void SetFilter(const char* pszFilters);
     void SetInitialDir(const char* pszFolder);
     void SetInitialFileName(const char* psz)
     {
@@ -80,7 +82,9 @@ public:
         else
             m_pofn->Flags &= ~OFN_FILEMUSTEXIST;
     }
-    void AddFlags(DWORD flags) { m_pofn->Flags |= flags; }  // Adds one or more of the OFN_ flags
+
+    // Adds one or more of the OFN_ flags
+    void AddFlags(DWORD flags) { m_pofn->Flags |= flags; }
 
     OPENFILENAMEA* GetOF() { return m_pofn; }
                    operator OPENFILENAMEA*() const { return m_pofn; }

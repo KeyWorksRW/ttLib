@@ -6,6 +6,10 @@
 // License:   Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
+#pragma once
+
+#include <stdint.h>
+
 class ttConsoleColor
 {
 public:

@@ -12,7 +12,6 @@
 #include "ttdebug.h"  // ttASSERT macros
 
 // A simple header-only array of any type
-
 template<typename T> class ttCArray
 {
 public:
@@ -38,7 +37,8 @@ public:
         m_aData[m_cItems++] = t;
     }
 
-    size_t Add()  // use this to add an emptry member which you can fill in using the returned array index
+    // Use this to add an emptry member which you can fill in using the returned array index
+    size_t Add()
     {
         if (m_cItems >= m_cAllocated)
         {
@@ -65,7 +65,8 @@ public:
         return false;
     }
 
-    size_t Find(const T t) const  // returns -1 if not found
+    // Returns -1 if not found
+    size_t Find(const T t) const
     {
         for (size_t pos = 0; pos < m_cItems; pos++)
         {
@@ -80,7 +81,8 @@ public:
     size_t GetCount() const { return m_cItems; }
     bool   InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
 
-    void Reset()  // it is the caller's responsibility to delete any allocated members first!
+    // It is the caller's responsibility to delete any allocated members first!
+    void Reset()
     {
         if (m_aData)
         {
@@ -99,7 +101,8 @@ public:
         return m_aData[pos];
     }
 
-    T* GetCurPtr() { return m_aData; }  // This is ONLY valid until the next Add() or Reset() is called.
+    // This is ONLY valid until the next Add() or Reset() is called.
+    T* GetCurPtr() { return m_aData; }
 
 private:
     size_t m_cItems;

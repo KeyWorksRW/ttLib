@@ -37,6 +37,7 @@
 #include "ttheap.h"   // ttCHeap
 #include "ttdebug.h"  // ttASSERT macros
 
+// SBCS string class. See ttwstr.h for wide-string equivalent
 class ttCStr
 {
 public:
@@ -75,13 +76,13 @@ public:
     char* FindChar(char ch) { return ttStrChr(m_psz, ch); }
     char* FindLastChar(char ch) { return ttStrChrR(m_psz, ch); }
 
-    size_t StrByteLen() { return m_psz ? ttStrByteLen(m_psz) : 0; }  // length of string in bytes including 0 terminator
-    int    StrCat(const char* psz);
-    int    StrCopy(const char* psz);
-    size_t StrLen()
-    {
-        return m_psz ? ttStrLen(m_psz) : 0;
-    }  // number of characters (use strByteLen() for buffer size calculations)
+    // length of string in bytes including 0 terminator
+    size_t StrByteLen() { return m_psz ? ttStrByteLen(m_psz) : 0; }
+    // number of characters (use strByteLen() for buffer size calculations)
+    size_t StrLen() { return m_psz ? ttStrLen(m_psz) : 0; }
+
+    int StrCat(const char* psz);
+    int StrCopy(const char* psz);
 
     bool IsSameStr(const char* psz) { return ttIsSameStr(m_psz, psz); }
     bool IsSameStrI(const char* psz) { return ttIsSameStrI(m_psz, psz); }
@@ -105,23 +106,30 @@ public:
     bool IsNonEmpty() const { return (m_psz && *m_psz) ? true : false; }
     bool IsNull() const { return (m_psz == nullptr); }
 
-    bool CopyWide(const wchar_t* pwsz);  // convert UNICODE to UTF8 and store it
+    // convert UNICODE to UTF8 and store it
+    bool CopyWide(const wchar_t* pwsz);
 
     bool ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCaseSensitive = false);
 
     // Filename handling methods
 
-    char* AppendFileName(const char* pszFile);   // returns pointer to full string
-    char* ReplaceFilename(const char* pszFile);  // returns pointer to full string
+    // returns pointer to full string
+    char* AppendFileName(const char* pszFile);
+    // returns pointer to full string
+    char* ReplaceFilename(const char* pszFile);
 
     void ChangeExtension(const char* pszExtension);
     void RemoveExtension();
 
-    void  AddTrailingSlash();  // adds a trailing forward slash if string doesn't already end with '/' or '\'
-    char* FindLastSlash();     // Handles any mix of '\' and '/' in the filename
+    // adds a trailing forward slash if string doesn't already end with '/' or '\'
+    void AddTrailingSlash();
 
-    void  FullPathName();
-    char* GetCWD();  // Caution: this will replace any current string
+    // Handles any mix of '\' and '/' in the filename
+    char* FindLastSlash();
+
+    void FullPathName();
+    // Caution: this will replace any current string
+    char* GetCWD();
 
     // UI retrieving methods
 
@@ -129,38 +137,44 @@ public:
     char* GetResString(size_t idString);
     bool  GetWndText(HWND hwnd);
 
-    // The following will always return a pointer, but if an error occurred, it will point to an empty string
+    // This will always return a pointer, but if an error occurred, it will point to an empty string
     char* GetListBoxText(HWND hwnd) { return GetListBoxText(hwnd, ::SendMessage(hwnd, LB_GETCURSEL, 0, 0)); }
     char* GetListBoxText(HWND hwnd, size_t sel);
 
     char* GetComboLBText(HWND hwnd) { return GetListBoxText(hwnd, ::SendMessage(hwnd, CB_GETCURSEL, 0, 0)); }
     char* GetComboLBText(HWND hwnd, size_t sel);
 
-    char* cdecl printf(size_t idFmtString, ...);  // retrieves the format string from the specified resource
-#endif                                            // defined(_WIN32)
+    // retrieves the format string from the specified resource
+    char* cdecl printf(size_t idFmtString, ...);
+#endif  // defined(_WIN32)
 
     void MakeLower();
     void MakeUpper();
 
-    bool GetEnv(const char* pszName);  // makes a copy of the specified environment variable
+    // makes a copy of the specified environment variable
+    bool GetEnv(const char* pszName);
 
     // if the first non whitespace character in pszString == chBegin, get everthing between chBegin and chEnd,
     // otherwise get everything after the whitespace
-
     char* GetString(const char* pszString, char chBegin, char chEnd);
 
     char* GetAngleString(const char* pszString) { return GetString(pszString, '<', '>'); }
     char* GetBracketsString(const char* pszString) { return GetString(pszString, '[', ']'); }
     char* GetParenthString(const char* pszString) { return GetString(pszString, '(', ')'); }
 
-    char* GetQuotedString(const char* pszQuote);  // Handles single and double quote strings
+    // Handles single and double quote strings
+    char* GetQuotedString(const char* pszQuote);
 
-    char* cdecl printf(const char* pszFormat, ...);         // Deletes any current string before printing
-    char* cdecl printfAppend(const char* pszFormat, ...);   // Appends to the end of any current string
-    void cdecl  WarningMsgBox(const char* pszFormat, ...);  // displays the formatted string in a warning message box
+    // Deletes any current string before printing
+    char* cdecl printf(const char* pszFormat, ...);
+    // Appends to the end of any current string
+    char* cdecl printfAppend(const char* pszFormat, ...);
+    // displays the formatted string in a warning message box
+    void cdecl WarningMsgBox(const char* pszFormat, ...);
 
-    void   ReSize(size_t cb);
-    size_t SizeBuffer() { return ttSize(m_psz); }  // returns 0 if m_psz is null
+    void ReSize(size_t cb);
+    // returns 0 if there is no string
+    size_t SizeBuffer() { return ttSize(m_psz); }
     void   Delete()
     {
         if (m_psz)
@@ -170,7 +184,8 @@ public:
         }
     }
 
-    char*  GetPtr() { return m_psz; }    // for when casting to char* is problematic
+    // for when casting to char* is problematic
+    char*  GetPtr() { return m_psz; }
     char** GetPPtr() { return &m_psz; }  // use with extreme caution!
 
     operator char*() const { return (char*) m_psz; }

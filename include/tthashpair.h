@@ -11,8 +11,10 @@
 
 #pragma once
 
+#include "ttlib.h"
 #include "ttdebug.h"  // ttASSERT macros
 
+// Class utilizing an array of HASH numbers and an associated value
 class ttCHashPair
 {
 public:
@@ -51,8 +53,9 @@ public:
     void   RemoveURL(const char* pszURL) { Remove(ttHashFromURL(pszURL)); }
 
 #ifdef _DEBUG
+    // Verifies that the hash numbers are in numerical order
     void Verify()
-    {  // make certain the hash numbers are in numerical order
+    {
         for (size_t pos = 1; pos < m_cItems; pos++)
             ttASSERT(m_aData[pos].hash > m_aData[pos - 1].hash);
     }
@@ -65,6 +68,7 @@ protected:
     HASH_PAIR* FindInsertionPoint(size_t hash) const;
     HASH_PAIR* GetHashPair(size_t hash) const;
 
+private:
     // Class members
 
     size_t     m_cItems;

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:      ttCDlg
-// Purpose:   Class for displaying a modal dialog
+// Purpose:   Class for displaying a dialog
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
 // License:   Apache License (see ../LICENSE)
@@ -9,6 +9,8 @@
 #pragma once
 
 #if defined(_WIN32)
+
+    #include <wtypes.h>
 
 // This dialog class has no base requirements other than compiling for Windows. It can be used whether your app is
 // using ATL, WTL, wxWidgets, or is just a console app that needs a dialog box.
@@ -39,30 +41,34 @@ namespace ttpriv
     INT_PTR WINAPI DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam);
 }
 
+// Class for displaying a dialog
 class ttCDlg
 {
 public:
     ttCDlg(UINT idTemplate);
 
     INT_PTR DoModal(HWND hwndParent);
-    HWND    DoModeless(HWND hwndParent);  // Must use returned handle in IsDialogMessage for keys to work in dialog
+    // You must use returned handle in IsDialogMessage for keys to work in dialog
+    HWND DoModeless(HWND hwndParent);
 
-    virtual void OnBegin() {
-    }  // called when dialog is initialized, override if you need to do something during dialog initialization
-    virtual void OnOK() {
-    }  // called when IDOK button is pressed--call CancelEnd() before return to prevent closing the dialog
-    virtual void OnCancel() {
-    }  // called when IDCANCEL button is pressed--call CancelEnd() before return to prevent closing the dialog
+    // called when dialog is initialized, override if you need to do something during dialog initialization
+    virtual void OnBegin() {}
+    // called when IDOK button is pressed--call CancelEnd() before return to prevent closing the dialog
+    virtual void OnOK() {}
+    // called when IDCANCEL button is pressed--call CancelEnd() before return to prevent closing the dialog
+    virtual void OnCancel() {}
 
-    void CenterWindow(
-        bool bCenterOnDesktop = false);  // Call this in OnBegin to center dialog in owner window or desktop
-    void EnableShadeBtns();  // call this in OnBegin to convert all buttons in the dialog to 3D shaded buttons
-    void SetBtnIcon(int idBtn, int idIcon,
-                    UINT nIconAlign = BS_LEFT);  // call this in OnBegin to add an Icon to a 3D shaded button
-    void SetBtnIcon(int idBtn, const char* pszIconName,
-                    UINT nIconAlign = BS_LEFT);  // call this in OnBegin to add an Icon to a 3D shaded button
+    // Call this in OnBegin to center dialog in owner window or desktop
+    void CenterWindow(bool bCenterOnDesktop = false);
+    // Call this in OnBegin to convert all buttons in the dialog to 3D shaded buttons
+    void EnableShadeBtns();
+    // Call this in OnBegin to add an Icon to a 3D shaded button
+    void SetBtnIcon(int idBtn, int idIcon, UINT nIconAlign = BS_LEFT);
+    // Call this in OnBegin to add an Icon to a 3D shaded button
+    void SetBtnIcon(int idBtn, const char* pszIconName, UINT nIconAlign = BS_LEFT);
 
-    void CancelEnd() { m_bCancelEnd = true; }  // call within OnEnd() to cancel ending the dialog
+    // Call within OnEnd() to cancel ending the dialog
+    void CancelEnd() { m_bCancelEnd = true; }
     BOOL CloseDialog(size_t result = IDOK)
     {
         return (m_bModeless ? DestroyWindow(*this) : ::EndDialog(*this, (int) result));
@@ -487,14 +493,17 @@ public:
         return SendMessage(LB_GETITEMRECT, ((index == (WPARAM) -1) ? GetCurSel() : index), (LPARAM) prc);
     }
 
+    // Works on single selection listbox only
     LRESULT GetCurSel() const
-    {  // works on single selection listbox only
+    {
         ttASSERT_MSG(!(GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)),
                      "GetCurSel() only works on single selection listbox");
         return SendMessage(LB_GETCURSEL);
     }
+
+    // Works on single selection listbox only
     LRESULT SetCurSel(WPARAM index = 0) const
-    {  // works on single selection listbox only
+    {
         ttASSERT_MSG(!(GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)),
                      "SetCurSel() only works on single selection listbox");
         return SendMessage(LB_SETCURSEL, index);
@@ -532,14 +541,16 @@ public:
     {
         return pwszPrefix ? SendMessageW(LB_FINDSTRING, iStart, (LPARAM) pwszPrefix) : LB_ERR;
     }
+    // Works on single selection listbox only
     LRESULT SelectString(const char* pszString, int iStart = -1) const
-    {  // works on single selection listbox only
+    {
         ttASSERT_MSG(!(GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)),
                      "SelectString only works on single-selection listbox");
         return SendMessageA(LB_SELECTSTRING, iStart, (LPARAM) pszString);
     }
+    // Works on single selection listbox only
     LRESULT SelectString(const wchar_t* pwszString, int iStart = -1) const
-    {  // works on single selection listbox only
+    {
         ttASSERT_MSG(!(GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)),
                      "SelectString only works on single-selection listbox");
         return SendMessageW(LB_SELECTSTRING, iStart, (LPARAM) pwszString);

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:      ttCMultiThrd, CMultiChildThread
-// Purpose:   Class for handling multiple thread
+// Purpose:   Class for handling multiple threads
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2010-2019 KeyWorks Software (Ralph Walden)
 // License:   Apache License (see ../LICENSE)
@@ -25,29 +25,38 @@
 
 // a try/catch section is placed around the call to doThreadWork
 
+#if defined(_WIN32)
+    #include <wtypes.h>
+#endif  // _WIN32
+
 #include "ttmap.h"  // ttCMap
 
 size_t ttGetCPUCount();
 
+// Class for handling multiple threads
 class ttCMultiThrd
 {
 public:
     ttCMultiThrd();
     ~ttCMultiThrd();
 
-    virtual void DoThreadWork(
-        void* pvData1,
-        void* pvData2) = NULL;  // Derived class MUST supply this! While running, call isCancelled() to return
+    // Derived class MUST supply this! While running, call isCancelled() to return
+    virtual void DoThreadWork(void* pvData1, void* pvData2) = NULL;
 
-    bool isCancelled() { return m_bCanceled; }  // true if threads are being aborted
+    // true if threads are being aborted
+    bool isCancelled() { return m_bCanceled; }
     void CancelThreads();
 
-    void InitializeThreads(size_t nThreads = 0);     // 0 means create as many threads as there are CPUs
-    void StartThread(void* pvData1, void* pvData2);  // will not return until an available thread is found
+    // 0 means create as many threads as there are CPUs
+    void InitializeThreads(size_t nThreads = 0);
+    // will not return until an available thread is found
+    void StartThread(void* pvData1, void* pvData2);
 
-    size_t GetAvailableThreads();  // returns currently available threads
+    // returns number of currently available threads
+    size_t GetAvailableThreads();
 
-    void WaitForThreadsToComplete();  // waits for all threads to finish, then returns
+    // waits for all threads to finish, then returns
+    void WaitForThreadsToComplete();
 
 protected:
     size_t m_cThreads;

@@ -3,18 +3,19 @@
 // Purpose:   Line-oriented file class
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2019 KeyWorks Software (Ralph Walden)
-// License:   Apache License (see LICENSE)
+// License:   Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
 
-// Note that lines are zero-based. The first line is accessed as 0.
-
-// It's fine to call AddLine() before calling ReadFile(), however you can only call ReadFile() once.
-
 #include "../include/ttfile.h"  // ttCFile
 #include "../include/ttstr.h"   // ttCStr
 
+// Line-oriented file class
+//
+// Note that lines are zero-based. The first line is accessed as 0.
+//
+// It's fine to call AddLine() before calling ReadFile(), however you can only call ReadFile() once.
 class ttCLineFile : public ttCHeap
 {
 public:
@@ -23,22 +24,30 @@ public:
 
     // Public functions
 
-    void AddLine(const char* pszLine);  // Adds to the end of the file
+    // Adds to the end of the file
+    void AddLine(const char* pszLine);
     void DeleteLine(int line);
-    void InsertLine(int line, const char* pszLine);  // Insert before line
+    // Insert before line
+    void InsertLine(int line, const char* pszLine);
     void ReplaceLine(int line, const char* pszLine);
 
-    int  GetLineNumber() { return m_curLine; }  // Get the current line number used by ReadLine() and GetCurLine()
-    int  GetMaxLine() { return m_cLines - 1; }  // Largest line number you can read
-    int  GetCount() const { return m_cLines; }  // Total number of lines
+    // Get the current line number used by ReadLine() and GetCurLine()
+    int GetLineNumber() { return m_curLine; }
+    // Largest line number you can read
+    int GetMaxLine() { return m_cLines - 1; }
+    // Total number of lines
+    int  GetCount() const { return m_cLines; }
     bool InRange(int pos) const { return (pos < m_cLines && m_cLines > 0); }
 
-    void Sort(int firstLine, int lastLine, int column = 0);  // sort lines into alphabetical order
+    // sort lines into alphabetical order
+    void Sort(int firstLine, int lastLine, int column = 0);
 
     bool ReadFile(const char* pszFile);
-    bool WriteFile(const char* pszFile = nullptr);  // nullptr will write to the file that was read
+    // nullptr will write to the file that was read
+    bool WriteFile(const char* pszFile = nullptr);
 
-    void SetCurLine(int line)  // sets the line to be read by ReadLine() or GetCurLine()
+    // sets the line to be read by ReadLine() or GetCurLine()
+    void SetCurLine(int line)
     {
         ttASSERT(InRange(line));
         if (line < m_cLines)
@@ -46,7 +55,6 @@ public:
     }
 
     // Call ReadLine() to get the current line and increment the line number.
-
     char* ReadLine()
     {
         if (m_curLine >= m_cLines)
@@ -81,7 +89,8 @@ private:
     typedef struct
     {
         char* pszLine;
-        bool  bAllocated;  // true means string was allocated, false it's part of m_pbuf
+        // true means string was allocated, false it's part of m_pbuf
+        bool bAllocated;
     } LINE_PTRS;
 
     // Class members

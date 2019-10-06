@@ -17,6 +17,8 @@
 
 #if defined(_WIN32)
 
+    #include <wtypes.h>
+
 // REVIEW: [randalphwa - 1/10/2019] This is a bug waiting to happen. Handles in Windows are FreeAllocd with
 // DeleteObject(). HDIB looks like a GDI Object, and if it really was, it would be handed to DeleteObject(). A HANDLE
 // in Windows is a pointer, but you do NOT use standard memory routines to allocate/FreeAlloc it the way HDIB is being

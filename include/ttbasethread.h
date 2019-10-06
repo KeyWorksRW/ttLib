@@ -12,11 +12,14 @@
 
 #if defined(_WIN32)
 
+    #include <wtypes.h>
+
 namespace ttpriv
 {
     unsigned __stdcall _BaseThread(void* pv);
 }
 
+// Class for creating a single thread
 class ttCBaseThread
 {
 public:
@@ -30,7 +33,8 @@ public:
     //    void InitializeThreadForOle();  // Call this in doThreadWork() if you need Ole support
     void WaitForThreadToComplete();
 
-    virtual void DoThreadWork() = 0;  // Derived class MUST supply this!
+      // Derived class MUST supply this!
+    virtual void DoThreadWork() = 0;
     virtual void SetCancelThreadPending() { m_bCancelThread = true; }
     virtual bool IsCancelThreadPending() { return m_bCancelThread; }
 

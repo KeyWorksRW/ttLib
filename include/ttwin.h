@@ -12,6 +12,9 @@
 
 #if defined(_WIN32)
 
+
+    #include <wtypes.h>
+
     #if !defined(BEGIN_TTMSG_MAP)
         #include "ttcasemap.h"  // Macros for mapping Windows messages to functions
     #endif
@@ -21,7 +24,8 @@ namespace ttpriv
     LRESULT WINAPI ttCWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 }
 
-class ttCWin  // Non-MDI window class
+// Non-MDI window handling class
+class ttCWin
 {
 public:
     ttCWin();
@@ -45,12 +49,16 @@ public:
         if (m_pwc)
             m_pwc->lpszMenuName = (const char*) idMenuResource;
     }
-    bool SetClassName(const char* pszClassName);  // returns false if strLen(pszClassName) > 255
+
+    // returns false if strLen(pszClassName) > 255
+    bool SetClassName(const char* pszClassName);
+
+    // constructor will have set this to CS_HREDRAW | CS_VREDRAW
     void SetClassStyle(DWORD style)
     {
         if (m_pwc)
             m_pwc->style = style;
-    }  // constructor will have set this to CS_HREDRAW | CS_VREDRAW
+    }
     void SetWndExtra(int cbExtra)
     {
         if (m_pwc)
@@ -86,9 +94,11 @@ public:
     bool CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWND hwndParent = NULL, RECT* prc = NULL,
                    HMENU hmenu = NULL);
 
-    bool AttachWnd(
-        HWND hwnd);  // attaches to a window not created by ttCWin, updates m_pszClassName, m_hwnd and m_hwndParent
-    bool SubClass(HWND hwnd = NULL);  // if NULL, subclass our own window
+    // Attaches to a window not created by ttCWin, updates m_pszClassName, m_hwnd and m_hwndParent
+    bool AttachWnd(HWND hwnd);
+
+    // if hwnd is NULL, subclass our own window
+    bool SubClass(HWND hwnd = NULL);
 
     // Class functions
 
@@ -123,19 +133,25 @@ protected:
         return false;
     }
 
-protected:
     friend LRESULT WINAPI ttpriv::ttCWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+// Other classes inherit from this class, and currently expect access to the class members
+protected:
     // Class members
     const char* m_pszClassName;  // class name of the window we created or attached to
 
     HWND m_hwnd;  // m_hwnd vs m_hWnd -- SDK/include, ATL and WTL use both variants. We're sticking with all lowercase.
     HWND m_hwndParent;
-    HINSTANCE m_hinst;  // instance used to create the class, can be used to load resources from the app
 
-    WNDCLASSEXA* m_pwc;           // created in constructor, deleted by CreateWnd and AttachWnd
-    WNDPROC      m_SubClassProc;  // previous window procedure before it was subclassed
-    LRESULT      m_result;
+    // instance used to create the class, can be used to load resources from the app
+    HINSTANCE m_hinst;
+
+    // created in constructor, deleted by CreateWnd and AttachWnd
+    WNDCLASSEXA* m_pwc;
+
+    // previous window procedure before it was subclassed
+    WNDPROC m_SubClassProc;
+    LRESULT m_result;
 };
 
 #endif  // defined(_WIN32)

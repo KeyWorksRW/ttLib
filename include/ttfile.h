@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <stdint.h>
+
 #include "ttdebug.h"  // ttASSERT macros
 #include "ttstr.h"    // ttCStr
 
@@ -24,6 +26,7 @@
     #include <objidl.h>  // for IStream interface
 #endif
 
+// Class for reading and writing files, strings, data, etc.
 class ttCFile
 {
 public:
@@ -45,14 +48,17 @@ public:
     // Class functions
 
     // Default is LF-only EOL. Call SetUnixLF(false) to get CR/LF EOL
-
-    void SetUnixLF(bool bUnix = true) { m_fUnixLF = bUnix; }  // Only affects writeEol() functions
+    //
+    // Only affects writeEol() functions
+    void SetUnixLF(bool bUnix = true) { m_fUnixLF = bUnix; }
 
     // For ReadFile, ReadURL and WriteFile() call GetErrorResult() for ERROR_ info
 
-    bool ReadFile(const char* pszFile);     // ERROR_INVALID_NAME, ERROR_CANTOPEN, ERROR_SEEK_FAILURE, ERROR_CANTREAD
-    bool WriteFile(const char* pszFile);    // ERROR_INVALID_NAME, ERROR_EMPTY_BUFFER, ERROR_CANTOPEN, ERROR_CANTWRITE
-    bool ReadStrFile(const char* pszText);  // read a string as if it was a file (makes a copy of the string).
+    bool ReadFile(const char* pszFile);   // ERROR_INVALID_NAME, ERROR_CANTOPEN, ERROR_SEEK_FAILURE, ERROR_CANTREAD
+    bool WriteFile(const char* pszFile);  // ERROR_INVALID_NAME, ERROR_EMPTY_BUFFER, ERROR_CANTOPEN, ERROR_CANTWRITE
+
+    // Reads a string as if it was a file (makes a copy of the string).
+    bool ReadStrFile(const char* pszText);
 
 #if defined(_WIN32)
     bool ReadURL(const char* pszURL, HINTERNET hInternet = NULL);  // ERROR_INVALID_NAME, ERROR_SERVICE_DOES_NOT_EXIST
@@ -63,22 +69,26 @@ public:
     HRESULT GetErrorResult() { return m_ioResult; }
 #endif  // defined(_WIN32)
 
-    bool UnicodeToAnsi();  // convert loaded file from Unicode to Ansi. Will return false if file not read.
+    // Converts loaded file from Unicode to Ansi. Will return false if file not read.
+    bool UnicodeToAnsi();
 
-    bool ReadLine(char** ppszLine = nullptr);  // note that this converts \r into 0, so you can only read lines once --
-                                               // trim(pszLine) is called before returning
+    // note that this converts \r and/or \n into 0, so you can only read lines once.
+    //
+    // trim(pszLine) is called before returning
+    bool ReadLine(char** ppszLine = nullptr);
+
+    // only needed if you aren't going to call ReadLine
     void PrepForReadLine()
     {
         m_pCurrent = m_pbuf;
         m_pszLine = m_pCurrent;
         m_bReadlineReady = true;
-    }  // only needed if you aren't going to call readLine
+    }
     char* GetLnPtr() { return m_pszLine; }
     bool  IsEndOfFile() const { return (!m_pCurrent || !*m_pCurrent) ? true : false; }
 
     // returns nullptr if blank, comment, section diveder, or %YAML line. Otherwises returns pointer to first non-space
     // character, stripped of comment and trailing space
-
     char* GetParsedYamlLine();
 
     void WriteStr(const char* psz);
@@ -86,8 +96,10 @@ public:
     void WriteEol(void);
     void WriteEol(const char* psz);
 
-    void   AddSingleLF();       // adds a CR/LF only if there isn't one already
-    size_t GetCurLineLength();  // Use when writing data
+    // adds a CR/LF only if there isn't one already
+    void AddSingleLF();
+    // Use when writing data
+    size_t GetCurLineLength();
     char   GetPrevChar()
     {
         if (m_pCurrent && m_pCurrent > m_pbuf)
@@ -97,20 +109,23 @@ public:
     }
     void Backup(size_t cch);
     bool IsThisPreviousString(const char* pszPrev);
-    void ReCalcSize();  // reset the current position based on string length of entire buffer
+    // reset the current position based on string length of entire buffer
+    void ReCalcSize();
 
     void cdecl printf(const char* pszFormat, ...);
 
-    void InsertStr(const char* pszText,
-                   char*       pszPosition);  // pszPosition derived from previous call to GetCurPosition()
+    // pszPosition derived from previous call to GetCurPosition()
+    void InsertStr(const char* pszText, char* pszPosition);
     bool ReplaceStr(const char* pszOldText, const char* pszNewText, bool fCaseSensitive = false);
-    void Delete();  // FreeAllocs memory, resets pointers
+    // FreeAllocs memory, resets pointers
+    void Delete();
 
     size_t GetCurSize() const { return m_cbAllocated; }
     char*  GetBeginPosition() const { return m_pbuf; }
     char*  GetEndPosition() const { return m_pEnd; }
 
-    char* GetCurPosition() { return m_pCurrent; }  // used for InsertStr()
+    // used for InsertStr()
+    char* GetCurPosition() { return m_pCurrent; }
     bool IsUnicode() { return (m_pbuf && m_pEnd > m_pbuf + 2 && (BYTE) m_pbuf[0] == 0xFF && (BYTE) m_pbuf[1] == 0xFE); }
 
     void SetCurPosition(char* psz)
@@ -125,7 +140,6 @@ public:
     // Calling readLine() will modify the contents -- which means you can't compare two ttCFile objects if you parsed
     // one with readLine(). To allow for this, call MakeCopy() after you have read the file into memory, and
     // RestoreCopy() if you need to reset the file contents to they way they were before readLine() was called.
-
     void  MakeCopy();
     void  RestoreCopy();
     char* GetCopy() { return m_pCopy; }
@@ -154,13 +168,15 @@ protected:
     void AllocateBuffer(size_t cbInitial = 16 * 1024);
 
     // Class members
+
     char* m_pCurrent;
 #ifdef _DEBUG
     char* m_pszFile;
 #endif
 
     size_t m_cbAllocated;
-    size_t m_cbUrlFile;  // actual file size after ReadURL()
+    // actual file size after ReadURL()
+    size_t m_cbUrlFile;
 
     char* m_pbuf;
     char* m_pEnd;

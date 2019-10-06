@@ -16,6 +16,7 @@
 // On Windows, this class uses a sub-heap for memory allocation. When the class is deleted, the entire sub-heap is
 // deleted, rather then walking through and deleting each individual allocation.
 
+// Header-only class for storing key/value pairs
 template<class TKey, class TVal> class ttCMap
 {
 public:
@@ -85,8 +86,9 @@ public:
         return -1;
     }
 
+    // Caution! You cannot use this if val is a string type
     int FindVal(const TVal val) const
-    {  // Caution! You cannot use this if val is a string type
+    {
         for (size_t pos = 0; pos < m_cItems; pos++)
         {
             if (m_aMapPairs[pos].val == val)

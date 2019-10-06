@@ -10,11 +10,13 @@
 
 #if defined(_WIN32)
 
+    #include <winnls.h>
+    #include <winbase.h>
+
     #include "ttstr.h"    // ttCStr
     #include "ttdebug.h"  // ttASSERT macros
 
-// This is a header-only class.
-
+// Class for handling a Windows SYSTEMTIME or FILETIME structure
 class ttCTime
 {
 public:
@@ -58,7 +60,7 @@ public:
         return m_cszFull;
     }
     const char* GetShortFormat()
-    {                                  // short date/time
+    {
         m_cszShort = GetDateFormat();  // GetDateFormat() modifies m_cszFormatted, so we have to use a temporary
         m_cszShort += ", ";
         m_cszShort += GetTimeFormat();
@@ -88,7 +90,7 @@ public:
 
     operator SYSTEMTIME*() { return &m_tm; }
 
-protected:
+private:
     SYSTEMTIME m_tm;
 
     // We keep a copy of each format in case we're called multiple times in a printf() call

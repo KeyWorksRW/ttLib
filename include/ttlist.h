@@ -13,10 +13,15 @@
 
 #pragma once
 
+#if defined(_WIN32)
+    #include <wtypes.h>
+#endif  // _WIN32
+
 #include "ttheap.h"      // ttCHeap
 #include "tthashpair.h"  // ttCHashPair
 #include "ttstr.h"       // ttCStr
 
+// String arrays based off a private heap
 class ttCList : public ttCHeap
 {
 public:
@@ -31,13 +36,15 @@ public:
     };
 
     // SetFlags() will not change any previously added strings
-
-    void SetFlags(size_t flags);  // any combination of FLG_ADD_DUPLICATES | FLG_IGNORE_CASE | FLG_URL_STRINGS
+    // Use any combination of FLG_ADD_DUPLICATES | FLG_IGNORE_CASE | FLG_URL_STRINGS
+    void SetFlags(size_t flags);
     void AllowDuplicates() { SetFlags(FLG_ADD_DUPLICATES); }
 
     size_t Add(const char* psz);
     bool   Find(const char* psz) const { return InRange(GetPos(psz)); }
-    size_t GetPos(const char* psz) const;  // returns -1 if not found
+
+    // Returns -1 if not found
+    size_t GetPos(const char* psz) const;
     void   InsertAt(size_t pos, const char* psz);
     void   Remove(const char* psz);
     void   Remove(size_t pos);
@@ -47,9 +54,11 @@ public:
     size_t GetCount() const { return m_cItems; }
     bool   IsEmpty() const { return m_cItems == 0; }
     bool   InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
-    void   Delete();  // deletes all strings
+    // Deletes all strings
+    void Delete();
 
-    char* Get(size_t pos) const;  // zero-based index, will return nullptr if pos >= GetCount()
+    // zero-based index, will return nullptr if pos >= GetCount()
+    char* Get(size_t pos) const;
 
     // CSimpleArray/CAtlArray equivalents
 
@@ -72,21 +81,25 @@ public:
                 cout << lst.EnumValue();
      */
 
-    void  BeginEnum() { m_enum = 0; }
-    bool  Enum();
-    char* EnumValue();                    // returns pointer to last enumerated string, or nullptr if no string found
-    bool  Enum(const char** ppszResult);  // use this if you want to receive a pointer to the string
+    void BeginEnum() { m_enum = 0; }
+    bool Enum();
+    // returns pointer to last enumerated string, or nullptr if no string found
+    char* EnumValue();
+    // use this if you want to receive a pointer to the string
+    bool Enum(const char** ppszResult);
 
     void Sort();  // sort strings into alphabetical order
 
     // Use the following with caution! All strings MUST have at least iColumn characters!
-
-    void Sort(size_t iColumn);  // sort strings using the offset (equivalent to strcmp(str1 + iColumn, str2 + iColumn)
+    //
+    // Sort strings using the offset (equivalent to strcmp(str1 + iColumn, str2 + iColumn)
+    void Sort(size_t iColumn);
 
     void  operator+=(const char* psz) { Add(psz); }
     char* operator[](size_t pos) const { return Get(pos); }
 
-    char** GetArray() { return m_aptrs; }  // use with EXTREME caution, provided primarily for testing
+    // use with EXTREME caution, provided primarily for testing
+    char** GetArray() { return m_aptrs; }
 
 protected:
     inline void swap(ptrdiff_t pos1, ptrdiff_t pos2)
@@ -120,12 +133,13 @@ protected:
 
 // Holds a pair of strings, referenced as Key and Val. Note that unlike ttCList, the default behaviour is to allow
 // duplicate keys
-
 class ttCDblList : public ttCHeap
 {
 public:
-    void IgnoreCase() { m_bIgnoreCase = true; }  // ignore case when searching for keys or values
-    void PreventDuplicateKeys();                 // key won't be added if it already exists
+    // ignore case when searching for keys or values
+    void IgnoreCase() { m_bIgnoreCase = true; }
+    // key won't be added if it already exists
+    void PreventDuplicateKeys();
 
     ttCDblList(bool bSerialize = false);
     ~ttCDblList();
@@ -145,7 +159,8 @@ public:
     size_t GetCount() const { return m_cItems; }
     bool   IsEmpty() const { return m_cItems == 0; }
     bool   InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
-    void   Delete();  // deletes all strings
+    // Deletes all strings
+    void Delete();
 
     void SortKeys();
     void SortVals();
@@ -182,7 +197,6 @@ protected:
 };
 
 // Similar to ttCDblList only the val is an array of ptrdiff_t instead of a char*
-
 class ttCStrIntList : public ttCHeap
 {
 public:
@@ -194,7 +208,8 @@ public:
 
     ttCStrIntList(bool bSerialize = false);
 
-    void IgnoreCase() { m_bIgnoreCase = true; }  // ignore case when searching for keys
+    // ignore case when searching for keys
+    void IgnoreCase() { m_bIgnoreCase = true; }
 
     /*
         If the string already exists, but the Val doesn't, Add() will add the Val to the array of Vals
@@ -205,16 +220,16 @@ public:
         Add("my key", 2);   // Now both 1 and 2 are associated with "my key"
     */
 
-    void   Add(const char* pszKey, ptrdiff_t newVal);
-    bool   Add(size_t posKey, ptrdiff_t newVal);  // Add vals to an existing key
-    bool   FindKey(const char* pszKey, size_t* ppos = nullptr) const;
-    size_t GetCount() const
-    {
-        return m_cItems;
-    }  // returns the number of keys actually added (duplicates are not added)
-    bool InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
+    void Add(const char* pszKey, ptrdiff_t newVal);
+    // Add vals to an existing key
+    bool Add(size_t posKey, ptrdiff_t newVal);
+    bool FindKey(const char* pszKey, size_t* ppos = nullptr) const;
+    // returns the number of keys actually added (duplicates are not added)
+    size_t GetCount() const { return m_cItems; }
+    bool   InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
 
-    void Delete();  // deletes all strings
+    // Deletes all strings
+    void Delete();
 
     // To get all the numbers, either use Enum() or call these GetVal routines. Be aware that any pointer to
     // the values is only valid for as long as no additional values are added to the key
@@ -257,25 +272,24 @@ protected:
     bool m_bIgnoreCase;
 };
 
-// This class is primarily designed for use with localized id/string pairs, which is why it doesn't have as much
-// functionality as the other string list classes.
-
 class ttCCritSection;  // forward definition
 
+// This class is primarily designed for use with localized id/string pairs, which is why it doesn't have as much
+// functionality as the other string list classes.
 class ttCIntStrList
 {
 public:
     ttCIntStrList(void);  // Until issue #43 (https://github.com/KeyWorksRW/keyBld/issues/43) gets implemented
     ~ttCIntStrList();
 
-    const char* Add(size_t id, const char* psz);  // returns pointer to the duplicated string, not the original
+    // returns pointer to the duplicated string, not the original
+    const char* Add(size_t id, const char* psz);
     const char* Find(size_t id);
-    size_t      GetCount() const
-    {
-        return m_cItems;
-    }  // returns the number of unique id/string pairs added (duplicates ids are not added)
+    // returns the number of unique id/string pairs added (duplicates ids are not added)
+    size_t GetCount() const { return m_cItems; }
 
-    void Delete();  // resets the list to empty state (frees all string memory).
+    // resets the list to empty state (frees all string memory).
+    void Delete();
 
     bool InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
 

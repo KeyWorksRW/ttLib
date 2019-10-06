@@ -14,13 +14,17 @@
 
 namespace tt
 {
-    const size_t          MAX_STRING_LEN = 0x00FFFFFF;  // strings limited to 16,777,215 bytes (16 megabytes)
-    extern const char*    pszMsgTitle;                  // title for message boxes
-    extern const wchar_t* pwszMsgTitle;                 // title for message boxes
+    // strings limited to 16,777,215 bytes (16 megabytes)
+    const size_t MAX_STRING_LEN = 0x00FFFFFF;
+    // title for message boxes
+    extern const char* pszMsgTitle;
+    // title for message boxes
+    extern const wchar_t* pwszMsgTitle;
 
 #if defined(_WIN32)
-    extern HINSTANCE hinstResources;  // handle to use to load resources
-#endif                                // _WINDOWS_
+    // Handle to use to load resources
+    extern HINSTANCE hinstResources;
+#endif  // _WINDOWS_
 }  // namespace tt
 
 // clang-format off
@@ -64,14 +68,12 @@ namespace ttch {
 #if !defined(_XGET)
     // This macro can be placed around static text that you want xgettext.exe to extract for translation using the
     // "xgettext.exe -k_XGET" keyword option
-
     #define _XGET(txt) txt
 #endif
 
 #if !defined(TRANSLATE)
     // If using wxWidgets, then translate the string into a UTF8 string. Currently there is no mechanism for translating
     // without wxWidgets, but the macro makes it possible to add that functionality later.
-
     #if defined(_WX_DEFS_H_)
         #define TRANSLATE(str) wxGetTranslation(str).utf8_str()
     #else
@@ -101,7 +103,6 @@ char*  ttStrStrI(const char* pszMain, const char* pszSub);
 
 // Use ttStrLen() to get the number of characters without trailing zero, use ttStrByteLen() to get the number of bytes
 // including the terminating zero
-
 inline size_t ttStrByteLen(const char* psz)
 {
     return ttStrLen(psz) * sizeof(char) + sizeof(char);
@@ -119,25 +120,46 @@ size_t ttSize(const void* pv);
 bool   ttValidate(const void* pv);
 
 bool ttIsSamePath(const char* pszFile1, const char* pszFile2);
-bool ttIsSameStr(const char* psz1, const char* psz2);           // same as strcmp, but returns true/false
-bool ttIsSameStrI(const char* psz1, const char* psz2);          // case-insensitive comparison
-bool ttIsSameSubStr(const char* pszMain, const char* pszSub);   // true if sub string matches first part of main string
-bool ttIsSameSubStrI(const char* pszMain, const char* pszSub);  // case-insensitive comparison
+// same as strcmp, but returns true/false
+bool ttIsSameStr(const char* psz1, const char* psz2);
+// case-insensitive comparison
+bool ttIsSameStrI(const char* psz1, const char* psz2);
+// true if sub string matches first part of main string
+bool ttIsSameSubStr(const char* pszMain, const char* pszSub);
+// case-insensitive comparison
+bool ttIsSameSubStrI(const char* pszMain, const char* pszSub);
+// Returns true if the character at the specified position is a valid filename character
 bool ttIsValidFileChar(const char* psz, size_t pos);
 
-void   ttAddTrailingSlash(char* pszPath);
-void   ttBackslashToForwardslash(char* pszPath);  // converts all backslashes in the string to forward slashes
-void   ttConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszResult);
-bool   ttCreateDir(const char* pszDir);
-char*  ttFindNonSpace(const char* psz);  // returns pointer to the next non-whitespace character
-char*  ttFindSpace(const char* psz);     // returns pointer to the next whitespace character
-void   ttForwardslashToBackslash(char* pszPath);
-size_t ttHashFromSz(const char* psz);      // creates a hash number from an string
-size_t ttHashFromURL(const char* pszURL);  // creates a hash number from a url or filename ('/' and '\' are considered
-                                           // the same, letter case doesn't matter)
-char* ttNextChar(const char* psz);         // handles UTF8 strings
-char* ttStepOver(const char* psz);         // equivalent to FindNonSpace(FindSpace(psz))
-void  ttTrimRight(char* psz);
+void ttAddTrailingSlash(char* pszPath);
+
+// converts all backslashes in the string to forward slashes
+void ttBackslashToForwardslash(char* pszPath);
+
+void ttConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszResult);
+bool ttCreateDir(const char* pszDir);
+
+// returns pointer to the next non-whitespace character
+char* ttFindNonSpace(const char* psz);
+
+// returns pointer to the next whitespace character
+char* ttFindSpace(const char* psz);
+
+void ttForwardslashToBackslash(char* pszPath);
+
+// Creates a hash number from an string
+size_t ttHashFromSz(const char* psz);
+
+// Creates a hash number from a url or filename ('/' and '\' are considered the same, letter case doesn't matter)
+size_t ttHashFromURL(const char* pszURL);
+
+// handles UTF8 strings
+char* ttNextChar(const char* psz);
+
+// Equivalent to FindNonSpace(FindSpace(psz))
+char* ttStepOver(const char* psz);
+
+void ttTrimRight(char* psz);
 
 inline bool ttIsAlpha(char ch)
 {
@@ -159,10 +181,11 @@ inline bool ttIsPunct(char ch)
 {
     return (ch == '.' || ch == ',' || ch == ';' || ch == ':' || ch == '?' || ch == '!');
 }
+// is ch the start of a utf8 sequence?
 inline bool ttIsUTF8(char ch)
 {
     return ((ch & 0xC0) != 0x80);
-}  // is ch the start of a utf8 sequence?
+}
 inline bool ttIsWhitespace(char ch)
 {
     return ttStrChr(" \t\r\n\f", ch) ? true : false;
@@ -191,16 +214,21 @@ bool ttFileExists(const char* pszFile);
 // ttFindExtPortion and ttFindFilePortion properly handle directories and filenames that start with '.' -- i.e.,
 // ttFindExtPortion(".gitignore") will return nullptr
 
-char* ttFindExt(const char* pszPath, const char* pszExt);  // find a case-insensitive extension in a path string
-char* ttFindExtPortion(
-    const char* pszPath);  // returns pointer to the '.' that begins a file name extension, or nullptr
-char* ttFindFilePortion(const char* pszPath);  // returns pointer to the filename portion of a path
-char* ttFindLastSlash(const char* pszPath);    // handles both forward and back slashes
+// Find a case-insensitive extension in a path string
+char* ttFindExt(const char* pszPath, const char* pszExt);
 
+// Returns pointer to the '.' that begins a file name extension, or nullptr
+char* ttFindExtPortion(const char* pszPath);
+// Returns pointer to the filename portion of a path
+char* ttFindFilePortion(const char* pszPath);
+// Handles both forward and back slashes
+char* ttFindLastSlash(const char* pszPath);
+
+// Replace the ttLib assertion handler with your own
 inline void ttSetAssertHandlerA(TTASSERTHANDLERA pFunc)
 {
     pttAssertHandlerA = pFunc;
-}  // Replace the ttLib assertion handler with your own
+}
 inline void ttSetAssertHandlerW(TTASSERTHANDLERW pFunc)
 {
     pttAssertHandlerW = pFunc;
@@ -324,32 +352,53 @@ wchar_t* ttStepOver(const wchar_t* pwsz);
 void     ttTrimRight(wchar_t* psz);
 
 #if defined(_WIN32)
-// clang-format off
+// ttInitCaller is equivalent to calling setResInst(hinstRes), setMsgBoxParent(hwndParent) and
+// setMsgBoxTitle(pszMsgTitle)
+[[deprecated]] void ttInitCaller(HINSTANCE hinstRes, HWND hwndParent, const char* pszMsgTitle);
 
-    // ttInitCaller is equivalent to calling setResInst(hinstRes), setMsgBoxParent(hwndParent) and setMsgBoxTitle(pszMsgTitle)
-    [[deprecated]] void ttInitCaller(HINSTANCE hinstRes, HWND hwndParent, const char* pszMsgTitle);
+inline HINSTANCE ttGetResInst()
+{
+    return tt::hinstResources;
+}
+inline void ttSetResInst(HINSTANCE hinst)
+{
+    tt::hinstResources = hinst;
+}
 
-    inline HINSTANCE   ttGetResInst() { return tt::hinstResources; }
-    inline void        ttSetResInst(HINSTANCE hinst) { tt::hinstResources = hinst; }
+const char* ttGetResString(size_t idString);
+const char* ttLoadTxtResource(int idRes, uint32_t* pcbFile = nullptr, HINSTANCE hinst = tt::hinstResources);
 
-    const char* ttGetResString(size_t idString);
-    const char* ttLoadTxtResource(int idRes, uint32_t* pcbFile = nullptr, HINSTANCE hinst = tt::hinstResources);
+int       ttMsgBox(UINT idResource, UINT uType = MB_OK | MB_ICONWARNING);
+int       ttMsgBox(const char* pszMsg, UINT uType = MB_OK | MB_ICONWARNING);
+int cdecl ttMsgBoxFmt(const char* pszFormat, UINT uType, ...);
+int cdecl ttMsgBoxFmt(int idResource, UINT uType, ...);
 
-    int         ttMsgBox(UINT idResource, UINT uType = MB_OK | MB_ICONWARNING);
-    int         ttMsgBox(const char* pszMsg, UINT uType = MB_OK | MB_ICONWARNING);
-    int cdecl   ttMsgBoxFmt(const char* pszFormat, UINT uType, ...);
-    int cdecl   ttMsgBoxFmt(int idResource, UINT uType, ...);
+ptrdiff_t ttCompareFileTime(FILETIME* pftSrc, FILETIME* pftDst);
+HFONT     ttCreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold = false, bool fItalics = false);
 
-    ptrdiff_t   ttCompareFileTime(FILETIME* pftSrc, FILETIME* pftDst);
-    HFONT       ttCreateLogFont(const char* pszTypeFace, size_t cPt, bool fBold = false, bool fItalics = false);
+inline int ttRC_HEIGHT(const RECT* prc)
+{
+    return prc->bottom - prc->top;
+};
+inline int ttRC_HEIGHT(const RECT rc)
+{
+    return rc.bottom - rc.top;
+};
+inline int ttRC_WIDTH(const RECT* prc)
+{
+    return prc->right - prc->left;
+};
+inline int ttRC_WIDTH(const RECT rc)
+{
+    return rc.right - rc.left;
+};
 
-    inline int  ttRC_HEIGHT(const RECT* prc) { return prc->bottom - prc->top; };
-    inline int  ttRC_HEIGHT(const RECT rc) { return rc.bottom - rc.top; };
-    inline int  ttRC_WIDTH(const RECT* prc) { return prc->right - prc->left; };
-    inline int  ttRC_WIDTH(const RECT rc) { return rc.right - rc.left; };
-
-    inline bool ttIsPosInRect(const RECT* prc, int xPos, int yPos) { return (xPos >= prc->left && xPos <= prc->right && yPos >= prc->top && yPos <= prc->bottom); }
-    inline bool ttIsValidWindow(HWND hwnd) { return (bool) (hwnd && IsWindow(hwnd)); };
-
-// clang-format on
+inline bool ttIsPosInRect(const RECT* prc, int xPos, int yPos)
+{
+    return (xPos >= prc->left && xPos <= prc->right && yPos >= prc->top && yPos <= prc->bottom);
+}
+inline bool ttIsValidWindow(HWND hwnd)
+{
+    return (bool) (hwnd && IsWindow(hwnd));
+};
 #endif  // defined(_WIN32)

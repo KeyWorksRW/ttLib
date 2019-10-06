@@ -24,6 +24,7 @@ namespace ttpriv
 
 class ttCShadeBtn;
 
+// Class for applying CShadeBtn to every button in a dialog
 class ttCMultiBtn
 {
 public:

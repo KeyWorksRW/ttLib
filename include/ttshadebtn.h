@@ -19,9 +19,13 @@
 
 #if defined(_WIN32)
 
+    #include <wingdi.h>
+    #include <wtypes.h>
+
     #include "ttdib.h"  // ttCDib
     #include "ttwin.h"  // ttCWin
 
+// Class for implementing an owner-draw button
 class ttCShadeBtn : public ttCWin
 {
 public:
@@ -82,6 +86,7 @@ protected:
 
     void OnPaint();
 
+private:
     // Class members
 
     BOOL      m_Border;     // 0=flat; 1=3D;

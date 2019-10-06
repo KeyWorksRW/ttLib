@@ -19,7 +19,6 @@
 #include "ttdebug.h"  // ttASSERT macros
 
 // A simple header-only array of any type
-
 template<typename T> class ttCHeapArray : public ttCHeap
 {
 public:
@@ -42,7 +41,8 @@ public:
         m_aData[m_cItems++] = t;
     }
 
-    size_t Add()  // use this to add an emptry member which you can fill in using the returned array index
+    // Use this to add an emptry member which you can fill in using the returned array index
+    size_t Add()
     {
         if (m_cItems >= m_cAllocated)
         {
@@ -69,7 +69,8 @@ public:
         return false;
     }
 
-    size_t Find(const T t) const  // returns -1 if not found
+    // returns -1 if not found
+    size_t Find(const T t) const
     {
         for (size_t pos = 0; pos < m_cItems; pos++)
         {
@@ -84,7 +85,8 @@ public:
     size_t GetCount() const { return m_cItems; }
     bool   InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
 
-    void Reset()  // caller's responsibility to delete any allocated members first!
+    // It is the caller's responsibility to delete any allocated members first!
+    void Reset()
     {
         if (m_aData)
         {
@@ -94,7 +96,8 @@ public:
         m_cAllocated = m_cItems = 0;
     }
 
-    void SetGrowth(size_t growth) { m_cGrowth = growth; }  // Number of items to reserve when more memory is needed
+    // Sets number of items to reserve when more memory is needed
+    void SetGrowth(size_t growth) { m_cGrowth = growth; }
 
     void operator+=(T t) { Add(t); }
     T&   operator[](size_t pos) const
@@ -105,7 +108,7 @@ public:
         return m_aData[pos];
     }
 
-protected:
+private:
     size_t m_cItems;
     size_t m_cAllocated;
     size_t m_cGrowth;  // number of items to allocate in advance

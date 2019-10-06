@@ -10,8 +10,10 @@
 
 #if defined(_WIN32)
 
-// Header-only class
+    #include <winreg.h>
+    #include <winerror.h>
 
+// Header-only class for working with the Windows registry
 class ttCRegistry
 {
 public:
@@ -95,6 +97,7 @@ public:
 
     operator HKEY() const { return m_hkey; }
 
+private:
     HKEY m_hkey;
 };
 

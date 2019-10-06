@@ -33,9 +33,14 @@
 
 #pragma once
 
+#if defined(_WIN32)
+    #include <winuser.h>
+#endif
+
 #include "ttheap.h"   // ttCHeap
 #include "ttdebug.h"  // ttASSERT macros
 #include "ttstr.h"    // ttCStr
+#include "ttlib.h"
 
 #if defined(_WX_DEFS_H_)
     #include <wx/string.h>
@@ -73,23 +78,23 @@ public:
 
     // Method naming conventions are lower camel case when matching tt:: namespace functions
 
-    wchar_t* FindExt(const wchar_t* pszExt)
-    {
-        return (wchar_t*) ttFindExt(m_psz, pszExt);
-    }                          // find a specific filename extension
-    wchar_t* FindExt() const;  // find any extension
+    // find a specific filename extension
+    wchar_t* FindExt(const wchar_t* pszExt) { return (wchar_t*) ttFindExt(m_psz, pszExt); }
+
+    // find any extension
+    wchar_t* FindExt() const;
     wchar_t* FindStr(const wchar_t* psz) { return ttStrStr(m_psz, psz); }
     wchar_t* FindStrI(const wchar_t* psz) { return ttStrStrI(m_psz, psz); }
     wchar_t* FindChar(wchar_t ch) { return ttStrChr(m_psz, ch); }
     wchar_t* FindLastChar(wchar_t ch) { return ttStrChrR(m_psz, ch); }
 
-    size_t StrByteLen() { return m_psz ? ttStrByteLen(m_psz) : 0; }  // length of string in bytes including 0 terminator
-    int    StrCat(const wchar_t* psz);
-    int    StrCopy(const wchar_t* psz);
-    size_t StrLen()
-    {
-        return m_psz ? ttStrLen(m_psz) : 0;
-    }  // number of characters (use strByteLen() for buffer size calculations)
+    // length of string in bytes including 0 terminator
+    size_t StrByteLen() { return m_psz ? ttStrByteLen(m_psz) : 0; }
+    // number of characters (use strByteLen() for buffer size calculations)
+    size_t StrLen() { return m_psz ? ttStrLen(m_psz) : 0; }
+
+    int StrCat(const wchar_t* psz);
+    int StrCopy(const wchar_t* psz);
 
     bool IsSameStr(const wchar_t* psz) { return ttIsSameStr(m_psz, psz); }
     bool IsSameStrI(const wchar_t* psz) { return ttIsSameStrI(m_psz, psz); }
@@ -113,19 +118,23 @@ public:
     bool IsNonEmpty() const { return (m_psz && *m_psz) ? true : false; }
     bool IsNull() const { return (m_psz == nullptr); }
 
-    bool CopyNarrow(const char* psz);  // convert UTF8 to UNICODE and store it
+    // Convert UTF8 to UNICODE and store it
+    bool CopyNarrow(const char* psz);
 
     bool ReplaceStr(const wchar_t* pszOldText, const wchar_t* pszNewText, bool bCaseSensitive = false);
 
     // Filename handling methods
 
-    void     AppendFileName(const wchar_t* pszFile);
-    void     AddTrailingSlash();  // adds a trailing forward slash if string doesn't already end with '/' or '\'
-    void     ChangeExtension(const wchar_t* pszExtension);
-    wchar_t* GetCWD();  // Caution: this will replace any current string
+    void AppendFileName(const wchar_t* pszFile);
+    // Adds a trailing forward slash if string doesn't already end with '/' or '\'
+    void AddTrailingSlash();
+    void ChangeExtension(const wchar_t* pszExtension);
+    // Caution: this will replace any current string
+    wchar_t* GetCWD();
     void     RemoveExtension();
 
-    wchar_t* FindLastSlash();  // Handles any mix of '\' and '/' in the filename
+    // Handles any mix of '\' and '/' in the filename
+    wchar_t* FindLastSlash();
 
     void FullPathName();
 
@@ -148,21 +157,22 @@ public:
 
     // if the first non whitespace character in pszString == chBegin, get everthing between chBegin and chEnd, otherwise
     // get everything after the whitespace
-
     wchar_t* GetString(const wchar_t* pszString, wchar_t chBegin, wchar_t chEnd);
 
     wchar_t* GetAngleString(const wchar_t* pszString) { return GetString(pszString, L'<', L'>'); }
     wchar_t* GetBracketsString(const wchar_t* pszString) { return GetString(pszString, L'[', L']'); }
     wchar_t* GetParenthString(const wchar_t* pszString) { return GetString(pszString, L'(', L')'); }
 
-    wchar_t* GetQuotedString(const wchar_t* pszQuote);  // returns pointer to first character after closing quote (or
-                                                        // nullptr if not a quoted string)
+    // returns pointer to first character after closing quote (or nullptr if not a quoted string)
+    wchar_t* GetQuotedString(const wchar_t* pszQuote);
 
     void cdecl     printf(const wchar_t* pszFormat, ...);
     wchar_t* cdecl printfAppend(const wchar_t* pszFormat, ...);
 
-    void   ReSize(size_t cbTotalSize);             // increase buffer size if needed
-    size_t SizeBuffer() { return ttSize(m_psz); }  // returns 0 if m_psz is null
+    void ReSize(size_t cbTotalSize);
+
+    // returns 0 if m_psz is null
+    size_t SizeBuffer() { return ttSize(m_psz); }
     void   Delete()
     {
         if (m_psz)
@@ -172,7 +182,8 @@ public:
         }
     }
 
-    wchar_t*  GetPtr() { return m_psz; }    // for when casting to char* is problematic
+    // For when casting to char* is problematic
+    wchar_t*  GetPtr() { return m_psz; }
     wchar_t** GetPPtr() { return &m_psz; }  // use with extreme caution!
 
     operator wchar_t*() const { return (wchar_t*) m_psz; }
@@ -199,6 +210,7 @@ protected:
 
     const wchar_t* ProcessKFmt(const wchar_t* pszEnd, va_list* pargList);
 
+private:
     // Class members
 
     wchar_t* m_psz;  // using this name instead of m_pwsz to make it easier to copy similar code form ttstr.cpp

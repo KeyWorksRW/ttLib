@@ -34,8 +34,12 @@ class ttCHeap
 {
 public:
     ttCHeap();
-    ttCHeap(bool bSerialize);  // Creates a sub-heap. Use true for thread safe, false for speed (but not thread safe)
-    ttCHeap(HANDLE hHeap);     // Pass in a heap handle or another ttCHeap class (which will call the HANDLE() operator)
+
+    // Creates a sub-heap. Use true for thread safe, false for speed (but not thread safe)
+    ttCHeap(bool bSerialize);
+
+    // Pass in a heap handle or another ttCHeap class (which will call the HANDLE() operator)
+    ttCHeap(HANDLE hHeap);
 
     ~ttCHeap();
 
@@ -44,7 +48,8 @@ public:
     // We use the "tt" prefix to make certain there is no confusion in a derived class that the memory routines are from
     // this class rather than the standard memory functions.
 
-    void* ttMalloc(size_t cb);  // under _DEBUG, will fill with 0xCD
+    // under _DEBUG, will fill with 0xCD
+    void* ttMalloc(size_t cb);
     void* ttCalloc(size_t cb);
     void* ttReAlloc(void* pv, size_t cb);
     void* ttReCalloc(void* pv, size_t cb);
@@ -54,16 +59,19 @@ public:
         if (pv)
             HeapFree(m_hHeap, 0, pv);
     }
+
+    // identical to ttFree
     void ttDelete(void* pv)
     {
         if (pv)
             HeapFree(m_hHeap, 0, pv);
-    }  // identical to ttFree
+    }
 
     char*    ttStrDup(const char* psz);
     wchar_t* ttStrDup(const wchar_t* pwsz);
 
-    char*    ttStrDup(const char* psz, char** ppszDst);  // allocates/ReAllocates *ppszDst
+    // allocates/ReAllocates *ppszDst
+    char*    ttStrDup(const char* psz, char** ppszDst);
     wchar_t* ttStrDup(const wchar_t* psz, wchar_t** ppszDst);
 
     size_t ttSize(const void* pv) { return pv ? HeapSize(m_hHeap, 0, pv) : 0; }

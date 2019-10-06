@@ -18,24 +18,30 @@ void cdecl ttTrace(const char* pszFormat, ...);
 
 // clears the ttTrace window if ttTrace is running
 void ttTraceClear();
+
 bool ttAssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFunction, int line);
 bool ttAssertionMsg(const wchar_t* pszMsg, const char* pszFile, const char* pszFunction, int line);
 void ttdoReportLastError(const char* pszFile, const char* pszFunc, int line);
-void ttSetAsserts(bool bDisable);  // enables disables all assertion messages
+
+// Enables disables all assertion messages
+void ttSetAsserts(bool bDisable);
 
 __declspec(noreturn) void ttOOM(void);
 
 namespace tt
 {
 #if defined(_WIN32)
-    extern HWND hwndTrace;  // handle to ttTrace main window (if it was running when ttTrace was called;
+    // handle to ttTrace main window (if it was running when ttTrace was called
+    extern HWND hwndTrace;
 
     extern const UINT WMP_TRACE_GENERAL;  // WM_USER + 0x1f3;    // general message to send to ttTrace
     extern const UINT WMP_TRACE_MSG;      // WM_USER + 0x1f5;    // trace message to send to ttTrace
     extern const UINT WMP_CLEAR_TRACE;    // WM_USER + 0x1f9;    // clears the ttTrace window
 
-    extern const char* txtTraceClass;      // class name of window to send trace messages to
-    extern const char* txtTraceShareName;  // name of shared memory to write to
+    // class name of window to send trace messages to
+    extern const char* txtTraceClass;
+    // name of shared memory to write to
+    extern const char* txtTraceShareName;
 
     int CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc, int line);
 #endif  // defined(_WIN32)
