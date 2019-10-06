@@ -10,6 +10,12 @@
 
 #pragma once
 
+#if defined(_WIN32) && !defined(wxGUI) && !defined(PTEST)
+    #include <winbase.h>
+#else
+    #include <wx/thread.h>
+#endif
+
 class ttCCritSection
 {
 public:
@@ -25,6 +31,11 @@ public:
     void Lock() { EnterCriticalSection(&m_cs); }
     void Unlock() { LeaveCriticalSection(&m_cs); }
 
+    // Alternatives to the above, makes it easier to switch to wxCriticalSection in wxWidgets apps
+
+    void Enter() { EnterCriticalSection(&m_cs); }
+    void Leave() { LeaveCriticalSection(&m_cs); }
+
     // Class functions
 
 private:
@@ -38,7 +49,7 @@ private:
     void Lock() { m_cs.Enter(); }
     void Unlock() { m_cs.Leave(); }
 #endif  // defined(_WIN32)
-};      // end ttCCritSection
+};
 
 /*
     Designed to keep a Critical Section locked until the destructor is called
