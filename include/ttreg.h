@@ -8,9 +8,6 @@
 
 #pragma once
 
-#ifndef __TTLIB_CREG_H__
-#define __TTLIB_CREG_H__
-
 #if defined(_WIN32)
 
 // Header-only class
@@ -40,7 +37,8 @@ public:
     {
         if (m_hkey)
             RegCloseKey(m_hkey);
-        return (RegCreateKeyExA(hkeyBase, pszKey, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &m_hkey, NULL) == ERROR_SUCCESS);
+        return (RegCreateKeyExA(hkeyBase, pszKey, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &m_hkey,
+                                NULL) == ERROR_SUCCESS);
     }
     void Close()
     {
@@ -50,7 +48,8 @@ public:
 
     bool WriteString(const char* pszKey, const char* pszValue)
     {
-        return (RegSetValueExA(m_hkey, pszKey, 0, REG_SZ, (PBYTE) pszValue, (DWORD) ttStrLen(pszValue) + 1) == ERROR_SUCCESS);
+        return (RegSetValueExA(m_hkey, pszKey, 0, REG_SZ, (PBYTE) pszValue, (DWORD) ttStrLen(pszValue) + 1) ==
+                ERROR_SUCCESS);
     }
     bool ReadString(const char* pszName, PSTR pszDst, DWORD cbDst = MAX_PATH)
     {
@@ -89,19 +88,10 @@ public:
         return (RegEnumValueA(m_hkey, item, pszKey, &cbKey, NULL, &type, (PBYTE) pszDst, &cbDst) == ERROR_SUCCESS);
     }
 
-    bool DeleteKey(const char* pszKey)
-    {
-        return (RegDeleteKeyA(m_hkey, pszKey) == ERROR_SUCCESS);
-    }
-    bool DeleteValue(const char* pszKey)
-    {
-        return (RegDeleteValueA(m_hkey, pszKey) == ERROR_SUCCESS);
-    }
+    bool DeleteKey(const char* pszKey) { return (RegDeleteKeyA(m_hkey, pszKey) == ERROR_SUCCESS); }
+    bool DeleteValue(const char* pszKey) { return (RegDeleteValueA(m_hkey, pszKey) == ERROR_SUCCESS); }
 
-    bool IsOpen()
-    {
-        return m_hkey != NULL;
-    }
+    bool IsOpen() { return m_hkey != NULL; }
 
     operator HKEY() const { return m_hkey; }
 
@@ -109,4 +99,3 @@ public:
 };
 
 #endif  // defined(_WIN32)
-#endif  // __TTLIB_CREG_H__

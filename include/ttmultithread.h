@@ -8,9 +8,6 @@
 
 #pragma once
 
-#ifndef __TTLIB_MULTITHREAD_H__
-#define __TTLIB_MULTITHREAD_H__
-
 // This class creates a pool of threads which are created with a call to IniatializeThreads(nThreads) specifying how
 // many threads you want. The threads will exist until this class's destructor is called.
 
@@ -38,7 +35,9 @@ public:
     ttCMultiThrd();
     ~ttCMultiThrd();
 
-    virtual void DoThreadWork(void* pvData1, void* pvData2) = NULL;  // Derived class MUST supply this! While running, call isCancelled() to return
+    virtual void DoThreadWork(
+        void* pvData1,
+        void* pvData2) = NULL;  // Derived class MUST supply this! While running, call isCancelled() to return
 
     bool isCancelled() { return m_bCanceled; }  // true if threads are being aborted
     void CancelThreads();
@@ -72,5 +71,3 @@ protected:
     MULTI_THRD_INFO* m_aThrdInfo;
     HANDLE*          m_ahsemDone;
 };
-
-#endif  // __TTLIB_MULTITHREAD_H__

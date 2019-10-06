@@ -18,52 +18,52 @@
 #pragma once
 
 #ifndef __DLG_ID__
-#ifdef _DEBUG
-// use this to confirm you have a valid dialog id--it will generate an assertion message if the id doesn't
-// exist at runtime
-#define DLG_ID(id) tt::CheckItemID(*this, id, #id, __FILE__, __func__, __LINE__)
-#else
-#define DLG_ID(id) id
-#endif
+    #ifdef _DEBUG
+        // use this to confirm you have a valid dialog id--it will generate an assertion message if the id doesn't
+        // exist at runtime
+        #define DLG_ID(id) tt::CheckItemID(*this, id, #id, __FILE__, __func__, __LINE__)
+    #else
+        #define DLG_ID(id) id
+    #endif
 #endif
 
 // Use the following if you have a large number of commands to process. This will put them in a switch statement which
 // may result in better performance then the multiple if statements normally used.
 
 #ifndef __TTLIB_TTMSG_SWITCH__
-#define __TTLIB_TTMSG_SWITCH__
+    #define __TTLIB_TTMSG_SWITCH__
 
-#define BEGIN_TTCMD_SWITCH()    \
-    if (uMsg == WM_COMMAND)     \
-    {                           \
-        lResult = 0;            \
-        switch (LOWORD(wParam)) \
-        {
-#define END_TTCMD_SWITCH() \
-    default:               \
-        return FALSE;      \
-        }                  \
-        }
+    #define BEGIN_TTCMD_SWITCH()    \
+        if (uMsg == WM_COMMAND)     \
+        {                           \
+            lResult = 0;            \
+            switch (LOWORD(wParam)) \
+            {
+    #define END_TTCMD_SWITCH() \
+        default:               \
+            return FALSE;      \
+            }                  \
+            }
 
-#define ttCASE_CMD(id, func) \
-    case id:                 \
-        func();              \
-        return TRUE;
+    #define ttCASE_CMD(id, func) \
+        case id:                 \
+            func();              \
+            return TRUE;
 
-#define BEGIN_TTMSG_SWITCH() \
-    {                        \
-        switch (uMsg)        \
-        {
-#define END_TTMSG_SWITCH() \
-    default:               \
-        return FALSE;      \
-        }                  \
-        }
+    #define BEGIN_TTMSG_SWITCH() \
+        {                        \
+            switch (uMsg)        \
+            {
+    #define END_TTMSG_SWITCH() \
+        default:               \
+            return FALSE;      \
+            }                  \
+            }
 
-#define ttCASE_MSG(msg, func)           \
-    case msg:                           \
-        lResult = func(wParam, lParam); \
-        return TRUE;
+    #define ttCASE_MSG(msg, func)           \
+        case msg:                           \
+            lResult = func(wParam, lParam); \
+            return TRUE;
 
 #endif  // __TTLIB_TTMSG_SWITCH__
 
@@ -77,20 +77,22 @@
         return TRUE;                                                                \
     }
 
-#define MSG_EDIT_CHANGE(id, func)                                                                                        \
-    if (uMsg == WM_COMMAND && (HIWORD(wParam) == EN_CHANGE || HIWORD(wParam) == CBN_EDITCHANGE) && LOWORD(wParam) == id) \
-    {                                                                                                                    \
-        func();                                                                                                          \
-        lResult = 0;                                                                                                     \
-        return TRUE;                                                                                                     \
+#define MSG_EDIT_CHANGE(id, func)                                                                  \
+    if (uMsg == WM_COMMAND && (HIWORD(wParam) == EN_CHANGE || HIWORD(wParam) == CBN_EDITCHANGE) && \
+        LOWORD(wParam) == id)                                                                      \
+    {                                                                                              \
+        func();                                                                                    \
+        lResult = 0;                                                                               \
+        return TRUE;                                                                               \
     }
 
-#define MSG_SEL_CHANGE(id, func)                                                                                            \
-    if (uMsg == WM_COMMAND && (HIWORD(wParam) == LBN_SELCHANGE || HIWORD(wParam) == CBN_SELCHANGE) && LOWORD(wParam) == id) \
-    {                                                                                                                       \
-        func();                                                                                                             \
-        lResult = 0;                                                                                                        \
-        return TRUE;                                                                                                        \
+#define MSG_SEL_CHANGE(id, func)                                                                      \
+    if (uMsg == WM_COMMAND && (HIWORD(wParam) == LBN_SELCHANGE || HIWORD(wParam) == CBN_SELCHANGE) && \
+        LOWORD(wParam) == id)                                                                         \
+    {                                                                                                 \
+        func();                                                                                       \
+        lResult = 0;                                                                                  \
+        return TRUE;                                                                                  \
     }
 
 #define MSG_LISTBOX_DBL_CLICK(id, func)                                             \
@@ -1113,8 +1115,8 @@
 // New NT4 & NT5 messages
 
 #ifndef WM_MOUSEHOVER
-#define WM_MOUSEHOVER 0x02A1
-#define WM_MOUSELEAVE 0x02A3
+    #define WM_MOUSEHOVER 0x02A1
+    #define WM_MOUSELEAVE 0x02A3
 #endif
 
 #define MSG_WM_MOUSEHOVER(func)                                           \
@@ -1554,12 +1556,12 @@
         lResult = func((LPNMHDR) lParam);                                                                   \
         return TRUE;                                                                                        \
     }
-#define NOTIFY_RANGE_CODE_HANDLER_EX(idFirst, idLast, cd, func)                        \
-    if (uMsg == WM_NOTIFY && cd == ((LPNMHDR) lParam)->code &&                         \
-        ((LPNMHDR) lParam)->idFrom >= idFirst && ((LPNMHDR) lParam)->idFrom <= idLast) \
-    {                                                                                  \
-        lResult = func((LPNMHDR) lParam);                                              \
-        return TRUE;                                                                   \
+#define NOTIFY_RANGE_CODE_HANDLER_EX(idFirst, idLast, cd, func)                                         \
+    if (uMsg == WM_NOTIFY && cd == ((LPNMHDR) lParam)->code && ((LPNMHDR) lParam)->idFrom >= idFirst && \
+        ((LPNMHDR) lParam)->idFrom <= idLast)                                                           \
+    {                                                                                                   \
+        lResult = func((LPNMHDR) lParam);                                                               \
+        return TRUE;                                                                                    \
     }
 
 #define REFLECTED_COMMAND_HANDLER_EX(id, code, func)                           \
@@ -1623,10 +1625,10 @@
         lResult = func((LPNMHDR) lParam);                                                                    \
         return TRUE;                                                                                         \
     }
-#define REFLECTED_NOTIFY_RANGE_CODE_HANDLER_EX(idFirst, idLast, cd, func)              \
-    if (uMsg == OCM_NOTIFY && cd == ((LPNMHDR) lParam)->code &&                        \
-        ((LPNMHDR) lParam)->idFrom >= idFirst && ((LPNMHDR) lParam)->idFrom <= idLast) \
-    {                                                                                  \
-        lResult = func((LPNMHDR) lParam);                                              \
-        return TRUE;                                                                   \
+#define REFLECTED_NOTIFY_RANGE_CODE_HANDLER_EX(idFirst, idLast, cd, func)                                \
+    if (uMsg == OCM_NOTIFY && cd == ((LPNMHDR) lParam)->code && ((LPNMHDR) lParam)->idFrom >= idFirst && \
+        ((LPNMHDR) lParam)->idFrom <= idLast)                                                            \
+    {                                                                                                    \
+        lResult = func((LPNMHDR) lParam);                                                                \
+        return TRUE;                                                                                     \
     }

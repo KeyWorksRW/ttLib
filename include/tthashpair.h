@@ -11,9 +11,6 @@
 
 #pragma once
 
-#ifndef __TTLIB_HASHPAIR_H__
-#define __TTLIB_HASHPAIR_H__
-
 #include "ttdebug.h"  // ttASSERT macros
 
 class ttCHashPair
@@ -61,10 +58,7 @@ public:
     }
 #endif
 
-    size_t GetCount() const
-    {
-        return m_cItems;
-    }
+    size_t     GetCount() const { return m_cItems; }
     HASH_PAIR* GetArray() { return m_aData; }  // Use with caution!
 
 protected:
@@ -77,5 +71,3 @@ protected:
     size_t     m_cAllocated;
     HASH_PAIR* m_aData;
 };
-
-#endif  // __TTLIB_HASHPAIR_H__

@@ -19,8 +19,8 @@
 
 #if defined(_WIN32)
 
-#include "ttdib.h"  // ttCDib
-#include "ttwin.h"  // ttCWin
+    #include "ttdib.h"  // ttCDib
+    #include "ttwin.h"  // ttCWin
 
 class ttCShadeBtn : public ttCWin
 {
@@ -50,18 +50,19 @@ public:
     void      SetButtonStyle(UINT nStyle, BOOL bRedraw = TRUE);
     void      SetFlat(bool bFlag) { m_flat = bFlag; }
     bool      SetFont(LOGFONTA* pNewStyle);
-    bool      SetFont(const char* pszFontName, long lSize = 0, long lWeight = 400, BYTE bItalic = 0, BYTE bUnderline = 0);
+    bool SetFont(const char* pszFontName, long lSize = 0, long lWeight = 400, BYTE bItalic = 0, BYTE bUnderline = 0);
 
     void SetIcon(UINT nIcon, UINT nIconAlign = BS_CENTER, UINT nIconDown = 0, UINT nIconHighLight = 0);
     void SetIcon(const char* pszIconName, UINT nIconAlign = BS_CENTER, UINT nIconDown = 0, UINT nIconHighLight = 0);
     void SetIcon(HICON hIcon, UINT nIconAlign, UINT nIconDown, UINT nIconHighLight);
 
-    void     SetShade(BTN_SHADE shadeID = SHS_NOISE, BYTE granularity = 8, BYTE highlight = 10, BYTE coloring = 0, COLORREF color = 0);
+    void     SetShade(BTN_SHADE shadeID = SHS_NOISE, BYTE granularity = 8, BYTE highlight = 10, BYTE coloring = 0,
+                      COLORREF color = 0);
     void     SetTextAlign(UINT nTextAlign);
     COLORREF SetTextColor(COLORREF new_color);
 
     bool operator==(ttCShadeBtn* pShade) { return m_hwnd == pShade->m_hwnd; }
-    operator HWND() const { return m_hwnd; }
+         operator HWND() const { return m_hwnd; }
 
 protected:
     // Message handlers
@@ -70,7 +71,8 @@ protected:
         TTMSG_WM_PAINT(OnPaint)
 
         case WM_ENABLE:
-            InvalidateRect(*this, NULL, TRUE);  // REVIEW: [randalphwa - 1/26/2019] Can we get away with setting FALSE for bErase?
+            InvalidateRect(*this, NULL,
+                           TRUE);  // REVIEW: [randalphwa - 1/26/2019] Can we get away with setting FALSE for bErase?
             return true;
 
         case BM_SETSTATE:

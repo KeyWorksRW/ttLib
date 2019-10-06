@@ -10,9 +10,6 @@
 
 #pragma once
 
-#ifndef __TTLIB_TTMEM_H__
-#define __TTLIB_TTMEM_H__
-
 #include "ttdebug.h"  // ttASSERT macros
 #include "ttheap.h"   // ttCHeap
 
@@ -44,8 +41,7 @@ public:
     uint8_t* m_pb;
 };
 
-template<typename T>
-class ttCTMem  // Header-only class
+template<typename T> class ttCTMem  // Header-only class
 {
 public:
     ttCTMem() { m_p = NULL; }
@@ -78,5 +74,3 @@ public:
 
     T m_p;
 };
-
-#endif  // __TTLIB_TTMEM_H__

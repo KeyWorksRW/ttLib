@@ -11,17 +11,17 @@
 
 #pragma once
 
-#ifndef __TTLIB_ASSERTS_H__
-#define __TTLIB_ASSERTS_H__
-
 // Note that all functions listed here are available in release builds. Only the macros are removed in release builds
 
-void cdecl ttTrace(const char* pszFormat, ...);  // formats a string and displays it in a ttTrace window (if ttTrace is running)
-void       ttTraceClear();                       // clears the ttTrace window if ttTrace is running
-bool       ttAssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFunction, int line);
-bool       ttAssertionMsg(const wchar_t* pszMsg, const char* pszFile, const char* pszFunction, int line);
-void       ttdoReportLastError(const char* pszFile, const char* pszFunc, int line);
-void       ttSetAsserts(bool bDisable);  // enables disables all assertion messages
+// formats a string and displays it in a ttTrace window (if ttTrace is running)
+void cdecl ttTrace(const char* pszFormat, ...);
+
+// clears the ttTrace window if ttTrace is running
+void ttTraceClear();
+bool ttAssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFunction, int line);
+bool ttAssertionMsg(const wchar_t* pszMsg, const char* pszFile, const char* pszFunction, int line);
+void ttdoReportLastError(const char* pszFile, const char* pszFunc, int line);
+void ttSetAsserts(bool bDisable);  // enables disables all assertion messages
 
 __declspec(noreturn) void ttOOM(void);
 
@@ -88,5 +88,3 @@ namespace tt
 // clang-format on
 
 #endif  // _DEBUG
-
-#endif  // __TTLIB_ASSERTS_H__

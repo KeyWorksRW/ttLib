@@ -8,9 +8,6 @@
 
 #pragma once
 
-#ifndef __TTLIB_TTHEAP_H__
-#define __TTLIB_TTHEAP_H__
-
 #if defined(_WIN32)
 
 /*
@@ -87,4 +84,3 @@ namespace tt
 }
 
 #endif  // defined(_WIN32)
-#endif  // __TTLIB_TTHEAP_H__

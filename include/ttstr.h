@@ -19,11 +19,10 @@
 //
 //      %kd - formats an integer with commas. I.e., 54321 would be formatted as 54,321
 //      %kq - outputs quotation marks around the string
-//      %ks - adds a 's' to the current buffer if the integer is zero or greater then 1, e.g., printf("item%ks", cItems);
-//      %kS - adds a 's' to the current buffer if the __int64 is zero or greater then 1
-//      %kls - adds a 's' to the current buffer if the last numeric argument is zero or greater then 1 (printf("%d item%kls", cItems);
-//      %kt - formats a size_t value with commas
-//      %ku - formats an unsigned integer with commas
+//      %ks - adds a 's' to the current buffer if the integer is zero or greater then 1, e.g., printf("item%ks",
+//      cItems); %kS - adds a 's' to the current buffer if the __int64 is zero or greater then 1 %kls - adds a 's' to
+//      the current buffer if the last numeric argument is zero or greater then 1 (printf("%d item%kls", cItems); %kt -
+//      formats a size_t value with commas %ku - formats an unsigned integer with commas
 
 //      %kI64d -- handles int64_t, adding commas if needed
 //      %kI64u -- handles uint64_t, adding commas if needed
@@ -34,9 +33,6 @@
 //      %kr - argument is a resource identifier to a string
 
 #pragma once
-
-#ifndef __TTLIB_CSTR_H__
-#define __TTLIB_CSTR_H__
 
 #include "ttheap.h"   // ttCHeap
 #include "ttdebug.h"  // ttASSERT macros
@@ -55,10 +51,7 @@ public:
             CopyWide(pwsz);
     }
 #if defined(_WX_DEFS_H_)
-    ttCStr(const wxString& str)
-    {
-        m_psz = ttStrDup(str.utf8_str());
-    }
+    ttCStr(const wxString& str) { m_psz = ttStrDup(str.utf8_str()); }
 #endif
 #if defined(_WIN32)
     ttCStr(HWND hwnd)
@@ -68,15 +61,15 @@ public:
     }
 #endif  // defined(_WIN32)
 
-    ~ttCStr()
-    {
-        Delete();
-    }
+    ~ttCStr() { Delete(); }
 
     // Method naming conventions are lower camel case when matching tt:: namespace functions
 
-    char* FindExt(const char* pszExt) { return (char*) ttFindExt(m_psz, pszExt); }  // find a specific filename extension
-    char* FindExt() const;                                                          // find any extension
+    char* FindExt(const char* pszExt)
+    {
+        return (char*) ttFindExt(m_psz, pszExt);
+    }                       // find a specific filename extension
+    char* FindExt() const;  // find any extension
     char* FindStr(const char* psz) { return ttStrStr(m_psz, psz); }
     char* FindStrI(const char* psz) { return ttStrStrI(m_psz, psz); }
     char* FindChar(char ch) { return ttStrChr(m_psz, ch); }
@@ -85,7 +78,10 @@ public:
     size_t StrByteLen() { return m_psz ? ttStrByteLen(m_psz) : 0; }  // length of string in bytes including 0 terminator
     int    StrCat(const char* psz);
     int    StrCopy(const char* psz);
-    size_t StrLen() { return m_psz ? ttStrLen(m_psz) : 0; }  // number of characters (use strByteLen() for buffer size calculations)
+    size_t StrLen()
+    {
+        return m_psz ? ttStrLen(m_psz) : 0;
+    }  // number of characters (use strByteLen() for buffer size calculations)
 
     bool IsSameStr(const char* psz) { return ttIsSameStr(m_psz, psz); }
     bool IsSameStrI(const char* psz) { return ttIsSameStrI(m_psz, psz); }
@@ -159,9 +155,9 @@ public:
 
     char* GetQuotedString(const char* pszQuote);  // Handles single and double quote strings
 
-    char* cdecl printf(const char* pszFormat, ...);        // Deletes any current string before printing
-    char* cdecl printfAppend(const char* pszFormat, ...);  // Appends to the end of any current string
-    void cdecl WarningMsgBox(const char* pszFormat, ...);  // displays the formatted string in a warning message box
+    char* cdecl printf(const char* pszFormat, ...);         // Deletes any current string before printing
+    char* cdecl printfAppend(const char* pszFormat, ...);   // Appends to the end of any current string
+    void cdecl  WarningMsgBox(const char* pszFormat, ...);  // displays the formatted string in a warning message box
 
     void   ReSize(size_t cb);
     size_t SizeBuffer() { return ttSize(m_psz); }  // returns 0 if m_psz is null
@@ -226,5 +222,3 @@ private:
 
     char* m_psz;
 };
-
-#endif  // __TTLIB_CSTR_H__

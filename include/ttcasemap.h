@@ -51,9 +51,6 @@
 
 #pragma once
 
-#ifndef __TTLIB_TTMSG_MAP_H__
-#define __TTLIB_TTMSG_MAP_H__
-
 // clang-format off
 #ifndef GET_X_LPARAM
     #define GET_X_LPARAM(lp) ((int) (short) LOWORD(lp))
@@ -984,4 +981,3 @@
         return true;
 
 // clang-format on
-#endif  // not __TTLIB_TTMSG_MAP_H__

@@ -8,9 +8,6 @@
 
 #pragma once
 
-#ifndef __TTLIB_TTCDLG_H__
-#define __TTLIB_TTCDLG_H__
-
 #if defined(_WIN32)
 
 // This dialog class has no base requirements other than compiling for Windows. It can be used whether your app is
@@ -18,24 +15,24 @@
 
 // Classes are also provided for some dialog controls: ttCComboBox, ttCListBox, ttCListView
 
-#include <CommCtrl.h>
+    #include <CommCtrl.h>
 
-#include "ttdebug.h"     // ttASSERT macros
-#include "ttstr.h"       // ttCStr
-#include "ttwstr.h"      // ttCWStr
-#include "ttmultibtn.h"  // ttCMultiBtn
+    #include "ttdebug.h"     // ttASSERT macros
+    #include "ttstr.h"       // ttCStr
+    #include "ttwstr.h"      // ttCWStr
+    #include "ttmultibtn.h"  // ttCMultiBtn
 
-#ifndef BEGIN_TTMSG_MAP
-#include "ttcasemap.h"  // Macros for mapping Windows messages to functions
-#endif
+    #ifndef BEGIN_TTMSG_MAP
+        #include "ttcasemap.h"  // Macros for mapping Windows messages to functions
+    #endif
 
-#ifndef __DLG_ID__
-#ifdef _DEBUG
-#define DLG_ID(id) tt::CheckItemID(*this, id, #id, __FILE__, __func__, __LINE__)
-#else
-#define DLG_ID(id) id
-#endif
-#endif
+    #ifndef __DLG_ID__
+        #ifdef _DEBUG
+            #define DLG_ID(id) tt::CheckItemID(*this, id, #id, __FILE__, __func__, __LINE__)
+        #else
+            #define DLG_ID(id) id
+        #endif
+    #endif
 
 namespace ttpriv
 {
@@ -50,32 +47,45 @@ public:
     INT_PTR DoModal(HWND hwndParent);
     HWND    DoModeless(HWND hwndParent);  // Must use returned handle in IsDialogMessage for keys to work in dialog
 
-    virtual void OnBegin() {}   // called when dialog is initialized, override if you need to do something during dialog initialization
-    virtual void OnOK() {}      // called when IDOK button is pressed--call CancelEnd() before return to prevent closing the dialog
-    virtual void OnCancel() {}  // called when IDCANCEL button is pressed--call CancelEnd() before return to prevent closing the dialog
+    virtual void OnBegin() {
+    }  // called when dialog is initialized, override if you need to do something during dialog initialization
+    virtual void OnOK() {
+    }  // called when IDOK button is pressed--call CancelEnd() before return to prevent closing the dialog
+    virtual void OnCancel() {
+    }  // called when IDCANCEL button is pressed--call CancelEnd() before return to prevent closing the dialog
 
-    void CenterWindow(bool bCenterOnDesktop = false);                                // Call this in OnBegin to center dialog in owner window or desktop
-    void EnableShadeBtns();                                                          // call this in OnBegin to convert all buttons in the dialog to 3D shaded buttons
-    void SetBtnIcon(int idBtn, int idIcon, UINT nIconAlign = BS_LEFT);               // call this in OnBegin to add an Icon to a 3D shaded button
-    void SetBtnIcon(int idBtn, const char* pszIconName, UINT nIconAlign = BS_LEFT);  // call this in OnBegin to add an Icon to a 3D shaded button
+    void CenterWindow(
+        bool bCenterOnDesktop = false);  // Call this in OnBegin to center dialog in owner window or desktop
+    void EnableShadeBtns();  // call this in OnBegin to convert all buttons in the dialog to 3D shaded buttons
+    void SetBtnIcon(int idBtn, int idIcon,
+                    UINT nIconAlign = BS_LEFT);  // call this in OnBegin to add an Icon to a 3D shaded button
+    void SetBtnIcon(int idBtn, const char* pszIconName,
+                    UINT nIconAlign = BS_LEFT);  // call this in OnBegin to add an Icon to a 3D shaded button
 
     void CancelEnd() { m_bCancelEnd = true; }  // call within OnEnd() to cancel ending the dialog
-    BOOL CloseDialog(size_t result = IDOK) { return (m_bModeless ? DestroyWindow(*this) : ::EndDialog(*this, (int) result)); }
+    BOOL CloseDialog(size_t result = IDOK)
+    {
+        return (m_bModeless ? DestroyWindow(*this) : ::EndDialog(*this, (int) result));
+    }
 
     HWND GetDlgItem(int id) const { return ::GetDlgItem(m_hwnd, (int) id); }
     int  GetControlTextLength(int id) const { return ::GetWindowTextLengthA(GetDlgItem(id)); }
     BOOL GetControlRect(int id, RECT* prc) const { return ::GetWindowRect(GetDlgItem(id), prc); }
 
-    void GetControlText(int id, char* pszText, int cchMax = MAX_PATH) const { (void) ::GetWindowTextA(GetDlgItem(id),
-                                                                                                      pszText, cchMax); }
+    void GetControlText(int id, char* pszText, int cchMax = MAX_PATH) const
+    {
+        (void) ::GetWindowTextA(GetDlgItem(id), pszText, cchMax);
+    }
     void GetControlText(int id, ttCStr* pcsz) const { pcsz->GetWndText(GetDlgItem(id)); }
     void SetControlText(int id, const char* pszText) const
     {
         (void) ::SetWindowTextA(GetDlgItem(id), pszText ? pszText : "");
     }
 
-    void GetControlText(int id, wchar_t* pwszText, int cchMax = MAX_PATH) const { (void) ::GetWindowTextW(GetDlgItem(id),
-                                                                                                          pwszText, cchMax); }
+    void GetControlText(int id, wchar_t* pwszText, int cchMax = MAX_PATH) const
+    {
+        (void) ::GetWindowTextW(GetDlgItem(id), pwszText, cchMax);
+    }
     void GetControlText(int id, ttCWStr* pcsz) const { pcsz->GetWndText(GetDlgItem(id)); }
     void SetControlText(int id, const wchar_t* pwszText) const
     {
@@ -105,11 +115,23 @@ public:
         return (HICON)::SendMessageA(m_hwnd, WM_SETICON, bBigIcon, (LPARAM) hIcon);
     }
 
-    LRESULT SendItemMsg(int id, UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::SendMessageA(GetDlgItem(id), msg, wParam, lParam); }
-    LRESULT PostItemMsg(int id, UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::PostMessageA(GetDlgItem(id), msg, wParam, lParam); }
+    LRESULT SendItemMsg(int id, UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
+    {
+        return ::SendMessageA(GetDlgItem(id), msg, wParam, lParam);
+    }
+    LRESULT PostItemMsg(int id, UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
+    {
+        return ::PostMessageA(GetDlgItem(id), msg, wParam, lParam);
+    }
 
-    LRESULT SendMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::SendMessageA(*this, msg, wParam, lParam); }
-    LRESULT PostMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::PostMessageA(*this, msg, wParam, lParam); }
+    LRESULT SendMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
+    {
+        return ::SendMessageA(*this, msg, wParam, lParam);
+    }
+    LRESULT PostMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
+    {
+        return ::PostMessageA(*this, msg, wParam, lParam);
+    }
 
     void SetFocus(int idControl) const { ::SetFocus(GetDlgItem(idControl)); }
 
@@ -119,10 +141,13 @@ public:
     void ttDDX_Text(int id, ttCStr& csz) { (m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz)); }
     void ttDDX_Text(int id, ttCWStr& csz) { (m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz)); }
     void ttDDX_Check(int id, bool& bFlag) { (m_bInitializing ? SetCheck(id, bFlag) : (void) (bFlag = GetCheck(id))); }
-    void ttDDX_Int(int id, ptrdiff_t* pVal) { (m_bInitializing ? SetControlInteger(id, *pVal) : (void) (*pVal = GetControlInteger(id))); }
+    void ttDDX_Int(int id, ptrdiff_t* pVal)
+    {
+        (m_bInitializing ? SetControlInteger(id, *pVal) : (void) (*pVal = GetControlInteger(id)));
+    }
 
     HWND GetParent() { return m_hwndParent; }
-    operator HWND() const { return m_hwnd; }
+         operator HWND() const { return m_hwnd; }
 
 protected:
     // BEGIN_TTCMD_MAP in ttcasemap.h will override this
@@ -212,8 +237,11 @@ public:
         ttASSERT(m_hwnd);
         return ::GetWindowTextW(m_hwnd, pwsz, cchMax);
     }
-    inline LRESULT GetLBText(wchar_t* pwsz, LRESULT iSel) const { return SendMessageW(CB_GETLBTEXT, iSel, (LPARAM) pwsz); }
-    inline void    SetText(const wchar_t* pwsz) const
+    inline LRESULT GetLBText(wchar_t* pwsz, LRESULT iSel) const
+    {
+        return SendMessageW(CB_GETLBTEXT, iSel, (LPARAM) pwsz);
+    }
+    inline void SetText(const wchar_t* pwsz) const
     {
         ttASSERT(m_hwnd);
         ttASSERT(pwsz);
@@ -267,9 +295,12 @@ public:
 
     LRESULT GetCurSel() const { return SendMessage(CB_GETCURSEL); }
     LRESULT SetCurSel(WPARAM index = 0) const { return SendMessage(CB_SETCURSEL, index); }
-    LRESULT GetEditSel(DWORD* pStart, DWORD* pEnd) const { return SendMessage(CB_GETEDITSEL, (WPARAM) pStart, (LPARAM) pEnd); }
-    void    SetEditSel(int iStart, int iEnd) const { (void) SendMessage(CB_SETEDITSEL, 0, MAKELPARAM(iStart, iEnd)); }
-    void    SelectEditContol(void) const { SendMessage(CB_SETEDITSEL, 0, MAKELPARAM(0, -1)); }
+    LRESULT GetEditSel(DWORD* pStart, DWORD* pEnd) const
+    {
+        return SendMessage(CB_GETEDITSEL, (WPARAM) pStart, (LPARAM) pEnd);
+    }
+    void SetEditSel(int iStart, int iEnd) const { (void) SendMessage(CB_SETEDITSEL, 0, MAKELPARAM(iStart, iEnd)); }
+    void SelectEditContol(void) const { SendMessage(CB_SETEDITSEL, 0, MAKELPARAM(0, -1)); }
 
     LRESULT FindString(const char* pszString, int iStart = -1) const
     {
@@ -346,7 +377,10 @@ public:
     void Initialize(HWND hdlg, int id) { m_hwnd = ::GetDlgItem(hdlg, id); }
     void Attach(HWND hwndCtrl) { m_hwnd = hwndCtrl; }
 
-    LRESULT SendMessageA(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::SendMessageA(m_hwnd, msg, wParam, lParam); }
+    LRESULT SendMessageA(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
+    {
+        return ::SendMessageA(m_hwnd, msg, wParam, lParam);
+    }
     LRESULT SendMessageW(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
     {
         ttASSERT(m_hwnd);
@@ -355,12 +389,27 @@ public:
 
     void Enable(BOOL fEnable = TRUE) const { EnableWindow(m_hwnd, fEnable); }
 
-    LRESULT GetTextLength(int index = -1) const { return SendMessageA(LB_GETTEXTLEN, (index == -1) ? GetCurSel() : index); }
+    LRESULT GetTextLength(int index = -1) const
+    {
+        return SendMessageA(LB_GETTEXTLEN, (index == -1) ? GetCurSel() : index);
+    }
 
-    LRESULT GetText(char* psz, int index = -1) const { return SendMessageA(LB_GETTEXT, (index == -1) ? GetCurSel() : index, (LPARAM) psz); }
-    LRESULT GetText(wchar_t* pwsz, int index = -1) const { return SendMessageW(LB_GETTEXT, (index == -1) ? GetCurSel() : index, (LPARAM) pwsz); }
-    void    GetText(ttCStr* pcsz, int index = -1) const { pcsz->GetListBoxText(*this, (index == -1) ? GetCurSel() : index); }
-    void    GetText(ttCWStr* pcsz, int index = -1) const { pcsz->GetListBoxText(*this, (index == -1) ? GetCurSel() : index); }
+    LRESULT GetText(char* psz, int index = -1) const
+    {
+        return SendMessageA(LB_GETTEXT, (index == -1) ? GetCurSel() : index, (LPARAM) psz);
+    }
+    LRESULT GetText(wchar_t* pwsz, int index = -1) const
+    {
+        return SendMessageW(LB_GETTEXT, (index == -1) ? GetCurSel() : index, (LPARAM) pwsz);
+    }
+    void GetText(ttCStr* pcsz, int index = -1) const
+    {
+        pcsz->GetListBoxText(*this, (index == -1) ? GetCurSel() : index);
+    }
+    void GetText(ttCWStr* pcsz, int index = -1) const
+    {
+        pcsz->GetListBoxText(*this, (index == -1) ? GetCurSel() : index);
+    }
 
     LRESULT GetCount() const { return SendMessage(LB_GETCOUNT); }
     LRESULT GetSelCount() const
@@ -372,14 +421,17 @@ public:
     void Reset() const { SendMessage(LB_RESETCONTENT); }
     void SetCount(int cItems)
     {
-#ifdef _DEBUG
+    #ifdef _DEBUG
         LRESULT result =
-#endif
+    #endif
             SendMessage(LB_SETCOUNT, (WPARAM) cItems);
         ttASSERT_MSG(result != LB_ERR, "SetCount failed. Does listbox have LBS_NODATA style?");
     }
 
-    void SetFont(HFONT hfont, bool fRedraw = false) { SendMessageA(WM_SETFONT, (WPARAM) hfont, (LPARAM)(fRedraw ? TRUE : FALSE)); }
+    void SetFont(HFONT hfont, bool fRedraw = false)
+    {
+        SendMessageA(WM_SETFONT, (WPARAM) hfont, (LPARAM)(fRedraw ? TRUE : FALSE));
+    }
 
     LRESULT Add(const char* psz) const
     {
@@ -409,10 +461,7 @@ public:
             SendMessageW(LB_SETITEMDATA, index, data);
         return index;
     }
-    LRESULT AddString(const char* psz) const
-    {
-        return psz ? SendMessageA(LB_ADDSTRING, 0, (LPARAM) psz) : LB_ERR;
-    }
+    LRESULT AddString(const char* psz) const { return psz ? SendMessageA(LB_ADDSTRING, 0, (LPARAM) psz) : LB_ERR; }
     LRESULT AddString(const wchar_t* pwsz) const
     {
         return pwsz ? SendMessageW(LB_ADDSTRING, 0, (LPARAM) pwsz) : LB_ERR;
@@ -500,7 +549,7 @@ public:
     void DisableRedraw(void) { SendMessage(WM_SETREDRAW, FALSE); }
     void EnableRedraw(void) { SendMessage(WM_SETREDRAW, TRUE); }
 
-    operator HWND() const { return m_hwnd; }
+         operator HWND() const { return m_hwnd; }
     void operator+=(const char* psz) const { SendMessageA(LB_ADDSTRING, 0, (LPARAM) psz); }
 
     HWND m_hwnd;
@@ -556,4 +605,3 @@ public:
 };  // end of ttCListView
 
 #endif  // defined(_WIN32)
-#endif  // __TTLIB_TTCDLG_H__

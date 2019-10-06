@@ -19,10 +19,9 @@
 //
 //      %kd - formats an integer with commas. I.e., 54321 would be formatted as 54,321
 //      %kq - outputs quotation marks around the string
-//      %ks - adds a 's' to the current buffer if the integer is zero or greater then 1, e.g., printf("item%ks", cItems);
-//      %kS - adds a 's' to the current buffer if the __int64 is zero or greater then 1
-//      %kt - formats a size_t value with commas
-//      %ku - formats an unsigned integer with commas
+//      %ks - adds a 's' to the current buffer if the integer is zero or greater then 1, e.g., printf("item%ks",
+//      cItems); %kS - adds a 's' to the current buffer if the __int64 is zero or greater then 1 %kt - formats a size_t
+//      value with commas %ku - formats an unsigned integer with commas
 
 //      %kI64d -- handles int64_t, adding commas if needed
 //      %kI64u -- handles uint64_t, adding commas if needed
@@ -34,15 +33,12 @@
 
 #pragma once
 
-#ifndef __TTLIB_CWSTR_H__
-#define __TTLIB_CWSTR_H__
-
 #include "ttheap.h"   // ttCHeap
 #include "ttdebug.h"  // ttASSERT macros
 #include "ttstr.h"    // ttCStr
 
 #if defined(_WX_DEFS_H_)
-#include <wx/string.h>
+    #include <wx/string.h>
 #endif
 
 class ttCWStr
@@ -59,10 +55,7 @@ public:
             CopyNarrow(psz);
     }
 #if defined(_WX_DEFS_H_)
-    ttCWStr(const wxString str)
-    {
-        m_psz = ttStrDup(str.wc_str());
-    }
+    ttCWStr(const wxString str) { m_psz = ttStrDup(str.wc_str()); }
 #endif
 #if defined(_WIN32)
     ttCWStr(HWND hwnd)
@@ -80,8 +73,11 @@ public:
 
     // Method naming conventions are lower camel case when matching tt:: namespace functions
 
-    wchar_t* FindExt(const wchar_t* pszExt) { return (wchar_t*) ttFindExt(m_psz, pszExt); }  // find a specific filename extension
-    wchar_t* FindExt() const;                                                                // find any extension
+    wchar_t* FindExt(const wchar_t* pszExt)
+    {
+        return (wchar_t*) ttFindExt(m_psz, pszExt);
+    }                          // find a specific filename extension
+    wchar_t* FindExt() const;  // find any extension
     wchar_t* FindStr(const wchar_t* psz) { return ttStrStr(m_psz, psz); }
     wchar_t* FindStrI(const wchar_t* psz) { return ttStrStrI(m_psz, psz); }
     wchar_t* FindChar(wchar_t ch) { return ttStrChr(m_psz, ch); }
@@ -90,7 +86,10 @@ public:
     size_t StrByteLen() { return m_psz ? ttStrByteLen(m_psz) : 0; }  // length of string in bytes including 0 terminator
     int    StrCat(const wchar_t* psz);
     int    StrCopy(const wchar_t* psz);
-    size_t StrLen() { return m_psz ? ttStrLen(m_psz) : 0; }  // number of characters (use strByteLen() for buffer size calculations)
+    size_t StrLen()
+    {
+        return m_psz ? ttStrLen(m_psz) : 0;
+    }  // number of characters (use strByteLen() for buffer size calculations)
 
     bool IsSameStr(const wchar_t* psz) { return ttIsSameStr(m_psz, psz); }
     bool IsSameStrI(const wchar_t* psz) { return ttIsSameStrI(m_psz, psz); }
@@ -147,7 +146,8 @@ public:
     void MakeLower();
     void MakeUpper();
 
-    // if the first non whitespace character in pszString == chBegin, get everthing between chBegin and chEnd, otherwise get everything after the whitespace
+    // if the first non whitespace character in pszString == chBegin, get everthing between chBegin and chEnd, otherwise
+    // get everything after the whitespace
 
     wchar_t* GetString(const wchar_t* pszString, wchar_t chBegin, wchar_t chEnd);
 
@@ -155,9 +155,10 @@ public:
     wchar_t* GetBracketsString(const wchar_t* pszString) { return GetString(pszString, L'[', L']'); }
     wchar_t* GetParenthString(const wchar_t* pszString) { return GetString(pszString, L'(', L')'); }
 
-    wchar_t* GetQuotedString(const wchar_t* pszQuote);  // returns pointer to first character after closing quote (or nullptr if not a quoted string)
+    wchar_t* GetQuotedString(const wchar_t* pszQuote);  // returns pointer to first character after closing quote (or
+                                                        // nullptr if not a quoted string)
 
-    void cdecl printf(const wchar_t* pszFormat, ...);
+    void cdecl     printf(const wchar_t* pszFormat, ...);
     wchar_t* cdecl printfAppend(const wchar_t* pszFormat, ...);
 
     void   ReSize(size_t cbTotalSize);             // increase buffer size if needed
@@ -202,5 +203,3 @@ protected:
 
     wchar_t* m_psz;  // using this name instead of m_pwsz to make it easier to copy similar code form ttstr.cpp
 };
-
-#endif  // __TTLIB_CWSTR_H__

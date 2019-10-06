@@ -10,14 +10,11 @@
 
 #pragma once
 
-#ifndef __TTLIB_TTCWIN_H__
-#define __TTLIB_TTCWIN_H__
-
 #if defined(_WIN32)
 
-#ifndef BEGIN_TTMSG_MAP
-#include "ttcasemap.h"  // Macros for mapping Windows messages to functions
-#endif
+    #if !defined(BEGIN_TTMSG_MAP)
+        #include "ttcasemap.h"  // Macros for mapping Windows messages to functions
+    #endif
 
 namespace ttpriv
 {
@@ -86,15 +83,23 @@ public:
             m_pwc->hIconSm = hIcon;
     }
 
-    bool CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWND hwndParent = NULL, RECT* prc = NULL, HMENU hmenu = NULL);
+    bool CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWND hwndParent = NULL, RECT* prc = NULL,
+                   HMENU hmenu = NULL);
 
-    bool AttachWnd(HWND hwnd);        // attaches to a window not created by ttCWin, updates m_pszClassName, m_hwnd and m_hwndParent
+    bool AttachWnd(
+        HWND hwnd);  // attaches to a window not created by ttCWin, updates m_pszClassName, m_hwnd and m_hwndParent
     bool SubClass(HWND hwnd = NULL);  // if NULL, subclass our own window
 
     // Class functions
 
-    LRESULT SendMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::SendMessageA(*this, msg, wParam, lParam); }
-    LRESULT PostMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const { return ::PostMessageA(*this, msg, wParam, lParam); }
+    LRESULT SendMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
+    {
+        return ::SendMessageA(*this, msg, wParam, lParam);
+    }
+    LRESULT PostMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
+    {
+        return ::PostMessageA(*this, msg, wParam, lParam);
+    }
 
     void ShowWindow(int nCmdShow = SW_SHOW) { ::ShowWindow(*this, nCmdShow); }
 
@@ -124,8 +129,8 @@ protected:
     // Class members
     const char* m_pszClassName;  // class name of the window we created or attached to
 
-    HWND      m_hwnd;  // m_hwnd vs m_hWnd -- SDK/include, ATL and WTL use both variants. We're sticking with all lowercase.
-    HWND      m_hwndParent;
+    HWND m_hwnd;  // m_hwnd vs m_hWnd -- SDK/include, ATL and WTL use both variants. We're sticking with all lowercase.
+    HWND m_hwndParent;
     HINSTANCE m_hinst;  // instance used to create the class, can be used to load resources from the app
 
     WNDCLASSEXA* m_pwc;           // created in constructor, deleted by CreateWnd and AttachWnd
@@ -134,4 +139,3 @@ protected:
 };
 
 #endif  // defined(_WIN32)
-#endif  // __TTLIB_TTCWIN_H__

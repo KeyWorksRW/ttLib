@@ -8,13 +8,10 @@
 
 #pragma once
 
-#ifndef __TTLIB_KTIME_H__
-#define __TTLIB_KTIME_H__
-
 #if defined(_WIN32)
 
-#include "ttstr.h"    // ttCStr
-#include "ttdebug.h"  // ttASSERT macros
+    #include "ttstr.h"    // ttCStr
+    #include "ttdebug.h"  // ttASSERT macros
 
 // This is a header-only class.
 
@@ -53,8 +50,9 @@ public:
         return m_cszTime;
     }
     const char* GetFullFormat()
-    {                                              // full date/time
-        m_cszFull = GetDateFormat(DATE_LONGDATE);  // GetDateFormat() modifies m_cszFormatted, so we have to use a temporary
+    {  // full date/time
+        m_cszFull =
+            GetDateFormat(DATE_LONGDATE);  // GetDateFormat() modifies m_cszFormatted, so we have to use a temporary
         m_cszFull += ", ";
         m_cszFull += GetTimeFormat();
         return m_cszFull;
@@ -102,4 +100,3 @@ protected:
 };
 
 #endif  // !defined(_WIN32)
-#endif  // __TTLIB_KTIME_H__

@@ -8,9 +8,6 @@
 
 #pragma once
 
-#ifndef __TTLIB_FINDFILE_H__
-#define __TTLIB_FINDFILE_H__
-
 #if defined(_WIN32)
 
 /*
@@ -33,10 +30,11 @@ public:
     ttCFindFile(void) { m_hfind = INVALID_HANDLE_VALUE; }  // With this constructor, call NewPattern(...) to initialize
     ttCFindFile(const char* pszFilePattern)
     {
-        m_hfind = FindFirstFileExA(pszFilePattern, FindExInfoBasic, this, FindExSearchNameMatch, nullptr, FIND_FIRST_EX_LARGE_FETCH);
-#ifdef _DEBUG
+        m_hfind = FindFirstFileExA(pszFilePattern, FindExInfoBasic, this, FindExSearchNameMatch, nullptr,
+                                   FIND_FIRST_EX_LARGE_FETCH);
+    #ifdef _DEBUG
         m_pszFilename = cFileName;
-#endif
+    #endif
     }
     ~ttCFindFile()
     {
@@ -49,7 +47,8 @@ public:
     {
         if (m_hfind != INVALID_HANDLE_VALUE)
             FindClose(m_hfind);
-        m_hfind = FindFirstFileExA(pszFilePattern, FindExInfoBasic, this, FindExSearchNameMatch, nullptr, FIND_FIRST_EX_LARGE_FETCH);
+        m_hfind = FindFirstFileExA(pszFilePattern, FindExInfoBasic, this, FindExSearchNameMatch, nullptr,
+                                   FIND_FIRST_EX_LARGE_FETCH);
         return IsValid();
     }
 
@@ -73,7 +72,10 @@ public:
     char* FindLastChar(char ch) { return ttStrChrR(cFileName, ch); }
 
     size_t StrByteLen() { return ttStrByteLen(cFileName); }  // length of string in bytes including 0 terminator
-    size_t StrLen() { return ttStrLen(cFileName); }          // number of characters (use strByteLen() for buffer size calculations)
+    size_t StrLen()
+    {
+        return ttStrLen(cFileName);
+    }  // number of characters (use strByteLen() for buffer size calculations)
 
     bool IsSameStr(const char* psz) { return ttIsSameStr(cFileName, psz); }
     bool IsSameStrI(const char* psz) { return ttIsSameStrI(cFileName, psz); }
@@ -88,16 +90,21 @@ public:
 
     // Note that the two == operators are case insensitive since filenames on Windows are case insensitive
 
-    bool operator==(const char* psz) { return (IsEmpty()) ? false : ttIsSameStrI(cFileName, psz); }  // isSameStr will check for psz == null
-    bool operator==(char* psz) { return (IsEmpty()) ? false : ttIsSameStrI(cFileName, psz); }        // isSameStr will check for psz == null
+    bool operator==(const char* psz)
+    {
+        return (IsEmpty()) ? false : ttIsSameStrI(cFileName, psz);
+    }  // isSameStr will check for psz == null
+    bool operator==(char* psz)
+    {
+        return (IsEmpty()) ? false : ttIsSameStrI(cFileName, psz);
+    }  // isSameStr will check for psz == null
 
 protected:
-#ifdef _DEBUG
+    #ifdef _DEBUG
     char* m_pszFilename;
-#endif
+    #endif
 
     HANDLE m_hfind;
 };
 
 #endif  // defined(_WIN32)
-#endif  // __TTLIB_FINDFILE_H__

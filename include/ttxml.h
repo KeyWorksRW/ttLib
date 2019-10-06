@@ -14,9 +14,6 @@
 
 #pragma once
 
-#ifndef __TTLIB_KEYXML_H__
-#define __TTLIB_KEYXML_H__
-
 #include "ttheap.h"      // ttCHeap
 #include "tthashpair.h"  // ttCHashPair
 #include "ttarray.h"     // ttCArray
@@ -26,25 +23,23 @@
 class ttCParseXML;   // forward definition
 class ttCXMLBranch;  // forward definition
 
-// clang-format off
-#define PARSE_MINIMAL           0x00000000 // Unset the following flags.
-#define PARSE_PI                0x00000002 // Parse '<?...?>'
-#define PARSE_DOCTYPE           0x0000000  // Parse '<!DOCTYPE ...>' section, setting '[...]' as data member.
-#define PARSE_COMMENTS          0x00000008 // Parse <!--...-->'
-#define PARSE_CDATA             0x00000010 // Parse '<![CDATA[...]]>', and/or '<![INCLUDE[...]]>'
-#define PARSE_ESCAPES           0x00000020 // Not implemented.
-#define PARSE_TRIM_PCDATA       0x00000040 // Trim '>...<'
-#define PARSE_TRIM_ATTRIBUTE    0x00000080 // Trim 'foo="..."'.
-#define PARSE_TRIM_CDATA        0x00000100 // Trim '<![CDATA[...]]>', and/or '<![INCLUDE[...]]>'
-#define PARSE_TRIM_ENTITY       0x00000200 // Trim '<!ENTITY name ...>', etc.
-#define PARSE_TRIM_DOCTYPE      0x00000400 // Trim '<!DOCTYPE [...]>'
-#define PARSE_TRIM_COMMENT      0x00000800 // Trim <!--...-->'
-#define PARSE_NORMALIZE         0x00001000 // Normalize all entities that are flagged to be trimmed.
-#define PARSE_DTD               0x00002000 // If PARSE_DOCTYPE set, then parse whatever is in data member ('[...]').
-#define PARSE_DTD_ONLY          0x00004000 // If PARSE_DOCTYPE|PARSE_DTD set, then parse only '<!DOCTYPE [*]>'
-#define PARSE_DEFAULT           0x0000FFFF
-#define PARSE_DONT_SET          0x80000000
-// clang-format on
+#define PARSE_MINIMAL        0x00000000  // Unset the following flags.
+#define PARSE_PI             0x00000002  // Parse '<?...?>'
+#define PARSE_DOCTYPE        0x0000000   // Parse '<!DOCTYPE ...>' section, setting '[...]' as data member.
+#define PARSE_COMMENTS       0x00000008  // Parse <!--...-->'
+#define PARSE_CDATA          0x00000010  // Parse '<![CDATA[...]]>', and/or '<![INCLUDE[...]]>'
+#define PARSE_ESCAPES        0x00000020  // Not implemented.
+#define PARSE_TRIM_PCDATA    0x00000040  // Trim '>...<'
+#define PARSE_TRIM_ATTRIBUTE 0x00000080  // Trim 'foo="..."'.
+#define PARSE_TRIM_CDATA     0x00000100  // Trim '<![CDATA[...]]>', and/or '<![INCLUDE[...]]>'
+#define PARSE_TRIM_ENTITY    0x00000200  // Trim '<!ENTITY name ...>', etc.
+#define PARSE_TRIM_DOCTYPE   0x00000400  // Trim '<!DOCTYPE [...]>'
+#define PARSE_TRIM_COMMENT   0x00000800  // Trim <!--...-->'
+#define PARSE_NORMALIZE      0x00001000  // Normalize all entities that are flagged to be trimmed.
+#define PARSE_DTD            0x00002000  // If PARSE_DOCTYPE set, then parse whatever is in data member ('[...]').
+#define PARSE_DTD_ONLY       0x00004000  // If PARSE_DOCTYPE|PARSE_DTD set, then parse only '<!DOCTYPE [*]>'
+#define PARSE_DEFAULT        0x0000FFFF
+#define PARSE_DONT_SET       0x80000000
 
 namespace tt
 {
@@ -198,9 +193,9 @@ namespace tt
         // clang-format on
     };
 
+    // clang-format off
     enum XMLENTITY : size_t
     {
-        // clang-format off
         ENTITY_NULL,                        // An undifferentiated entity.
         ENTITY_ROOT,                        // A document tree's absolute root.
         ENTITY_ELEMENT,                     // E.g. '<...>'
@@ -214,8 +209,8 @@ namespace tt
         ENTITY_DTD_ATTLIST,                 // E.g. '<!ATTLIST ...>'.
         ENTITY_DTD_ELEMENT,                 // E.g. '<!ELEMENT ...>'.
         ENTITY_DTD_NOTATION                 // E.g. '<!NOTATION ...>'.
-        // clang-format on
     };
+    // clang-format on
 
     typedef struct
     {
@@ -268,9 +263,12 @@ public:
     ttCXMLBranch* FindFirstElement(const char* pszName);
     ttCXMLBranch* FindNextElement(const char* pszName);  // Must call FindFirstElement() before this
 
-    // Use GetAttribute() for the current branch, FindFirstAttribute to find a child branch containing the specified attribute/value
+    // Use GetAttribute() for the current branch, FindFirstAttribute to find a child branch containing the specified
+    // attribute/value
 
-    ttCXMLBranch* FindFirstAttribute(const char* pszAttribute, const char* pszValue = nullptr);  // find first attribute with specified name and (optional) value
+    ttCXMLBranch* FindFirstAttribute(
+        const char* pszAttribute,
+        const char* pszValue = nullptr);  // find first attribute with specified name and (optional) value
 
     const char*  GetAttribute(const char* pszName) const;
     tt::XMLATTR* GetAttributeAt(size_t i)
@@ -288,13 +286,13 @@ public:
     const char*      GetData() { return pszData ? pszData : ""; }
     tt::HTML_ELEMENT GetElementTag() const { return element; }
     const char*      GetName() const { return pszName ? pszName : ""; }
-    ttCXMLBranch*    GetSiblingAt(size_t i) { return (!IsRoot() && i < GetSiblingsCount()) ? parent->aChildren[i] : NULL; }
-    size_t           GetSiblingNumber();
-    size_t           GetSiblingsCount() const { return (!IsRoot()) ? parent->cChildren : 0; }
-    tt::XMLENTITY    GetType() const { return type; }
-    bool             RemoveChildAt(size_t i);
-    bool             ReplaceAttributeValue(ttCParseXML* pxml, const char* pszName, const char* pszNewValue);
-    const char*      GetFirstChildData()
+    ttCXMLBranch* GetSiblingAt(size_t i) { return (!IsRoot() && i < GetSiblingsCount()) ? parent->aChildren[i] : NULL; }
+    size_t        GetSiblingNumber();
+    size_t        GetSiblingsCount() const { return (!IsRoot()) ? parent->cChildren : 0; }
+    tt::XMLENTITY GetType() const { return type; }
+    bool          RemoveChildAt(size_t i);
+    bool          ReplaceAttributeValue(ttCParseXML* pxml, const char* pszName, const char* pszNewValue);
+    const char*   GetFirstChildData()
     {
         if (cChildren)
             return GetChildAt(0)->GetData();
@@ -347,7 +345,8 @@ public:
         return m_pRoot;
     }
     ttCXMLBranch* AddBranch(ttCXMLBranch* pParent, const char* pszBranchName, tt::XMLENTITY eType = tt::ENTITY_ELEMENT);
-    void          AddAttribute(ttCXMLBranch* pBranch, const char* pszName, const char* pszValue, size_t iGrow = 4 /* estimated new attributes */);
+    void          AddAttribute(ttCXMLBranch* pBranch, const char* pszName, const char* pszValue,
+                               size_t iGrow = 4 /* estimated new attributes */);
     ttCXMLBranch* AddDataChild(ttCXMLBranch* pParent, const char* pszName, const char* pszData);
     ttCXMLBranch* GraftBranch(ttCXMLBranch* pParent, tt::XMLENTITY eType = tt::ENTITY_ELEMENT);
 
@@ -369,9 +368,9 @@ public:
     ttCXMLBranch* GetObjectTag(size_t pos) { return m_aObjectTags[pos]; }
 
     char* AllocateBuffer(size_t cb) { return (char*) ttMalloc(cb); }
-    void  AllocateStringBuffers(ttCXMLBranch* pBranch = nullptr);  // convert all strings to separately allocated buffers
-    void  FreeBuffer(char* pszBuffer) { ttFree(pszBuffer); }
-    bool  isAllocatedStrings() { return m_bAllocatedStrings; }
+    void AllocateStringBuffers(ttCXMLBranch* pBranch = nullptr);  // convert all strings to separately allocated buffers
+    void FreeBuffer(char* pszBuffer) { ttFree(pszBuffer); }
+    bool isAllocatedStrings() { return m_bAllocatedStrings; }
 
 protected:
     // Class functions
@@ -408,5 +407,3 @@ protected:
     ttCStr  m_cszDocType;
     ttCFile m_kf;
 };
-
-#endif  // __TTLIB_KEYXML_H__

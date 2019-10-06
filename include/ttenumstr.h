@@ -18,25 +18,23 @@
 
 #pragma once
 
-#ifndef __TTLIB_CENUMSTR_H__
-#define __TTLIB_CENUMSTR_H__
-
 #include "ttstr.h"  // ttCStr
 
 class ttCEnumStr
 {
 public:
     ttCEnumStr(const char* psz, char chSeparator = ';');  // This will make a copy of psz
-    ttCEnumStr();                                         // If using this constructor, you must call SetNewStr() before calling Enum()
+    ttCEnumStr();  // If using this constructor, you must call SetNewStr() before calling Enum()
 
     // Class functions
 
-    bool Enum(const char** ppszCurrent = nullptr);  // if no more substrings, *ppszCurrent (if non-null) will be set to nullptr
-    void ResetEnum(char chSeparator = ';');         // Call this to reset the enumeration to the beginning of the master string
+    bool Enum(const char** ppszCurrent =
+                  nullptr);                  // if no more substrings, *ppszCurrent (if non-null) will be set to nullptr
+    void ResetEnum(char chSeparator = ';');  // Call this to reset the enumeration to the beginning of the master string
     void SetNewStr(const char* psz, char chSeparator = ';');
 
     char* GetCurrent() const { return m_pszCur; }  // value is undefined if Enum() returned false
-    operator char*() const { return m_pszCur; }
+          operator char*() const { return m_pszCur; }
 
     bool operator==(const char* psz) { return ttIsSameStr(m_pszCur, psz); }
     bool operator==(char* psz) { return ttIsSameStr(m_pszCur, psz); }
@@ -49,5 +47,3 @@ protected:
     char*  m_pszEnd;
     char   m_chSeparator;
 };
-
-#endif  // __TTLIB_CENUMSTR_H__

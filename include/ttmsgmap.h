@@ -52,112 +52,145 @@
 
 #pragma once
 
-#ifndef __TTLIB_TTMSG_MAP_H__
-#define __TTLIB_TTMSG_MAP_H__
-
 // lResult is set to zero before OnMsgMap is called, so only change if non-zero result is needed
-#define BEGIN_TTMSG_MAP() bool OnMsgMap(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lResult) { uMsg; wParam; lParam; lResult;
-#define END_TTMSG_MAP() return false; }
-
-#define TTMSG_BUTTON_CLICK(id, func) \
-    if (uMsg == WM_COMMAND && HIWORD(wParam) == BN_CLICKED && LOWORD(wParam) == id) { \
-        func(); \
-        return true; \
+#define BEGIN_TTMSG_MAP()                                                    \
+    bool OnMsgMap(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lResult) \
+    {                                                                        \
+        uMsg;                                                                \
+        wParam;                                                              \
+        lParam;                                                              \
+        lResult;
+#define END_TTMSG_MAP() \
+    return false;       \
     }
 
-#define TTMSG_EDIT_CHANGE(id, func) \
-    if (uMsg == WM_COMMAND && (HIWORD(wParam) == EN_CHANGE || HIWORD(wParam) == CBN_EDITCHANGE) && LOWORD(wParam) == id) { \
-        func(); \
-        return true; \
+#define TTMSG_BUTTON_CLICK(id, func)                                                \
+    if (uMsg == WM_COMMAND && HIWORD(wParam) == BN_CLICKED && LOWORD(wParam) == id) \
+    {                                                                               \
+        func();                                                                     \
+        return true;                                                                \
     }
 
-#define TTMSG_SEL_CHANGE(id, func) \
-    if (uMsg == WM_COMMAND && (HIWORD(wParam) == LBN_SELCHANGE || HIWORD(wParam) == CBN_SELCHANGE) && LOWORD(wParam) == id) { \
-        func(); \
-        return true; \
+#define TTMSG_EDIT_CHANGE(id, func)                                                                \
+    if (uMsg == WM_COMMAND && (HIWORD(wParam) == EN_CHANGE || HIWORD(wParam) == CBN_EDITCHANGE) && \
+        LOWORD(wParam) == id)                                                                      \
+    {                                                                                              \
+        func();                                                                                    \
+        return true;                                                                               \
     }
 
-#define TTMSG_LISTBOX_DBL_CLICK(id, func) \
-    if (uMsg == WM_COMMAND && HIWORD(wParam) == LBN_DBLCLK && LOWORD(wParam) == id) { \
-        func(); \
-        return true; \
+#define TTMSG_SEL_CHANGE(id, func)                                                                    \
+    if (uMsg == WM_COMMAND && (HIWORD(wParam) == LBN_SELCHANGE || HIWORD(wParam) == CBN_SELCHANGE) && \
+        LOWORD(wParam) == id)                                                                         \
+    {                                                                                                 \
+        func();                                                                                       \
+        return true;                                                                                  \
+    }
+
+#define TTMSG_LISTBOX_DBL_CLICK(id, func)                                           \
+    if (uMsg == WM_COMMAND && HIWORD(wParam) == LBN_DBLCLK && LOWORD(wParam) == id) \
+    {                                                                               \
+        func();                                                                     \
+        return true;                                                                \
     }
 
 // Use this for any WM_COMMAND messages not handled above. See TTCMD below for placing these in a switch statement
-#define TTMSG_COMMAND(id, func) \
-    if (uMsg == WM_COMMAND && LOWORD(wParam) == id) { \
+#define TTMSG_COMMAND(id, func)                             \
+    if (uMsg == WM_COMMAND && LOWORD(wParam) == id)         \
+    {                                                       \
         func((UINT) HIWORD(wParam), (UINT) LOWORD(wParam)); \
-        return true; \
+        return true;                                        \
     }
 
-#define TTMSG_NOTIFY(id, func) \
-    if (uMsg == WM_NOTIFY && ((NMHDR*) lParam)->idFrom == (UINT) id) { \
-        func((NMHDR*) lParam); \
-        return true; \
+#define TTMSG_NOTIFY(id, func)                                       \
+    if (uMsg == WM_NOTIFY && ((NMHDR*) lParam)->idFrom == (UINT) id) \
+    {                                                                \
+        func((NMHDR*) lParam);                                       \
+        return true;                                                 \
     }
 
 #define TTMSG_PAINT(func) \
-    if (uMsg == WM_PAINT) { \
-        func(); \
-        return true; \
+    if (uMsg == WM_PAINT) \
+    {                     \
+        func();           \
+        return true;      \
     }
 
 #define TTMSG_CLOSE(func) \
-    if (uMsg == WM_CLOSE) { \
-        func(); \
-        return true; \
+    if (uMsg == WM_CLOSE) \
+    {                     \
+        func();           \
+        return true;      \
     }
 
 // LRESULT func(CREATESTRUCT* pcs)
-#define TTMSG_CREATE(func) \
-    if (uMsg == WM_CREATE) { \
+#define TTMSG_CREATE(func)                      \
+    if (uMsg == WM_CREATE)                      \
+    {                                           \
         lResult = func((CREATESTRUCT*) lParam); \
-        return true; \
+        return true;                            \
     }
 
 // LRESULT func(DRAWITEMSTRUCT* pdis)
-#define TTMSG_DRAWITEM(func) \
-    if (uMsg == WM_DRAWITEM) { \
+#define TTMSG_DRAWITEM(func)                      \
+    if (uMsg == WM_DRAWITEM)                      \
+    {                                             \
         lResult = func((DRAWITEMSTRUCT*) lParam); \
-        return true; \
+        return true;                              \
     }
 
 #define TTMSG_DESTROY(func) \
-    if (uMsg == WM_DESTROY) { \
-        func(); \
-        return true; \
+    if (uMsg == WM_DESTROY) \
+    {                       \
+        func();             \
+        return true;        \
     }
 
 // Use this for any WM_ messages not handled above
 // LRESULT func(WPARAM wParam, LPARAM lParam)
-#define TTMSG(msg, func) \
-    if (uMsg == msg) { \
+#define TTMSG(msg, func)                \
+    if (uMsg == msg)                    \
+    {                                   \
         lResult = func(wParam, lParam); \
-        return true; \
+        return true;                    \
     }
 
 // Use the following if you have a large number of commands to process. The switch statement will typically result in
 // better performance with a large number of items then the if statements used above.
 
 #ifndef __TTLIB_TTMSG_SWITCH__
-#define __TTLIB_TTMSG_SWITCH__
+    #define __TTLIB_TTMSG_SWITCH__
 
-    #define BEGIN_TTCMD_SWITCH() if (uMsg == WM_COMMAND) { switch (LOWORD(wParam)) {
-    #define END_TTCMD_SWITCH() default: return false; } }
+    #define BEGIN_TTCMD_SWITCH()    \
+        if (uMsg == WM_COMMAND)     \
+        {                           \
+            switch (LOWORD(wParam)) \
+            {
+    #define END_TTCMD_SWITCH() \
+        default:               \
+            return false;      \
+            }                  \
+            }
 
-    #define ttCASE_CMD(id, func)    \
-        case id: \
-            func(); \
+    #define ttCASE_CMD(id, func) \
+        case id:                 \
+            func();              \
             return true;
 
-    #define BEGIN_TTMSG_SWITCH() { switch (uMsg) {
-    #define END_TTMSG_SWITCH() default: return false; } }
+    #define BEGIN_TTMSG_SWITCH() \
+        {                        \
+            switch (uMsg)        \
+            {
+    #define END_TTMSG_SWITCH() \
+        default:               \
+            return false;      \
+            }                  \
+            }
 
     // LRESULT func(WPARAM wParam, LPARAM lParam)
-    #define ttCASE_MSG(msg, func) \
-        case msg: \
+    #define ttCASE_MSG(msg, func)           \
+        case msg:                           \
             lResult = func(wParam, lParam); \
             return true;
 
 #endif  // __TTLIB_TTMSG_SWITCH__
-#endif  // __TTLIB_TTMSG_MAP_H__

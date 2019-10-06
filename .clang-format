@@ -92,6 +92,7 @@ SpacesInSquareBrackets: false
 Standard:        Cpp11
 TabWidth:        4
 UseTab:          Never
+# clang-format 9 options
+AlignConsecutiveMacros: true
+IndentPPDirectives: BeforeHash
 ...
-# IndentPPDirectives: BeforeHash
-# AlignConsecutiveMacros: true

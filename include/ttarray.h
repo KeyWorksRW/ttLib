@@ -8,16 +8,12 @@
 
 #pragma once
 
-#ifndef __TTLIB_TTARRAY_H__
-#define __TTLIB_TTARRAY_H__
-
 #include "ttheap.h"   // ttCHeap
 #include "ttdebug.h"  // ttASSERT macros
 
 // A simple header-only array of any type
 
-template<typename T>
-class ttCArray
+template<typename T> class ttCArray
 {
 public:
     ttCArray()
@@ -36,9 +32,8 @@ public:
         if (m_cItems >= m_cAllocated)
         {
             m_cAllocated += 8;  // allocate room for 8 items at a time
-            m_aData = (T*) (m_aData ?
-                                ttReAlloc(m_aData, m_cAllocated * sizeof(T)) :
-                                ttMalloc(m_cAllocated * sizeof(T)));
+            m_aData =
+                (T*) (m_aData ? ttReAlloc(m_aData, m_cAllocated * sizeof(T)) : ttMalloc(m_cAllocated * sizeof(T)));
         }
         m_aData[m_cItems++] = t;
     }
@@ -48,9 +43,8 @@ public:
         if (m_cItems >= m_cAllocated)
         {
             m_cAllocated += 8;  // allocate room for 8 items at a time
-            m_aData = (T*) (m_aData ?
-                                ttReAlloc(m_aData, m_cAllocated * sizeof(T)) :
-                                ttMalloc(m_cAllocated * sizeof(T)));
+            m_aData =
+                (T*) (m_aData ? ttReAlloc(m_aData, m_cAllocated * sizeof(T)) : ttMalloc(m_cAllocated * sizeof(T)));
         }
         return m_cItems++;
     }
@@ -112,5 +106,3 @@ private:
     size_t m_cAllocated;
     T*     m_aData;
 };
-
-#endif  // __TTLIB_TTARRAY_H__

@@ -8,9 +8,6 @@
 
 #pragma once
 
-#ifndef __TTLIB_TTMAP_H__
-#define __TTLIB_TTMAP_H__
-
 #include "ttheap.h"  // ttCHeap
 
 // Caution! You MUST use ttCMap::ttMalloc or ttCMap::ttStrDup if you want allocated memory to be freed in the
@@ -19,8 +16,7 @@
 // On Windows, this class uses a sub-heap for memory allocation. When the class is deleted, the entire sub-heap is
 // deleted, rather then walking through and deleting each individual allocation.
 
-template<class TKey, class TVal>
-class ttCMap
+template<class TKey, class TVal> class ttCMap
 {
 public:
     typedef struct
@@ -131,5 +127,3 @@ private:
     int  m_cAllocated;
     bool m_bCallersHeap;
 };
-
-#endif  // __TTLIB_TTMAP_H__

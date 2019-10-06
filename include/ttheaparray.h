@@ -15,16 +15,12 @@
 
 #pragma once
 
-#ifndef __TTLIB_TTHEAPARRAY_H__
-#define __TTLIB_TTHEAPARRAY_H__
-
 #include "ttheap.h"   // ttCHeap
 #include "ttdebug.h"  // ttASSERT macros
 
 // A simple header-only array of any type
 
-template<typename T>
-class ttCHeapArray : public ttCHeap
+template<typename T> class ttCHeapArray : public ttCHeap
 {
 public:
     ttCHeapArray()
@@ -40,7 +36,8 @@ public:
         if (m_cItems >= m_cAllocated)
         {
             m_cAllocated += m_cGrowth;  // allocate room for m_cGrowth items at a time
-            m_aData = (T*) (m_aData ? ttRealloc(m_aData, m_cAllocated * sizeof(T)) : ttMalloc(m_cAllocated * sizeof(T)));
+            m_aData =
+                (T*) (m_aData ? ttRealloc(m_aData, m_cAllocated * sizeof(T)) : ttMalloc(m_cAllocated * sizeof(T)));
         }
         m_aData[m_cItems++] = t;
     }
@@ -50,7 +47,8 @@ public:
         if (m_cItems >= m_cAllocated)
         {
             m_cAllocated += m_cGrowth;  // allocate room for m_cGrowth items at a time
-            m_aData = (T*) (m_aData ? ttReAlloc(m_aData, m_cAllocated * sizeof(T)) : ttMalloc(m_cAllocated * sizeof(T)));
+            m_aData =
+                (T*) (m_aData ? ttReAlloc(m_aData, m_cAllocated * sizeof(T)) : ttMalloc(m_cAllocated * sizeof(T)));
         }
         return m_cItems++;
     }
@@ -113,5 +111,3 @@ protected:
     size_t m_cGrowth;  // number of items to allocate in advance
     T*     m_aData;
 };
-
-#endif  // __TTLIB_TTHEAPARRAY_H__

@@ -10,9 +10,6 @@
 
 #pragma once
 
-#ifndef __TTLIB_CRITSECTION_H__
-#define __TTLIB_CRITSECTION_H__
-
 class ttCCritSection
 {
 public:
@@ -23,10 +20,7 @@ public:
         memset(&m_cs, 0, sizeof(CRITICAL_SECTION));
         InitializeCriticalSection(&m_cs);
     };
-    ~ttCCritSection()
-    {
-        DeleteCriticalSection(&m_cs);
-    };
+    ~ttCCritSection() { DeleteCriticalSection(&m_cs); };
 
     void Lock() { EnterCriticalSection(&m_cs); }
     void Unlock() { LeaveCriticalSection(&m_cs); }
@@ -89,5 +83,3 @@ public:
 
     ttCCritSection* m_pcs;
 };
-
-#endif  // __TTLIB_CRITSECTION_H__

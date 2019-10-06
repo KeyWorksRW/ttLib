@@ -22,7 +22,7 @@
 // in Windows is a pointer, but you do NOT use standard memory routines to allocate/FreeAlloc it the way HDIB is being
 // used here. The HDIB should be replaced with a void* since it gets cast to different structure pointers.
 
-#define HDIB HANDLE
+    #define HDIB HANDLE
 
 class ttCDib
 {

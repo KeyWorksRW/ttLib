@@ -13,9 +13,6 @@
 
 #pragma once
 
-#ifndef __TTLIB_STRLIST_H__
-#define __TTLIB_STRLIST_H__
-
 #include "ttheap.h"      // ttCHeap
 #include "tthashpair.h"  // ttCHashPair
 #include "ttstr.h"       // ttCStr
@@ -211,8 +208,11 @@ public:
     void   Add(const char* pszKey, ptrdiff_t newVal);
     bool   Add(size_t posKey, ptrdiff_t newVal);  // Add vals to an existing key
     bool   FindKey(const char* pszKey, size_t* ppos = nullptr) const;
-    size_t GetCount() const { return m_cItems; }  // returns the number of keys actually added (duplicates are not added)
-    bool   InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
+    size_t GetCount() const
+    {
+        return m_cItems;
+    }  // returns the number of keys actually added (duplicates are not added)
+    bool InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
 
     void Delete();  // deletes all strings
 
@@ -270,7 +270,10 @@ public:
 
     const char* Add(size_t id, const char* psz);  // returns pointer to the duplicated string, not the original
     const char* Find(size_t id);
-    size_t      GetCount() const { return m_cItems; }  // returns the number of unique id/string pairs added (duplicates ids are not added)
+    size_t      GetCount() const
+    {
+        return m_cItems;
+    }  // returns the number of unique id/string pairs added (duplicates ids are not added)
 
     void Delete();  // resets the list to empty state (frees all string memory).
 
@@ -290,5 +293,3 @@ private:
     KEYVAL_PAIR*    m_aData;
     ttCCritSection* m_pcrit;
 };
-
-#endif  // __TTLIB_STRLIST_H__

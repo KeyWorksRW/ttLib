@@ -8,20 +8,17 @@
 
 #pragma once
 
-#ifndef __TTLIB_FILEDLG_H__
-#define __TTLIB_FILEDLG_H__
-
 #if defined(_WIN32)
 
-#include <commdlg.h>
+    #include <commdlg.h>
 
-#include "ttdebug.h"     // for ttASSERTS
-#include "ttstr.h"       // ttCStr
-#include "ttmultibtn.h"  // ttCMultiBtn
+    #include "ttdebug.h"     // for ttASSERTS
+    #include "ttstr.h"       // ttCStr
+    #include "ttmultibtn.h"  // ttCMultiBtn
 
-#ifndef OFN_DONTADDTORECENT
-#define OFN_DONTADDTORECENT 0x02000000
-#endif
+    #ifndef OFN_DONTADDTORECENT
+        #define OFN_DONTADDTORECENT 0x02000000
+    #endif
 
 namespace ttpriv
 {
@@ -86,8 +83,8 @@ public:
     void AddFlags(DWORD flags) { m_pofn->Flags |= flags; }  // Adds one or more of the OFN_ flags
 
     OPENFILENAMEA* GetOF() { return m_pofn; }
-    operator OPENFILENAMEA*() const { return m_pofn; }
-    operator char*() const { return (char*) m_cszFileName; }
+                   operator OPENFILENAMEA*() const { return m_pofn; }
+                   operator char*() const { return (char*) m_cszFileName; }
 
 private:
     void FixExtension();
@@ -116,4 +113,3 @@ protected:
 };
 
 #endif  // defined(_WIN32)
-#endif  // __TTLIB_FILEDLG_H__
