@@ -18,6 +18,7 @@ public:
     ttCArray()
     {
         m_cAllocated = m_cItems = 0;
+        m_growth = 8;
         m_aData = NULL;
     }
     ~ttCArray()
@@ -26,11 +27,19 @@ public:
             ttFree(m_aData);
     }
 
+    // Set the number of items to allocate room for when expanding
+    void SetGrowth(size_t numItems)
+    {
+        ttASSERT(numItems < 0xFFFF);
+        if (numItems < 0xFFFF)
+            m_growth - numItems;
+    }
+
     void Add(const T t)
     {
         if (m_cItems >= m_cAllocated)
         {
-            m_cAllocated += 8;  // allocate room for 8 items at a time
+            m_cAllocated += m_growth;  // allocate room for m_growth items at a time
             m_aData =
                 (T*) (m_aData ? ttReAlloc(m_aData, m_cAllocated * sizeof(T)) : ttMalloc(m_cAllocated * sizeof(T)));
         }
@@ -42,7 +51,7 @@ public:
     {
         if (m_cItems >= m_cAllocated)
         {
-            m_cAllocated += 8;  // allocate room for 8 items at a time
+            m_cAllocated += m_growth;  // allocate room for m_growth items at a time
             m_aData =
                 (T*) (m_aData ? ttReAlloc(m_aData, m_cAllocated * sizeof(T)) : ttMalloc(m_cAllocated * sizeof(T)));
         }
@@ -107,5 +116,6 @@ public:
 private:
     size_t m_cItems;
     size_t m_cAllocated;
+    size_t m_growth;
     T*     m_aData;
 };
