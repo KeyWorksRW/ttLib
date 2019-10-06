@@ -12,6 +12,10 @@
     #include <stdint.h>  // needed for standard types
 #endif
 
+#if defined(_WIN32)
+    #include <wtypes.h>
+#endif
+
 namespace tt
 {
     // strings limited to 16,777,215 bytes (16 megabytes)
@@ -101,8 +105,9 @@ size_t ttStrLen(const char* psz);
 char*  ttStrStr(const char* pszMain, const char* pszSub);
 char*  ttStrStrI(const char* pszMain, const char* pszSub);
 
-// Use ttStrLen() to get the number of characters without trailing zero, use ttStrByteLen() to get the number of bytes
-// including the terminating zero
+// Use ttStrByteLen() to get the number of bytes including the terminating zero.
+//
+// Use ttStrLen() to get the number of characters without trailing zero
 inline size_t ttStrByteLen(const char* psz)
 {
     return ttStrLen(psz) * sizeof(char) + sizeof(char);

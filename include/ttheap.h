@@ -10,6 +10,8 @@
 
 #if defined(_WIN32)
 
+#include <wtypes.h>
+
 /*
     The Windows heap manager is a bit faster to use then the C runtime. Replacing the standard memory allocation
     functions provides a performance boost and eliminates the need to check for a null pointer on return. If there is
