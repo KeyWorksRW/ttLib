@@ -108,9 +108,11 @@ public:
         return m_aData[pos];
     }
 
+protected:
+    T* m_aData;
+
 private:
     size_t m_cItems;
     size_t m_cAllocated;
     size_t m_cGrowth;  // number of items to allocate in advance
-    T*     m_aData;
 };
