@@ -714,7 +714,8 @@ char* ttStepOver(const char* psz)
 {
     if (!psz)
         return nullptr;
-    while (*psz && *psz != ' ' && *psz != '\t' && *psz != '\r' && *psz != '\n' && *psz != '\f')  // step over all non whitespace
+    while (*psz && *psz != ' ' && *psz != '\t' && *psz != '\r' && *psz != '\n' &&
+           *psz != '\f')  // step over all non whitespace
         ++psz;
     while (*psz == ' ' || *psz == '\t' || *psz == '\r' || *psz == '\n' || *psz == '\f')  // step over all whitespace
         ++psz;
@@ -725,9 +726,11 @@ wchar_t* ttStepOver(const wchar_t* psz)
 {
     if (!psz)
         return nullptr;
-    while (*psz && *psz != L' ' && *psz != L'\t' && *psz != L'\r' && *psz != L'\n' && *psz != L'\f')  // step over all non whitespace
+    while (*psz && *psz != L' ' && *psz != L'\t' && *psz != L'\r' && *psz != L'\n' &&
+           *psz != L'\f')  // step over all non whitespace
         ++psz;
-    while (*psz == L' ' || *psz == L'\t' || *psz == L'\r' || *psz == L'\n' || *psz == L'\f')  // step over all whitespace
+    while (*psz == L' ' || *psz == L'\t' || *psz == L'\r' || *psz == L'\n' ||
+           *psz == L'\f')  // step over all whitespace
         ++psz;
     return (wchar_t*) psz;
 }
@@ -1164,7 +1167,8 @@ char* ttFindLastSlash(const char* psz)
     else if (!pszLastFwdSlash)
         return pszLastBackSlash ? pszLastBackSlash : nullptr;
     else
-        return pszLastFwdSlash > pszLastBackSlash ? pszLastFwdSlash : pszLastBackSlash;  // Impossible for them to be equal
+        return pszLastFwdSlash > pszLastBackSlash ? pszLastFwdSlash :
+                                                    pszLastBackSlash;  // Impossible for them to be equal
 }
 
 void ttAddTrailingSlash(char* psz)

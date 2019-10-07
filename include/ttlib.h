@@ -70,15 +70,16 @@ namespace ttch {
 } // end of ttch namespace
 
 #if !defined(_XGET)
-    // This macro can be placed around static text that you want xgettext.exe to extract for translation using the
-    // "xgettext.exe -k_XGET" keyword option
+    // This macro can be placed around static text that you want xgettext.exe to extract for
+    // translation using the "xgettext.exe -k_XGET" keyword option.
     #define _XGET(txt) txt
 #endif
 
 #if !defined(TRANSLATE)
-    // If using wxWidgets, then translate the string into a UTF8 string. Currently there is no mechanism for translating
-    // without wxWidgets, but the macro makes it possible to add that functionality later.
     #if defined(_WX_DEFS_H_)
+        // If using wxWidgets, then translate the string into a UTF8 string. Currently there
+        // is no mechanism for translating without wxWidgets, but the macro makes it possible
+        // to add that functionality later.
         #define TRANSLATE(str) wxGetTranslation(str).utf8_str()
     #else
         #define TRANSLATE(str) str
@@ -107,7 +108,7 @@ char*  ttStrStrI(const char* pszMain, const char* pszSub);
 
 // Use ttStrByteLen() to get the number of bytes including the terminating zero.
 //
-// Use ttStrLen() to get the number of characters without trailing zero
+// Use ttStrLen() to get the number of characters NOT includingt the trailing zero.
 inline size_t ttStrByteLen(const char* psz)
 {
     return ttStrLen(psz) * sizeof(char) + sizeof(char);
@@ -125,29 +126,31 @@ size_t ttSize(const void* pv);
 bool   ttValidate(const void* pv);
 
 bool ttIsSamePath(const char* pszFile1, const char* pszFile2);
-// same as strcmp, but returns true/false
+// Same as strcmp, but returns true/false.
 bool ttIsSameStr(const char* psz1, const char* psz2);
-// case-insensitive comparison
+// Case-insensitive comparison
 bool ttIsSameStrI(const char* psz1, const char* psz2);
-// true if sub string matches first part of main string
+// Returns true if sub string matches first part of main string.
 bool ttIsSameSubStr(const char* pszMain, const char* pszSub);
-// case-insensitive comparison
+// Case-insensitive comparison
 bool ttIsSameSubStrI(const char* pszMain, const char* pszSub);
-// Returns true if the character at the specified position is a valid filename character
+// Returns true if the character at the specified position is a valid filename character.
 bool ttIsValidFileChar(const char* psz, size_t pos);
 
 void ttAddTrailingSlash(char* pszPath);
 
-// converts all backslashes in the string to forward slashes
+// Converts all backslashes in the string to forward slashes
 void ttBackslashToForwardslash(char* pszPath);
 
+// Converts pszFile into a path relative to pszRoot, stores result in cszResult.
 void ttConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszResult);
 bool ttCreateDir(const char* pszDir);
 
-// returns pointer to the next non-whitespace character
+// Returns pointer to the next non-whitespace character.
 char* ttFindNonSpace(const char* psz);
 
-// returns pointer to the next whitespace character
+// Returns pointer to the next whitespace character or to the end of the string if there is
+// no whitespace.
 char* ttFindSpace(const char* psz);
 
 void ttForwardslashToBackslash(char* pszPath);
@@ -155,13 +158,13 @@ void ttForwardslashToBackslash(char* pszPath);
 // Creates a hash number from an string
 size_t ttHashFromSz(const char* psz);
 
-// Creates a hash number from a url or filename ('/' and '\' are considered the same, letter case doesn't matter)
+// Creates a hash number from a url or filename ('/' and '\' are considered the same, letter case doesn't matter).
 size_t ttHashFromURL(const char* pszURL);
 
-// handles UTF8 strings
+// Handles UTF8 strings
 char* ttNextChar(const char* psz);
 
-// Equivalent to FindNonSpace(FindSpace(psz))
+// Equivalent to FindNonSpace(FindSpace(psz)).
 char* ttStepOver(const char* psz);
 
 void ttTrimRight(char* psz);
@@ -186,7 +189,7 @@ inline bool ttIsPunct(char ch)
 {
     return (ch == '.' || ch == ',' || ch == ';' || ch == ':' || ch == '?' || ch == '!');
 }
-// is ch the start of a utf8 sequence?
+// Is ch the start of a utf8 sequence?
 inline bool ttIsUTF8(char ch)
 {
     return ((ch & 0xC0) != 0x80);
@@ -219,17 +222,17 @@ bool ttFileExists(const char* pszFile);
 // ttFindExtPortion and ttFindFilePortion properly handle directories and filenames that start with '.' -- i.e.,
 // ttFindExtPortion(".gitignore") will return nullptr
 
-// Find a case-insensitive extension in a path string
+// Find a case-insensitive extension in a path string.
 char* ttFindExt(const char* pszPath, const char* pszExt);
 
-// Returns pointer to the '.' that begins a file name extension, or nullptr
+// Returns pointer to the '.' that begins a file name extension, or nullptr.
 char* ttFindExtPortion(const char* pszPath);
-// Returns pointer to the filename portion of a path
+// Returns pointer to the filename portion of a path.
 char* ttFindFilePortion(const char* pszPath);
-// Handles both forward and back slashes
+// Handles both forward and back slashes.
 char* ttFindLastSlash(const char* pszPath);
 
-// Replace the ttLib assertion handler with your own
+// Replace the ttLib assertion handler with your own.
 inline void ttSetAssertHandlerA(TTASSERTHANDLERA pFunc)
 {
     pttAssertHandlerA = pFunc;
@@ -252,24 +255,35 @@ void ttSetMsgBoxTitle(const char* pszMsgTitle);
 
 // ttPrintf/ttVPrintf provides a sub-set of the standard sprintf format codes, with automatic allocation of sufficient
 // memory to hold the result, along with some special format specifiers.
-//
-//      standard: c, C, d, i, u, x, X, s, S     (no floating point, precision or padding)
-//
-//      %kd -  formats an integer with commas. I.e., 54321 would be formatted as 54,321
-//      %kq -  outputs quotation marks around the string
-//      %ks -  adds a 's' to the current buffer if the integer is zero or greater then 1, e.g., printf("item%ks",
-//      cItems); %kS -  adds a 's' to the current buffer if the __int64 is zero or greater then 1 %kls - adds a 's' to
-//      the current buffer if the last numeric argument is zero or greater then 1 (printf("%d item%kls", cItems); %kt -
-//      formats a size_t value with commas %ku -  formats an unsigned integer with commas
 
-//      %kI64d -- handles int64_t, adding commas if needed
-//      %kI64u -- handles uint64_t, adding commas if needed
-
+// standard: c, C, d, i, u, x, X, s, S     (no floating point, precision or padding)
+//
+// %kd -  formats an integer with commas. I.e., 54321 would be formatted as 54,321
+// %kq -  outputs quotation marks around the string
+//
+// %ks -  adds a 's' to the current buffer if the integer is zero or greater then 1, e.g.,
+//
+//     printf("item%ks", cItems);
+//
+//
+// %kS -  adds a 's' to the current buffer if the __int64 is zero or greater then 1
+//
+// %kls - adds a 's' to the current buffer if the last numeric argument is zero or greater
+// then 1
+//
+//     printf("%d item%kls", cItems);
+//
+// %kt - formats a size_t value with commas
+//
+// %ku -  formats an unsigned integer with commas
+//
+// %kI64d -- handles int64_t, adding commas if needed
+// %kI64u -- handles uint64_t, adding commas if needed
+//
 // The following are only valid when compiling for _WIN32
-
-//      %ke - formats a system message assuming the argument is an error number
-//      %kr - argument is a resource identifier to a string
-
+//
+// %ke - formats a system message assuming the argument is an error number
+// %kr - argument is a resource identifier to a string
 char* cdecl ttPrintf(char** ppszDst, const char* pszFormat,
                      ...);  // CAUTION! The memory ppszDst points to will be modified by ttHeap functions
 void        ttVPrintf(char** ppszDst, const char* pszFormat, va_list argList);
@@ -286,7 +300,7 @@ wchar_t* ttStrChrR(const wchar_t* psz, wchar_t ch);
 wchar_t* ttStrStr(const wchar_t* pszMain, const wchar_t* pszSub);
 
 wchar_t* ttStrChr(const wchar_t* psz, wchar_t ch);
-wchar_t* ttStrChrR(const wchar_t* psz, wchar_t ch);  // returns nullptr if not found, works on UTF8 strings
+wchar_t* ttStrChrR(const wchar_t* psz, wchar_t ch);  // Returns nullptr if not found
 wchar_t* ttStrStr(const wchar_t* pszMain, const wchar_t* pszSub);
 wchar_t* ttStrStrI(const wchar_t* pszMain, const wchar_t* pszSub);
 wchar_t* ttFindNonSpace(const wchar_t* psz);  // returns pointer to the next non-space character
@@ -357,8 +371,8 @@ wchar_t* ttStepOver(const wchar_t* pwsz);
 void     ttTrimRight(wchar_t* psz);
 
 #if defined(_WIN32)
-// ttInitCaller is equivalent to calling setResInst(hinstRes), setMsgBoxParent(hwndParent) and
-// setMsgBoxTitle(pszMsgTitle)
+// ttInitCaller is equivalent to calling setResInst(hinstRes), setMsgBoxParent(hwndParent)
+// and setMsgBoxTitle(pszMsgTitle)
 [[deprecated]] void ttInitCaller(HINSTANCE hinstRes, HWND hwndParent, const char* pszMsgTitle);
 
 inline HINSTANCE ttGetResInst()
