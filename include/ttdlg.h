@@ -481,7 +481,7 @@ public:
         return pwsz ? SendMessageW(LB_INSERTSTRING, index, (LPARAM) pwsz) : LB_ERR;
     }
 
-    LRESULT DeleteString(ptrdiff_t index) const { return SendMessage(LB_DELETESTRING, index); }
+    LRESULT DeleteString(int index) const { return SendMessage(LB_DELETESTRING, index); }
 
     // void  RemoveListItem();  // removes currently selected item
 
