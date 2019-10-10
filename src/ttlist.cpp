@@ -508,6 +508,38 @@ bool ttCDblList::FindKey(const char* pszKey, size_t* ppos) const
     return false;
 }
 
+bool ttCDblList::FindNextKey(const char* pszKey, size_t* ppos) const
+{
+    ttASSERT_NONEMPTY(pszKey);
+    if (!pszKey || !*pszKey)
+        return false;
+    if (m_bIgnoreCase)
+    {
+        for (size_t i = *ppos + 1; i < m_cItems; i++)
+        {
+            if (ttIsSameStrI(m_aptrs[i].pszKey, pszKey))
+            {
+                if (ppos)
+                    *ppos = i;
+                return true;
+            }
+        }
+    }
+    else
+    {
+        for (size_t i = *ppos + 1; i < m_cItems; i++)
+        {
+            if (ttIsSameStr(m_aptrs[i].pszKey, pszKey))
+            {
+                if (ppos)
+                    *ppos = i;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 bool ttCDblList::FindVal(const char* pszVal, size_t* ppos) const
 {
     ttASSERT_MSG(pszVal, "NULL pointer!");

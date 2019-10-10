@@ -147,6 +147,8 @@ public:
     void Add(const char* pszKey, const char* pszVal);
 
     bool  FindKey(const char* pszKey, size_t* ppos = nullptr) const;
+    // Will find the next key after a call to FindKey.
+    bool  FindNextKey(const char* pszKey, size_t* ppos) const;
     bool  FindVal(const char* pszVal, size_t* ppos = nullptr) const;
     char* GetKeyAt(size_t pos) const;
     char* GetValAt(size_t pos) const;
