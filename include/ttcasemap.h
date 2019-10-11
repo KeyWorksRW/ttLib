@@ -32,8 +32,8 @@
         void OnPaint();
 
     All macros return true to indicate that you handled the message and that the default window/dialog procedure should
-    not be called. If the message requires a non-zero return, the called function will have a return type of LRESULT.
-    Otherwise, a return type is not used.
+   not be called. If the message requires a non-zero return, the called function will have a return type of LRESULT.
+   Otherwise, a return type is not used.
 
     For messages that you would prefer to handle inline instead of calling a function, simply add a case statement. For
     example:
@@ -51,27 +51,53 @@
 
 #pragma once
 
-// clang-format off
 #ifndef GET_X_LPARAM
     #define GET_X_LPARAM(lp) ((int) (short) LOWORD(lp))
     #define GET_Y_LPARAM(lp) ((int) (short) HIWORD(lp))
 #endif
 
-#define BEGIN_TTCMD_MAP() bool OnCmdCaseMap(int id, int NotifyCode, LRESULT& lResult) { NotifyCode; lResult; switch (id) {
-#define BEGIN_TTMSG_MAP() bool OnMsgMap(UINT msg, WPARAM wParam, LPARAM lParam, LRESULT& lResult) { wParam; lParam; lResult; switch (msg) {
-#define END_TTMSG_MAP() default: return false; } }
+// clang-format off
+
+// Use this block to handle notification messages.
+#define BEGIN_TTCMD_MAP()                                       \
+    bool OnCmdCaseMap(int id, int NotifyCode, LRESULT& lResult) \
+    {                                                           \
+        NotifyCode;                                             \
+        lResult;                                                \
+        switch (id)                                             \
+        {
+
+// Use this block to handle windows messages.
+#define BEGIN_TTMSG_MAP()                                                   \
+    bool OnMsgMap(UINT msg, WPARAM wParam, LPARAM lParam, LRESULT& lResult) \
+    {                                                                       \
+        wParam;                                                             \
+        lParam;                                                             \
+        lResult;                                                            \
+        switch (msg)                                                        \
+        {
+
+#define END_TTMSG_MAP() \
+    default:            \
+        return false;   \
+        }               \
+        }
 
 ////////////////////////////////////////////////////////////////
 // The following macros are for use in a BEGIN_TTCMD_MAP block
 ////////////////////////////////////////////////////////////////
 
-// void func(); // TTCASE_CMD calls func() without passing the NotifyCode
+// Use TTCASE_CMD if you don't need the notification code, TTCASE_CTRL if you do.
+//
+// void func();
 #define TTCASE_CMD(id, func) \
     case id: \
         func(); \
         return true;
 
-// void func(int NotifyCode);   // use this to check the notification code
+// Use TTCASE_CTRL if you need the notification code, TTCASE_CMD if you don't.
+//
+// void func(int NotifyCode);
 #define TTCASE_CTRL(id, func) \
     case id: \
         func(NotifyCode); \
@@ -81,7 +107,8 @@
 // The following macros are for use in a BEGIN_TTMSG_MAP block
 ////////////////////////////////////////////////////////////////
 
-// hdc not passed since it's assumed you will use BeginPaint()/EndPaint()
+// hdc is not passed since it's assumed you will use BeginPaint()/EndPaint().
+//
 // void OnPaint();
 #define TTMSG_WM_PAINT(func) \
     case WM_PAINT: \
@@ -575,7 +602,10 @@
         func((UINT) wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)); \
         return true;
 
-// void OnLBtnDblClk(UINT flagVKeys, int xPos, int yPos);  // flagVKeys indicates which virtual keys are pressed (Ctrl, Shift, etc.)
+
+// flagVKeys indicates which virtual keys are pressed (Ctrl, Shift, etc.)
+//
+// void OnLBtnDblClk(UINT flagVKeys, int xPos, int yPos);
 #define TTMSG_WM_LBUTTONDBLCLK(func) \
     case WM_LBUTTONDBLCLK: \
         func((UINT) wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)); \
@@ -962,6 +992,7 @@
         return true;
 
 // Note that return is set to false because DefWindwProc must be called even if this message is handled
+
 // void OnGestureNotify(GESTURENOTIFYSTRUCT* pGestureNotifyStruct);
 #define TTMSG_WM_GESTURENOTIFY(func) \
     case WM_GESTURENOTIFY: \
