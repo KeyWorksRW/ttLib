@@ -13,30 +13,35 @@
 #include "../include/ttwin.h"    // ttCWin
 
 // This is the Window procedure used by all windows that ttCWin created or subclassed.
-
 LRESULT WINAPI ttpriv::ttCWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    if (msg == WM_CREATE)
+    ttCWin* pThis;
+    if (msg == WM_NCCREATE)
     {
         CREATESTRUCTA* pcs = (CREATESTRUCTA*) lParam;
-        void*          pThis = (void*) pcs->lpCreateParams;
+        pThis = (ttCWin*) pcs->lpCreateParams;
+        ttASSERT_MSG(pThis, "this pointer not supplied to CREATESTRUCT");
         if (pThis)
+        {
+            pThis->m_hwnd = hwnd;
             SetWindowLongPtrA(hwnd, GWLP_USERDATA, (LONG_PTR) pThis);
+        }
     }
+    else
+        pThis = (ttCWin*) GetWindowLongPtrA(hwnd, GWLP_USERDATA);
 
-    ttCWin* pThis = (ttCWin*) GetWindowLongPtrA(hwnd, GWLP_USERDATA);
-    if (!pThis)
-        return DefWindowProcA(hwnd, msg, wParam, lParam);
+    if (pThis)
+    {
+        LRESULT lResult = 0;
+        // Both OnCmdCaseMap and OnMsgMap pass lResult by reference so it may change before the return.
+        if (msg == WM_COMMAND && pThis->OnCmdCaseMap((int) LOWORD(wParam), (UINT) HIWORD(wParam), lResult))
+            return lResult;
+        if (pThis->OnMsgMap(msg, wParam, lParam, lResult))
+            return lResult;
 
-    LRESULT lResult = 0;
-    if (msg == WM_COMMAND && pThis->OnCmdCaseMap((int) LOWORD(wParam), (UINT) HIWORD(wParam), lResult))
-        return lResult;
-    if (pThis->OnMsgMap(msg, wParam, lParam, lResult))
-        return lResult;
-
-    if (pThis->m_SubClassProc)
-        return CallWindowProcA(pThis->m_SubClassProc, hwnd, msg, wParam, lParam);
-
+        if (pThis->m_SubClassProc)
+            return CallWindowProcA(pThis->m_SubClassProc, hwnd, msg, wParam, lParam);
+    }
     return DefWindowProcA(hwnd, msg, wParam, lParam);
 }
 
@@ -70,7 +75,8 @@ bool ttCWin::SetClassName(const char* pszClassName)
 {
     ttASSERT_NONEMPTY(pszClassName);
 
-    if (!pszClassName || !*pszClassName || ttStrLen(pszClassName) > 256)  // Windows limits class names to 256 characters
+    if (!pszClassName || !*pszClassName ||
+        ttStrLen(pszClassName) > 256)  // Windows limits class names to 256 characters
         return false;
 
     if (m_pszClassName)
@@ -81,8 +87,9 @@ bool ttCWin::SetClassName(const char* pszClassName)
     return true;
 }
 
-bool ttCWin::CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWND hwndParent,
-                       RECT* prcPosition, HMENU hmenu)
+// If not already registered, this will register the class and delete m_pwc before calling CreateWindowExA.
+bool ttCWin::CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWND hwndParent, RECT* prcPosition,
+                       HMENU hmenu)
 {
     if (m_pwc)
     {  // means the class hasn't been registered yet
@@ -106,14 +113,11 @@ bool ttCWin::CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWN
     m_hwndParent = hwndParent;
 
     if (prcPosition != NULL)
-        m_hwnd = ::CreateWindowExA(dwExStyle, m_pszClassName, pszTitle, dwStyle,
-                                   prcPosition->left, prcPosition->top,
-                                   ttRC_WIDTH(prcPosition), ttRC_HEIGHT(prcPosition),
-                                   hwndParent, hmenu, m_hinst, (void*) this);
+        ::CreateWindowExA(dwExStyle, m_pszClassName, pszTitle, dwStyle, prcPosition->left, prcPosition->top,
+                          ttRC_WIDTH(prcPosition), ttRC_HEIGHT(prcPosition), hwndParent, hmenu, m_hinst, (void*) this);
     else
-        m_hwnd = ::CreateWindowExA(dwExStyle, m_pszClassName, pszTitle, dwStyle,
-                                   CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-                                   hwndParent, hmenu, m_hinst, (void*) this);
+        ::CreateWindowExA(dwExStyle, m_pszClassName, pszTitle, dwStyle, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+                          CW_USEDEFAULT, hwndParent, hmenu, m_hinst, (void*) this);
 
     return ttIsValidWindow(m_hwnd);
 }
