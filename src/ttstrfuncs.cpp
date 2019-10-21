@@ -857,7 +857,7 @@ char* ttItoa(int32_t val, char* pszDst, size_t cbDst)
         cbDst--;
     }
 
-    ttUtoa((uint32_t) val, pszDst, cbDst);
+    ttUtoa((uint32_t) abs(val), pszDst, cbDst);
     return pszRet;
 }
 
@@ -875,7 +875,7 @@ char* ttItoa(int64_t val, char* pszDst, size_t cbDst)
     }
 
     char* pszRet = pszDst;
-    ttUtoa((uint64_t) val, pszDst, cbDst);
+    ttUtoa((uint64_t) abs(val), pszDst, cbDst);
     return pszRet;
 }
 
