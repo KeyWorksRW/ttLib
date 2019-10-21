@@ -190,4 +190,13 @@ protected:
 
     bool m_bReadlineReady;
     bool m_fUnixLF;
+
+#if defined(_DEBUG)
+public:
+    // 0 means no line has been successfully read, 1 is the first line. Value is incremented
+    // with every call to ReadLine.
+    //
+    // Only availabe in _DEBUG builds.
+    int m_curReadLine;
+#endif  // _DEBUG
 };

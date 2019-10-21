@@ -423,10 +423,17 @@ bool ttCFile::ReadLine(char** ppszLine)
     {
         m_pszLine = m_pCurrent = m_pbuf;
         m_bReadlineReady = true;
+#if defined(_DEBUG)
+        m_curReadLine = 0;
+#endif  // _DEBUG
     }
 
     if (!m_pCurrent || !*m_pCurrent)
         return false;
+
+#if defined(_DEBUG)
+    ++m_curReadLine;
+#endif  // _DEBUG
 
     m_pszLine = m_pCurrent;
     if (ppszLine)
