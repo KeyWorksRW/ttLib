@@ -92,9 +92,7 @@ public:
         for (size_t pos = 0; pos < m_cItems; pos++)
         {
             if (m_aMapPairs[pos].val == val)
-            {
                 return pos;
-            }
         }
         return -1;
     }
@@ -103,9 +101,29 @@ public:
         for (int pos = 0; pos < m_cItems; pos++)
         {
             if (m_aMapPairs[pos].key == key)
-            {
                 return m_aMapPairs[pos].val;
-            }
+        }
+        return (TVal) NULL;
+    }
+
+    // This will return the paired value if key is a string.
+    TVal GetVal(const char* pszKey) const
+    {
+        for (int pos = 0; pos < m_cItems; pos++)
+        {
+            if (ttIsSameStr(m_aMapPairs[pos].key, pszKey))
+                return m_aMapPairs[pos].val;
+        }
+        return (TVal) NULL;
+    }
+
+    // This will return the paired value if key is a string (case-insensitive comparison).
+    TVal GetValI(const char* pszKey) const
+    {
+        for (int pos = 0; pos < m_cItems; pos++)
+        {
+            if (ttIsSameStrI(m_aMapPairs[pos].key, pszKey))
+                return m_aMapPairs[pos].val;
         }
         return (TVal) NULL;
     }
@@ -113,8 +131,8 @@ public:
     int GetCount() const { return m_cItems; }
     int GetSize() const { return m_cItems; }  // for compatibility with CSimpleMap
 
-    // The following functions can be used to allocate memory that won't have to be specifically FreeAllocd -- it will
-    // be FreeAllocd automatically when the heap is destroyed in ttCMap's destructor
+    // The following functions can be used to allocate memory that won't have to be specifically freed -- it will
+    // be freed automatically when the heap is destroyed in ttCMap's destructor
 
     void  ttMalloc(size_t cb) { return m_pHeap->ttMalloc(cb); }
     char* ttStrDup(const char* psz) { return m_pHeap->ttStrDup(psz); }
