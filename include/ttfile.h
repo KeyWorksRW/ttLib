@@ -87,8 +87,13 @@ public:
     char* GetLnPtr() { return m_pszLine; }
     bool  IsEndOfFile() const { return (!m_pCurrent || !*m_pCurrent) ? true : false; }
 
-    // returns nullptr if blank, comment, section diveder, or %YAML line. Otherwises returns pointer to first non-space
-    // character, stripped of comment and trailing space
+    // Returns zero 0 if no line has been successfully read. The first call to ReadLine will
+    // set this value to 1, and the value will be incremented with each additional call.
+    int  GetLastReadLine() { return m_curReadLine; }
+    void SetLastReadLine(int line) { m_curReadLine = line; }
+
+    // Returns nullptr if blank, comment, section diveder, or %YAML line. Otherwises returns
+    // pointer to first non-space character, stripped of comment and trailing space.
     char* GetParsedYamlLine();
 
     void WriteStr(const char* psz);
@@ -96,8 +101,9 @@ public:
     void WriteEol(void);
     void WriteEol(const char* psz);
 
-    // adds a CR/LF only if there isn't one already
+    // Adds a CR/LF only if there isn't one already.
     void AddSingleLF();
+
     // Use when writing data
     size_t GetCurLineLength();
     char   GetPrevChar()
@@ -109,7 +115,8 @@ public:
     }
     void Backup(size_t cch);
     bool IsThisPreviousString(const char* pszPrev);
-    // reset the current position based on string length of entire buffer
+
+    // Resets the current position based on string length of entire buffer.
     void ReCalcSize();
 
     void cdecl printf(const char* pszFormat, ...);
@@ -117,14 +124,15 @@ public:
     // pszPosition derived from previous call to GetCurPosition()
     void InsertStr(const char* pszText, char* pszPosition);
     bool ReplaceStr(const char* pszOldText, const char* pszNewText, bool fCaseSensitive = false);
-    // FreeAllocs memory, resets pointers
+
+    // Frees memory, resets pointers.
     void Delete();
 
     size_t GetCurSize() const { return m_cbAllocated; }
     char*  GetBeginPosition() const { return m_pbuf; }
     char*  GetEndPosition() const { return m_pEnd; }
 
-    // used for InsertStr()
+    // Used for InsertStr().
     char* GetCurPosition() { return m_pCurrent; }
     bool IsUnicode() { return (m_pbuf && m_pEnd > m_pbuf + 2 && (BYTE) m_pbuf[0] == 0xFF && (BYTE) m_pbuf[1] == 0xFE); }
 
@@ -140,16 +148,21 @@ public:
     // Calling readLine() will modify the contents -- which means you can't compare two ttCFile objects if you parsed
     // one with readLine(). To allow for this, call MakeCopy() after you have read the file into memory, and
     // RestoreCopy() if you need to reset the file contents to they way they were before readLine() was called.
-    void  MakeCopy();
-    void  RestoreCopy();
+    void MakeCopy();
+
+    // Restores the file to the state saved by a previous call to MakeCopy().
+    void RestoreCopy();
+
+    // Returns a pointer to the buffer previously saved by a call to MakeCopy().
     char* GetCopy() { return m_pCopy; }
 
     void AllocateMoreMemory(size_t cbMore = 16 * 1024);
 
-         operator void*() { return (void*) m_pszLine; };
-         operator uint8_t*() { return (uint8_t*) m_pszLine; };
-         operator char*() const { return m_pszLine; }
-         operator const char*() const { return m_pszLine; }
+    operator void*() { return (void*) m_pszLine; };
+    operator uint8_t*() { return (uint8_t*) m_pszLine; };
+    operator char*() const { return m_pszLine; }
+    operator const char*() const { return m_pszLine; }
+
     void operator+=(const char* psz) { WriteStr(psz); }
     void operator=(const char* psz)
     {
@@ -161,8 +174,9 @@ public:
     char operator[](int pos) { return m_pszLine[pos]; }
 
     // Use with great caution! Only affects the above operators, and is changed by the next ReadLine() call.
-    void  SetLnPtr(char* pszLine) { m_pszLine = pszLine; }
-    char* m_pszLine;  // default line pointer when calling readLine(nullptr)
+    void SetLnPtr(char* pszLine) { m_pszLine = pszLine; }
+
+    char* m_pszLine;  // Default line pointer when calling ReadLine().
 
 protected:
     void AllocateBuffer(size_t cbInitial = 16 * 1024);
@@ -175,8 +189,7 @@ protected:
 #endif
 
     size_t m_cbAllocated;
-    // actual file size after ReadURL()
-    size_t m_cbUrlFile;
+    size_t m_cbUrlFile;  // Actual file size after call to ReadURL().
 
     char* m_pbuf;
     char* m_pEnd;
@@ -184,19 +197,15 @@ protected:
     FILEIO_RESULT m_ioResult;
 #if defined(_WIN32)
     HINTERNET m_hInternetSession;
-#endif  // defined(_WIN32)
+#endif
 
     char* m_pCopy;
 
     bool m_bReadlineReady;
     bool m_fUnixLF;
 
-#if defined(_DEBUG)
-public:
+private:
     // 0 means no line has been successfully read, 1 is the first line. Value is incremented
     // with every call to ReadLine.
-    //
-    // Only availabe in _DEBUG builds.
     int m_curReadLine;
-#endif  // _DEBUG
 };

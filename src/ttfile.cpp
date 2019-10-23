@@ -13,34 +13,34 @@
 #include "../include/ttfile.h"
 
 #if defined(_WIN32)
-#define CHECK_URL_PTR(str)                                               \
-    {                                                                    \
-        ttASSERT(str);                                                   \
-        if (!str || !str[0] || ttStrLen(str) >= INTERNET_MAX_URL_LENGTH) \
-        {                                                                \
-            m_ioResult = ERROR_BAD_NAME;                                 \
-            return false;                                                \
-        }                                                                \
-    }
+    #define CHECK_URL_PTR(str)                                               \
+        {                                                                    \
+            ttASSERT(str);                                                   \
+            if (!str || !str[0] || ttStrLen(str) >= INTERNET_MAX_URL_LENGTH) \
+            {                                                                \
+                m_ioResult = ERROR_BAD_NAME;                                 \
+                return false;                                                \
+            }                                                                \
+        }
 
-#pragma comment(lib, "Wininet.lib")
+    #pragma comment(lib, "Wininet.lib")
 #endif  // defined(_WIN32)
 
-// Not unsafe in the way that we use it (first call it to get buffer size needed, then call again with correctly sized buffer)
-// #define _CRT_SECURE_NO_DEPRECATE
+// Not unsafe in the way that we use it (first call it to get buffer size needed, then call again with correctly sized
+// buffer) #define _CRT_SECURE_NO_DEPRECATE
 #pragma warning(disable : 4996)  // 'wcstombs': This function or variable may be unsafe.
 
 // CB_END_PAD must be sufficient to allow for a CR/LF, and beginning/ending quotes without overflowing buffer
 
-#define CB_END_PAD 4         // amount of extra bytes before buffer overflow
+#define CB_END_PAD       4   // amount of extra bytes before buffer overflow
 #define CB_MAX_FMT_WIDTH 20  // Largest formatted width we allow
 
 #ifndef FILENAME_MAX
-#define FILENAME_MAX 260
+    #define FILENAME_MAX 260
 #endif
 
 #ifndef ERROR_INVALID_NAME
-#define ERROR_INVALID_NAME 123
+    #define ERROR_INVALID_NAME 123
 #endif
 
 #define CHECK_FILE_PTR(str)                                   \
@@ -62,14 +62,17 @@ ttCFile::ttCFile()
     m_hInternetSession = nullptr;
     m_bReadlineReady = false;
     m_fUnixLF = true;
+    m_curReadLine = 0;
 }
 
 ttCFile::ttCFile(ptrdiff_t cb)
 {
-    // It's likely we're being give the exact file size, and AllocateBuffer() will round up (to nearest 256 byte boundary)
-    // The upside to calling AllocateBuffer() and AllocateMoreMemory() is keeping all memory allocation in just two places
+    // It's likely we're being give the exact file size, and AllocateBuffer() will round up (to nearest 256 byte
+    // boundary) The upside to calling AllocateBuffer() and AllocateMoreMemory() is keeping all memory allocation in
+    // just two places
 
     AllocateBuffer(cb);
+    m_curReadLine = 0;
 }
 
 ttCFile::~ttCFile()
@@ -145,7 +148,8 @@ bool ttCFile::ReadFile(const char* pszFile)
     m_pszFile = ttFindFilePortion(pszFile);  // set this so Debugger will see it
 #endif
 
-    HANDLE hf = CreateFileA(pszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+    HANDLE hf =
+        CreateFileA(pszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
     if (hf == INVALID_HANDLE_VALUE)
     {
         m_ioResult = ERROR_CANT_OPEN;
@@ -216,10 +220,8 @@ bool ttCFile::ReadURL(const char* pszURL, HINTERNET hInternet)
             return false;
         }
     }
-    HINTERNET hURL = ::InternetOpenUrlA(hInternet ?
-                                            hInternet :
-                                            m_hInternetSession,
-                                        pszURL, NULL, 0, INTERNET_FLAG_RELOAD, 0);
+    HINTERNET hURL =
+        ::InternetOpenUrlA(hInternet ? hInternet : m_hInternetSession, pszURL, NULL, 0, INTERNET_FLAG_RELOAD, 0);
     if (!hURL)
     {
         m_ioResult = ERROR_CANT_OPEN;
@@ -423,17 +425,13 @@ bool ttCFile::ReadLine(char** ppszLine)
     {
         m_pszLine = m_pCurrent = m_pbuf;
         m_bReadlineReady = true;
-#if defined(_DEBUG)
         m_curReadLine = 0;
-#endif  // _DEBUG
     }
 
     if (!m_pCurrent || !*m_pCurrent)
         return false;
 
-#if defined(_DEBUG)
     ++m_curReadLine;
-#endif  // _DEBUG
 
     m_pszLine = m_pCurrent;
     if (ppszLine)
@@ -444,9 +442,11 @@ bool ttCFile::ReadLine(char** ppszLine)
     {
         if (*pszEndLine == '\r')
         {
-            m_pCurrent = pszEndLine + (pszEndLine[1] == '\n' ? 2 : 1);  // if line ends with \r\n, skip over both characters
+            m_pCurrent =
+                pszEndLine + (pszEndLine[1] == '\n' ? 2 : 1);  // if line ends with \r\n, skip over both characters
             *pszEndLine-- = 0;
-            while (pszEndLine >= m_pszLine && (*pszEndLine == ' ' || *pszEndLine == ' '))  // remove any trailing whitespace
+            while (pszEndLine >= m_pszLine &&
+                   (*pszEndLine == ' ' || *pszEndLine == ' '))  // remove any trailing whitespace
                 *pszEndLine-- = 0;
             return true;
         }
@@ -454,7 +454,8 @@ bool ttCFile::ReadLine(char** ppszLine)
         {
             m_pCurrent = pszEndLine + 1;
             *pszEndLine-- = 0;
-            while (pszEndLine >= m_pszLine && (*pszEndLine == ' ' || *pszEndLine == ' '))  // remove any trailing whitespace
+            while (pszEndLine >= m_pszLine &&
+                   (*pszEndLine == ' ' || *pszEndLine == ' '))  // remove any trailing whitespace
                 *pszEndLine-- = 0;
             return true;
         }
@@ -504,7 +505,8 @@ bool ttCFile::ReplaceStr(const char* pszOldText, const char* pszNewText, bool fC
 {
     ttASSERT_MSG(pszOldText, "NULL pointer!");
     ttASSERT(*pszOldText);
-    ttASSERT_MSG(!*m_pCurrent, "m_pCurrent does not appear to be pointing to the end of the buffer. Did you call ReadLine?");
+    ttASSERT_MSG(!*m_pCurrent,
+                 "m_pCurrent does not appear to be pointing to the end of the buffer. Did you call ReadLine?");
 
     if (!pszNewText)
         pszNewText = "";
@@ -516,7 +518,8 @@ bool ttCFile::ReplaceStr(const char* pszOldText, const char* pszNewText, bool fC
     if (!pszPos)
         return false;
 
-    ttASSERT_MSG(pszPos < m_pCurrent, "m_pCurrent does not appear to be pointing to the end of the buffer. Did you call ReadLine?");
+    ttASSERT_MSG(pszPos < m_pCurrent,
+                 "m_pCurrent does not appear to be pointing to the end of the buffer. Did you call ReadLine?");
     if (pszPos >= m_pCurrent)
         return false;
 
@@ -526,9 +529,8 @@ bool ttCFile::ReplaceStr(const char* pszOldText, const char* pszNewText, bool fC
     if (cbNew == 0)  // delete the old text since new text is empty
     {
         ptrdiff_t cb = m_pCurrent - pszPos;
-        ttASSERT_MSG(cb > 0,
-                     "m_pCurrent does not appear to be pointing to the end of the buffer."
-                     " Did you call ReadLine()? You can't use ReplaceStr() if you called ReadLine()");
+        ttASSERT_MSG(cb > 0, "m_pCurrent does not appear to be pointing to the end of the buffer."
+                             " Did you call ReadLine()? You can't use ReplaceStr() if you called ReadLine()");
         memmove(pszPos, pszPos + cbOld, cb);
         m_pCurrent -= cbOld;
         ttASSERT_MSG(!*m_pCurrent, "m_pCurrent did not get changed correctly");
