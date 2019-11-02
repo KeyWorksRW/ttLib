@@ -52,7 +52,7 @@ public:
             CopyWide(pwsz);
     }
 #if defined(_WX_DEFS_H_)
-    ttCStr(const wxString& str) { m_psz = ttStrDup(str.utf8_str()); }
+    ttCStr(const wxString& str) { m_psz = ttStrDup((const char*) str.utf8_str()); }
 #endif
 #if defined(_WIN32)
     ttCStr(HWND hwnd)

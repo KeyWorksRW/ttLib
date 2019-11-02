@@ -246,13 +246,6 @@ void ttInitCaller(const char* pszTitle);
 
 void ttSetMsgBoxTitle(const char* pszMsgTitle);
 
-// clang-format off
-#if defined(_WX_DEFS_H_)
-    inline void ttInitCaller(const wxString& str) { ttInitCaller((const char*) str.utf8_str()); }
-    inline void ttSetMsgBoxTitle(const wxString& str) { ttSetMsgBoxTitle((const char*) str.utf8_str()); }
-#endif    // defined(_WX_DEFS_H_)
-// clang-format on
-
 // ttPrintf/ttVPrintf provides a sub-set of the standard sprintf format codes, with automatic allocation of sufficient
 // memory to hold the result, along with some special format specifiers.
 
@@ -421,3 +414,21 @@ inline bool ttIsValidWindow(HWND hwnd)
     return (bool) (hwnd && IsWindow(hwnd));
 };
 #endif  // defined(_WIN32)
+
+
+// clang-format off
+#if defined(_WX_DEFS_H_)
+    inline void  ttInitCaller(const wxString& str) { ttInitCaller((const char*) str.utf8_str()); }
+    inline void  ttSetMsgBoxTitle(const wxString& str) { ttSetMsgBoxTitle((const char*) str.utf8_str()); }
+    inline char* ttStrDup(const wxString& str) { return ttStrDup((const char*) str.utf8_str()); }
+    inline int   ttStrCat(char* pszDst, const wxString& str) { return ttStrCat(pszDst, (const char*) str.utf8_str()); };
+
+#if defined(_WIN32)
+    inline int ttMsgBox(const wxString& str, UINT uType = MB_OK | MB_ICONWARNING)
+    {
+        return ttMsgBox((const char*) str.utf8_str(), uType);
+    };
+#endif  // defined (_WIN32)
+
+#endif  // defined(_WX_DEFS_H_)
+// clang-format on
