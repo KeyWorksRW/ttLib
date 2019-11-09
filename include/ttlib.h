@@ -196,7 +196,7 @@ inline bool ttIsUTF8(char ch)
 }
 inline bool ttIsWhitespace(char ch)
 {
-    return ttStrChr(" \t\r\n\f", ch) ? true : false;
+    return strchr(" \t\r\n\f", ch) ? true : false;
 };
 
 // clang-format off
