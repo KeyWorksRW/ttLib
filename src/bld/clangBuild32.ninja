@@ -9,12 +9,12 @@ resout = bld/res
 msvc_deps_prefix = Note: including file:
 
 # -EHsc	// Structured exception handling
-# -MT	// Static multi-threaded library
+# -MD	// DLL version of multi-threaded library
 # -Zl	// Don't specify default runtime library in .obj file
 # -O1	// Optimize for size (/Og /Os /Oy /Ob2 /Gs /GF /Gy)
 # -FC	// Full path to source code file in diagnostics
 
-cflags = -nologo -DNDEBUG -showIncludes -EHsc -W4 -Zl -O1 -FC -D__clang__ -fms-compatibility-version=19 -m32 -flto -fwhole-program-vtables /Fp$outdir/ttLib.pch
+cflags = -nologo -DNDEBUG -showIncludes -EHsc -W4 -MD -O1 -FC -D__clang__ -fms-compatibility-version=19 -m32 -flto -fwhole-program-vtables /Fp$outdir/ttLib.pch
 
 rule compilePCH
   deps = msvc

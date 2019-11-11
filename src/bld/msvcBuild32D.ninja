@@ -9,11 +9,11 @@ resout = bld/res
 msvc_deps_prefix = Note: including file:
 
 # -EHsc	// Structured exception handling
-# -MTd	// Multithreaded debug dll (MSVCRTD)
+# -MDd	// Multithreaded debug dll (MSVCRTD)
 # -Z7	// produces object files with full symbolic debugging information
 # -FC	// Full path to source code file in diagnostics
 
-cflags = -nologo -D_DEBUG -showIncludes -EHsc -W4 -Zl -Od -Z7 -FC /Fp$outdir/ttLib.pch
+cflags = -nologo -D_DEBUG -showIncludes -EHsc -W4 -MD -Od -Z7 -FC /Fp$outdir/ttLib.pch
 
 rule compilePCH
   deps = msvc
