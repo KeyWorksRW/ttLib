@@ -8,14 +8,14 @@ At an absolute minimum, you will need to have the following in your PATH:
   - [CLANG](https://clang.llvm.org/) (version 7 or higher)
   - MSVC
 
-Before building, you will need to start one of the Visual Studio command shells, preferablly one that builds 64-bit targets. From within that shell, you can use the following commands to build the library:
+Before building, you will need to start one of the Visual Studio command shells, preferably one that builds 64-bit targets. From within that shell, you can use the following commands to build the library:
 
 	cd src
 	nmake
 
 By default, this will build a 64-bit release version of the library (lib64/ttLib.lib).
 
-If you have MINGW installead and both MINGW and the CLANG compiler are in your PATH, you can use the following commands to build the library:
+If you have MINGW installed and both MINGW and the CLANG compiler are in your PATH, you can use the following commands to build the library:
 
 	cd src
 	mingw32-make
