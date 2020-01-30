@@ -2,21 +2,22 @@
 // Name:      ttCStr
 // Purpose:   SBCS string class
 // Author:    Ralph Walden
-// Copyright: Copyright (c) 2004-2019 KeyWorks Software (Ralph Walden)
+// Copyright: Copyright (c) 2004-2020 KeyWorks Software (Ralph Walden)
 // License:   Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 #include "pch.h"
 
-#include "../include/ttdebug.h"  // ttASSERT macros
-#include "../include/ttstr.h"    // ttCStr
+#include <cassert>
+
+#include "../include/ttstr.h"  // ttCStr
 
 #if __cplusplus >= 201703L
-#include <filesystem>
+    #include <filesystem>
 #endif
 
 #if defined(wxGUI)
-#include <wx/msgdlg.h>
+    #include <wx/msgdlg.h>
 #endif
 
 using namespace ttch;  // used for the CH_ constants
@@ -27,14 +28,14 @@ namespace ttpriv
 }
 
 #ifndef _MAX_U64TOSTR_BASE10_COUNT
-#define _MAX_U64TOSTR_BASE10_COUNT (20 + 1)
+    #define _MAX_U64TOSTR_BASE10_COUNT (20 + 1)
 #endif
 
 #define DEST_SIZE (ttSize(m_psz) - sizeof(char))
 
 char* ttCStr::AppendFileName(const char* pszFile)
 {
-    ttASSERT_NONEMPTY(pszFile);
+    assert(pszFile);
 
     if (!pszFile || !*pszFile)
         return m_psz;
@@ -53,7 +54,7 @@ char* ttCStr::AppendFileName(const char* pszFile)
 
 char* ttCStr::ReplaceFilename(const char* pszFile)
 {
-    ttASSERT_NONEMPTY(pszFile);
+    assert(pszFile);
 
     if (!pszFile || !*pszFile)
         return m_psz;
@@ -87,7 +88,7 @@ char* ttCStr::ReplaceFilename(const char* pszFile)
 
 void ttCStr::ChangeExtension(const char* pszExtension)
 {
-    ttASSERT_NONEMPTY(pszExtension);
+    assert(pszExtension);
 
     if (!pszExtension || !*pszExtension)
         return;
@@ -96,8 +97,9 @@ void ttCStr::ChangeExtension(const char* pszExtension)
         m_psz = ttStrDup("");
 
     char* psz = ttStrChrR(m_psz, '.');
-    if (psz && !(psz == m_psz || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/'))  // ignore .file, ./file, and ../file
-        *psz = 0;                                                                        // remove the extension if none of the above is true
+    if (psz && !(psz == m_psz || *(psz - 1) == '.' || psz[1] == '\\' ||
+                 psz[1] == '/'))  // ignore .file, ./file, and ../file
+        *psz = 0;                 // remove the extension if none of the above is true
 
     if (*pszExtension != '.')
         *this += ".";
@@ -121,7 +123,8 @@ void ttCStr::RemoveExtension()
         char* psz = ttStrChrR(m_psz, '.');
         if (psz)
         {
-            if (psz == m_psz || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/')  // ignore .file, ./file, and ../file
+            if (psz == m_psz || *(psz - 1) == '.' || psz[1] == '\\' ||
+                psz[1] == '/')  // ignore .file, ./file, and ../file
                 return;
             *psz = 0;
         }
@@ -142,7 +145,7 @@ void ttCStr::AddTrailingSlash()
 
 char* ttCStr::FindLastSlash()
 {
-    ttASSERT_MSG(m_psz, "NULL pointer!");
+    assert(m_psz);
 
     if (!m_psz || !*m_psz)
         return nullptr;
@@ -154,7 +157,8 @@ char* ttCStr::FindLastSlash()
     else if (!pszLastFwdSlash)
         return pszLastBackSlash ? pszLastBackSlash : nullptr;
     else
-        return pszLastFwdSlash > pszLastBackSlash ? pszLastFwdSlash : pszLastBackSlash;  // Impossible for them to be equal
+        return pszLastFwdSlash > pszLastBackSlash ? pszLastFwdSlash :
+                                                    pszLastBackSlash;  // Impossible for them to be equal
 }
 
 char* ttCStr::GetCWD()
@@ -176,7 +180,7 @@ char* ttCStr::GetCWD()
 
 void ttCStr::FullPathName()
 {
-    ttASSERT(m_psz);
+    assert(m_psz);
 #if (defined(_WIN32)) && !defined(wxGUI)
     char szPath[MAX_PATH];
     ::GetFullPathNameA(m_psz, sizeof(szPath), szPath, NULL);
@@ -224,7 +228,7 @@ bool ttCStr::CopyWide(const wchar_t* pwsz)
         m_psz = nullptr;
     }
 
-    ttASSERT_NONEMPTY(pwsz);
+    assert(pwsz);
 
     if (!pwsz || !*pwsz)
     {
@@ -234,7 +238,7 @@ bool ttCStr::CopyWide(const wchar_t* pwsz)
 
 #if defined(_WIN32) && !defined(wxGUI)
     size_t cb = wcslen(pwsz);
-    ttASSERT_MSG(cb <= tt::MAX_STRING_LEN, "String is over 16 megs in size!");
+    assert(cb <= tt::MAX_STRING_LEN);
 
     int cbNew = WideCharToMultiByte(CP_UTF8, 0, pwsz, (int) cb, nullptr, 0, NULL, NULL);
     if (cbNew)
@@ -261,7 +265,7 @@ bool ttCStr::CopyWide(const wchar_t* pwsz)
 
 void ttCStr::ReSize(size_t cbNew)
 {
-    ttASSERT(cbNew <= tt::MAX_STRING_LEN);
+    assert(cbNew <= tt::MAX_STRING_LEN);
     if (cbNew > tt::MAX_STRING_LEN)
         cbNew = tt::MAX_STRING_LEN;
 
@@ -270,15 +274,16 @@ void ttCStr::ReSize(size_t cbNew)
     if (cbNew != curSize)
         m_psz = m_psz ? (char*) ttReAlloc(m_psz, cbNew) : (char*) ttMalloc(cbNew);
 #else
-    // until ttHeap gets ported, we won't know if malloc_size() for Mac or malloc_usable_size() for Unix is available
+    // until ttHeap gets ported, we won't know if malloc_size() for Mac or malloc_usable_size() for Unix is
+    // available
     m_psz = m_psz ? (char*) ttReAlloc(m_psz, cbNew) : (char*) ttMalloc(cbNew);
 #endif
 }
 
 bool ttCStr::ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCaseSensitive)
 {
-    ttASSERT_MSG(pszOldText, "NULL pointer!");
-    ttASSERT(*pszOldText);
+    assert(pszOldText);
+    assert(*pszOldText);
 
     if (!pszOldText || !*pszOldText || !m_psz || !*m_psz)
         return false;
@@ -331,7 +336,8 @@ bool ttCStr::ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCa
 
 void ttCStr::operator=(const char* psz)
 {
-    if (m_psz && m_psz == psz)  // This can happen when getting a point to ttCStr and then assigning it to the same ttCStr
+    if (m_psz &&
+        m_psz == psz)  // This can happen when getting a point to ttCStr and then assigning it to the same ttCStr
         return;
 
     ttStrDup(psz ? psz : "", &m_psz);
@@ -339,7 +345,8 @@ void ttCStr::operator=(const char* psz)
 
 void ttCStr::operator+=(const char* psz)
 {
-    ttASSERT_MSG(m_psz != psz, "Attempt to append string to itself!");
+    // Don't append our own string to ourself
+    assert(m_psz != psz);
     if (m_psz && m_psz == psz)
         return;
     if (!m_psz)
@@ -350,7 +357,7 @@ void ttCStr::operator+=(const char* psz)
     {
         size_t cbNew = ttStrByteLen(psz);
         size_t cbOld = ttStrByteLen(m_psz);
-        ttASSERT_MSG(cbNew + cbOld <= tt::MAX_STRING_LEN, "String is over 16 megs in size!");
+        assert(cbNew + cbOld <= tt::MAX_STRING_LEN);
         if (cbNew + cbOld > tt::MAX_STRING_LEN)
             return;  // ignore it if it's too large
         m_psz = (char*) ttReAlloc(m_psz, cbNew + cbOld);
@@ -444,7 +451,7 @@ void cdecl ttCStr::WarningMsgBox(const char* pszFormat, ...)
 
 int ttCStr::StrCat(const char* psz)
 {
-    ttASSERT_MSG(psz, "NULL pointer!");
+    assert(psz);
 
     if (psz == nullptr)
         return EINVAL;
@@ -455,7 +462,7 @@ int ttCStr::StrCat(const char* psz)
     {
         size_t cbNew = ttStrByteLen(psz);
         size_t cbOld = ttStrByteLen(m_psz);
-        ttASSERT_MSG(cbNew + cbOld <= tt::MAX_STRING_LEN, "String is over 16 megs in size!");
+        assert(cbNew + cbOld <= tt::MAX_STRING_LEN);
         if (cbNew + cbOld > tt::MAX_STRING_LEN)
             return EOVERFLOW;  // ignore it if it's too large
         m_psz = (char*) ttReAlloc(m_psz, cbNew + cbOld);
@@ -466,7 +473,7 @@ int ttCStr::StrCat(const char* psz)
 
 int ttCStr::StrCopy(const char* psz)
 {
-    ttASSERT_MSG(psz, "NULL pointer!");
+    assert(psz);
 
     if (psz == nullptr)
         return EINVAL;
@@ -477,7 +484,7 @@ int ttCStr::StrCopy(const char* psz)
     {
         size_t cbNew = ttStrByteLen(psz);
         size_t cbOld = ttSize(m_psz);
-        ttASSERT_MSG(cbNew + cbOld <= tt::MAX_STRING_LEN, "String is over 16 megs in size!");
+        assert(cbNew + cbOld <= tt::MAX_STRING_LEN);
         if (cbNew + cbOld > tt::MAX_STRING_LEN)
             return EOVERFLOW;  // ignore it if it's too large
         ttStrDup(psz, &m_psz);
@@ -522,7 +529,7 @@ char* ttCStr::Hextoa(size_t val, bool bUpperCase)
 
 char* ttCStr::GetString(const char* pszString, char chBegin, char chEnd)
 {
-    ttASSERT_NONEMPTY(pszString);
+    assert(pszString);
 
     Delete();  // current string, if any, should be deleted no matter what
 
@@ -530,7 +537,7 @@ char* ttCStr::GetString(const char* pszString, char chBegin, char chEnd)
         return nullptr;
 
     size_t cb = ttStrByteLen(pszString);
-    ttASSERT_MSG(cb <= tt::MAX_STRING_LEN, "String is over 16 megs in size!");
+    assert(cb <= tt::MAX_STRING_LEN);
 
     if (cb == 0 || cb > tt::MAX_STRING_LEN)
         return nullptr;
@@ -571,7 +578,7 @@ char* ttCStr::GetString(const char* pszString, char chBegin, char chEnd)
 
 char* ttCStr::GetQuotedString(const char* pszQuote)
 {
-    ttASSERT_NONEMPTY(pszQuote);
+    assert(pszQuote);
 
     if (!pszQuote || !*pszQuote)
     {
@@ -607,7 +614,7 @@ char* ttCStr::GetQuotedString(const char* pszQuote)
 
 bool ttCStr::GetEnv(const char* pszName)
 {
-    ttASSERT_NONEMPTY(pszName);
+    assert(pszName);
 
     size_t cbEnv = 0;
     // an environment variable larger then 8k is almost certainly bogus and a security risk to use
@@ -637,7 +644,7 @@ char* ttCStr::GetListBoxText(HWND hwnd, size_t sel)
     else
     {
         size_t cb = ::SendMessageA(hwnd, LB_GETTEXTLEN, sel, 0);
-        ttASSERT(cb != (size_t) LB_ERR);
+        assert(cb != (size_t) LB_ERR);
         if (cb != (size_t) LB_ERR)
         {
             m_psz = (char*) ttMalloc(cb + 1);
@@ -660,7 +667,7 @@ char* ttCStr::GetComboLBText(HWND hwnd, size_t sel)
     else
     {
         size_t cb = ::SendMessageA(hwnd, CB_GETLBTEXTLEN, sel, 0);
-        ttASSERT(cb != (size_t) CB_ERR);
+        assert(cb != (size_t) CB_ERR);
         if (cb != (size_t) CB_ERR)
         {
             m_psz = (char*) ttMalloc(cb + 1);
@@ -712,7 +719,7 @@ bool ttCStr::GetWndText(HWND hwnd)
         m_psz = nullptr;
     }
 
-    ttASSERT_MSG(hwnd && IsWindow(hwnd), "Invalid window handle");
+    assert(hwnd && IsWindow(hwnd));
     if (!hwnd || !IsWindow(hwnd))
     {
         m_psz = ttStrDup("");
@@ -720,7 +727,7 @@ bool ttCStr::GetWndText(HWND hwnd)
     }
 
     int cb = GetWindowTextLengthA(hwnd);
-    ttASSERT_MSG(cb <= (int) tt::MAX_STRING_LEN, "String is over 16 megs in size!");
+    assert(cb <= (int) tt::MAX_STRING_LEN);
 
     if (cb == 0 || cb > (int) tt::MAX_STRING_LEN)
     {

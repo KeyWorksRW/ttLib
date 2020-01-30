@@ -8,7 +8,8 @@
 
 #include "pch.h"
 
-#include "../include/ttdebug.h"        // ttASSERT macros
+#include <cassert>
+
 #include "../include/ttmultithread.h"  // ttCMultiThrd
 
 DWORD __stdcall _ttMultiThread(void* pv);
@@ -28,7 +29,7 @@ ttCMultiThrd::~ttCMultiThrd()
         m_bEndThreads = true;
         for (size_t iThread = 0; iThread < m_cThreads; iThread++)
         {
-            ReleaseSemaphore(m_aThrdInfo[iThread].hsemStart, 1, NULL);    // thread can't exit until you let it start
+            ReleaseSemaphore(m_aThrdInfo[iThread].hsemStart, 1, NULL);  // thread can't exit until you let it start
             WaitForSingleObject(m_aThrdInfo[iThread].hThread, INFINITE);  // wait for thread to terminate
             CloseHandle(m_aThrdInfo[iThread].hsemStart);
             CloseHandle(m_aThrdInfo[iThread].hsemDone);
@@ -45,10 +46,12 @@ void ttCMultiThrd::InitializeThreads(size_t cThreads)  // 0 means create as many
     GetSystemInfo(&si);
     int cpus = (int) si.dwNumberOfProcessors;
 
-    ttASSERT(cThreads <= (size_t) cpus);
-    ttASSERT_MSG(!m_cThreads, "You cannot call InitializeThreads more then once!");
+    assert(cThreads <= (size_t) cpus);
+
+    // Ensure InitializeThreads is only called once!
+    assert(!m_cThreads);
     if (m_cThreads)
-        return;  // already initialized
+        return;
 
     if (cThreads == 0)
         cThreads = (size_t) cpus;
@@ -65,7 +68,7 @@ void ttCMultiThrd::InitializeThreads(size_t cThreads)  // 0 means create as many
         DWORD thrdID;
         // REVIEW: [ralphw - 05-20-2018] Should switch to _beginthreadex() for portability
         m_aThrdInfo[iThread].hThread = (HANDLE) CreateThread(NULL, 0, _ttMultiThread, (LPVOID) this, 0, &thrdID);
-        ttASSERT(m_aThrdInfo[iThread].hThread);
+        assert(m_aThrdInfo[iThread].hThread);
         if (!m_aThrdInfo[iThread].hThread)
         {
             // TODO: [ralphw - 03-02-2010] this would be really bad...
@@ -89,12 +92,13 @@ size_t ttCMultiThrd::GetAvailableThreads()
 
 void ttCMultiThrd::StartThread(void* pvData1, void* pvData2)
 {
-    ttASSERT_MSG(m_aThrdInfo, "StartThread called before InitializeThreads()");
+    // Ensure this isn't called before InitializeThreads()
+    assert(m_aThrdInfo);
     if (!m_aThrdInfo)
         InitializeThreads(0);
 
     DWORD pos = WaitForMultipleObjects((DWORD) m_cThreads, m_ahsemDone, FALSE, INFINITE) - WAIT_OBJECT_0;
-    ttASSERT(pos >= 0 && pos < (DWORD) m_cThreads);
+    assert(pos >= 0 && pos < (DWORD) m_cThreads);
     m_aThrdInfo[pos].bDone = false;
     m_aThrdInfo[pos].pvData1 = pvData1;
     m_aThrdInfo[pos].pvData2 = pvData2;
@@ -129,7 +133,7 @@ DWORD __stdcall _ttMultiThread(void* pv)
     ttCMultiThrd* pThis = (ttCMultiThrd*) pv;
     DWORD         thrdID = GetCurrentThreadId();
     auto          pos = pThis->m_threadMap.FindKey(thrdID);
-    ttASSERT(pos >= 0);  // theoretically impossible
+    assert(pos >= 0);  // theoretically impossible
     ttCMultiThrd::MULTI_THRD_INFO* pThrdInfo = pThis->m_threadMap.GetValueAt(pos);
 
     for (;;)
@@ -145,7 +149,10 @@ DWORD __stdcall _ttMultiThread(void* pv)
         }
         catch (...)
         {
-            ttFAIL("Exception in doThreadWork()");
+            assert(false);
+            pThrdInfo->bDone = true;
+            ReleaseSemaphore(pThrdInfo->hsemDone, 1, NULL);
+            return 0;
         }
 
         pThrdInfo->bDone = true;

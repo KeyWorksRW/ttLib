@@ -2,13 +2,14 @@
 // Name:      ttCEnumStr
 // Purpose:   Enumerate through substrings in a string
 // Author:    Ralph Walden
-// Copyright: Copyright (c) 2018-2019 KeyWorks Software (Ralph Walden)
+// Copyright: Copyright (c) 2018-2020 KeyWorks Software (Ralph Walden)
 // License:   Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 #include "pch.h"
 
-#include "../include/ttdebug.h"    // ttASSERT macros
+#include <cassert>
+
 #include "../include/ttenumstr.h"  // ttCEnumStr
 
 ttCEnumStr::ttCEnumStr()
@@ -56,7 +57,7 @@ void ttCEnumStr::SetNewStr(const char* psz, char chSeparator)
 
 bool ttCEnumStr::Enum(const char** ppszCurrent)
 {
-    ttASSERT_MSG(!m_csz.IsNull(), "Calling Enum() without a valid master string (ttCEnumStr(nullptr) or SetNewStr(nullptr))!");
+    assert(!m_csz.IsNull());
     if (m_csz.IsNull())
     {
         if (ppszCurrent)
@@ -100,7 +101,8 @@ bool ttCEnumStr::Enum(const char** ppszCurrent)
             if (m_pszEnd)
                 *m_pszEnd = 0;
 
-            if (m_pszCur && !m_pszCur[0])  // Don't return empty string -- this can happen when a original string ends without a separator
+            if (m_pszCur && !m_pszCur[0])  // Don't return empty string -- this can happen when a original string
+                                           // ends without a separator
                 return Enum(ppszCurrent);
 
             if (ppszCurrent)

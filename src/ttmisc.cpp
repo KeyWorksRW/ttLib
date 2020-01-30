@@ -2,18 +2,19 @@
 // Name:      misc.cpp
 // Purpose:   miscellaneous functions
 // Author:    Ralph Walden
-// Copyright: Copyright (c) 2018-2019 KeyWorks Software (Ralph Walden)
+// Copyright: Copyright (c) 2018-2020 KeyWorks Software (Ralph Walden)
 // License:   Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 #include "pch.h"
 
-#include "../include/ttdebug.h"  // for ttASSERTS
-#include "../include/ttstr.h"    // ttCStr
+#include <cassert>
+
+#include "../include/ttstr.h"  // ttCStr
 
 size_t ttHashFromSz(const char* psz)
 {
-    ttASSERT_NONEMPTY(psz);
+    assert(psz);
 
     if (!psz || !*psz)
         return 0;
@@ -30,7 +31,7 @@ size_t ttHashFromSz(const char* psz)
 
 size_t ttHashFromSz(const wchar_t* psz)
 {
-    ttASSERT_NONEMPTY(psz);
+    assert(psz);
 
     if (!psz || !*psz)
         return 5381;
@@ -43,8 +44,8 @@ size_t ttHashFromSz(const wchar_t* psz)
     return hash;
 }
 
-// Unlike a "regular" hash, this version treats forward and backslashes identically, as well as upper and lower-case
-// letters
+// Unlike a "regular" hash, this version treats forward and backslashes identically, as well as upper and
+// lower-case letters
 
 size_t ttHashFromURL(const char* pszURL)
 {

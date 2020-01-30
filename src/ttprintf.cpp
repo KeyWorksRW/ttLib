@@ -2,7 +2,7 @@
 // Name:      ttprintf.cpp
 // Purpose:   Printing routines
 // Author:    Ralph Walden
-// Copyright: Copyright (c) 2019 KeyWorks Software (Ralph Walden)
+// Copyright: Copyright (c) 2019-2020 KeyWorks Software (Ralph Walden)
 // License:   Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
@@ -10,7 +10,8 @@
 
 #include "pch.h"
 
-#include "../include/ttdebug.h"  // for ttASSERTS
+#include <cassert>
+
 #include "../include/ttheap.h"   // ttCHeap
 #include "../include/ttstr.h"    // ttCStr
 
@@ -19,7 +20,7 @@ class ttPrintfPtr
 public:
     ttPrintfPtr(char** ppszDst)
     {
-        ttASSERT_MSG(ppszDst, "NULL pointer!");
+        assert(ppszDst);
         m_ppszDst = ppszDst;
         if (m_ppszDst && *m_ppszDst)
             ttFree(*m_ppszDst);
@@ -59,7 +60,7 @@ void ttPrintfPtr::Need(size_t cb)
         cb >>= 7;
         cb <<= 7;
         cb += 0x80;  // round up allocation size to 128
-        ttASSERT_MSG(cb < tt::MAX_STRING_LEN, "Attempting to printf to a string that is now larger than 16 megs!");
+        assert(cb < tt::MAX_STRING_LEN);
         ReAlloc(cb);  // allow it even if >= MAX_STRING_LEN, but strCat() will no longer add to it.
         m_cAvail = cb - 1;
     }
@@ -93,8 +94,8 @@ char* cdecl ttPrintf(char** ppszDst, const char* pszFormat, ...)
 
 void ttVPrintf(char** ppszDst, const char* pszFormat, va_list argList)
 {
-    ttASSERT_MSG(pszFormat, "NULL pointer!");
-    ttASSERT_MSG(*pszFormat, "Empty format string!");
+    assert(pszFormat);
+    assert(*pszFormat);
     if (!pszFormat || !*pszFormat)
         return;
 
@@ -115,7 +116,7 @@ void ttVPrintf(char** ppszDst, const char* pszFormat, va_list argList)
             if (!cb)
                 return;  // empty format string
             cb += ttStrByteLen(sptr);
-            ttASSERT(cb <= MAX_STRING);
+            assert(cb <= MAX_STRING);
             if (cb > MAX_STRING)  // empty or invalid string
                 return;
             sptr.Need(cb);
@@ -260,7 +261,8 @@ void ttVPrintf(char** ppszDst, const char* pszFormat, va_list argList)
         }
         else if (*pszEnd == 'X')
         {
-            ttASSERT_MSG(!bSize_t, "zX and IX not supported");
+            // zX and IX not supported
+            assert(!bSize_t);
             ttHextoa(va_arg(argList, int), szNumBuf, true);
             if (cbMin >= 0)
             {
@@ -294,7 +296,8 @@ void ttVPrintf(char** ppszDst, const char* pszFormat, va_list argList)
 #endif                                   // defined(_WIN32)
             )
             {
-                ttASSERT_MSG(psz, "NULL pointer passed to ttCStr::printf(\"%s");
+                // NULL pointer passed
+                assert(psz);
                 psz = "(missing argument for %s)";
             }
             sptr.strCat(psz);
@@ -324,7 +327,7 @@ void ttVPrintf(char** ppszDst, const char* pszFormat, va_list argList)
             // This is a potential security risk since we don't know what size of argument to retrieve from va_arg().
             // We simply print the rest of the format string and don't pop any arguments off.
 
-            ttFAIL("Invalid format string for printf");
+            assert(!"Invalid format string for printf");
 #ifdef _DEBUG
             sptr.strCat("Invalid format string: ");
 #endif  // _DEBUG
@@ -457,10 +460,10 @@ void ttpriv::AddCommasToNumber(char* pszNum, char* pszDst, size_t cbDst)
     ptrdiff_t cbNum = ttStrLen(pszDst);  // needs to be signed because it can go negative
     if (cbNum < 4)
     {
-        ttASSERT(cbNum < (ptrdiff_t) cbDst);
+        assert(cbNum < (ptrdiff_t) cbDst);
         return;
     }
-    ttASSERT(cbNum + (cbNum / 3) < (ptrdiff_t) cbDst);
+    assert(cbNum + (cbNum / 3) < (ptrdiff_t) cbDst);
     if (cbNum + (cbNum / 3) >= (ptrdiff_t) cbDst)
         return;
 
