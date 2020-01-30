@@ -1,44 +1,46 @@
 # Requires ttBld.exe version 1.0.0 or higher to process
 
 Options:
-    Project:     ttLib      # project target name
-    Exe_type:    lib        # [window | console | lib | dll]
-    Pch:         pch.h      # precompiled header
-    Optimize:    space      # [space | speed] optimization
-    Warn:        4          # [1-4]
+    Project:    ttLib      # project target name
+    Exe_type:   lib        # [window | console | lib | dll]
+    Pch:        pch.h      # precompiled header
+    Optimize:   space      # [space | speed] optimization
+    Warn:       4          # [1-4]
 
-    CFlags_cmn:  -std:c++17 /Zc:__cplusplus # flags to pass to the compiler in all builds
+    CFlags_cmn: -std:c++17 /Zc:__cplusplus # flags to pass to the compiler in all builds
 
-    Crt_rel:     dll        # [static | dll] type of CRT to link to in release builds
-    Crt_dbg:     dll        # [static | dll] type of CRT to link to in debug builds
+    Crt_rel:    dll        # [static | dll] type of CRT to link to in release builds
+    Crt_dbg:    dll        # [static | dll] type of CRT to link to in debug builds
 
-    TargetDir:   ../lib  # 64-bit target directory
+    IncDirs:    ./;../ttwx/src
+    TargetDir:  ./lib
 
 Files:
-    ttbasethread.cpp    # ttCBaseThread class
     ttconsole.cpp       # class that sets/restores console foreground color
-    ttdebug.cpp         # debug and assertion handling
-    ttdirdlg.cpp        # dialog for selecting a directory
     ttenumstr.cpp       # ttCEnumStr class
-    ttfile.cpp          # ttCFile class
-    ttfiledir.cpp       # file and directory handling
     tthashpair.cpp      # ttCHashPair
-    ttheap.cpp          # ttCHeap class
-    ttlinefile.cpp      # Line-oriented file class
-    ttlist.cpp          # ttCList class
     ttmisc.cpp          # miscellaneous functions
     ttmultithread.cpp   # ttCMultiThrd class
     ttprintf.cpp        # printf
     ttstr.cpp           # ttCStr class
     ttstrfuncs.cpp      # string handling and ttStr class
-    ttwstr.cpp          # ttCWStr class
-    ttxml.cpp           # ttCParseXML class
+
+    ../ttwx/src/ttstring.cpp    # std::string class with some additional functionality
+    ../ttwx/src/tttextfile.cpp  # Class for reading and writing text files.
+    ../ttwx/src/ttwx.cpp        # Miscellaneous functions
 
 # Windows only files
 
+    ttbasethread.cpp    # ttCBaseThread class
+    ttdebug.cpp         # debug and assertion handling
     ttdib.cpp           # ttCDib class
+    ttdirdlg.cpp        # dialog for selecting a directory
     ttdlg.cpp           # ttCDlg class
+    ttfile.cpp          # ttCFile class
+    ttfiledir.cpp       # file and directory handling
     ttfiledlg.cpp       # ttCFileDlg class
+    ttheap.cpp          # ttCHeap class
+    ttlist.cpp          # ttCList class
     ttmultibtn.cpp      # ttCMultiBtn class
     ttshadebtn.cpp      # ttCShadeBtn class
     ttwin.cpp           # ttCWin class
