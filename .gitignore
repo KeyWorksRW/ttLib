@@ -5,8 +5,13 @@ bin64/
 lib/
 lib32/
 lib64/
+lib_x86/
+lib_x64/
 bld/
 build/
+
+# doxygen creates the files in docs, so don't track them
+docs/
 
 .private/
 archive/

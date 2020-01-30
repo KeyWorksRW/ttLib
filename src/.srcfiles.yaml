@@ -6,13 +6,13 @@ Options:
     Pch:         pch.h      # precompiled header
     Optimize:    space      # [space | speed] optimization
     Warn:        4          # [1-4]
+
+    CFlags_cmn:  -std:c++17 /Zc:__cplusplus # flags to pass to the compiler in all builds
+
     Crt_rel:     dll        # [static | dll] type of CRT to link to in release builds
     Crt_dbg:     dll        # [static | dll] type of CRT to link to in debug builds
 
-    64Bit:       true       # create 64-bit project as well as 32-bit project
-    TargetDir64: ../lib64   # 64-bit target directory
-    32Bit:       true       # if true, build 32-bit target
-    TargetDir32: ../lib32   # 32-bit target directory
+    TargetDir:   ../lib  # 64-bit target directory
 
 Files:
     ttbasethread.cpp    # ttCBaseThread class
