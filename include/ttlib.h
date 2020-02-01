@@ -8,9 +8,8 @@
 
 #pragma once
 
-#if !defined(_WX_DEFS_H_)
-    #include <stdint.h>  // needed for standard types
-#endif
+#include <stdint.h>  // needed for standard types
+#include <cstdlib>   // needed for std::abs
 
 #if defined(_WIN32)
     #include <wtypes.h>
@@ -24,6 +23,19 @@ namespace tt
     extern const char* pszMsgTitle;
     // title for message boxes
     extern const wchar_t* pwszMsgTitle;
+
+    /// Equivalent to Windows RECT structure -- this makes it available on non-Windows
+    /// platforms.
+    typedef struct RECT
+    {
+        int32_t left;
+        int32_t top;
+        int32_t right;
+        int32_t bottom;
+
+        inline int32_t GetWidth() { return std::abs(right - left); }
+        inline int32_t GetHeight() { return std::abs(bottom - top); }
+    } RECT;
 
 #if defined(_WIN32)
     // Handle to use to load resources

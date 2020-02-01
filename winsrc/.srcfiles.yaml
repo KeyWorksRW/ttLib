@@ -25,9 +25,8 @@ Files:
     ../src/ttstr.cpp           # ttCStr class
     ../src/ttstrfuncs.cpp      # string handling and ttStr class
 
-    ../ttwx/src/ttstring.cpp    # std::string class with some additional functionality
-    ../ttwx/src/tttextfile.cpp  # Class for reading and writing text files.
-    ../ttwx/src/ttwx.cpp        # Miscellaneous functions
+    ../src/ttstring.cpp        # std::string class with some additional functionality
+    ../src/tttextfile.cpp      # Class for reading and writing text files.
 
 # Windows only files
 
