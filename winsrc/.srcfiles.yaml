@@ -44,3 +44,4 @@ Files:
     ttshadebtn.cpp      # ttCShadeBtn class
     ttwin.cpp           # ttCWin class
     ttwinmisc.cpp       # Miscellaneous functions for use on Windows
+    ttwstr.cpp          # Wide-character string class

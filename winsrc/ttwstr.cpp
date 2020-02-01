@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:      ttCWStr
-// Purpose:   SBCS string class
+// Purpose:   Wide-character string class
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2004-2019 KeyWorks Software (Ralph Walden)
 // License:   Apache License (see ../LICENSE)
