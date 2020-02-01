@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include <string_view>
+
 /**
  * @file
  * The main difference between these and wxASSERT macros is that this one will display the last system error (if
