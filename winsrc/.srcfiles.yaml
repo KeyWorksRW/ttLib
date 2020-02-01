@@ -28,6 +28,12 @@ Files:
     ../src/ttstring.cpp        # std::string class with some additional functionality
     ../src/tttextfile.cpp      # Class for reading and writing text files.
 
+    # This is obsolete and should be replaced with pugixml!
+    ttxml.cpp
+
+    # This is obsolete and should be replaced by ttTextFile or ttTextView
+    ttlinefile.cpp
+
 # Windows only files
 
     ttbasethread.cpp    # ttCBaseThread class
