@@ -8,6 +8,14 @@
 
 #pragma once
 
+#if defined(_TTLIB_H_GUARD_)
+    #error Do not #include ttLibwin.h if you have already #included ttlib.h
+#endif
+
+// clang-format off
+#ifndef _TTLIBWIN_H_GUARD_
+#define _TTLIBWIN_H_GUARD_
+
 #if !defined(_WIN32)
     #error Use ttlib.h if you are not compiling for Windows
 #endif
@@ -386,3 +394,5 @@ inline bool ttIsValidWindow(HWND hwnd)
 {
     return (bool) (hwnd && IsWindow(hwnd));
 };
+
+#endif _TTLIBWIN_H_GUARD_

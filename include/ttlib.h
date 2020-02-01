@@ -8,6 +8,14 @@
 
 #pragma once
 
+#if defined(_TTLIBWIN_H_GUARD_)
+    #error Do not #include ttLib.h if you have already #included ttlibWin.h
+#endif
+
+// clang-format off
+#ifndef _TTLIB_H_GUARD_
+#define _TTLIB_H_GUARD_
+
 #include <stdint.h>  // needed for standard types
 #include <cstdlib>   // needed for std::abs
 
@@ -444,3 +452,5 @@ inline bool ttIsValidWindow(HWND hwnd)
 
 #endif  // defined(_WX_DEFS_H_)
 // clang-format on
+
+#endif // _TTLIB_H_GUARD_
