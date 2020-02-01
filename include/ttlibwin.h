@@ -21,6 +21,7 @@
 #endif
 
 #include <stdint.h>  // needed for standard types
+#include <sstream>
 
 namespace tt
 {
@@ -361,8 +362,14 @@ inline void ttSetResInst(HINSTANCE hinst)
 const char* ttGetResString(size_t idString);
 const char* ttLoadTxtResource(int idRes, uint32_t* pcbFile = nullptr, HINSTANCE hinst = tt::hinstResources);
 
-int       ttMsgBox(UINT idResource, UINT uType = MB_OK | MB_ICONWARNING);
-int       ttMsgBox(const char* pszMsg, UINT uType = MB_OK | MB_ICONWARNING);
+int ttMsgBox(UINT idResource, UINT uType = MB_OK | MB_ICONWARNING);
+int ttMsgBox(const char* pszMsg, UINT uType = MB_OK | MB_ICONWARNING);
+
+inline int ttMsgBox(const std::stringstream& msg)
+{
+    return ttMsgBox(msg.str().c_str(), MB_OK | MB_ICONWARNING);
+}
+
 int cdecl ttMsgBoxFmt(const char* pszFormat, UINT uType, ...);
 int cdecl ttMsgBoxFmt(int idResource, UINT uType, ...);
 
