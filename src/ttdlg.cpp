@@ -10,9 +10,9 @@
 
 #if defined(_WIN32)
 
-#include <VersionHelpers.h>
+    #include <VersionHelpers.h>
 
-#include "../include/ttdlg.h"
+    #include "../include/ttdlg.h"
 
 static HMONITOR ttKeyMonitorFromWindow(HWND hwnd, DWORD dwFlags);
 static BOOL     ttKeyMonitorFromPoint(HMONITOR hMonitor, LPMONITORINFO lpmi);
@@ -35,19 +35,19 @@ INT_PTR ttCDlg::DoModal(HWND hwndParent)
         m_hwndParent = hwndParent;
 
     m_bModeless = false;
-    INT_PTR result = ::DialogBoxParamA(tt::hinstResources, MAKEINTRESOURCEA(m_idTemplate), m_hwndParent,
+    INT_PTR result = ::DialogBoxParamA(GetModuleHandle(NULL), MAKEINTRESOURCEA(m_idTemplate), m_hwndParent,
                                        (DLGPROC) ttpriv::DlgProc, (LPARAM) this);
 
-#ifdef _DEBUG
-    // If creation failed because there was no dialog resource, report that specific condition under _DEBUG
+    #if !defined(NDEBUG)  // Starts debug section.
+    // If creation failed because there was no dialog resource, report that specific condition in Debug builds.
     if (result == -1)
     {
-        HRSRC hrsrc = FindResourceA(tt::hinstResources, MAKEINTRESOURCEA(m_idTemplate), (char*) RT_DIALOG);
+        HRSRC hrsrc = FindResourceA(GetModuleHandle(NULL), MAKEINTRESOURCEA(m_idTemplate), (char*) RT_DIALOG);
         ttASSERT_MSG(hrsrc, "Missing dialog template");
         if (!hrsrc)
             return result;
     }
-#endif
+    #endif
     ttASSERT_MSG(result != -1, "Failed to create dialog box");
     return result;
 }
@@ -59,7 +59,7 @@ HWND ttCDlg::DoModeless(HWND hwndParent)
     if (hwndParent)
         m_hwndParent = hwndParent;
     m_bModeless = true;
-    return ::CreateDialogParamA(tt::hinstResources, MAKEINTRESOURCEA(m_idTemplate), m_hwndParent,
+    return ::CreateDialogParamA(GetModuleHandle(NULL), MAKEINTRESOURCEA(m_idTemplate), m_hwndParent,
                                 (DLGPROC) ttpriv::DlgProc, (LPARAM) this);
 }
 
@@ -95,12 +95,12 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
             delete pThis->m_pShadedBtns;
             pThis->m_pShadedBtns = nullptr;
         }
-#ifdef _DEBUG
+    #if !defined(NDEBUG)  // Starts debug section.
         // This allows a destructor to verify that the window was destroyed before the destructor was called
 
         if (pThis->m_bModeless)
             pThis->m_hwnd = nullptr;
-#endif
+    #endif
     }
 
     LRESULT lResult = 0;  // This is passed by reference to OnCmdCaseMap
@@ -122,7 +122,8 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
                     if (pThis->m_bCancelEnd)
                         pThis->m_bCancelEnd = false;
                     else
-                        pThis->CloseDialog(IDOK);  // do NOT call EndDialog--it will fail if this is a modeless dialog
+                        pThis->CloseDialog(
+                            IDOK);  // do NOT call EndDialog--it will fail if this is a modeless dialog
                     break;
 
                 case IDCANCEL:
@@ -354,13 +355,13 @@ static HMONITOR(WINAPI* s_pfnMonitorFromWindow)(HWND, DWORD);
 static HMONITOR(WINAPI* s_pfnMonitorFromPoint)(POINT, DWORD);
 static BOOL(WINAPI* s_pfnGetMonitorInfo)(HMONITOR, LPMONITORINFO);
 
-#ifndef xPRIMARY_MONITOR
-#define xPRIMARY_MONITOR ((HMONITOR) 0x12340042)
-#endif
+    #ifndef xPRIMARY_MONITOR
+        #define xPRIMARY_MONITOR ((HMONITOR) 0x12340042)
+    #endif
 
-#ifndef MONITORINFOF_PRIMARY
-#define MONITORINFOF_PRIMARY 0x00000001
-#endif
+    #ifndef MONITORINFOF_PRIMARY
+        #define MONITORINFOF_PRIMARY 0x00000001
+    #endif
 
 static bool InitMonitorStubs()
 {
@@ -371,8 +372,7 @@ static bool InitMonitorStubs()
     fTried = true;
     HMODULE hUser32 = GetModuleHandle(TEXT("USER32"));
 
-    if (hUser32 &&
-        (*(FARPROC*) & s_pfnMonitorFromWindow = GetProcAddress(hUser32, "MonitorFromWindow")) != NULL &&
+    if (hUser32 && (*(FARPROC*) & s_pfnMonitorFromWindow = GetProcAddress(hUser32, "MonitorFromWindow")) != NULL &&
         (*(FARPROC*) & s_pfnMonitorFromPoint = GetProcAddress(hUser32, "MonitorFromPoint")) != NULL &&
         (*(FARPROC*) & s_pfnGetMonitorInfo = GetProcAddress(hUser32, "GetMonitorInfoA")) != NULL)
         return true;
@@ -388,7 +388,7 @@ static HMONITOR ttKeyMonitorFromWindow(HWND hwnd, DWORD dwFlags)
         return xPRIMARY_MONITOR;
 }
 
-#if 0
+    #if 0
 static HMONITOR ttKeyMonitorFromPoint(POINT pt, DWORD dwFlags)
 {
     if (InitMonitorStubs())
@@ -396,7 +396,7 @@ static HMONITOR ttKeyMonitorFromPoint(POINT pt, DWORD dwFlags)
     else
         return xPRIMARY_MONITOR;
 }
-#endif
+    #endif
 
 static BOOL ttKeyMonitorFromPoint(HMONITOR hMonitor, LPMONITORINFO lpmi)
 {

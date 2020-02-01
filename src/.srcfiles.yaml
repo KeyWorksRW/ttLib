@@ -12,7 +12,7 @@ Options:
     Crt_rel:    dll        # [static | dll] type of CRT to link to in release builds
     Crt_dbg:    dll        # [static | dll] type of CRT to link to in debug builds
 
-    IncDirs:    ./;../ttwx/src
+    IncDirs:    ./;../include/;../ttwx/src/
     TargetDir:  ./lib
 
 Files:

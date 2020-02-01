@@ -184,7 +184,7 @@ protected:
     // Class members
 
     char* m_pCurrent;
-#ifdef _DEBUG
+#if !defined(NDEBUG)  // Starts debug section.
     char* m_pszFile;
 #endif
 

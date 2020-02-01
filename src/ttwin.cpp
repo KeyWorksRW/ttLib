@@ -114,10 +114,11 @@ bool ttCWin::CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWN
 
     if (prcPosition != NULL)
         ::CreateWindowExA(dwExStyle, m_pszClassName, pszTitle, dwStyle, prcPosition->left, prcPosition->top,
-                          ttRC_WIDTH(prcPosition), ttRC_HEIGHT(prcPosition), hwndParent, hmenu, m_hinst, (void*) this);
+                          ttRC_WIDTH(prcPosition), ttRC_HEIGHT(prcPosition), hwndParent, hmenu, m_hinst,
+                          (void*) this);
     else
-        ::CreateWindowExA(dwExStyle, m_pszClassName, pszTitle, dwStyle, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-                          CW_USEDEFAULT, hwndParent, hmenu, m_hinst, (void*) this);
+        ::CreateWindowExA(dwExStyle, m_pszClassName, pszTitle, dwStyle, CW_USEDEFAULT, CW_USEDEFAULT,
+                          CW_USEDEFAULT, CW_USEDEFAULT, hwndParent, hmenu, m_hinst, (void*) this);
 
     return ttIsValidWindow(m_hwnd);
 }
@@ -145,8 +146,8 @@ bool ttCWin::AttachWnd(HWND hwnd)
         return false;
     m_hwnd = hwnd;
 
-    // Deleting m_pwc and getting the window's class name makes it possible to call CreateWnd and create another window
-    // of the same type that we attached to.
+    // Deleting m_pwc and getting the window's class name makes it possible to call CreateWnd and create another
+    // window of the same type that we attached to.
 
     ttCStr cszClassName(256);
     if (::GetClassNameA(hwnd, cszClassName, (int) cszClassName.SizeBuffer()) != 0)

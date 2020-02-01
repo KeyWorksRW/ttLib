@@ -9,8 +9,10 @@
 #include "pch.h"
 
 #include <cassert>
+#include <string>
 
-#include "../include/ttstr.h"  // ttCStr
+#include "../include/ttdebug.h"  // ttASSERT macros
+#include "../include/ttstr.h"    // ttCStr
 
 #if __cplusplus >= 201703L
     #include <filesystem>
@@ -32,6 +34,46 @@ namespace ttpriv
 #endif
 
 #define DEST_SIZE (ttSize(m_psz) - sizeof(char))
+
+char* ttCStr::append(const char* psz)
+{
+    if (psz == nullptr)
+        return m_psz;
+
+    if (!m_psz)
+        m_psz = ttStrDup(psz);
+    else
+    {
+        size_t cbNew = std::strlen(psz) + sizeof(char);
+        size_t cbOld = std::strlen(m_psz) + sizeof(char);
+        m_psz = (char*) ttReAlloc(m_psz, cbNew + cbOld);
+        std::strcpy(m_psz + (cbOld - 1), psz);
+    }
+    return m_psz;
+}
+
+size_t ttCStr::find(const char* psz)
+{
+    if (!m_psz || !psz)
+        return std::string::npos;
+    const char* pszFound = std::strstr(m_psz, psz);
+    return (pszFound ? (pszFound - m_psz) : std::string::npos);
+}
+
+bool ttCStr::starts_with(const char* pszSub)
+{
+    if (!m_psz || !pszSub)
+        return false;
+    const char* pszMain = m_psz;
+    while (*pszSub)
+    {
+        if (*pszMain != *pszSub)
+            return false;  // doesn't match even when case is made the same
+        ++pszMain;
+        ++pszSub;
+    }
+    return true;
+}
 
 char* ttCStr::AppendFileName(const char* pszFile)
 {

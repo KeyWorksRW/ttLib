@@ -15,14 +15,17 @@
 // The printf()/vprintf() methods are similar to the CRT versions only these don't support precision, width, or padding
 // These methods support c, C, d, u, x, X, s, S
 
+// clang-format off
+
 // The following non-standard options are supported:
 //
-//      %kd - formats an integer with commas. I.e., 54321 would be formatted as 54,321
-//      %kq - outputs quotation marks around the string
-//      %ks - adds a 's' to the current buffer if the integer is zero or greater then 1, e.g., printf("item%ks",
-//      cItems); %kS - adds a 's' to the current buffer if the __int64 is zero or greater then 1 %kls - adds a 's' to
-//      the current buffer if the last numeric argument is zero or greater then 1 (printf("%d item%kls", cItems); %kt -
-//      formats a size_t value with commas %ku - formats an unsigned integer with commas
+//   %kd - formats an integer with commas. I.e., 54321 would be formatted as 54,321
+//   %kq - outputs quotation marks around the string
+//   %ks - adds a 's' to the current buffer if the integer is zero or greater then 1, e.g., printf("item%ks", cItems);
+//   %kS - adds a 's' to the current buffer if the __int64 is zero or greater then 1
+//   %kls - adds a 's' to the current buffer if the last numeric argument is zero or greater then 1
+//                                                                  (printf("%d item%kls", cItems);
+//   %kt - formats a size_t value with commas %ku - formats an unsigned integer with commas
 
 //      %kI64d -- handles int64_t, adding commas if needed
 //      %kI64u -- handles uint64_t, adding commas if needed
@@ -32,7 +35,13 @@
 //      %ke - formats a system message assuming the argument is an error number
 //      %kr - argument is a resource identifier to a string
 
+// clang-format on
+
 #pragma once
+
+#define _TT_TCSTR   // Used by ttString to determine if constructor is available or not
+
+#include <cstring>
 
 #include "ttheap.h"   // ttCHeap
 #include "ttdebug.h"  // ttASSERT macros
@@ -64,6 +73,28 @@ public:
 
     ~ttCStr() { Delete(); }
 
+    // std::string equivalents
+
+    char*  append(const char* psz);
+    char   back() { return (!empty() ? m_psz[size() - 1] : 0); }
+    char*  c_str() { return m_psz; }  // Note that this ALWAYS returns a char* type unlike std::string.c_str()
+    void   clear() { Delete(); }
+    char*  data() { return m_psz; }   // Note that this ALWAYS returns a char* type unlike std::string.data()
+    bool   empty() { return (!m_psz || !m_psz[0]); }
+    char   front() { return (m_psz ? m_psz[0] : 0); }
+    size_t length() { return (m_psz ? std::strlen(m_psz) : 0); }
+    void   reserve(size_t cap) { ReSize(cap); }
+    void   shrink_to_fit() { ReSize(size()); }
+    size_t size() { return length(); }
+    int    compare(const char* psz) { return (m_psz ? std::strcmp(m_psz, psz) : 1); }
+    size_t find(const char* psz);
+    bool   starts_with(const char* psz);
+
+    // TODO: [KeyWorks - 11-27-2019]
+    // size_t capacity(); // this would require adding a m_cap member and tracking all memory size.
+    // resize()
+    // rfind(); this would be new for us
+
     // Method naming conventions are lower camel case when matching tt:: namespace functions
 
     char* FindExt(const char* pszExt)
@@ -76,11 +107,12 @@ public:
     char* FindChar(char ch) { return ttStrChr(m_psz, ch); }
     char* FindLastChar(char ch) { return ttStrChrR(m_psz, ch); }
 
-    // length of string in bytes including 0 terminator
+    // Length of string in bytes including 0 terminator.
     size_t StrByteLen() { return m_psz ? ttStrByteLen(m_psz) : 0; }
-    // number of characters (use strByteLen() for buffer size calculations)
+    // Number of characters (use strByteLen() for buffer size calculations).
     size_t StrLen() { return m_psz ? ttStrLen(m_psz) : 0; }
 
+    // Returns 0 on success, EINVAL if psz == nullptr, EOVERFLOW if overflow.
     int StrCat(const char* psz);
     int StrCopy(const char* psz);
 
@@ -193,7 +225,7 @@ public:
 
     void operator=(const char* psz);
     void operator=(const wchar_t* pwsz) { CopyWide(pwsz); };
-    void operator=(ttCStr& csz) { *this = (char*) csz; }
+    void operator=(ttCStr& csz) { *this = csz.GetPtr(); }
 
     void operator+=(const char* psz);
     void operator+=(char ch);

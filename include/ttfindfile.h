@@ -42,7 +42,7 @@ public:
     {
         m_hfind = FindFirstFileExA(pszFilePattern, FindExInfoBasic, this, FindExSearchNameMatch, nullptr,
                                    FIND_FIRST_EX_LARGE_FETCH);
-    #ifdef _DEBUG
+    #if !defined(NDEBUG)  // Starts debug section.
         m_pszFilename = cFileName;
     #endif
     }
@@ -104,7 +104,7 @@ public:
     bool operator==(char* psz) { return (IsEmpty()) ? false : ttIsSameStrI(cFileName, psz); }
 
 private:
-    #ifdef _DEBUG
+    #if !defined(NDEBUG)  // Starts debug section.
     char* m_pszFilename;
     #endif
 

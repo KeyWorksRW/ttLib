@@ -40,5 +40,7 @@ public:
     void ResetColor();
 
 private:
+#if defined(_WIN32) && !defined(PTEST)
     uint16_t m_defAttributes;
+#endif
 };

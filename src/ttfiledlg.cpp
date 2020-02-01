@@ -10,7 +10,7 @@
 
 #if defined(_WIN32)
 
-#include "../include/ttfiledlg.h"
+    #include "../include/ttfiledlg.h"
 
 ttCFileDlg::ttCFileDlg(HWND hwndParent)
 {
@@ -23,10 +23,10 @@ ttCFileDlg::ttCFileDlg(HWND hwndParent)
     // If we are running on Windows XP or higher, then make room for pvReserved, dwReserved, and FlagsEx.
     // That's why we allocate OPENFILENAME rather then just declaring it in our class
 
-#if (_WIN32_WINNT < 0x0500)
+    #if (_WIN32_WINNT < 0x0500)
     if (_osv.dwMajorVersion >= 5)
         cbStruct += sizeof(void*) + sizeof(DWORD) + sizeof(DWORD);
-#endif
+    #endif
     m_pofn = (OPENFILENAMEA*) ttCalloc(cbStruct);
 
     m_cszFileName.ReSize(MAX_PATH);
@@ -37,8 +37,8 @@ ttCFileDlg::ttCFileDlg(HWND hwndParent)
     m_pofn->lpstrFile = m_cszFileName;
     m_pofn->nMaxFile = MAX_PATH;
     m_pofn->lpfnHook = ttpriv::OFNHookProc;
-    m_pofn->Flags = OFN_ENABLESIZING | OFN_EXPLORER | OFN_ENABLEHOOK | OFN_FILEMUSTEXIST |
-                    OFN_HIDEREADONLY | OFN_DONTADDTORECENT;
+    m_pofn->Flags = OFN_ENABLESIZING | OFN_EXPLORER | OFN_ENABLEHOOK | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY |
+                    OFN_DONTADDTORECENT;
     m_pofn->lCustData = (LPARAM) this;
 
     m_bRepositionWindow = false;
@@ -54,10 +54,10 @@ bool ttCFileDlg::GetOpenName()
 {
     if (!::GetOpenFileNameA(m_pofn))
     {
-#ifdef _DEBUG
+    #if !defined(NDEBUG)                       // Starts debug section.
         DWORD error = CommDlgExtendedError();  // Will be 0 if the user cancelled, else it's an actual error
         ttASSERT_MSG(error == 0, "An error occurred in the Open dialog box");
-#endif
+    #endif
         return false;
     }
 
@@ -73,10 +73,10 @@ bool ttCFileDlg::GetSaveName()
 
     if (!::GetSaveFileNameA(m_pofn))
     {
-#ifdef _DEBUG
+    #if !defined(NDEBUG)                       // Starts debug section.
         DWORD error = CommDlgExtendedError();  // Will be 0 if the user cancelled, else it's an actual error
         ttASSERT_MSG(error == 0, "An error occurred in the Open dialog box");
-#endif
+    #endif
         return false;
     }
     FixExtension();
@@ -148,10 +148,10 @@ UINT_PTR CALLBACK ttpriv::OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */,
 
         if (!IsRectEmpty(&pThis->m_rcPosition))
             pThis->m_bRepositionWindow = true;
-#if 0  // REVIEW: [randalphwa - 09-03-2018] enable this if we add CenterWindow()
+    #if 0  // REVIEW: [randalphwa - 09-03-2018] enable this if we add CenterWindow()
         else
             CenterWindow(GetParent(GetParent(hdlg)), GetParent(hdlg));
-#endif
+    #endif
         return TRUE;
     }
 

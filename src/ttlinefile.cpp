@@ -61,9 +61,10 @@ void ttCLineFile::DeleteLine(int line)
 
 bool ttCLineFile::ReadFile(const char* pszFile)
 {
-    if (m_file.GetBeginPosition()) {
-        // REVIEW: [KeyWorks - 09-03-2019] If we need to support this, then first we have to allocate memory for every
-        // string that is currently stored that hasn't been allocated yet.
+    if (m_file.GetBeginPosition())
+    {
+        // REVIEW: [KeyWorks - 09-03-2019] If we need to support this, then first we have to allocate memory for
+        // every string that is currently stored that hasn't been allocated yet.
 
         ttMsgBox("You've already read a file into ttCLineFile");
         return false;
@@ -147,7 +148,7 @@ void ttCLineFile::ReplaceLine(int line, const char* pszLine)
 
 void ttCLineFile::Sort(int firstLine, int lastLine, int column)
 {
-#if defined(_DEBUG)
+#if !defined(NDEBUG)  // Starts debug section.
     for (int itmp = firstLine; itmp <= lastLine; ++itmp)
     {
         if (!m_aptrs[itmp].pszLine)
@@ -161,7 +162,7 @@ void ttCLineFile::Sort(int firstLine, int lastLine, int column)
             return;
         }
     }
-#endif  // _DEBUG
+#endif
 
     m_SortColumn = column;
     qsortCol(firstLine, lastLine);

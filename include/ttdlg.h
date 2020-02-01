@@ -29,7 +29,7 @@
     #endif
 
     #ifndef __DLG_ID__
-        #ifdef _DEBUG
+        #if !defined(NDEBUG)  // Starts debug section.
             #define DLG_ID(id) tt::CheckItemID(*this, id, #id, __FILE__, __func__, __LINE__)
         #else
             #define DLG_ID(id) id
@@ -427,7 +427,7 @@ public:
     void Reset() const { SendMessage(LB_RESETCONTENT); }
     void SetCount(int cItems)
     {
-    #ifdef _DEBUG
+    #if !defined(NDEBUG)  // Starts debug section.
         LRESULT result =
     #endif
             SendMessage(LB_SETCOUNT, (WPARAM) cItems);

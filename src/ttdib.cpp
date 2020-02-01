@@ -16,20 +16,20 @@
 
 #if defined(_WIN32)
 
-#include "../include/ttheap.h"
-#include "../include/ttdib.h"
+    #include "../include/ttheap.h"
+    #include "../include/ttdib.h"
 
-#ifndef WIDTHBYTES
-#define WIDTHBYTES(bits) (((bits) + 31) / 32 * 4)
-#endif
+    #ifndef WIDTHBYTES
+        #define WIDTHBYTES(bits) (((bits) + 31) / 32 * 4)
+    #endif
 
-#if 0                      // [randalphwa - 1/10/2019] These are presumably used to indentify type, but nothing uses them
-#define BFT_ICON 0x4349    // 'IC'
-#define BFT_BITMAP 0x4d42  // 'BM'
-#define BFT_CURSOR 0x5450  // 'PT'
-#endif
+    #if 0  // [randalphwa - 1/10/2019] These are presumably used to indentify type, but nothing uses them
+        #define BFT_ICON   0x4349  // 'IC'
+        #define BFT_BITMAP 0x4d42  // 'BM'
+        #define BFT_CURSOR 0x5450  // 'PT'
+    #endif
 
-#define IS_WIN30_DIB(lpbi) ((*(LPDWORD)(lpbi)) == sizeof(BITMAPINFOHEADER))
+    #define IS_WIN30_DIB(lpbi) ((*(LPDWORD)(lpbi)) == sizeof(BITMAPINFOHEADER))
 
 ttCDib::ttCDib()
 {
@@ -130,7 +130,7 @@ HDIB ttCDib::Create(DWORD dwWidth, DWORD dwHeight, WORD wBitCount)
     lpbi = (LPBITMAPINFOHEADER)(hDib);
     *lpbi = m_bi;
 
-    return hDib;  //return handle to the DIB
+    return hDib;  // return handle to the DIB
 }
 
 long ttCDib::Draw(HDC pDC, long xoffset, long yoffset)
@@ -138,10 +138,10 @@ long ttCDib::Draw(HDC pDC, long xoffset, long yoffset)
     if (hDib && pDC)
     {
         // palette must be correctly filled
-        char* lpDIB = (char*) hDib;  //set image to hdc...
+        char* lpDIB = (char*) hDib;  // set image to hdc...
         SetStretchBltMode(pDC, COLORONCOLOR);
-        SetDIBitsToDevice(pDC, xoffset, yoffset, m_bi.biWidth, m_bi.biHeight, 0, 0, 0,
-                          m_bi.biHeight, GetBits(), (BITMAPINFO*) lpDIB, DIB_RGB_COLORS);
+        SetDIBitsToDevice(pDC, xoffset, yoffset, m_bi.biWidth, m_bi.biHeight, 0, 0, 0, m_bi.biHeight, GetBits(),
+                          (BITMAPINFO*) lpDIB, DIB_RGB_COLORS);
         return 1;
     }
     return 0;
@@ -152,10 +152,10 @@ long ttCDib::Stretch(HDC pDC, long xoffset, long yoffset, long xsize, long ysize
     if (hDib && pDC)
     {
         // palette must be correctly filled
-        char* lpDIB = (char*) hDib;  //set image to hdc...
+        char* lpDIB = (char*) hDib;  // set image to hdc...
         SetStretchBltMode(pDC, COLORONCOLOR);
-        StretchDIBits(pDC, xoffset, yoffset, xsize, ysize, 0, 0, m_bi.biWidth, m_bi.biHeight,
-                      GetBits(), (BITMAPINFO*) lpDIB, DIB_RGB_COLORS, SRCCOPY);
+        StretchDIBits(pDC, xoffset, yoffset, xsize, ysize, 0, 0, m_bi.biWidth, m_bi.biHeight, GetBits(),
+                      (BITMAPINFO*) lpDIB, DIB_RGB_COLORS, SRCCOPY);
         return 1;
     }
     return 0;
@@ -305,14 +305,14 @@ BYTE ttCDib::GetNearestIndex(RGBQUAD c)
     return j;
 }
 
-#define HSLMAX 240 /* H,L, and S vary over 0-HSLMAX */
-#define RGBMAX 255 /* R,G, and B vary over 0-RGBMAX */
-                   /* HSLMAX BEST IF DIVISIBLE BY 6 */
-                   /* RGBMAX, HSLMAX must each fit in a byte. */
-/* Hue is undefined if Saturation is 0 (grey-scale) */
-/* This value determines where the Hue scrollbar is */
-/* initially set for achromatic colors */
-#define UNDEFINED (HSLMAX * 2 / 3)
+    #define HSLMAX 240 /* H,L, and S vary over 0-HSLMAX */
+    #define RGBMAX 255 /* R,G, and B vary over 0-RGBMAX */
+                       /* HSLMAX BEST IF DIVISIBLE BY 6 */
+                       /* RGBMAX, HSLMAX must each fit in a byte. */
+    /* Hue is undefined if Saturation is 0 (grey-scale) */
+    /* This value determines where the Hue scrollbar is */
+    /* initially set for achromatic colors */
+    #define UNDEFINED (HSLMAX * 2 / 3)
 
 RGBQUAD ttCDib::RGBtoHSL(RGBQUAD lRGBColor)
 {
@@ -339,7 +339,8 @@ RGBQUAD ttCDib::RGBtoHSL(RGBQUAD lRGBColor)
         if (L <= (HSLMAX / 2))  // saturation
             S = (((cMax - cMin) * HSLMAX) + ((cMax + cMin) / 2)) / (cMax + cMin);
         else
-            S = ((((cMax - cMin) * HSLMAX) + ((2 * RGBMAX - cMax - cMin) / 2)) / (2 * RGBMAX - cMax - cMin)) & 0xFF;
+            S = ((((cMax - cMin) * HSLMAX) + ((2 * RGBMAX - cMax - cMin) / 2)) / (2 * RGBMAX - cMax - cMin)) &
+                0xFF;
         // hue
         Rdelta = (((cMax - R) * (HSLMAX / 6)) + ((cMax - cMin) / 2)) / (cMax - cMin);
         Gdelta = (((cMax - G) * (HSLMAX / 6)) + ((cMax - cMin) / 2)) / (cMax - cMin);

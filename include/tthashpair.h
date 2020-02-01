@@ -52,7 +52,7 @@ public:
     size_t GetUrlVal(const char* pszURL) const { return GetVal(ttHashFromURL(pszURL)); }
     void   RemoveURL(const char* pszURL) { Remove(ttHashFromURL(pszURL)); }
 
-#ifdef _DEBUG
+#if !defined(NDEBUG)  // Starts debug section.
     // Verifies that the hash numbers are in numerical order
     void Verify()
     {

@@ -8,7 +8,14 @@
 
 #include "pch.h"
 
+#include <cstdio>  // for printf
+
 #include "../include/ttconsole.h"  // ttConsoleColor
+
+#ifdef __clang__
+    #pragma GCC diagnostic ignored \
+        "-Wformat-security"  // format string is not a string literal (potentially insecure)
+#endif
 
 ttConsoleColor::ttConsoleColor(int clr)
 {
@@ -35,7 +42,8 @@ void ttConsoleColor::SetColor(int clr)
     CONSOLE_SCREEN_BUFFER_INFO csbi;
 
     GetConsoleScreenBufferInfo(hConsole, &csbi);
-    SetConsoleTextAttribute(hConsole, (csbi.wAttributes & 0xFFF0) | (WORD) clr);  // Foreground colors take up the least significant byte
+    SetConsoleTextAttribute(hConsole, (csbi.wAttributes & 0xFFF0) |
+                                          (WORD) clr);  // Foreground colors take up the least significant byte
 
 #else   // following section uses ANSI escape codes
     const char* pszClr;

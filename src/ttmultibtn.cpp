@@ -10,8 +10,8 @@
 
 #if defined(_WIN32)
 
-#include "../include/ttmultibtn.h"  // ttCMultiBtn
-#include "../include/ttshadebtn.h"  // ttCShadeBtn
+    #include "../include/ttmultibtn.h"  // ttCMultiBtn
+    #include "../include/ttshadebtn.h"  // ttCShadeBtn
 
 BOOL WINAPI ttpriv::EnumBtnProc(HWND hwnd, LPARAM lval)
 {
@@ -51,8 +51,9 @@ void ttCMultiBtn::Initialize(HWND hwndParent, BTN_SHADE shade)
 
 void ttCMultiBtn::SetIcon(int idBtn, int idIcon, UINT nIconAlign)
 {
-    ttASSERT_MSG(m_aBtns.GetCount(),
-                 "Calling SetIcon without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
+    ttASSERT_MSG(
+        m_aBtns.GetCount(),
+        "Calling SetIcon without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
 
     for (size_t i = 0; i < m_aBtns.GetCount(); i++)
     {
@@ -62,15 +63,16 @@ void ttCMultiBtn::SetIcon(int idBtn, int idIcon, UINT nIconAlign)
             return;
         }
     }
-#ifdef _DEBUG
+    #if !defined(NDEBUG)  // Starts debug section.
     ttTrace("ttCMultiBtn::SetIcon was unable to find the button id: %d", idBtn);
-#endif
+    #endif
 }
 
 void ttCMultiBtn::SetIcon(int idBtn, const char* pszIconName, UINT nIconAlign)
 {
-    ttASSERT_MSG(m_aBtns.GetCount(),
-                 "Calling SetIcon without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
+    ttASSERT_MSG(
+        m_aBtns.GetCount(),
+        "Calling SetIcon without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
 
     for (size_t i = 0; i < m_aBtns.GetCount(); i++)
     {
@@ -80,15 +82,16 @@ void ttCMultiBtn::SetIcon(int idBtn, const char* pszIconName, UINT nIconAlign)
             return;
         }
     }
-#ifdef _DEBUG
+    #if !defined(NDEBUG)  // Starts debug section.
     ttTrace("ttCMultiBtn::SetIcon was unable to find the button id: %d", idBtn);
-#endif
+    #endif
 }
 
 ttCShadeBtn* ttCMultiBtn::FindShadeBtn(int id)
 {
-    ttASSERT_MSG(m_aBtns.GetCount(),
-                 "Calling FindShadeBtn without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
+    ttASSERT_MSG(
+        m_aBtns.GetCount(),
+        "Calling FindShadeBtn without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
 
     for (size_t i = 0; i < m_aBtns.GetCount(); i++)
     {

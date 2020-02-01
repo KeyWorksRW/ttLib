@@ -99,9 +99,8 @@ size_t ttCList::Add(const char* pszKey)
     if (m_cItems + 1 >= m_cAllocated)  // the +1 is paranoia -- it shouldn't really be necessary
     {
         m_cAllocated += 32;  // add room for 32 strings at a time
-        m_aptrs = (char**) (m_aptrs ?
-                                ttReAlloc(m_aptrs, m_cAllocated * sizeof(char*)) :
-                                ttMalloc(m_cAllocated * sizeof(char*)));
+        m_aptrs = (char**) (m_aptrs ? ttReAlloc(m_aptrs, m_cAllocated * sizeof(char*)) :
+                                      ttMalloc(m_cAllocated * sizeof(char*)));
     }
     m_aptrs[m_cItems] = ttStrDup(pszKey);
     return m_cItems++;
@@ -167,7 +166,8 @@ void ttCList::Remove(size_t pos)
                 --phshPair[posHsh].val;
         }
         ttCStr cszKey;
-        char*  pszNormalized = NormalizeString(m_aptrs[pos], cszKey);  // return will point to either pszKey or cszKey
+        char*  pszNormalized =
+            NormalizeString(m_aptrs[pos], cszKey);  // return will point to either pszKey or cszKey
         m_HashPair.Remove(pszNormalized);
     }
 
@@ -187,11 +187,9 @@ void ttCList::Delete()
 {
     if (m_cItems == 0)
         return;  // we haven't added anything yet, so nothing to do!
-    if (m_bCreated && m_hHeap && m_hHeap != GetProcessHeap())
+    if (isCreated() && !isMainHeap())
     {
-        HeapDestroy(m_hHeap);
-        m_hHeap = HeapCreate(m_bSerialize ? 0 : HEAP_NO_SERIALIZE, 4096, 0);
-        m_bCreated = true;
+        DeleteAll();
     }
     else
     {  // if we didn't create the heap ourselves, then we need to delete each individual item
@@ -263,9 +261,8 @@ void ttCList::InsertAt(size_t pos, const char* pszKey)
     if (m_cItems + 1 >= m_cAllocated)  // the +1 is paranoia -- it shouldn't really be necessary
     {
         m_cAllocated += 32;  // add room for 32 strings at a time
-        m_aptrs = (char**) (m_aptrs ?
-                                ttReAlloc(m_aptrs, m_cAllocated * sizeof(char*)) :
-                                ttMalloc(m_cAllocated * sizeof(char*)));
+        m_aptrs = (char**) (m_aptrs ? ttReAlloc(m_aptrs, m_cAllocated * sizeof(char*)) :
+                                      ttMalloc(m_cAllocated * sizeof(char*)));
     }
     memmove((void*) (m_aptrs + pos + 1), (void*) (m_aptrs + pos), (m_cItems - pos + 1) * sizeof(char*));
 
@@ -416,11 +413,9 @@ void ttCDblList::Delete()
     if (m_cItems == 0)
         return;  // we haven't added anything yet, so nothing to do!
 
-    if (m_bCreated && m_hHeap && m_hHeap != GetProcessHeap())
+    if (isCreated() && !isMainHeap())
     {
-        HeapDestroy(m_hHeap);
-        m_hHeap = HeapCreate(m_bSerialize ? 0 : HEAP_NO_SERIALIZE, 4096, 0);
-        m_bCreated = true;
+        DeleteAll();
     }
     else
     {  // if we didn't create the heap ourselves, then we need to delete each individual item
@@ -451,7 +446,8 @@ void ttCDblList::PreventDuplicateKeys()
 void ttCDblList::Add(const char* pszKey, const char* pszVal)
 {
     ttASSERT_NONEMPTY(pszKey);
-    ttASSERT_MSG(pszVal, "NULL pointer!");  // it's okay to add an empty val string as long as it isn't a null pointer
+    ttASSERT_MSG(pszVal,
+                 "NULL pointer!");  // it's okay to add an empty val string as long as it isn't a null pointer
 
     if (!pszKey || !*pszKey || !pszVal)
         return;
@@ -468,9 +464,8 @@ void ttCDblList::Add(const char* pszKey, const char* pszVal)
     if (m_cItems >= m_cAllocated)
     {
         m_cAllocated += 32;  // add room for 32 strings at a time
-        m_aptrs = (DBLPTRS*) (m_aptrs ?
-                                  ttReAlloc(m_aptrs, m_cAllocated * sizeof(DBLPTRS)) :
-                                  ttMalloc(m_cAllocated * sizeof(DBLPTRS)));
+        m_aptrs = (DBLPTRS*) (m_aptrs ? ttReAlloc(m_aptrs, m_cAllocated * sizeof(DBLPTRS)) :
+                                        ttMalloc(m_cAllocated * sizeof(DBLPTRS)));
     }
     m_aptrs[m_cItems].pszKey = ttStrDup(pszKey);
     m_aptrs[m_cItems++].pszVal = ttStrDup(pszVal);
@@ -739,9 +734,8 @@ void ttCStrIntList::Add(const char* pszKey, ptrdiff_t newVal)
     if (m_cItems >= m_cAllocated)
     {
         m_cAllocated += 32;  // add room for 32 strings at a time
-        m_aptrs = (DBLPTRS*) (m_aptrs ?
-                                  ttReAlloc(m_aptrs, m_cAllocated * sizeof(DBLPTRS)) :
-                                  ttMalloc(m_cAllocated * sizeof(DBLPTRS)));
+        m_aptrs = (DBLPTRS*) (m_aptrs ? ttReAlloc(m_aptrs, m_cAllocated * sizeof(DBLPTRS)) :
+                                        ttMalloc(m_cAllocated * sizeof(DBLPTRS)));
     }
     m_aptrs[m_cItems].pszKey = ttStrDup(pszKey);
     m_aptrs[m_cItems].pVal = (ptrdiff_t*) ttMalloc(2 * sizeof(ptrdiff_t));
@@ -755,11 +749,9 @@ void ttCStrIntList::Delete()
     if (m_cItems == 0)
         return;  // we haven't added anything yet, so nothing to do!
 
-    if (m_bCreated && m_hHeap && m_hHeap != GetProcessHeap())
+    if (isCreated() && !isMainHeap())
     {
-        HeapDestroy(m_hHeap);
-        m_hHeap = HeapCreate(m_bSerialize ? 0 : HEAP_NO_SERIALIZE, 4096, 0);
-        m_bCreated = true;
+        DeleteAll();
     }
     else
     {  // if we didn't create the heap ourselves, then we need to delete each individual item
@@ -835,7 +827,7 @@ ptrdiff_t ttCStrIntList::GetValCount(size_t pos) const
 {
     ttASSERT(InRange(pos));
     if (!InRange(pos))
-        return 0;  // there isn't a way to indicate an error other then the ASSERT in _DEBUG builds
+        return 0;  // There isn't a way to indicate an error other then the ASSERT in Debug builds.
     return m_aptrs[pos].pVal[0];
 }
 
@@ -848,7 +840,8 @@ bool ttCStrIntList::GetVal(const char* pszKey, ptrdiff_t* pVal, size_t posVal) c
         return false;
     for (size_t posKey = 0; posKey < m_cItems; ++posKey)
     {
-        if (m_bIgnoreCase ? ttIsSameStrI(m_aptrs[posKey].pszKey, pszKey) : ttIsSameStr(m_aptrs[posKey].pszKey, pszKey))
+        if (m_bIgnoreCase ? ttIsSameStrI(m_aptrs[posKey].pszKey, pszKey) :
+                            ttIsSameStr(m_aptrs[posKey].pszKey, pszKey))
         {
             if ((ptrdiff_t) posVal > m_aptrs[posKey].pVal[0])
                 return false;

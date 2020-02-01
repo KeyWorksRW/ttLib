@@ -51,6 +51,17 @@ public:
     void   Replace(size_t pos, const char* psz);
     void   Swap(size_t posA, size_t posB);
 
+    size_t begin() const { return 0; }
+    size_t end() const { return m_cItems; }
+    size_t erase(size_t pos)
+    {
+        Remove(pos);
+        return pos;
+    }
+    bool   empty() const { return m_cItems == 0; }
+    void   clear() { Delete(); }
+    size_t size() const { return m_cItems; }
+
     size_t GetCount() const { return m_cItems; }
     bool   IsEmpty() const { return m_cItems == 0; }
     bool   InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
@@ -146,7 +157,7 @@ public:
 
     void Add(const char* pszKey, const char* pszVal);
 
-    bool  FindKey(const char* pszKey, size_t* ppos = nullptr) const;
+    bool FindKey(const char* pszKey, size_t* ppos = nullptr) const;
     // Will find the next key after a call to FindKey.
     bool  FindNextKey(const char* pszKey, size_t* ppos) const;
     bool  FindVal(const char* pszVal, size_t* ppos = nullptr) const;
@@ -157,6 +168,10 @@ public:
     char* GetValueAt(size_t pos) const { return GetValAt(pos); }  // to match CSimpleArray::GetValueAt
 
     void Replace(size_t pos, const char* pszKey, const char* pszVal);
+
+    bool   empty() const { return m_cItems == 0; }
+    void   clear() { Delete(); }
+    size_t size() const { return m_cItems; }
 
     size_t GetCount() const { return m_cItems; }
     bool   IsEmpty() const { return m_cItems == 0; }
@@ -230,6 +245,10 @@ public:
     size_t GetCount() const { return m_cItems; }
     bool   InRange(size_t pos) const { return (pos < m_cItems && m_cItems > 0); }
 
+    bool   empty() const { return m_cItems == 0; }
+    void   clear() { Delete(); }
+    size_t size() const { return m_cItems; }
+
     // Deletes all strings
     void Delete();
 
@@ -289,6 +308,10 @@ public:
     const char* Find(size_t id);
     // returns the number of unique id/string pairs added (duplicates ids are not added)
     size_t GetCount() const { return m_cItems; }
+
+    void   clear() { Delete(); }
+    bool   empty() const { return m_cItems == 0; }
+    size_t size() const { return m_cItems; }
 
     // resets the list to empty state (frees all string memory).
     void Delete();

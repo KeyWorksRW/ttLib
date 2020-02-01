@@ -11,7 +11,7 @@
 #include "../include/ttdebug.h"  // ASSERTs
 #include "../include/ttheap.h"   // ttCHeap
 
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(PTEST)
 
 ttCHeap tt::MainHeap;
 
@@ -21,8 +21,8 @@ ttCHeap tt::MainHeap;
         2) bool -> creates a sub-heap, the parameter indicates if the sub-heap should be thread-safe or not
         3) heap handle -> uses another sub-heap, sub-heap is not FreeAllocd in destructor
 
-        #3 is typically used when you want a master ttCHeap class that will share it's sub-heap with all child ttCHeap
-        classes, and FreeAlloc the entire sub-heap at once.
+        #3 is typically used when you want a master ttCHeap class that will share it's sub-heap with all child
+   ttCHeap classes, and FreeAlloc the entire sub-heap at once.
 
             ttCHeap master(true);
             ttCHeap child(master);  // this invokes master::HANDLE() and from then on use master's sub-heap
@@ -36,6 +36,7 @@ ttCHeap::ttCHeap()
 
 ttCHeap::ttCHeap(bool bSerialize)
 {
+    m_bSerialize = bSerialize;
     m_hHeap = HeapCreate(bSerialize ? 0 : HEAP_NO_SERIALIZE, 4096, 0);
     ttASSERT_MSG(m_hHeap, "Unable to create heap");
     if (m_hHeap == nullptr)  // if we can't create a new heap, switch to the process heap
@@ -66,9 +67,11 @@ void* ttCHeap::ttMalloc(size_t cb)
     ttASSERT(pv);
     if (!pv)
         ttOOM();
-#ifdef _DEBUG
+        // clang-format off
+#if !defined(NDEBUG)  // Starts debug section.
     memset(pv, 0xCD, cb);
 #endif
+    // clang-format on
     return pv;
 }
 
@@ -150,6 +153,16 @@ wchar_t* ttCHeap::ttStrDup(const wchar_t* pszSrc, wchar_t** pszDst)
     return *pszDst;
 }
 
+void ttCHeap::DeleteAll()
+{
+    if (isCreated() && !isMainHeap())
+    {
+        HeapDestroy(m_hHeap);
+        m_hHeap = HeapCreate(m_bSerialize ? 0 : HEAP_NO_SERIALIZE, 4096, 0);
+        m_bCreated = true;
+    }
+}
+
 void* ttCalloc(size_t cb)
 {
     return tt::MainHeap.ttCalloc(cb);
@@ -199,4 +212,6 @@ bool ttValidate(const void* pv)
     return tt::MainHeap.ttValidate(pv);
 }
 
+#else  // not defined(_WIN32) || defined(PTEST)
+    #include "ttwxheap.cpp"
 #endif  // defined(_WIN32)

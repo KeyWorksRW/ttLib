@@ -26,8 +26,8 @@
     #pragma comment(lib, "Wininet.lib")
 #endif  // defined(_WIN32)
 
-// Not unsafe in the way that we use it (first call it to get buffer size needed, then call again with correctly sized
-// buffer) #define _CRT_SECURE_NO_DEPRECATE
+// Not unsafe in the way that we use it (first call it to get buffer size needed, then call again with correctly
+// sized buffer) #define _CRT_SECURE_NO_DEPRECATE
 #pragma warning(disable : 4996)  // 'wcstombs': This function or variable may be unsafe.
 
 // CB_END_PAD must be sufficient to allow for a CR/LF, and beginning/ending quotes without overflowing buffer
@@ -55,7 +55,8 @@
 
 ttCFile::ttCFile()
 {
-    m_cbAllocated = 0;  // nothing is allocated until a file is read, or the first output (e.g., writeStr()) is called
+    m_cbAllocated =
+        0;  // nothing is allocated until a file is read, or the first output (e.g., writeStr()) is called
     m_pbuf = m_pCopy = nullptr;
     m_pCurrent = nullptr;
     m_pszLine = nullptr;
@@ -68,8 +69,8 @@ ttCFile::ttCFile()
 ttCFile::ttCFile(ptrdiff_t cb)
 {
     // It's likely we're being give the exact file size, and AllocateBuffer() will round up (to nearest 256 byte
-    // boundary) The upside to calling AllocateBuffer() and AllocateMoreMemory() is keeping all memory allocation in
-    // just two places
+    // boundary) The upside to calling AllocateBuffer() and AllocateMoreMemory() is keeping all memory allocation
+    // in just two places
 
     AllocateBuffer(cb);
     m_curReadLine = 0;
@@ -85,8 +86,8 @@ ttCFile::~ttCFile()
         ttFree(m_pbuf);
 }
 
-// Memory allocation is always rounded up to the nearest 4K boundary. I.e., if you request 1 byte or 4095 bytes, what
-// will actually be allocated is 4096 bytes.
+// Memory allocation is always rounded up to the nearest 4K boundary. I.e., if you request 1 byte or 4095 bytes,
+// what will actually be allocated is 4096 bytes.
 
 void ttCFile::AllocateBuffer(size_t cbInitial)
 {
@@ -115,8 +116,8 @@ void ttCFile::AllocateMoreMemory(size_t cbMore)
 
 bool ttCFile::WriteFile(const char* pszFile)
 {
-    CHECK_FILE_PTR(pszFile);  // returns false on failure
-#ifdef _DEBUG
+    CHECK_FILE_PTR(pszFile);                 // returns false on failure
+#if !defined(NDEBUG)                         // Starts debug section.
     m_pszFile = ttFindFilePortion(pszFile);  // set this so Debugger will see it
 #endif
     ttASSERT_MSG(m_pCurrent > m_pbuf, "Trying to write an empty file!");
@@ -143,8 +144,8 @@ bool ttCFile::WriteFile(const char* pszFile)
 bool ttCFile::ReadFile(const char* pszFile)
 {
     Delete();
-    CHECK_FILE_PTR(pszFile);  // returns on failure
-#ifdef _DEBUG
+    CHECK_FILE_PTR(pszFile);                 // returns on failure
+#if !defined(NDEBUG)                         // Starts debug section.
     m_pszFile = ttFindFilePortion(pszFile);  // set this so Debugger will see it
 #endif
 
@@ -312,15 +313,15 @@ HRESULT ttCFile::ReadFile(IStream* pStream)  // _WINDOWS_ only
 bool ttCFile::ReadResource(DWORD idResource)
 {
     Delete();
-    HRSRC hrsrc = FindResourceA(tt::hinstResources, MAKEINTRESOURCEA(idResource), (char*) RT_RCDATA);
+    HRSRC hrsrc = FindResourceA(GetModuleHandle(NULL), MAKEINTRESOURCEA(idResource), (char*) RT_RCDATA);
     ttASSERT(hrsrc);
     if (!hrsrc)
     {
         m_ioResult = ERROR_CANT_OPEN;
         return false;
     }
-    uint32_t cbFile = SizeofResource(tt::hinstResources, hrsrc);
-    HGLOBAL  hglb = LoadResource(tt::hinstResources, hrsrc);
+    uint32_t cbFile = SizeofResource(GetModuleHandle(NULL), hrsrc);
+    HGLOBAL  hglb = LoadResource(GetModuleHandle(NULL), hrsrc);
     ttASSERT(hglb);
     if (!hglb)
     {
@@ -700,7 +701,8 @@ void ttCFile::MakeCopy()
 
 void ttCFile::RestoreCopy()
 {
-    ttASSERT_MSG(m_pCopy, "No copy available -- either MakeCopy() wasn't called, or RestoreCopy() has been called.");
+    ttASSERT_MSG(m_pCopy,
+                 "No copy available -- either MakeCopy() wasn't called, or RestoreCopy() has been called.");
 
     if (!m_pCopy)
         return;

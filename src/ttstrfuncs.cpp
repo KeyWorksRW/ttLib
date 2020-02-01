@@ -54,7 +54,7 @@ int ttStrCpy(char* pszDst, size_t cbDest, const char* pszSrc)
         return EINVAL;
     }
 
-#ifdef _DEBUG
+#if !defined(NDEBUG)  // Starts debug section.
     if (ttStrByteLen(pszSrc) > cbDest)
     {
         ttCStr cszMsg;

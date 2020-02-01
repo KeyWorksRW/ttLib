@@ -8,7 +8,7 @@
 
 #pragma once
 
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(PTEST)
 
 #include <wtypes.h>
 
@@ -50,7 +50,7 @@ public:
     // We use the "tt" prefix to make certain there is no confusion in a derived class that the memory routines are from
     // this class rather than the standard memory functions.
 
-    // under _DEBUG, will fill with 0xCD
+    // In Debug builds, this will fill the allocated memory with 0xCD.
     void* ttMalloc(size_t cb);
     void* ttCalloc(size_t cb);
     void* ttReAlloc(void* pv, size_t cb);
@@ -79,6 +79,12 @@ public:
     size_t ttSize(const void* pv) { return pv ? HeapSize(m_hHeap, 0, pv) : 0; }
     bool   ttValidate(const void* pv) { return HeapValidate(m_hHeap, 0, pv); }
 
+    // Sub-heap has been created (rather then using ProcessHeap or a master ttCHeap class)
+    bool isCreated() { return m_bCreated; }
+    bool isMainHeap() { return (m_hHeap && m_hHeap == GetProcessHeap()); }
+
+    void DeleteAll();
+
     operator HANDLE() const { return m_hHeap; }
 
 protected:
@@ -86,6 +92,10 @@ protected:
 
     HANDLE m_hHeap;
     bool   m_bCreated;
+
+private:
+    bool m_bSerialize;
+
 };  // end ttCHeap
 
 namespace tt

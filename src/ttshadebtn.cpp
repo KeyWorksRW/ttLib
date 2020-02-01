@@ -19,15 +19,15 @@
 
 #if defined(_WIN32)
 
-#include "../include/ttstr.h"       // ttCStr
-#include "../include/ttdebug.h"     // ttASSERT macros
-#include "../include/ttshadebtn.h"  // ttCShadeBtn
+    #include "../include/ttstr.h"       // ttCStr
+    #include "../include/ttdebug.h"     // ttASSERT macros
+    #include "../include/ttshadebtn.h"  // ttCShadeBtn
 
 /*
-    This class only works on non-image buttons. I.e., this class will not work on a button that is drawn with a bitmap.
-    Changing from MFC/WTL to ttWin also removed the check for a bitmap button. We should probably do some kind of check
-    for that condition and fail for bitmap buttons. While the review comment is here, the more important check will need
-    to be in ttMultiBtn -- since that's where all the button subclassing is done.
+    This class only works on non-image buttons. I.e., this class will not work on a button that is drawn with a
+    bitmap. Changing from MFC/WTL to ttWin also removed the check for a bitmap button. We should probably do some
+    kind of check for that condition and fail for bitmap buttons. While the review comment is here, the more
+    important check will need to be in ttMultiBtn -- since that's where all the button subclassing is done.
 */
 
 ttCShadeBtn::ttCShadeBtn()
@@ -57,13 +57,13 @@ ttCShadeBtn::ttCShadeBtn()
     // the user changed that font specifically for message boxes without expecting it to also change the font
     // on dialog buttons, and you might end up with an unreadable button as a result.
 
-#if 0
+    #if 0
     NONCLIENTMETRICS* pmetrics = (NONCLIENTMETRICS*) ttcalloc(sizeof(NONCLIENTMETRICS));
     pmetrics->cbSize = sizeof(NONCLIENTMETRICS);
     if (SystemParametersInfo(SPI_GETNONCLIENTMETRICS, 0, pmetrics, 0))
         SetFont(&pmetrics->lfMessageFont);
     ttFree(pmetrics);
-#endif
+    #endif
 }
 
 ttCShadeBtn::~ttCShadeBtn()
@@ -138,12 +138,13 @@ void ttCShadeBtn::SetButtonStyle(UINT nStyle, BOOL bRedraw)
         m_Checked = false;
     }
 
-    //default radio & check-box has no border
+    // default radio & check-box has no border
     if (!m_IsPushLike)
         m_Border = false;
 
     if (bRedraw)
-        InvalidateRect(*this, NULL, TRUE);  // REVIEW: [randalphwa - 1/26/2019] Can we get away with setting FALSE for bErase?
+        InvalidateRect(*this, NULL,
+                       TRUE);  // REVIEW: [randalphwa - 1/26/2019] Can we get away with setting FALSE for bErase?
 }
 
 void ttCShadeBtn::SetTextAlign(UINT nTextAlign)
@@ -213,7 +214,8 @@ void ttCShadeBtn::SetIcon(HICON hIcon, UINT nIconAlign, UINT nIconDown, UINT nIc
 
         if (nIconDown > 0)  // load down icon
         {
-            m_hIconDown = (HICON)::LoadImageA(tt::hinstResources, MAKEINTRESOURCEA(nIconDown), IMAGE_ICON, 0, 0, 0);
+            m_hIconDown =
+                (HICON)::LoadImageA(GetModuleHandle(NULL), MAKEINTRESOURCEA(nIconDown), IMAGE_ICON, 0, 0, 0);
             if (m_hIconDown == NULL)
                 m_hIconDown = m_hIcon;
         }
@@ -224,8 +226,8 @@ void ttCShadeBtn::SetIcon(HICON hIcon, UINT nIconAlign, UINT nIconDown, UINT nIc
 
         if (nIconHighLight > 0)  // load highlighted icon
         {
-            m_hIconHighLight = (HICON)::LoadImageA(tt::hinstResources,
-                                                   MAKEINTRESOURCEA(nIconHighLight), IMAGE_ICON, 0, 0, 0);
+            m_hIconHighLight =
+                (HICON)::LoadImageA(GetModuleHandle(NULL), MAKEINTRESOURCEA(nIconHighLight), IMAGE_ICON, 0, 0, 0);
             if (m_hIconHighLight == NULL)
                 m_hIconHighLight = m_hIcon;
         }
@@ -245,7 +247,7 @@ void ttCShadeBtn::SetIcon(UINT nIcon, UINT nIconAlign, UINT nIconDown, UINT nIco
     if (m_hIcon)
         DestroyIcon(m_hIcon);
 
-    HICON hIcon = (HICON)::LoadImage(tt::hinstResources, MAKEINTRESOURCE(nIcon), IMAGE_ICON, 0, 0, 0);
+    HICON hIcon = (HICON)::LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(nIcon), IMAGE_ICON, 0, 0, 0);
     ttASSERT_MSG(hIcon, "Unable to load icon");
     if (hIcon)
         SetIcon(hIcon, nIconAlign, nIconDown, nIconHighLight);
@@ -260,7 +262,7 @@ void ttCShadeBtn::SetIcon(const char* pszIconName, UINT nIconAlign, UINT nIconDo
     if (m_hIcon)
         DestroyIcon(m_hIcon);
 
-    HICON hIcon = (HICON)::LoadImageA(tt::hinstResources, pszIconName, IMAGE_ICON, 0, 0, 0);
+    HICON hIcon = (HICON)::LoadImageA(GetModuleHandle(NULL), pszIconName, IMAGE_ICON, 0, 0, 0);
     ttASSERT_MSG(hIcon, "Unable to load icon");
     if (hIcon)
         SetIcon(hIcon, nIconAlign, nIconDown, nIconHighLight);
@@ -277,14 +279,14 @@ void ttCShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, 
     sXSize = abs(rect.right - rect.left);
 
     m_dh.Create(max(1, sXSize - 2 * m_FocusRectMargin - 1), 1, 8);  // create the horizontal focus bitmap
-    m_dv.Create(1, max(1, sYSize - 2 * m_FocusRectMargin), 8);      //create the vertical focus bitmap
+    m_dv.Create(1, max(1, sYSize - 2 * m_FocusRectMargin), 8);      // create the vertical focus bitmap
 
-    m_dNormal.Create(sXSize, sYSize, 8);  //create the default bitmap
+    m_dNormal.Create(sXSize, sYSize, 8);  // create the default bitmap
 
-    COLORREF hicr = GetSysColor(COLOR_BTNHIGHLIGHT);  //get the button base colors
+    COLORREF hicr = GetSysColor(COLOR_BTNHIGHLIGHT);  // get the button base colors
     COLORREF midcr = GetSysColor(COLOR_BTNFACE);
     COLORREF locr = GetSysColor(COLOR_BTNSHADOW);
-    long     r, g, b;  //build the shaded palette
+    long     r, g, b;  // build the shaded palette
     for (i = 0; i < 129; i++)
     {
         r = ((128 - i) * GetRValue(locr & 0xFF) + i * GetRValue(midcr & 0xFF)) / 128;
@@ -304,22 +306,22 @@ void ttCShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, 
         m_dv.SetPaletteIndex((BYTE)(i + 127), (BYTE) r, (BYTE) g, (BYTE) b);
     }
 
-    m_dNormal.BlendPalette(color, coloring);  //color the palette
+    m_dNormal.BlendPalette(color, coloring);  // color the palette
 
-    iDst = m_dh.GetBits();  //build the horiz. dotted focus bitmap
+    iDst = m_dh.GetBits();  // build the horiz. dotted focus bitmap
     j = (long) m_dh.GetWidth();
     for (i = 0; i < j; i++)
     {
         //      iDst[i]=64+127*(i%2);   //soft
-        iDst[i] = (BYTE)(255 * (i % 2));  //hard
+        iDst[i] = (BYTE)(255 * (i % 2));  // hard
     }
 
-    iDst = m_dv.GetBits();  //build the vert. dotted focus bitmap
+    iDst = m_dv.GetBits();  // build the vert. dotted focus bitmap
     j = (long) m_dv.GetHeight();
     for (i = 0; i < j; i++)
     {
         //      *iDst=64+127*(i%2);     //soft
-        *iDst = (BYTE)(255 * (i % 2));  //hard
+        *iDst = (BYTE)(255 * (i % 2));  // hard
         iDst += 4;
     }
 
@@ -337,7 +339,7 @@ void ttCShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, 
     switch (shadeID)
     {
             //----------------------------------------------------
-        case SHS_METAL:  //SHS_METAL
+        case SHS_METAL:  // SHS_METAL
             m_dNormal.Clear();
             // create the strokes
             k = 40;  // stroke granularity
@@ -345,7 +347,7 @@ void ttCShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, 
             {
                 x = rand() / (RAND_MAX / sXSize);                    // stroke postion
                 y = rand() / (RAND_MAX / sYSize);                    // stroke position
-                xs = rand() / (RAND_MAX / min(sXSize, sYSize)) / 2;  //stroke lenght
+                xs = rand() / (RAND_MAX / min(sXSize, sYSize)) / 2;  // stroke lenght
                 d = rand() / (RAND_MAX / k);                         // stroke color
                 for (i = 0; i < xs; i++)
                 {
@@ -386,7 +388,7 @@ void ttCShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, 
                 posDst += bytes;
             }
             // set vertical bump
-            d = min(16, sXSize / 6);  //max edge=16
+            d = min(16, sXSize / 6);  // max edge=16
             a = sYSize * sYSize / 4;
             posDst = iDst;
             for (i = 0; i < sYSize; i++)
@@ -530,8 +532,8 @@ void ttCShadeBtn::OnPaint()
     int cx = abs(rcClient.right - rcClient.left);
     int cy = abs(rcClient.bottom - rcClient.top);
     // get text box position
-    RECT tr = { rcClient.left + m_FocusRectMargin + 2,
-                rcClient.top, rcClient.right - m_FocusRectMargin - 2, rcClient.bottom };
+    RECT tr = { rcClient.left + m_FocusRectMargin + 2, rcClient.top, rcClient.right - m_FocusRectMargin - 2,
+                rcClient.bottom };
 
     HDC hdcMem;  // create a memory DC to avoid flicker
     hdcMem = CreateCompatibleDC(hdcPaint);
@@ -542,7 +544,7 @@ void ttCShadeBtn::OnPaint()
     SetBkMode(hdcMem, TRANSPARENT);
     // with MemDC we need to select the font...
 
-    //get text font
+    // get text font
     HFONT hOldFont = NULL;
     if (m_hFont)
         hOldFont = (HFONT) SelectObject(hdcMem, m_hFont);
@@ -583,10 +585,9 @@ void ttCShadeBtn::OnPaint()
 
         if (m_hIcon)  // draw the icon
         {
-            ::DrawState(hdcMem, NULL, NULL,
-                        (LPARAM) m_hIcon, NULL, m_rcIconBox.left, m_rcIconBox.top,
-                        abs(m_rcIconBox.right - m_rcIconBox.left),
-                        abs(m_rcIconBox.bottom - m_rcIconBox.top), DST_ICON | DSS_DISABLED);
+            ::DrawState(hdcMem, NULL, NULL, (LPARAM) m_hIcon, NULL, m_rcIconBox.left, m_rcIconBox.top,
+                        abs(m_rcIconBox.right - m_rcIconBox.left), abs(m_rcIconBox.bottom - m_rcIconBox.top),
+                        DST_ICON | DSS_DISABLED);
         }
         // if needed, draw the standard 3D rectangular border
         if ((m_Border) && (m_flat == FALSE))
@@ -612,8 +613,8 @@ void ttCShadeBtn::OnPaint()
                 if (m_IsPushLike)
                     OffsetRect(&m_rcIconBox, 1, 1);
                 ::DrawState(hdcMem, NULL, NULL, (LPARAM) m_hIcon, NULL, m_rcIconBox.left, m_rcIconBox.top,
-                            abs(m_rcIconBox.right - m_rcIconBox.left),
-                            abs(m_rcIconBox.bottom - m_rcIconBox.top), DST_ICON | DSS_NORMAL);
+                            abs(m_rcIconBox.right - m_rcIconBox.left), abs(m_rcIconBox.bottom - m_rcIconBox.top),
+                            DST_ICON | DSS_NORMAL);
                 if (m_IsPushLike)
                     OffsetRect(&m_rcIconBox, -1, -1);
             }
@@ -636,10 +637,10 @@ void ttCShadeBtn::OnPaint()
             else  // no skin selected for normal state -> standard button
                 ::FillRect(hdcMem, &rcClient, (HBRUSH)(ULONG_PTR) GetSysColor(COLOR_BTNFACE));
 
-            if (m_hIcon)  //draw the icon
+            if (m_hIcon)  // draw the icon
                 ::DrawState(hdcMem, NULL, NULL, (LPARAM) m_hIcon, NULL, m_rcIconBox.left, m_rcIconBox.top,
-                            abs(m_rcIconBox.right - m_rcIconBox.left),
-                            abs(m_rcIconBox.bottom - m_rcIconBox.top), DST_ICON | DSS_NORMAL);
+                            abs(m_rcIconBox.right - m_rcIconBox.left), abs(m_rcIconBox.bottom - m_rcIconBox.top),
+                            DST_ICON | DSS_NORMAL);
             // if needed, draw the standard 3D rectangular border
             if (m_Border && (m_flat == FALSE))
             {

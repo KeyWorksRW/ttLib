@@ -32,7 +32,7 @@ public:
     {
         ttASSERT(numItems < 0xFFFF);
         if (numItems < 0xFFFF)
-            m_growth - numItems;
+            m_growth = numItems;
     }
 
     void Add(const T t)

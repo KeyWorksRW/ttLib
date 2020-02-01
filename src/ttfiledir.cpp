@@ -45,8 +45,8 @@ bool ttDirExists(const wchar_t* pszFolder)
     return (result != INVALID_FILE_ATTRIBUTES && result & FILE_ATTRIBUTE_DIRECTORY);
 }
 
-// REVIEW: [randalphwa - 09-01-2018] I suspect this will fail if the sub folder name contains a trailing slash. I.e.,
-// "c:\foo\bar\" will not create "c:\foo", but "c:\foo\bar" would. Add this to our test suite.
+// REVIEW: [randalphwa - 09-01-2018] I suspect this will fail if the sub folder name contains a trailing slash.
+// I.e., "c:\foo\bar\" will not create "c:\foo", but "c:\foo\bar" would. Add this to our test suite.
 
 bool ttCreateDir(const char* pszDir)
 {
@@ -95,8 +95,8 @@ bool ttCreateDir(const wchar_t* pszDir)
 }
 
 /*
-    This function serves two purposes. It converts a full path into a relative path, and it fixes a path to a file that is
-    supposed to be relative to a root location.
+    This function serves two purposes. It converts a full path into a relative path, and it fixes a path to a file
+   that is supposed to be relative to a root location.
 
     ConvertToRelative("c:/myProject/foo.cpp", "c:/myProject/foo.h")
 
@@ -118,7 +118,8 @@ void ttConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszRe
     ttASSERT_NONEMPTY(pszFile);
     if (!pszFile || !*pszFile)
     {
-        // REVIEW: [randalphwa - 4/15/2019] it might make more sense to just throw -- the calling program will not correctly no matter what
+        // REVIEW: [randalphwa - 4/15/2019] it might make more sense to just throw -- the calling program will not
+        // correctly no matter what
         cszResult = "internal error";
         return;
     }
@@ -130,7 +131,8 @@ void ttConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszRe
     }
 
     ttCStr cszRoot(pszRoot);
-    if (ttIsValidFileChar(pszFile, 0) && ttIsValidFileChar(pszFile, 1))  // this would mean we were only passed a filename
+    if (ttIsValidFileChar(pszFile, 0) &&
+        ttIsValidFileChar(pszFile, 1))  // this would mean we were only passed a filename
     {
         if (ttFileExists(cszRoot))  // if the root included a filename, then remove it now
         {
@@ -152,7 +154,8 @@ void ttConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszRe
     ttCStr cszFile(pszFile);
     cszFile.FullPathName();
 
-    if (toupper(cszRoot[0]) != toupper(cszFile[0]))  // probably on a different drive, but clearly there's nothing relative about it
+    if (toupper(cszRoot[0]) !=
+        toupper(cszFile[0]))  // probably on a different drive, but clearly there's nothing relative about it
     {
         cszResult = cszFile;
         return;
@@ -185,7 +188,7 @@ void ttConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszRe
         cszResult = cszFile.GetPtr() + pos;
         return;
     }
-#if 0
+    #if 0
     if (!cszFile[pos])  // this should be impossible
     {
         cszResult = pszFile;
@@ -198,7 +201,7 @@ void ttConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszRe
         cszResult = pszFilePortion;
         return;
     }
-#endif
+    #endif
 
     // The following scenarios need to be dealt with
 
@@ -259,11 +262,11 @@ char* ttFindFilePortion(const char* pszPath)
         return nullptr;
 
     char* psz;
-#ifdef _WINDOWS_
+    #ifdef _WINDOWS_
     psz = ttStrChrR(pszPath, '\\');  // Paths usually have back slashes under Windows
     if (psz)
         pszPath = psz + 1;
-#endif                              // _WINDOWS_
+    #endif                          // _WINDOWS_
     psz = ttStrChrR(pszPath, '/');  // forward slashes are valid on all OS, so check that too
     if (psz)
         return psz + 1;
@@ -276,7 +279,8 @@ char* ttFindFilePortion(const char* pszPath)
 char* ttFindExtPortion(const char* pszPath)
 {
     char* psz = ttStrChrR(pszPath, '.');
-    if (psz && !(psz == pszPath || *(psz - 1) == '.' || psz[1] == '\\' || psz[1] == '/'))  // ignore .file, ./file, and ../file
+    if (psz && !(psz == pszPath || *(psz - 1) == '.' || psz[1] == '\\' ||
+                 psz[1] == '/'))  // ignore .file, ./file, and ../file
         return psz;
     else
         return nullptr;
