@@ -30,7 +30,6 @@ __declspec(noreturn) void ttOOM(void);
 
 namespace tt
 {
-#if defined(_WIN32)
     // handle to ttTrace main window (if it was running when ttTrace was called
     extern HWND hwndTrace;
 
@@ -44,10 +43,11 @@ namespace tt
     extern const char* txtTraceShareName;
 
     int CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc, int line);
-#endif  // defined(_WIN32)
 }  // namespace tt
 
 // clang-format off
+// wxWidgets apps should use the ttASSERT in ../ttwx/ttassert.h
+#if !defined(ttASSERT)
 #ifdef _DEBUG
     #define ttASSERT(exp) (void)((!!(exp)) || ttAssertionMsg(#exp, __FILE__, __func__, __LINE__))
     #define ttASSERT_MSG(exp, pszMsg) { if (!(exp)) ttAssertionMsg(pszMsg, __FILE__, __func__, __LINE__); }
@@ -66,10 +66,8 @@ namespace tt
     #define ttDISABLE_ASSERTS ttSetAsserts(true)
     #define ttENABLE_ASSERTS  ttSetAsserts(false)
 
-#if defined(_WIN32)
     #define ttASSERT_HRESULT(hr, pszMsg) { if (FAILED(hr)) ttAssertionMsg(pszMsg, __FILE__, __func__, __LINE__); }
     #define ttReportLastError() { ttdoReportLastError(__FILE__, __func__, __LINE__); }
-#endif    // defined(_WIN32)
 
 #else   // not _DEBUG
 
@@ -91,6 +89,7 @@ namespace tt
     #define ttASSERT_HRESULT(hr, pszMsg)
     #define ttReportLastError()
 #endif    // defined(_WIN32)
+#endif
 // clang-format on
 
 #endif  // _DEBUG
