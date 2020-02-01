@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include "ttwx.h"  // This includes <string> && <string_view>
-
 #include <filesystem>
+
+#include "ttstrfuncs.h"  // Various functions for working with strings
 
 #if defined(__WXMSW__)
     #include <wx/string.h>
