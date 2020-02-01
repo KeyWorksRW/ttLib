@@ -13,9 +13,6 @@ build/
 # doxygen creates the files in docs, so don't track them
 docs/
 
-# remove this when ready to make it a sub-module
-ttwx/
-
 .private/
 archive/
 backup/

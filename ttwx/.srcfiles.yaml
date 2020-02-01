@@ -1,0 +1,24 @@
+# Requires ttBld.exe version 1.4.0 or higher to process
+
+Options:
+    Project:     ttwx         # project name
+    Exe_type:    lib          # [window | console | lib | dll]
+
+    Pch:         pch.h        # name of precompiled header file, or "none" if not using precompiled headers
+    IncDirs:     precompile   # this is where pch.h actually lives for the library build
+
+    Optimize:    space        # [space | speed] optimization to use in release builds
+    Warn:        4            # [1-4] warning level
+
+    CFlags_cmn: -std:c++17 /Zc:__cplusplus # flags to pass to the compiler in all builds
+    CFlags_rel: -DWXUSINGDLL    # remove this if Crt_rel is set to static
+    CFlags_dbg: -DWXUSINGDLL    # remove this if Crt_dbg is set to static
+
+    Crt_rel:     dll          # [static | dll] type of CRT to link to in release builds
+    Crt_dbg:     dll          # [static | dll] type of CRT to link to in debug builds
+
+    TargetDir:   ../lib          # target directory
+
+Files:
+    ttassert.cpp    # Implements ttAssert function
+    ttTR.cpp        # Function for translating strings
