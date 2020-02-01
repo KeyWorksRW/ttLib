@@ -50,11 +50,6 @@ debug: $(BldScriptD) ttLibD
 ttLibD:
 	ninja -f $(BldScriptD)
 
-########## localization ##########
-
-locale:
-	xgettext -k_ -kwxPLURAL -kwxTRANSLATE -k_XGET -i -c --omit-header -fxgen.lst
-
 ########## clean release section ##########
 
 clean: $(BldScript)

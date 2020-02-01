@@ -11,7 +11,6 @@
 
 #pragma once
 
-#include "ttlib.h"
 #include "ttdebug.h"  // ttASSERT macros
 
 // Class utilizing an array of HASH numbers and an associated value

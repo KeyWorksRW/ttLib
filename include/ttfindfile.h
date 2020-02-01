@@ -13,7 +13,7 @@
     #include <fileapi.h>
     #include <stdint.h>
 
-    #include "ttlib.h"
+    #include "ttlibwin.h"
 
     #if !defined(INVALID_HANDLE_VALUE)
         #define INVALID_HANDLE_VALUE ((HANDLE)(LONG_PTR) -1)

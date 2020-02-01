@@ -17,10 +17,6 @@
 #include "../include/ttdebug.h"        // ttASSERT macros
 #include "../include/ttwstr.h"   // ttCWStr
 
-#if defined(_WX_DEFS_H_)
-#include <wx/msgdlg.h>  // wxMessageBox
-#endif
-
 namespace tt
 {
     const char*    pszMsgTitle;   // utf8  title for message boxes

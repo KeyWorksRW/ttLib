@@ -19,7 +19,6 @@
 #pragma once
 
 #include "ttstr.h"  // ttCStr
-#include "ttlib.h"
 
 // Enumerate through substrings in a string
 class ttCEnumStr

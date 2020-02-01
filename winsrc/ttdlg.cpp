@@ -8,11 +8,9 @@
 
 #include "pch.h"
 
-#if defined(_WIN32)
+#include <VersionHelpers.h>
 
-    #include <VersionHelpers.h>
-
-    #include "../include/ttdlg.h"
+#include "../include/ttdlg.h"
 
 static HMONITOR ttKeyMonitorFromWindow(HWND hwnd, DWORD dwFlags);
 static BOOL     ttKeyMonitorFromPoint(HMONITOR hMonitor, LPMONITORINFO lpmi);
@@ -38,7 +36,7 @@ INT_PTR ttCDlg::DoModal(HWND hwndParent)
     INT_PTR result = ::DialogBoxParamA(GetModuleHandle(NULL), MAKEINTRESOURCEA(m_idTemplate), m_hwndParent,
                                        (DLGPROC) ttpriv::DlgProc, (LPARAM) this);
 
-    #if !defined(NDEBUG)  // Starts debug section.
+#if !defined(NDEBUG)  // Starts debug section.
     // If creation failed because there was no dialog resource, report that specific condition in Debug builds.
     if (result == -1)
     {
@@ -47,7 +45,7 @@ INT_PTR ttCDlg::DoModal(HWND hwndParent)
         if (!hrsrc)
             return result;
     }
-    #endif
+#endif
     ttASSERT_MSG(result != -1, "Failed to create dialog box");
     return result;
 }
@@ -95,12 +93,12 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
             delete pThis->m_pShadedBtns;
             pThis->m_pShadedBtns = nullptr;
         }
-    #if !defined(NDEBUG)  // Starts debug section.
+#if !defined(NDEBUG)  // Starts debug section.
         // This allows a destructor to verify that the window was destroyed before the destructor was called
 
         if (pThis->m_bModeless)
             pThis->m_hwnd = nullptr;
-    #endif
+#endif
     }
 
     LRESULT lResult = 0;  // This is passed by reference to OnCmdCaseMap
@@ -355,13 +353,13 @@ static HMONITOR(WINAPI* s_pfnMonitorFromWindow)(HWND, DWORD);
 static HMONITOR(WINAPI* s_pfnMonitorFromPoint)(POINT, DWORD);
 static BOOL(WINAPI* s_pfnGetMonitorInfo)(HMONITOR, LPMONITORINFO);
 
-    #ifndef xPRIMARY_MONITOR
-        #define xPRIMARY_MONITOR ((HMONITOR) 0x12340042)
-    #endif
+#ifndef xPRIMARY_MONITOR
+    #define xPRIMARY_MONITOR ((HMONITOR) 0x12340042)
+#endif
 
-    #ifndef MONITORINFOF_PRIMARY
-        #define MONITORINFOF_PRIMARY 0x00000001
-    #endif
+#ifndef MONITORINFOF_PRIMARY
+    #define MONITORINFOF_PRIMARY 0x00000001
+#endif
 
 static bool InitMonitorStubs()
 {
@@ -388,7 +386,7 @@ static HMONITOR ttKeyMonitorFromWindow(HWND hwnd, DWORD dwFlags)
         return xPRIMARY_MONITOR;
 }
 
-    #if 0
+#if 0
 static HMONITOR ttKeyMonitorFromPoint(POINT pt, DWORD dwFlags)
 {
     if (InitMonitorStubs())
@@ -396,7 +394,7 @@ static HMONITOR ttKeyMonitorFromPoint(POINT pt, DWORD dwFlags)
     else
         return xPRIMARY_MONITOR;
 }
-    #endif
+#endif
 
 static BOOL ttKeyMonitorFromPoint(HMONITOR hMonitor, LPMONITORINFO lpmi)
 {
@@ -413,5 +411,3 @@ static BOOL ttKeyMonitorFromPoint(HMONITOR hMonitor, LPMONITORINFO lpmi)
         return TRUE;
     }
 }
-
-#endif  // defined(_WIN32)

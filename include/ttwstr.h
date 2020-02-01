@@ -40,11 +40,6 @@
 #include "ttheap.h"   // ttCHeap
 #include "ttdebug.h"  // ttASSERT macros
 #include "ttstr.h"    // ttCStr
-#include "ttlib.h"
-
-#if defined(_WX_DEFS_H_)
-    #include <wx/string.h>
-#endif
 
 class ttCWStr
 {
@@ -59,9 +54,7 @@ public:
         if (psz)
             CopyNarrow(psz);
     }
-#if defined(_WX_DEFS_H_)
-    ttCWStr(const wxString str) { m_psz = ttStrDup(str.wc_str()); }
-#endif
+
 #if defined(_WIN32)
     ttCWStr(HWND hwnd)
     {

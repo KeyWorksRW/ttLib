@@ -12,7 +12,6 @@
 
 #include <stdint.h>
 
-#include "ttlib.h"
 #include "ttdebug.h"  // ttASSERT macros
 #include "ttheap.h"   // ttCHeap
 

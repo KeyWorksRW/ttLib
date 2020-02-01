@@ -1,7 +1,7 @@
 # Requires ttBld.exe version 1.0.0 or higher to process
 
 Options:
-    Project:    ttLib      # project target name
+    Project:    ttLib   # project target name
     Exe_type:   lib        # [window | console | lib | dll]
     Pch:        pch.h      # precompiled header
     Optimize:   space      # [space | speed] optimization
@@ -28,20 +28,3 @@ Files:
     ../ttwx/src/ttstring.cpp    # std::string class with some additional functionality
     ../ttwx/src/tttextfile.cpp  # Class for reading and writing text files.
     ../ttwx/src/ttwx.cpp        # Miscellaneous functions
-
-# Windows only files
-
-    ttbasethread.cpp    # ttCBaseThread class
-    ttdebug.cpp         # debug and assertion handling
-    ttdib.cpp           # ttCDib class
-    ttdirdlg.cpp        # dialog for selecting a directory
-    ttdlg.cpp           # ttCDlg class
-    ttfile.cpp          # ttCFile class
-    ttfiledir.cpp       # file and directory handling
-    ttfiledlg.cpp       # ttCFileDlg class
-    ttheap.cpp          # ttCHeap class
-    ttlist.cpp          # ttCList class
-    ttmultibtn.cpp      # ttCMultiBtn class
-    ttshadebtn.cpp      # ttCShadeBtn class
-    ttwin.cpp           # ttCWin class
-    ttwinmisc.cpp       # Miscellaneous functions for use on Windows
