@@ -402,4 +402,4 @@ inline bool ttIsValidWindow(HWND hwnd)
     return (bool) (hwnd && IsWindow(hwnd));
 };
 
-#endif _TTLIBWIN_H_GUARD_
+#endif // _TTLIBWIN_H_GUARD_
