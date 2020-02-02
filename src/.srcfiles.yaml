@@ -21,6 +21,7 @@ Files:
     tthashpair.cpp      # ttCHashPair
     ttmisc.cpp          # miscellaneous functions
     ttmultithread.cpp   # ttCMultiThrd class
+    ttpath.cpp          # Contains functions for working with filesystem::path and filesystem::directory
     ttprintf.cpp        # printf
     ttstr.cpp           # ttCStr class
     ttstrfuncs.cpp      # string handling and ttStr class
