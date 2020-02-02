@@ -11,7 +11,8 @@
 #include <exception>
 #include <fstream>
 
-#include "tttextfile.h"
+#include "../include/tttextfile.h"
+#include "../include/ttstrfuncs.h"
 
 bool ttTextFile::ReadFile(std::string_view filename)
 {
@@ -83,6 +84,17 @@ void ttTextFile::ParseLines(std::string_view str)
         }
     }
 }
+
+size_t ttTextFile::FindLineContaining(size_t start, std::string_view str, bool CaseSensitive)
+{
+    for (; start < size(); ++start)
+    {
+        if (tt::contains(at(start), str, CaseSensitive))
+            return start;
+    }
+    return tt::npos;
+}
+
 
 /////////////////////// ttViewFile /////////////////////////////////
 
@@ -158,4 +170,14 @@ void ttViewFile::ParseLines(std::string_view str)
             posBeginLine = pos + 1;
         }
     }
+}
+
+size_t ttViewFile::FindLineContaining(size_t start, std::string_view str, bool CaseSensitive)
+{
+    for (; start < size(); ++start)
+    {
+        if (tt::contains(at(start), str, CaseSensitive))
+            return start;
+    }
+    return tt::npos;
 }

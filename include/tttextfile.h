@@ -28,6 +28,11 @@ public:
     /// Writes each line to the file adding a '\n' to the end of the line.
     bool WriteFile(std::string_view filename);
 
+    /// Searches every line to see if it contains the sub-string.
+    ///
+    /// start is the zero-based offset to the line to start searching.
+    size_t FindLineContaining(size_t start, std::string_view str, bool CaseSensitive = true);
+
 protected:
 
     // Converts lines into a vector of std::string members. Lines can end with \n, \r, or \r\n.
@@ -52,6 +57,11 @@ public:
     /// Returns the string storing the entire file. If you change this string, all
     /// the string_view vector entries will be invalid!
     const std::string& GetBuffer() const { return m_buffer; }
+
+    /// Searches every line to see if it contains the sub-string.
+    ///
+    /// start is the zero-based offset to the line to start searching.
+    size_t FindLineContaining(size_t start, std::string_view str, bool CaseSensitive = true);
 
 protected:
 
