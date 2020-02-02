@@ -16,17 +16,7 @@ Options:
     TargetDir:  ./lib
 
 Files:
-    ../src/ttconsole.cpp       # class that sets/restores console foreground color
-    ../src/ttenumstr.cpp       # ttCEnumStr class
-    ../src/tthashpair.cpp      # ttCHashPair
-    ../src/ttmisc.cpp          # miscellaneous functions
-    ../src/ttmultithread.cpp   # ttCMultiThrd class
-    ../src/ttprintf.cpp        # printf
-    ../src/ttstr.cpp           # ttCStr class
-    ../src/ttstrfuncs.cpp      # string handling and ttStr class
-
-    ../src/ttstring.cpp        # std::string class with some additional functionality
-    ../src/tttextfile.cpp      # Class for reading and writing text files.
+    .include ../src/.srcfiles.yaml
 
     # This is obsolete and should be replaced with pugixml!
     ttxml.cpp
