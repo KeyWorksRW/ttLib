@@ -35,18 +35,19 @@ public:
     ttString(void) {}
     ttString(const char* psz) { assign(psz); }
     ttString(std::string_view str) { assign(str); }
-    ttString(ttString& str) { assign(str.c_str()); }
+    ttString(const ttString& str) { assign(str.c_str()); }
+
+    ttString(const std::filesystem::path& path) { assign(path.string()); }
+    ttString(const std::filesystem::directory_entry& dir) { assign(dir.path().string()); }
 
 #if defined(__WXMSW__)
     /// Converts wxString to a UTF8 string.
     ///
     /// This is needed for Windows because wxString is UTF16 and we need to convert it
-    /// to UTF8. On POSIS, wxString is already UTF8 so no conversion is needed.
+    /// to UTF8. On POSIX, wxString is already UTF8 so no conversion is needed.
     ttString(wxString& str) { assign(str.utf8_str().data()); }
 #endif  // _WIN32
 
-    ttString(const std::filesystem::path path) { assign(path.string()); }
-    ttString(const std::filesystem::directory_entry dir) { assign(dir.path().string()); }
 
 #if defined(_TT_TCSTR)
     ttString(ttCStr& csz) { assign(csz.c_str() ? csz.c_str() : ""); }
@@ -187,6 +188,18 @@ public:
 
     /// Returns true if the current string refers to an existing directory.
     bool dirExists() const;
+};
+
+/// Retrieves the current working directory and restores it in the dtor.
+class ttCwd : public ttString
+{
+public:
+    ttCwd() { assignCwd(); }
+    ~ttCwd()
+    {
+        std::filesystem::path cwd(c_str());
+        std::filesystem::current_path(cwd);
+    }
 };
 
 /// Contains a vector of ttString classes with some additional functionality such
