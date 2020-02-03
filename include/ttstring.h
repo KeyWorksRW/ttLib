@@ -175,7 +175,7 @@ public:
 
     /// Makes the current path relative to the supplied path. Supplied path should not
     /// contain a filename.
-    std::string_view make_relative(std::string& relative_to);
+    std::string_view make_relative(const std::string& relative_to);
 
     /// Changes any current path to an absolute path.
     std::string_view make_absolute();

@@ -496,7 +496,29 @@ std::string_view ttString::assignCwd()
     return *this;
 }
 
-std::string_view ttString::make_relative(std::string& relative_to)
+/**
+
+    There is an unfortunate problem with the way filesystem::relative works (at least with MSVC 2019). Assume you
+    have the following directory structure:
+
+        c:/foo/include
+        c:/foo/myproject/foo/include
+        c:/foo/myproject/src
+
+    Set your current string to "../foo/include" and the relative_to string to "c:/foo/myproject/src". You might
+    expect calling make_relative() to set the result to:
+
+        ../foo/include
+
+    but instead you get:
+
+        ../../foo/include
+
+*/
+
+/// Uses const std::string& instead of std::string_view because std::filesystem::relative
+/// will not accept a string_view.
+std::string_view ttString::make_relative(const std::string& relative_to)
 {
     if (!empty())
         assign(std::filesystem::relative(c_str(), relative_to.c_str()).string());
