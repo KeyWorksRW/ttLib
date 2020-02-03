@@ -74,3 +74,32 @@ bool tt::hasextension(std::filesystem::directory_entry name, std::string_view ex
     }
     return false;
 }
+
+bool tt::ChangeDir(std::string_view newdir)
+{
+    if (newdir.empty())
+        return false;
+    auto dir = std::filesystem::directory_entry(std::filesystem::path(newdir));
+    if (dir.exists() && dir.is_directory())
+    {
+        std::filesystem::current_path(dir);
+        return true;
+    }
+    return false;
+}
+
+bool tt::dirExists(std::string_view dir)
+{
+    if (dir.empty())
+        return false;
+    auto path = std::filesystem::directory_entry(std::filesystem::path(dir));
+    return (path.exists() && path.is_directory());
+}
+
+bool tt::fileExists(std::string_view filename)
+{
+    if (filename.empty())
+        return false;
+    auto path = std::filesystem::directory_entry(std::filesystem::path(filename));
+    return (path.exists() && !path.is_directory());
+}

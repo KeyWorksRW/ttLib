@@ -36,4 +36,13 @@ namespace tt
     /// contains the specified extension.
     bool hasextension(std::filesystem::directory_entry name, std::string_view extension);
 
+    /// Confirms newdir exists and is a directory and then changes to that directory.
+    ///
+    /// Returns false only if newdir is not an existing directory. Throws filesystem_error
+    /// if the directory is valid but could not be changed to.
+    bool ChangeDir(std::string_view newdir);
+
+    bool dirExists(std::string_view dir);
+    bool fileExists(std::string_view filename);
+
 }  // namespace tt
