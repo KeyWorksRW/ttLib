@@ -402,4 +402,41 @@ inline bool ttIsValidWindow(HWND hwnd)
     return (bool) (hwnd && IsWindow(hwnd));
 };
 
+///////////////// The following code is obsolete -- it's here until all caller's get changed
+
+#include "../include/ttstr.h"
+
+// Enumerate through substrings in a string
+class ttCEnumStr
+{
+public:
+    [[deprecated]] ttCEnumStr(const char* psz, char chSeparator = ';');  // This will make a copy of psz
+    [[deprecated]] ttCEnumStr();  // If using this constructor, you must call SetNewStr() before calling Enum()
+
+    // Class functions
+
+    // If no more substrings, *ppszCurrent (if non-null) will be set to nullptr
+    [[deprecated]] bool Enum(const char** ppszCurrent = nullptr);
+    // Call this to reset the enumeration to the beginning of the master string
+    [[deprecated]] void ResetEnum(char chSeparator = ';');
+    [[deprecated]] void SetNewStr(const char* psz, char chSeparator = ';');
+
+    // Value is undefined if Enum() returned false
+    [[deprecated]] char* GetCurrent() const { return m_pszCur; }
+
+    [[deprecated]] operator char*() const { return m_pszCur; }
+
+    [[deprecated]] bool operator==(const char* psz) { return ttIsSameStr(m_pszCur, psz); }
+    [[deprecated]] bool operator==(char* psz) { return ttIsSameStr(m_pszCur, psz); }
+
+private:
+    // Class members
+
+    char*  m_pszCur;
+    ttCStr m_csz;
+    char*  m_pszEnd;
+    char   m_chSeparator;
+};
+
+
 #endif // _TTLIBWIN_H_GUARD_

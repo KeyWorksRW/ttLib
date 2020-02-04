@@ -20,8 +20,6 @@
 
 #include "ttstring.h"
 
-#include "ttstr.h"  // ttCStr
-
 /// @file
 /// These two classes break a string containing substrings into a vector of substrings.
 /// Use ttEnumStr if you want a copy of the substring that can be modified. Use ttEnumView
@@ -41,36 +39,4 @@ class ttEnumView : public std::vector<std::string_view>
 {
 public:
     ttEnumView(std::string_view str, char separator = ';');
-};
-
-// Enumerate through substrings in a string
-class ttCEnumStr
-{
-public:
-    ttCEnumStr(const char* psz, char chSeparator = ';');  // This will make a copy of psz
-    ttCEnumStr();  // If using this constructor, you must call SetNewStr() before calling Enum()
-
-    // Class functions
-
-    // If no more substrings, *ppszCurrent (if non-null) will be set to nullptr
-    bool Enum(const char** ppszCurrent = nullptr);
-    // Call this to reset the enumeration to the beginning of the master string
-    void ResetEnum(char chSeparator = ';');
-    void SetNewStr(const char* psz, char chSeparator = ';');
-
-    // Value is undefined if Enum() returned false
-    char* GetCurrent() const { return m_pszCur; }
-
-    operator char*() const { return m_pszCur; }
-
-    bool operator==(const char* psz) { return ttIsSameStr(m_pszCur, psz); }
-    bool operator==(char* psz) { return ttIsSameStr(m_pszCur, psz); }
-
-private:
-    // Class members
-
-    char*  m_pszCur;
-    ttCStr m_csz;
-    char*  m_pszEnd;
-    char   m_chSeparator;
 };

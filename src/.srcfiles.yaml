@@ -12,19 +12,12 @@ Options:
     Crt_rel:    dll        # [static | dll] type of CRT to link to in release builds
     Crt_dbg:    dll        # [static | dll] type of CRT to link to in debug builds
 
-    IncDirs:    precompile;../include/;../ttwx/src/
+    IncDirs:    precompile;../include
     TargetDir:  ./lib
 
 Files:
-    ttconsole.cpp       # class that sets/restores console foreground color
-    ttenumstr.cpp       # ttCEnumStr class
-    tthashpair.cpp      # ttCHashPair
-    ttmisc.cpp          # miscellaneous functions
-    ttmultithread.cpp   # ttCMultiThrd class
-    ttpath.cpp          # Contains functions for working with filesystem::path and filesystem::directory
-    ttprintf.cpp        # printf
-    ttstr.cpp           # ttCStr class
-    ttstrfuncs.cpp      # string handling and ttStr class
-
+    ttconsole.cpp   # class that sets/restores console foreground color
+    ttenumstr.cpp   # ttCEnumStr class
+    ttpath.cpp      # Contains functions for working with filesystem::path and filesystem::directory
     ttstring.cpp    # std::string class with some additional functionality
     tttextfile.cpp  # Class for reading and writing text files.

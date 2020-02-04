@@ -15,7 +15,7 @@
 
 #include <sstream>
 
-#include "ttassert.h"
+#include "../include/ttassert.h"
 
 #if defined(NDEBUG)  // Release build.
 

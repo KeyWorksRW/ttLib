@@ -10,7 +10,7 @@
 
 #include <locale>
 
-#include "ttstring.h"
+#include "../include/ttstring.h"
 
 // Global empty string.
 const std::string ttEmptyString("");

@@ -11,7 +11,7 @@
 #include <unordered_map>
 #include <wx/intl.h>
 
-#include "ttTR.h"
+#include "../include/ttTR.h"
 
 static std::unordered_map<std::string, std::string> tt_translations;
 

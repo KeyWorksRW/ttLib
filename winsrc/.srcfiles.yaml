@@ -18,6 +18,15 @@ Options:
 Files:
     .include ../src/.srcfiles.yaml
 
+    # These files should be moved to ../src once they can be compiled without Windows
+
+    tthashpair.cpp      # ttCHashPair
+    ttmultithread.cpp   # ttCMultiThrd class
+    ttprintf.cpp        # printf
+    ttstr.cpp           # ttCStr class
+    ttmisc.cpp          # miscellaneous functions
+    ttstrfuncs.cpp      # string handling and ttStr class
+
     # This is obsolete and should be replaced with pugixml!
     ttxml.cpp
 
