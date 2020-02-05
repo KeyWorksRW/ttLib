@@ -80,15 +80,15 @@ public:
     char*  c_str() { return m_psz; }  // Note that this ALWAYS returns a char* type unlike std::string.c_str()
     void   clear() { Delete(); }
     char*  data() { return m_psz; }   // Note that this ALWAYS returns a char* type unlike std::string.data()
-    bool   empty() { return (!m_psz || !m_psz[0]); }
+    bool   empty() const { return (!m_psz || !m_psz[0]); }
     char   front() { return (m_psz ? m_psz[0] : 0); }
-    size_t length() { return (m_psz ? std::strlen(m_psz) : 0); }
+    size_t length() const { return (m_psz ? std::strlen(m_psz) : 0); }
     void   reserve(size_t cap) { ReSize(cap); }
     void   shrink_to_fit() { ReSize(size()); }
-    size_t size() { return length(); }
-    int    compare(const char* psz) { return (m_psz ? std::strcmp(m_psz, psz) : 1); }
-    size_t find(const char* psz);
-    bool   starts_with(const char* psz);
+    size_t size() const { return length(); }
+    int    compare(const char* psz) const { return (m_psz ? std::strcmp(m_psz, psz) : 1); }
+    size_t find(const char* psz) const;
+    bool   starts_with(const char* psz) const;
 
     // TODO: [KeyWorks - 11-27-2019]
     // size_t capacity(); // this would require adding a m_cap member and tracking all memory size.

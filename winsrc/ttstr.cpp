@@ -11,8 +11,9 @@
 #include <cassert>
 #include <string>
 
-#include "../include/ttdebug.h"  // ttASSERT macros
-#include "../include/ttstr.h"    // ttCStr
+#include "../include/ttdebug.h"     // ttASSERT macros
+#include "../include/ttstr.h"       // ttCStr
+#include "../include/ttstrfuncs.h"  // Various functions for working with strings
 
 #if __cplusplus >= 201703L
     #include <filesystem>
@@ -52,27 +53,18 @@ char* ttCStr::append(const char* psz)
     return m_psz;
 }
 
-size_t ttCStr::find(const char* psz)
+size_t ttCStr::find(const char* psz) const
 {
     if (!m_psz || !psz)
-        return std::string::npos;
-    const char* pszFound = std::strstr(m_psz, psz);
-    return (pszFound ? (pszFound - m_psz) : std::string::npos);
+        return tt::npos;
+    return tt::findstr_pos(m_psz, psz);
 }
 
-bool ttCStr::starts_with(const char* pszSub)
+bool ttCStr::starts_with(const char* pszSub) const
 {
     if (!m_psz || !pszSub)
         return false;
-    const char* pszMain = m_psz;
-    while (*pszSub)
-    {
-        if (*pszMain != *pszSub)
-            return false;  // doesn't match even when case is made the same
-        ++pszMain;
-        ++pszSub;
-    }
-    return true;
+    return tt::issamesubstr(m_psz, pszSub);
 }
 
 char* ttCStr::AppendFileName(const char* pszFile)
