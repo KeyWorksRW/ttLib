@@ -8,14 +8,16 @@
 
 #pragma once
 
-#if defined(_WIN32)
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
 
-    #include "ttarray.h"  // ttCArray
+#include "ttarray.h"  // ttCArray
 
-    #ifdef _MSC_VER
-        #pragma warning(disable : 26495)  // m_btnShade is uninitialized (r.w.: which is fine, it's not used until
-                                          // Initialize is called which sets it)
-    #endif
+#ifdef _MSC_VER
+    #pragma warning(disable : 26495)  // m_btnShade is uninitialized (r.w.: which is fine, it's not used until
+                                      // Initialize is called which sets it)
+#endif
 
 namespace ttpriv
 {
@@ -60,5 +62,3 @@ private:
     ttCArray<ttCShadeBtn*> m_aBtns;
     BTN_SHADE              m_btnShade;
 };
-
-#endif  // defined(_WIN32)

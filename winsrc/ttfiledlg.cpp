@@ -8,9 +8,11 @@
 
 #include "pch.h"
 
-#if defined(_WIN32)
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
 
-    #include "../include/ttfiledlg.h"
+#include "../include/ttfiledlg.h"
 
 ttCFileDlg::ttCFileDlg(HWND hwndParent)
 {
@@ -23,10 +25,10 @@ ttCFileDlg::ttCFileDlg(HWND hwndParent)
     // If we are running on Windows XP or higher, then make room for pvReserved, dwReserved, and FlagsEx.
     // That's why we allocate OPENFILENAME rather then just declaring it in our class
 
-    #if (_WIN32_WINNT < 0x0500)
+#if (_WIN32_WINNT < 0x0500)
     if (_osv.dwMajorVersion >= 5)
         cbStruct += sizeof(void*) + sizeof(DWORD) + sizeof(DWORD);
-    #endif
+#endif
     m_pofn = (OPENFILENAMEA*) ttCalloc(cbStruct);
 
     m_cszFileName.ReSize(MAX_PATH);
@@ -54,10 +56,10 @@ bool ttCFileDlg::GetOpenName()
 {
     if (!::GetOpenFileNameA(m_pofn))
     {
-    #if !defined(NDEBUG)                       // Starts debug section.
+#if !defined(NDEBUG)                           // Starts debug section.
         DWORD error = CommDlgExtendedError();  // Will be 0 if the user cancelled, else it's an actual error
         ttASSERT_MSG(error == 0, "An error occurred in the Open dialog box");
-    #endif
+#endif
         return false;
     }
 
@@ -73,10 +75,10 @@ bool ttCFileDlg::GetSaveName()
 
     if (!::GetSaveFileNameA(m_pofn))
     {
-    #if !defined(NDEBUG)                       // Starts debug section.
+#if !defined(NDEBUG)                           // Starts debug section.
         DWORD error = CommDlgExtendedError();  // Will be 0 if the user cancelled, else it's an actual error
         ttASSERT_MSG(error == 0, "An error occurred in the Open dialog box");
-    #endif
+#endif
         return false;
     }
     FixExtension();
@@ -148,10 +150,10 @@ UINT_PTR CALLBACK ttpriv::OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */,
 
         if (!IsRectEmpty(&pThis->m_rcPosition))
             pThis->m_bRepositionWindow = true;
-    #if 0  // REVIEW: [randalphwa - 09-03-2018] enable this if we add CenterWindow()
+#if 0  // REVIEW: [randalphwa - 09-03-2018] enable this if we add CenterWindow()
         else
             CenterWindow(GetParent(GetParent(hdlg)), GetParent(hdlg));
-    #endif
+#endif
         return TRUE;
     }
 
@@ -197,5 +199,3 @@ void ttCFileDlg::SetInitialDir(const char* pszFolder)
     ttForwardslashToBackslash(m_cszSetDir);
     m_pofn->lpstrInitialDir = m_cszSetDir;
 }
-
-#endif  // defined(_WIN32)

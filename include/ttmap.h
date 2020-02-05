@@ -8,6 +8,10 @@
 
 #pragma once
 
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
+
 #include "ttheap.h"  // ttCHeap
 
 // Caution! You MUST use ttCMap::ttMalloc or ttCMap::ttStrDup if you want allocated memory to be freed in the

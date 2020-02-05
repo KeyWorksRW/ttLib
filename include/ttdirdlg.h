@@ -8,6 +8,10 @@
 
 #pragma once
 
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
+
 #include <shlobj.h>
 
 #include "ttstr.h"   // ttCStr

@@ -12,6 +12,11 @@
 
 #include "../include/ttstr.h"  // ttCStr
 
+#if defined(_MSC_VER)
+    // We don't warn about deprecated functions that are still her for backwards compatability
+    #pragma warning(disable : 4996)  // deprecated
+#endif
+
 size_t ttHashFromSz(const char* psz)
 {
     assert(psz);

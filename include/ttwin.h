@@ -10,13 +10,15 @@
 
 #pragma once
 
-#if defined(_WIN32)
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
 
-    #include <wtypes.h>
+#include <wtypes.h>
 
-    #if !defined(BEGIN_TTMSG_MAP)
-        #include "ttcasemap.h"  // Macros for mapping Windows messages to functions
-    #endif
+#if !defined(BEGIN_TTMSG_MAP)
+    #include "ttcasemap.h"  // Macros for mapping Windows messages to functions
+#endif
 
 namespace ttpriv
 {
@@ -142,7 +144,8 @@ protected:
 
     const char* m_pszClassName;  // Class name of the window we created or attached to.
 
-    HWND m_hwnd;  // m_hwnd vs m_hWnd -- SDK/include, ATL and WTL use both variants. We're sticking with all lowercase.
+    HWND m_hwnd;  // m_hwnd vs m_hWnd -- SDK/include, ATL and WTL use both variants. We're sticking with all
+                  // lowercase.
     HWND m_hwndParent;
 
     // Instance used to create the class, can be used to load resources from the app.
@@ -155,5 +158,3 @@ protected:
     WNDPROC m_SubClassProc;
     LRESULT m_result;
 };
-
-#endif  // defined(_WIN32)

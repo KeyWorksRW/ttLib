@@ -14,22 +14,24 @@
 
 #include "pch.h"
 
-#if defined(_WIN32)
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
 
-    #include "../include/ttheap.h"
-    #include "../include/ttdib.h"
+#include "../include/ttheap.h"
+#include "../include/ttdib.h"
 
-    #ifndef WIDTHBYTES
-        #define WIDTHBYTES(bits) (((bits) + 31) / 32 * 4)
-    #endif
+#ifndef WIDTHBYTES
+    #define WIDTHBYTES(bits) (((bits) + 31) / 32 * 4)
+#endif
 
-    #if 0  // [randalphwa - 1/10/2019] These are presumably used to indentify type, but nothing uses them
-        #define BFT_ICON   0x4349  // 'IC'
-        #define BFT_BITMAP 0x4d42  // 'BM'
-        #define BFT_CURSOR 0x5450  // 'PT'
-    #endif
+#if 0  // [randalphwa - 1/10/2019] These are presumably used to indentify type, but nothing uses them
+    #define BFT_ICON   0x4349  // 'IC'
+    #define BFT_BITMAP 0x4d42  // 'BM'
+    #define BFT_CURSOR 0x5450  // 'PT'
+#endif
 
-    #define IS_WIN30_DIB(lpbi) ((*(LPDWORD)(lpbi)) == sizeof(BITMAPINFOHEADER))
+#define IS_WIN30_DIB(lpbi) ((*(LPDWORD)(lpbi)) == sizeof(BITMAPINFOHEADER))
 
 ttCDib::ttCDib()
 {
@@ -305,14 +307,14 @@ BYTE ttCDib::GetNearestIndex(RGBQUAD c)
     return j;
 }
 
-    #define HSLMAX 240 /* H,L, and S vary over 0-HSLMAX */
-    #define RGBMAX 255 /* R,G, and B vary over 0-RGBMAX */
-                       /* HSLMAX BEST IF DIVISIBLE BY 6 */
-                       /* RGBMAX, HSLMAX must each fit in a byte. */
-    /* Hue is undefined if Saturation is 0 (grey-scale) */
-    /* This value determines where the Hue scrollbar is */
-    /* initially set for achromatic colors */
-    #define UNDEFINED (HSLMAX * 2 / 3)
+#define HSLMAX 240 /* H,L, and S vary over 0-HSLMAX */
+#define RGBMAX 255 /* R,G, and B vary over 0-RGBMAX */
+                   /* HSLMAX BEST IF DIVISIBLE BY 6 */
+                   /* RGBMAX, HSLMAX must each fit in a byte. */
+/* Hue is undefined if Saturation is 0 (grey-scale) */
+/* This value determines where the Hue scrollbar is */
+/* initially set for achromatic colors */
+#define UNDEFINED (HSLMAX * 2 / 3)
 
 RGBQUAD ttCDib::RGBtoHSL(RGBQUAD lRGBColor)
 {
@@ -489,5 +491,3 @@ void ttCDib::Clear(BYTE bval)
     if (hDib)
         memset(GetBits(), bval, m_bi.biSizeImage);
 }
-
-#endif  // defined(_WIN32)

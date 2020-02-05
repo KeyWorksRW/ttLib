@@ -8,17 +8,19 @@
 
 #pragma once
 
-#if defined(_WIN32)
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
 
-    #include <commdlg.h>
+#include <commdlg.h>
 
-    #include "ttdebug.h"     // for ttASSERTS
-    #include "ttstr.h"       // ttCStr
-    #include "ttmultibtn.h"  // ttCMultiBtn
+#include "ttdebug.h"     // for ttASSERTS
+#include "ttstr.h"       // ttCStr
+#include "ttmultibtn.h"  // ttCMultiBtn
 
-    #ifndef OFN_DONTADDTORECENT
-        #define OFN_DONTADDTORECENT 0x02000000
-    #endif
+#ifndef OFN_DONTADDTORECENT
+    #define OFN_DONTADDTORECENT 0x02000000
+#endif
 
 namespace ttpriv
 {
@@ -37,7 +39,10 @@ public:
     bool GetOpenName();  // call this or the following to launch the actual dialog box
     bool GetSaveName();
 
-    char* GetFileName() { return m_cszFileName; }  // call this after one of the above two functions has been called
+    char* GetFileName()
+    {
+        return m_cszFileName;
+    }  // call this after one of the above two functions has been called
 
     void AddToRecent() { m_pofn->Flags &= ~OFN_DONTADDTORECENT; }
     void SetFilter(int idResource);
@@ -115,5 +120,3 @@ protected:
     bool m_bRepositionWindow;
     bool m_bShadeBtns;
 };
-
-#endif  // defined(_WIN32)

@@ -8,13 +8,15 @@
 
 #pragma once
 
-#if defined(_WIN32)
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
 
-    #include <winnls.h>
-    #include <winbase.h>
+#include <winnls.h>
+#include <winbase.h>
 
-    #include "ttstr.h"    // ttCStr
-    #include "ttdebug.h"  // ttASSERT macros
+#include "ttstr.h"    // ttCStr
+#include "ttdebug.h"  // ttASSERT macros
 
 // Class for handling a Windows SYSTEMTIME or FILETIME structure
 class ttCTime
@@ -53,8 +55,8 @@ public:
     }
     const char* GetFullFormat()
     {  // full date/time
-        m_cszFull =
-            GetDateFormat(DATE_LONGDATE);  // GetDateFormat() modifies m_cszFormatted, so we have to use a temporary
+        m_cszFull = GetDateFormat(
+            DATE_LONGDATE);  // GetDateFormat() modifies m_cszFormatted, so we have to use a temporary
         m_cszFull += ", ";
         m_cszFull += GetTimeFormat();
         return m_cszFull;
@@ -100,5 +102,3 @@ private:
     ttCStr m_cszFull;
     ttCStr m_cszShort;
 };
-
-#endif  // !defined(_WIN32)

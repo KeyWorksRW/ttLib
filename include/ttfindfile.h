@@ -8,16 +8,18 @@
 
 #pragma once
 
-#if defined(_WIN32)
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
 
-    #include <fileapi.h>
-    #include <stdint.h>
+#include <fileapi.h>
+#include <stdint.h>
 
-    #include "ttlibwin.h"
+#include "ttlibwin.h"
 
-    #if !defined(INVALID_HANDLE_VALUE)
-        #define INVALID_HANDLE_VALUE ((HANDLE)(LONG_PTR) -1)
-    #endif
+#if !defined(INVALID_HANDLE_VALUE)
+    #define INVALID_HANDLE_VALUE ((HANDLE)(LONG_PTR) -1)
+#endif
 
 /*
         Example usage:
@@ -37,14 +39,17 @@
 class ttCFindFile : public WIN32_FIND_DATAA
 {
 public:
-    ttCFindFile(void) { m_hfind = INVALID_HANDLE_VALUE; }  // With this constructor, call NewPattern(...) to initialize
+    ttCFindFile(void)
+    {
+        m_hfind = INVALID_HANDLE_VALUE;
+    }  // With this constructor, call NewPattern(...) to initialize
     ttCFindFile(const char* pszFilePattern)
     {
         m_hfind = FindFirstFileExA(pszFilePattern, FindExInfoBasic, this, FindExSearchNameMatch, nullptr,
                                    FIND_FIRST_EX_LARGE_FETCH);
-    #if !defined(NDEBUG)  // Starts debug section.
+#if !defined(NDEBUG)  // Starts debug section.
         m_pszFilename = cFileName;
-    #endif
+#endif
     }
     ~ttCFindFile()
     {
@@ -104,11 +109,9 @@ public:
     bool operator==(char* psz) { return (IsEmpty()) ? false : ttIsSameStrI(cFileName, psz); }
 
 private:
-    #if !defined(NDEBUG)  // Starts debug section.
+#if !defined(NDEBUG)  // Starts debug section.
     char* m_pszFilename;
-    #endif
+#endif
 
     HANDLE m_hfind;
 };
-
-#endif  // defined(_WIN32)

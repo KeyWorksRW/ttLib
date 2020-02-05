@@ -21,7 +21,6 @@
 #include <string_view>
 #include <sstream>
 
-#include "ttdebug.h"  // ttASSERT macros
 #include "ttstr.h"    // ttCStr
 
 #if defined(_WIN32)

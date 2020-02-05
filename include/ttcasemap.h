@@ -51,6 +51,10 @@
 
 #pragma once
 
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
+
 #ifndef GET_X_LPARAM
     #define GET_X_LPARAM(lp) ((int) (short) LOWORD(lp))
     #define GET_Y_LPARAM(lp) ((int) (short) HIWORD(lp))

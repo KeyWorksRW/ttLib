@@ -10,7 +10,9 @@
 
 #include "pch.h"  // precompiled header
 
-#if defined(_WIN32)
+#if !defined(_WIN32)
+    #error "This file can only be compiled for Windows"
+#endif
 
 #include "../include/ttcritsection.h"  // CCritSection, CCritLock
 #include "../include/ttstr.h"          // ttCStr
@@ -225,5 +227,3 @@ __declspec(noreturn) void ttOOM(void)
 
     exit(-1);
 }
-
-#endif  // defined(_WIN32)

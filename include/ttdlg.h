@@ -8,7 +8,9 @@
 
 #pragma once
 
-#if defined(_WIN32)
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
 
     #include <wtypes.h>
 
@@ -614,5 +616,3 @@ public:
 
     HWND m_hwnd;
 };  // end of ttCListView
-
-#endif  // defined(_WIN32)

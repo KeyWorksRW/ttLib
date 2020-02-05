@@ -8,12 +8,16 @@
 
 /*
 
-    Similar to ttCArray, only this one uses a sub-heap so that you can allocate memory for strings and other data, and
-    have all of it freed when the sub-heap is released.
+    Similar to ttCArray, only this one uses a sub-heap so that you can allocate memory for strings and other data,
+   and have all of it freed when the sub-heap is released.
 
 */
 
 #pragma once
+
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
 
 #include "ttheap.h"   // ttCHeap
 #include "ttdebug.h"  // ttASSERT macros

@@ -8,10 +8,12 @@
 
 #include "pch.h"  // precompiled header
 
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
+
 #include "../include/ttdebug.h"  // for ttASSERTS
 #include "../include/ttstr.h"    // ttCStr
-
-#if defined(_WIN32)
 
 bool ttFileExists(const char* pszFile)
 {
@@ -188,7 +190,7 @@ void ttConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszRe
         cszResult = cszFile.GetPtr() + pos;
         return;
     }
-    #if 0
+#if 0
     if (!cszFile[pos])  // this should be impossible
     {
         cszResult = pszFile;
@@ -201,7 +203,7 @@ void ttConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszRe
         cszResult = pszFilePortion;
         return;
     }
-    #endif
+#endif
 
     // The following scenarios need to be dealt with
 
@@ -262,11 +264,11 @@ char* ttFindFilePortion(const char* pszPath)
         return nullptr;
 
     char* psz;
-    #ifdef _WINDOWS_
+#ifdef _WINDOWS_
     psz = ttStrChrR(pszPath, '\\');  // Paths usually have back slashes under Windows
     if (psz)
         pszPath = psz + 1;
-    #endif                          // _WINDOWS_
+#endif                              // _WINDOWS_
     psz = ttStrChrR(pszPath, '/');  // forward slashes are valid on all OS, so check that too
     if (psz)
         return psz + 1;
@@ -314,5 +316,3 @@ bool ttIsValidFileChar(const char* psz, size_t pos)
     }
     return false;
 }
-
-#endif  // defined(_WIN32)

@@ -17,11 +17,13 @@
 
 #include "pch.h"
 
-#if defined(_WIN32)
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
 
-    #include "../include/ttstr.h"       // ttCStr
-    #include "../include/ttdebug.h"     // ttASSERT macros
-    #include "../include/ttshadebtn.h"  // ttCShadeBtn
+#include "../include/ttstr.h"       // ttCStr
+#include "../include/ttdebug.h"     // ttASSERT macros
+#include "../include/ttshadebtn.h"  // ttCShadeBtn
 
 /*
     This class only works on non-image buttons. I.e., this class will not work on a button that is drawn with a
@@ -57,13 +59,13 @@ ttCShadeBtn::ttCShadeBtn()
     // the user changed that font specifically for message boxes without expecting it to also change the font
     // on dialog buttons, and you might end up with an unreadable button as a result.
 
-    #if 0
+#if 0
     NONCLIENTMETRICS* pmetrics = (NONCLIENTMETRICS*) ttcalloc(sizeof(NONCLIENTMETRICS));
     pmetrics->cbSize = sizeof(NONCLIENTMETRICS);
     if (SystemParametersInfo(SPI_GETNONCLIENTMETRICS, 0, pmetrics, 0))
         SetFont(&pmetrics->lfMessageFont);
     ttFree(pmetrics);
-    #endif
+#endif
 }
 
 ttCShadeBtn::~ttCShadeBtn()
@@ -708,5 +710,3 @@ void ttCShadeBtn::FillSolidRect(HDC hdc, int x, int y, int cx, int cy, COLORREF 
     RECT rect = { x, y, x + cx, y + cy };
     ::FillRect(hdc, &rect, (HBRUSH)(ULONG_PTR) clr);
 }
-
-#endif  // defined(_WIN32)

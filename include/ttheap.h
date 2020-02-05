@@ -8,25 +8,27 @@
 
 #pragma once
 
-#if defined(_WIN32) && !defined(PTEST)
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
 
 #include <wtypes.h>
 
 /*
     The Windows heap manager is a bit faster to use then the C runtime. Replacing the standard memory allocation
-    functions provides a performance boost and eliminates the need to check for a null pointer on return. If there is
-    insufficient memory, the application will be terminated (see OOM()).
+    functions provides a performance boost and eliminates the need to check for a null pointer on return. If there
+    is insufficient memory, the application will be terminated (see OOM()).
 
-    ttCHeap can also be used to create a sub-heap. Any individual memory allocations on the sub-heap do not need to be
-    freed before the destructor as the entire sub-heap is destroyed at once. A class that wants to utilize this
+    ttCHeap can also be used to create a sub-heap. Any individual memory allocations on the sub-heap do not need to
+    be freed before the destructor as the entire sub-heap is destroyed at once. A class that wants to utilize this
     functionality should inherit from ttCHeap, and provide a serialization flag in it's constructor:
 
         classs MyClass :  public ttCHeap
         {
             MyClass() : ttCHeap(true) { } // true to make MyClass thread-safe
 
-    Now all of the ttMalloc/ttReAlloc/ttReCalloc routines below will be allocated on the sub-heap, and do not need to
-    be specifically FreeAllocd in the destructor.
+    Now all of the ttMalloc/ttReAlloc/ttReCalloc routines below will be allocated on the sub-heap, and do not need
+    to be specifically FreeAllocd in the destructor.
 
     Constructing ttCHeap using another heap takes advantage of the sub-heap above by elimintating the need to
     individually free every memory allocation in the destructor.
@@ -47,8 +49,8 @@ public:
 
     // Public functions
 
-    // We use the "tt" prefix to make certain there is no confusion in a derived class that the memory routines are from
-    // this class rather than the standard memory functions.
+    // We use the "tt" prefix to make certain there is no confusion in a derived class that the memory routines are
+    // from this class rather than the standard memory functions.
 
     // In Debug builds, this will fill the allocated memory with 0xCD.
     void* ttMalloc(size_t cb);
@@ -102,5 +104,3 @@ namespace tt
 {
     extern ttCHeap MainHeap;  // this uses the process heap rather then a sub-heap
 }
-
-#endif  // defined(_WIN32)

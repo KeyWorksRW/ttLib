@@ -52,6 +52,10 @@
 
 #pragma once
 
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
+
 // lResult is set to zero before OnMsgMap is called, so only change if non-zero result is needed
 #define BEGIN_TTMSG_MAP()                                                    \
     bool OnMsgMap(UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lResult) \

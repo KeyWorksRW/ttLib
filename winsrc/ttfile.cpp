@@ -145,7 +145,7 @@ bool ttCFile::WriteFile(const char* pszFile)
 
 bool ttCFile::ReadFile(const ttCStr& cszFilename)
 {
-    assert(cszFilename.empty());
+    assert(!cszFilename.empty());
     std::string temp(cszFilename);
     return Read(temp);
 }
