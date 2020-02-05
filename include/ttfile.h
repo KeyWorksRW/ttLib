@@ -18,6 +18,9 @@
 
 #include <stdint.h>
 
+#include <string_view>
+#include <sstream>
+
 #include "ttdebug.h"  // ttASSERT macros
 #include "ttstr.h"    // ttCStr
 
@@ -54,8 +57,9 @@ public:
 
     // For ReadFile, ReadURL and WriteFile() call GetErrorResult() for ERROR_ info
 
-    bool ReadFile(const char* pszFile);   // ERROR_INVALID_NAME, ERROR_CANTOPEN, ERROR_SEEK_FAILURE, ERROR_CANTREAD
-    bool WriteFile(const char* pszFile);  // ERROR_INVALID_NAME, ERROR_EMPTY_BUFFER, ERROR_CANTOPEN, ERROR_CANTWRITE
+    bool ReadFile(const ttCStr& cszFilename);
+    bool Read(const std::string& filename);
+    bool WriteFile(const char* pszFile);
 
     // Reads a string as if it was a file (makes a copy of the string).
     bool ReadStrFile(const char* pszText);
@@ -100,6 +104,9 @@ public:
     void WriteChar(char ch);
     void WriteEol(void);
     void WriteEol(const char* psz);
+
+    void WriteText(std::string_view text);
+    void WriteText(const std::stringstream& text);
 
     // Adds a CR/LF only if there isn't one already.
     void AddSingleLF();

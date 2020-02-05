@@ -8,6 +8,8 @@
 
 #include "pch.h"
 
+#include <cassert>
+
 #include <stdlib.h>  // for wcstombs_s
 
 #include "../include/ttfile.h"
@@ -141,16 +143,24 @@ bool ttCFile::WriteFile(const char* pszFile)
     return bResult ? true : false;
 }
 
-bool ttCFile::ReadFile(const char* pszFile)
+bool ttCFile::ReadFile(const ttCStr& cszFilename)
+{
+    assert(cszFilename.empty());
+    std::string temp(cszFilename);
+    return Read(temp);
+}
+
+bool ttCFile::Read(const std::string& filename)
 {
     Delete();
-    CHECK_FILE_PTR(pszFile);                 // returns on failure
-#if !defined(NDEBUG)                         // Starts debug section.
-    m_pszFile = ttFindFilePortion(pszFile);  // set this so Debugger will see it
-#endif
+    if (filename.empty())
+    {
+        m_ioResult = ERROR_BAD_NAME;
+        return false;
+    }
 
-    HANDLE hf =
-        CreateFileA(pszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+    HANDLE hf = CreateFileA(filename.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING,
+                            FILE_FLAG_SEQUENTIAL_SCAN, NULL);
     if (hf == INVALID_HANDLE_VALUE)
     {
         m_ioResult = ERROR_CANT_OPEN;
@@ -398,6 +408,26 @@ void ttCFile::WriteStr(const char* psz)
         AllocateMoreMemory(max(cb + 1024, 16 * 1024));
     ttStrCpy(m_pCurrent, psz);
     m_pCurrent += cb;
+}
+
+void ttCFile::WriteText(std::string_view text)
+{
+    if (text.empty())
+        return;
+
+    if (m_pCurrent + text.size() + 2 > m_pEnd)
+        AllocateMoreMemory(max(text.size() + 1024, 16 * 1024));
+    memcpy(m_pCurrent, text.data(), text.size());
+    m_pCurrent[text.size()] = 0;
+    m_pCurrent += text.size();
+}
+
+void ttCFile::WriteText(const std::stringstream& text)
+{
+    if (text.str().empty())
+        return;
+
+    WriteText(text.str());
 }
 
 void cdecl ttCFile::printf(const char* pszFormat, ...)
