@@ -302,6 +302,11 @@ size_t ttString::findi(std::string_view str, bool bUtf8) const
     return npos;
 }
 
+bool ttString::contains(std::string_view sub, bool CaseSensitive)
+{
+    return tt::contains(*this, sub, CaseSensitive);
+}
+
 size_t ttString::gethash() const
 {
     if (empty())

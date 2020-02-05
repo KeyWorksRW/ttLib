@@ -48,7 +48,6 @@ public:
     ttString(wxString& str) { assign(str.utf8_str().data()); }
 #endif  // _WIN32
 
-
 #if defined(_TT_TCSTR)
     ttString(ttCStr& csz) { assign(csz.c_str() ? csz.c_str() : ""); }
 #endif
@@ -61,6 +60,11 @@ public:
     /// If bUtf8 is true, current string and string to search for are assumed to be
     /// coded as UTF8 strings.
     size_t findi(std::string_view str, bool bUtf8 = false) const;
+
+    /// Returns true if the sub string exists
+    ///
+    /// Same as find/findi but with a boolean return instead of a position.
+    bool contains(std::string_view sub, bool CaseSensitive = true);
 
     /// Find any one of the characters in a set. Returns offset if found, npos if not.
     ///
