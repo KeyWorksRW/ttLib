@@ -8,9 +8,6 @@
 
 #include "pch.h"
 
-#include "../include/ttpath.h"
-#include "../include/ttstrfuncs.h"
-
 // Define a namespace so that either std::filesystem or boost::filesystem can be used
 namespace fs = std::filesystem;
 

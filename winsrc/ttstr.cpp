@@ -13,7 +13,6 @@
 
 #include "../include/ttdebug.h"     // ttASSERT macros
 #include "../include/ttstr.h"       // ttCStr
-#include "../include/ttstrfuncs.h"  // Various functions for working with strings
 
 #if __cplusplus >= 201703L
     #include <filesystem>

@@ -12,7 +12,6 @@
 
 #include "../include/ttheap.h"  // ttCHeap
 #include "../include/ttstr.h"   // ttCStr
-#include "../include/ttstrfuncs.h"
 
 using namespace ttch;  // CH_constants
 

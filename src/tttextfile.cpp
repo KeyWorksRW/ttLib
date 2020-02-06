@@ -12,7 +12,6 @@
 #include <fstream>
 
 #include "../include/tttextfile.h"
-#include "../include/ttstrfuncs.h"
 
 bool ttTextFile::ReadFile(std::string_view filename)
 {

@@ -10,8 +10,6 @@
 
 #include <filesystem>
 
-#include "ttstrfuncs.h"  // Various functions for working with strings
-
 #if defined(__WXMSW__)
     #include <wx/string.h>
 #endif

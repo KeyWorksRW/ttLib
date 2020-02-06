@@ -10,9 +10,10 @@
 
 #include <locale>
 #include <cassert>
+#include <cctype>
+
 
 #include "../include/ttstring.h"
-#include "../include/ttstrfuncs.h"
 
 // Global empty string.
 const std::string ttEmptyString("");
