@@ -8,9 +8,7 @@
 
 #include "pch.h"
 
-#include <cassert>
-
-#include "../include/ttenumstr.h"  // ttCEnumStr
+#include "../include/ttenumstr.h"  // ttEnumStr, ttEnumView -- Enumerate through substrings in a string
 
 ttEnumStr::ttEnumStr(std::string_view str, char separator)
 {
