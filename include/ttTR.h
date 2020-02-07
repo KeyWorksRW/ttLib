@@ -7,6 +7,9 @@
 /////////////////////////////////////////////////////////////////////////////
 
 /// @file
+/// Currently, actual translation requires wxWidgets. You can use these macros without wxWidgets, but the
+/// strings will not be translated.
+///
 /// **_tt()** is similar to the _() macro in **wxWidgets** in that it is used to translate a string.
 /// The most significant difference is that _tt() returns a **const char\*** pointer instead
 /// of a **wxString&**. On Windows, that means you can pass **_tt()** to **std:string** and **std::string_view**

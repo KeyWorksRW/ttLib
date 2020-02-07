@@ -6,14 +6,19 @@
 // License:   Apache License (see LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
+// Currently, translation only occurs when use with wxWidgets.
+
 #include "pch.h"
 
 #include <unordered_map>
-#include <wx/intl.h>
+
+#if defined(_WX_DEFS_H_)
+    #include <wx/intl.h>
+#endif
 
 #include "../include/ttTR.h"
 
-static std::unordered_map<std::string, std::string> tt_translations;
+std::unordered_map<std::string, std::string> tt_translations;
 
 const char* ttTranslate(const char* psz)
 {
@@ -26,6 +31,7 @@ const char* ttTranslate(const char* psz)
         }
         else
         {
+#if defined(_WX_DEFS_H_)
             auto trans = wxTranslations::Get();
             if (trans)
             {
@@ -56,6 +62,14 @@ const char* ttTranslate(const char* psz)
                     return translated.first->second.c_str();
                 }
             }
+#else    // !defined(_WX_DEFS_H_)
+            // Currently all that happens is the string is added without translation.
+            auto translated = tt_translations.insert({ psz, psz });
+            if (translated.second)
+            {
+                return translated.first->second.c_str();
+            }
+#endif  // _WX_DEFS_H_
         }
     }
 

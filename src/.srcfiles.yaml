@@ -16,8 +16,9 @@ Options:
     TargetDir:  ./lib
 
 Files:
+    ttTR.cpp        # Function for translating strings
     ttconsole.cpp   # class that sets/restores console foreground color
-    ttenumstr.cpp   # ttCEnumStr class
+    ttenumstr.cpp   # ttEnumStr, ttEnumStr
     ttpath.cpp      # Contains functions for working with filesystem::path and filesystem::directory
     ttstring.cpp    # std::string class with some additional functionality
     tttextfile.cpp  # Class for reading and writing text files.

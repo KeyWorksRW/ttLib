@@ -15,7 +15,7 @@ Options:
     Crt_rel:     dll          # [static | dll] type of CRT to link to in release builds
     Crt_dbg:     dll          # [static | dll] type of CRT to link to in debug builds
 
-    IncDirs:     precompile   # this is where pch.h actually lives for the library build
+    IncDirs:     precompile;../include
 
     TargetDir:   ../lib          # target directory
 
@@ -23,4 +23,3 @@ Files:
     .include ../src/.srcfiles.yaml
 
     ttassert.cpp    # Implements ttAssert function
-    ttTR.cpp        # Function for translating strings
