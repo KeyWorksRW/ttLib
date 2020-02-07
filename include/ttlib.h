@@ -17,14 +17,15 @@
 #define _TTLIB_H_GUARD_
 
 #include <stdint.h>  // needed for standard types
-#include <cstdlib>   // needed for std::abs
-
-#include <string_view>
-#include <filesystem>
 
 #if defined(_WIN32)
-    #include <wtypes.h>
+    #include <wtypes.h>  // Windows types
 #endif
+
+#include <cassert>   // assert macro
+#include <cstdlib>   // std::abs
+#include <string_view>
+#include <filesystem>  // directory_entry
 
 // clang-format on
 
@@ -32,12 +33,12 @@ namespace tt
 {
     static constexpr size_t npos = size_t(-1);
 
-    // strings limited to 16,777,215 bytes (16 megabytes)
+    /// strings limited to 16,777,215 bytes (16 megabytes)
     static constexpr size_t MAX_STRING_LEN = 0x00FFFFFF;
 
-    // title for message boxes
+    /// title for message boxes
     extern const char* pszMsgTitle;
-    // title for message boxes
+    /// title for message boxes
     extern const wchar_t* pwszMsgTitle;
 
     /// Equivalent to Windows RECT structure -- this makes it available on non-Windows
@@ -55,10 +56,13 @@ namespace tt
 
     // clang-format off
 #if defined(_WIN32)
-    // Handle to use to load resources
+    /// Handle to use to load resources
     extern HINSTANCE hinstResources;
 #endif  // _WINDOWS_
     // clang-format on
+
+    /// assert with a message
+    #define assertm(exp, msg) assert((msg, exp))
 
     /// Only valid for ANSI or UTF8 characters
     inline bool isdigit(char ch) { return ((ch >= '0' && ch <= '9') || ch == '-'); }
@@ -484,7 +488,7 @@ inline size_t ttStrByteLen(const wchar_t* pwsz)
     return ttStrLen(pwsz) * sizeof(wchar_t) + sizeof(wchar_t);
 }
 
-    // clang-format off
+// clang-format off
 #if defined(_WIN32)
     inline  bool   ttChDir(const wchar_t* pwszDir) { return (SetCurrentDirectoryW(pwszDir) != FALSE); }
 #else

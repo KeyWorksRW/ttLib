@@ -12,17 +12,18 @@
     #error Do not #include ttLibwin.h if you have already #included ttlib.h
 #endif
 
+#if !defined(_WIN32)
+    #error Use ttlib.h instead of ttlibwin.h if you are not compiling for Windows
+#endif
 // clang-format off
 
 #ifndef _TTLIBWIN_H_GUARD_
 #define _TTLIBWIN_H_GUARD_
 
-#if !defined(_WIN32)
-    #error Use ttlib.h if you are not compiling for Windows
-#endif
 
 #include <stdint.h>  // needed for standard types
 
+#include <cassert>  // assert macro
 #include <sstream>
 #include <string_view>
 #include <filesystem>
@@ -33,15 +34,15 @@ namespace tt
 {
     static constexpr size_t npos = size_t(-1);
 
-    // strings limited to 16,777,215 bytes (16 megabytes)
+    /// strings limited to 16,777,215 bytes (16 megabytes)
     static constexpr size_t MAX_STRING_LEN = 0x00FFFFFF;
 
-    // title for message boxes
+    /// title for message boxes
     extern const char* pszMsgTitle;
-    // title for message boxes
+    /// title for message boxes
     extern const wchar_t* pwszMsgTitle;
 
-    // Handle to use to load resources -- this will be different then module handle if resources are in a dll.
+    /// Handle to use to load resources -- this will be different then module handle if resources are in a dll.
     extern HINSTANCE hinstResources;
 
     /// Only valid for ANSI or UTF8 characters
@@ -518,9 +519,21 @@ inline bool ttIsValidWindow(HWND hwnd)
     return (bool) (hwnd && IsWindow(hwnd));
 };
 
-    ///////////////// The following code is obsolete -- it's here until all caller's get changed
+// clang-format off
 
-    #include "../include/ttstr.h"
+#ifndef assertm
+    /// assert with a message
+    #define assertm(exp, msg) assert((msg, exp))
+#endif
+
+///////////////// The following code is obsolete -- it's here until all caller's get changed
+
+
+
+#include "../include/ttstr.h"
+
+// clang-format on
+
 
 // Enumerate through substrings in a string
 class ttCEnumStr
