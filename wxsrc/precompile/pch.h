@@ -15,3 +15,5 @@
 #if defined(__WINDOWS__)
     #include "wx/msw/private.h"
 #endif
+
+#include <ttlib.h>
