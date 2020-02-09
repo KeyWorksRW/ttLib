@@ -415,7 +415,7 @@ inline bool ttIsValidWindow(HWND hwnd)
 
 #ifndef assertm
     /// assert with a message
-    #define assertm(exp, msg) assert((msg, exp))
+    #define assertm(exp, msg) assert(((void) msg, exp))
 #endif
 
 ///////////////// The following code is obsolete -- it's here until all caller's get changed
