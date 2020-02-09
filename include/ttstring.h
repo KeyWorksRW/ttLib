@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "ttnamespace.h"
+
 #include <filesystem>
 
 #if defined(__WXMSW__)
