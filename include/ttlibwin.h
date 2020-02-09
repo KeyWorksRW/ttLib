@@ -437,18 +437,18 @@ public:
     // Class functions
 
     // If no more substrings, *ppszCurrent (if non-null) will be set to nullptr
-    [[deprecated]] bool Enum(const char** ppszCurrent = nullptr);
+    bool Enum(const char** ppszCurrent = nullptr);
     // Call this to reset the enumeration to the beginning of the master string
-    [[deprecated]] void ResetEnum(char chSeparator = ';');
-    [[deprecated]] void SetNewStr(const char* psz, char chSeparator = ';');
+    void ResetEnum(char chSeparator = ';');
+    void SetNewStr(const char* psz, char chSeparator = ';');
 
     // Value is undefined if Enum() returned false
-    [[deprecated]] char* GetCurrent() const { return m_pszCur; }
+    char* GetCurrent() const { return m_pszCur; }
 
-    [[deprecated]] operator char*() const { return m_pszCur; }
+    operator char*() const { return m_pszCur; }
 
-    [[deprecated]] bool operator==(const char* psz) { return ttIsSameStr(m_pszCur, psz); }
-    [[deprecated]] bool operator==(char* psz) { return ttIsSameStr(m_pszCur, psz); }
+    bool operator==(const char* psz) { return ttIsSameStr(m_pszCur, psz); }
+    bool operator==(char* psz) { return ttIsSameStr(m_pszCur, psz); }
 
 private:
     // Class members
