@@ -29,6 +29,8 @@
 
 // clang-format on
 
+class ttString;
+
 namespace tt
 {
     static constexpr size_t npos = size_t(-1);
@@ -43,6 +45,29 @@ namespace tt
 
     /// Handle to use to load resources -- this will be different then module handle if resources are in a dll.
     extern HINSTANCE hinstResources;
+
+    /// Sets title to use in tt::MsgBox
+    void SetMsgBoxTitle(std::string_view utf8Title);
+
+    /// Converts the message to UTF16 and displays it in a Windows message box
+    int MsgBox(std::string_view utf8str, UINT uType = MB_OK | MB_ICONWARNING);
+
+    /// Converts window text to UTF8 and returns it in ttString
+    ttString GetWndText(HWND hwnd);
+
+    /// Sends LB_GETTEXT, converts the result to UTF8 and returns it in ttString.
+    ///
+    /// ttString will be empty() if index is invalid.
+    ttString GetListboxText(HWND hwndLB, WPARAM index);
+
+    /// Sends CB_GETLBTEXT, converts the result to UTF8 and returns it in ttString.
+    ///
+    /// ttString will be empty() if index is invalid.
+    ttString GetComboLBText(HWND hwndLB, WPARAM index);
+
+    /// Converts the text to UTF16 before calling SetWindowTextW(...)
+    void SetWndText(HWND hwnd, std::string_view utf8str);
+
 }  // namespace tt
 
 // clang-format off
