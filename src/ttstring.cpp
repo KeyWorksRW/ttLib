@@ -12,7 +12,6 @@
 #include <cassert>
 #include <cctype>
 
-
 #include "../include/ttstring.h"
 
 // Global empty string.
@@ -575,6 +574,22 @@ size_t ttString::stepover(size_t start) const
     }
     return pos;
 }
+
+#include "../utf8/unchecked.h"
+
+std::wstring ttString::to_utf16() const
+{
+    std::wstring str16;
+    utf8::unchecked::utf8to16(begin(), end(), back_inserter(str16));
+    return str16;
+}
+
+void ttString::from_utf16(std::wstring_view str)
+{
+    utf8::unchecked::utf16to8(str.begin(), str.end(), back_inserter(*this));
+}
+
+////////////////////////// Functions below are tt:: namespace functions /////////////////////////////////////
 
 const char* tt::nextchar(const char* psz)
 {

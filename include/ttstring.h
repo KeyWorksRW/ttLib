@@ -52,6 +52,9 @@ public:
     ttString(ttCStr& csz) { assign(csz.c_str() ? csz.c_str() : ""); }
 #endif
 
+    std::wstring to_utf16() const;
+    void from_utf16(std::wstring_view str);
+
     /// Case-insensitive comparison.
     int comparei(std::string_view str) const;
 
