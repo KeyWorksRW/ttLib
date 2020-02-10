@@ -81,4 +81,4 @@
 #endif  // defined(_WIN32)
 // clang-format on
 
-#include "../../include/ttlib.h"  // Master header file for ttLibwx
+#include "../../include/ttlib.h"  // Master header file for ttLib
