@@ -12,31 +12,31 @@
     #error "This header file can only be used when compiling for Windows"
 #endif
 
-    #include <wtypes.h>
+#include <wtypes.h>
 
 // This dialog class has no base requirements other than compiling for Windows. It can be used whether your app is
 // using ATL, WTL, wxWidgets, or is just a console app that needs a dialog box.
 
 // Classes are also provided for some dialog controls: ttCComboBox, ttCListBox, ttCListView
 
-    #include <CommCtrl.h>
+#include <CommCtrl.h>
 
-    #include "ttdebug.h"     // ttASSERT macros
-    #include "ttstr.h"       // ttCStr
-    #include "ttwstr.h"      // ttCWStr
-    #include "ttmultibtn.h"  // ttCMultiBtn
+#include "ttdebug.h"     // ttASSERT macros
+#include "ttstr.h"       // ttCStr
+#include "ttwstr.h"      // ttCWStr
+#include "ttmultibtn.h"  // ttCMultiBtn
 
-    #ifndef BEGIN_TTMSG_MAP
-        #include "ttcasemap.h"  // Macros for mapping Windows messages to functions
+#ifndef BEGIN_TTMSG_MAP
+    #include "ttcasemap.h"  // Macros for mapping Windows messages to functions
+#endif
+
+#ifndef __DLG_ID__
+    #if !defined(NDEBUG)  // Starts debug section.
+        #define DLG_ID(id) tt::CheckItemID(*this, id, #id, __FILE__, __func__, __LINE__)
+    #else
+        #define DLG_ID(id) id
     #endif
-
-    #ifndef __DLG_ID__
-        #if !defined(NDEBUG)  // Starts debug section.
-            #define DLG_ID(id) tt::CheckItemID(*this, id, #id, __FILE__, __func__, __LINE__)
-        #else
-            #define DLG_ID(id) id
-        #endif
-    #endif
+#endif
 
 namespace ttpriv
 {
@@ -146,9 +146,18 @@ public:
     void EndDialog(int nResult = IDCANCEL) const { ::EndDialog(m_hwnd, nResult); }
     void FadeWindow();
 
-    void ttDDX_Text(int id, ttCStr& csz) { (m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz)); }
-    void ttDDX_Text(int id, ttCWStr& csz) { (m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz)); }
-    void ttDDX_Check(int id, bool& bFlag) { (m_bInitializing ? SetCheck(id, bFlag) : (void) (bFlag = GetCheck(id))); }
+    void ttDDX_Text(int id, ttCStr& csz)
+    {
+        (m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz));
+    }
+    void ttDDX_Text(int id, ttCWStr& csz)
+    {
+        (m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz));
+    }
+    void ttDDX_Check(int id, bool& bFlag)
+    {
+        (m_bInitializing ? SetCheck(id, bFlag) : (void) (bFlag = GetCheck(id)));
+    }
     void ttDDX_Int(int id, ptrdiff_t* pVal)
     {
         (m_bInitializing ? SetControlInteger(id, *pVal) : (void) (*pVal = GetControlInteger(id)));
@@ -172,7 +181,8 @@ protected:
 
     // Class members
 
-    HWND m_hwnd;  // m_hwnd vs m_hWnd -- SDK/include, ATL and WTL use both variants. We're sticking with all lowercase.
+    HWND m_hwnd;  // m_hwnd vs m_hWnd -- SDK/include, ATL and WTL use both variants. We're sticking with all
+                  // lowercase.
     HWND m_hwndParent;
 
     ttCMultiBtn* m_pShadedBtns;
@@ -232,8 +242,11 @@ public:
         ttASSERT(m_hwnd);
         return ::GetWindowTextA(m_hwnd, psz, cchMax);
     }
-    inline LRESULT GetLBText(char* psz, LRESULT iSel) const { return SendMessageA(CB_GETLBTEXT, iSel, (LPARAM) psz); }
-    inline void    SetText(const char* psz) const
+    inline LRESULT GetLBText(char* psz, LRESULT iSel) const
+    {
+        return SendMessageA(CB_GETLBTEXT, iSel, (LPARAM) psz);
+    }
+    inline void SetText(const char* psz) const
     {
         ttASSERT(m_hwnd);
         ttASSERT(psz);
@@ -429,9 +442,9 @@ public:
     void Reset() const { SendMessage(LB_RESETCONTENT); }
     void SetCount(int cItems)
     {
-    #if !defined(NDEBUG)  // Starts debug section.
+#if !defined(NDEBUG)  // Starts debug section.
         LRESULT result =
-    #endif
+#endif
             SendMessage(LB_SETCOUNT, (WPARAM) cItems);
         ttASSERT_MSG(result != LB_ERR, "SetCount failed. Does listbox have LBS_NODATA style?");
     }
@@ -594,10 +607,16 @@ public:
     bool SetItem(LVITEMA* pItem) { return SendMessageA(m_hwnd, LVM_SETITEMA, 0, (LPARAM) pItem) ? true : false; }
     bool SetItem(LVITEMW* pItem) { return SendMessageW(m_hwnd, LVM_SETITEMW, 0, (LPARAM) pItem) ? true : false; }
 
-    LRESULT InsertItem(LVITEMA* pitem) { return (LRESULT)::SendMessageA(m_hwnd, LVM_INSERTITEMA, 0, (LPARAM) pitem); }
-    LRESULT InsertItemW(LVITEMW* pitem) { return (LRESULT)::SendMessageW(m_hwnd, LVM_INSERTITEMW, 0, (LPARAM) pitem); }
-    BOOL    DeleteItem(int index) { return (BOOL) ListView_DeleteItem(m_hwnd, index); }
-    void    Reset() const { ListView_DeleteAllItems(m_hwnd); }
+    LRESULT InsertItem(LVITEMA* pitem)
+    {
+        return (LRESULT)::SendMessageA(m_hwnd, LVM_INSERTITEMA, 0, (LPARAM) pitem);
+    }
+    LRESULT InsertItemW(LVITEMW* pitem)
+    {
+        return (LRESULT)::SendMessageW(m_hwnd, LVM_INSERTITEMW, 0, (LPARAM) pitem);
+    }
+    BOOL DeleteItem(int index) { return (BOOL) ListView_DeleteItem(m_hwnd, index); }
+    void Reset() const { ListView_DeleteAllItems(m_hwnd); }
 
     LRESULT AddString(const char* psz, LPARAM lParam = -1);
     LRESULT AddString(const wchar_t* pwsz, LPARAM lParam = -1);
@@ -608,7 +627,10 @@ public:
     void InsertColumn(int iColumn, const char* pszText, int width = -1);
     void InsertColumn(int iColumn, const wchar_t* pwszText, int width = -1);
 
-    void SetColumnWidth(int col, int width = LVSCW_AUTOSIZE_USEHEADER) { ListView_SetColumnWidth(m_hwnd, col, width); }
+    void SetColumnWidth(int col, int width = LVSCW_AUTOSIZE_USEHEADER)
+    {
+        ListView_SetColumnWidth(m_hwnd, col, width);
+    }
 
     HWND GetHWND() const { return m_hwnd; }
 
