@@ -8,10 +8,15 @@
 
 #pragma once
 
+// clang-format off
+#ifndef _TTNAMESPACE_H_GUARD_
+#define _TTNAMESPACE_H_GUARD_
+
 #include <string>
 #include <string_view>
 
 #include <filesystem>  // directory_entry
+// clang-format on
 
 namespace tt
 {
@@ -121,3 +126,5 @@ namespace tt
     bool dirExists(std::string_view dir);
     bool fileExists(std::string_view filename);
 }  // namespace tt
+
+#endif  // _TTNAMESPACE_H_GUARD_
