@@ -68,6 +68,10 @@ namespace tt
     /// Converts the text to UTF16 before calling SetWindowTextW(...)
     void SetWndText(HWND hwnd, std::string_view utf8str);
 
+    /// Converts all text to UTF16 before calling ShellExecuteW(...)
+    HINSTANCE ShellRun(std::string_view filename, std::string_view args, std::string_view dir,
+                       HWND hwndParent = NULL, INT nShow = SW_SHOWNORMAL);
+
 }  // namespace tt
 
 // clang-format off
@@ -436,7 +440,7 @@ inline bool ttIsValidWindow(HWND hwnd)
     return (bool) (hwnd && IsWindow(hwnd));
 };
 
-// clang-format off
+    // clang-format off
 
 #ifndef assertm
     /// assert with a message
@@ -450,7 +454,6 @@ inline bool ttIsValidWindow(HWND hwnd)
 #include "../include/ttstr.h"
 
 // clang-format on
-
 
 // Enumerate through substrings in a string
 class ttCEnumStr

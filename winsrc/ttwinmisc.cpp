@@ -14,6 +14,8 @@
     #error "This file can only be compiled for Windows"
 #endif
 
+#include <shellapi.h>
+
 #include "../include/ttcritsection.h"  // CCritSection, CCritLock
 #include "../include/ttstr.h"          // ttCStr
 #include "../include/ttdebug.h"        // ttASSERT macros
@@ -45,6 +47,11 @@ int tt::MsgBox(std::string_view utf8str, UINT uType)
     utf8::unchecked::utf8to16(utf8str.begin(), utf8str.end(), back_inserter(str16));
     return MessageBoxW(GetActiveWindow(), str16.c_str(), (!tt::MsgBoxTitle.empty() ? MsgBoxTitle.c_str() : L""),
                        uType);
+}
+
+void tt::SetMsgBoxTitle(std::string_view utf8Title)
+{
+    utf8::unchecked::utf8to16(utf8Title.begin(), utf8Title.end(), back_inserter(tt::MsgBoxTitle));
 }
 
 ttString tt::GetWndText(HWND hwnd)
@@ -130,13 +137,20 @@ void tt::SetWndText(HWND hwnd, std::string_view utf8str)
     SetWindowTextW(hwnd, str16.c_str());
 }
 
+HINSTANCE tt::ShellRun(std::string_view filename, std::string_view args, std::string_view dir,
+                       HWND hwndParent, INT nShow)
+{
+    std::wstring name16;
+    utf8::unchecked::utf8to16(filename.begin(), filename.end(), back_inserter(name16));
+    std::wstring args16;
+    utf8::unchecked::utf8to16(args.begin(), args.end(), back_inserter(args16));
+    std::wstring dir16;
+    utf8::unchecked::utf8to16(dir.begin(), dir.end(), back_inserter(dir16));
+
+    return ShellExecuteW(hwndParent, NULL, name16.c_str(), args16.c_str(), dir16.c_str(), nShow);
+}
 
 ///////////////////////////// End tt:: namespace functions ////////////////////////////////////
-
-void SetMsgBoxTitle(std::string_view utf8Title)
-{
-    utf8::unchecked::utf8to16(utf8Title.begin(), utf8Title.end(), back_inserter(tt::MsgBoxTitle));
-}
 
 // Note that these message boxes will work in a console app as well as a windowed app
 
