@@ -499,7 +499,7 @@ std::string_view ttString::append_filename(std::string_view filename)
 
 std::string_view ttString::assignCwd()
 {
-    assign(std::filesystem::absolute(".").string());
+    assign(std::filesystem::absolute(".").u8string());
     return *this;
 }
 
@@ -508,14 +508,21 @@ std::string_view ttString::assignCwd()
 std::string_view ttString::make_relative(const std::string& relative_to)
 {
     if (!empty())
-        assign(std::filesystem::relative(c_str(), relative_to.c_str()).string());
+    {
+        auto current = std::filesystem::u8path(c_str());
+        auto relto = std::filesystem::u8path(relative_to);
+        assign(std::filesystem::relative(current, relto).u8string());
+    }
     return *this;
 }
 
 std::string_view ttString::make_absolute()
 {
     if (!empty())
-        assign(std::filesystem::absolute(c_str()).string());
+    {
+        auto current = std::filesystem::u8path(c_str());
+        assign(std::filesystem::absolute(current).u8string());
+    }
     return *this;
 }
 
@@ -523,7 +530,7 @@ bool ttString::fileExists() const
 {
     if (empty())
         return false;
-    auto file = std::filesystem::directory_entry(std::filesystem::path(c_str()));
+    auto file = std::filesystem::directory_entry(std::filesystem::u8path(c_str()));
     return (file.exists() && !file.is_directory());
 }
 
@@ -531,7 +538,7 @@ bool ttString::dirExists() const
 {
     if (empty())
         return false;
-    auto file = std::filesystem::directory_entry(std::filesystem::path(c_str()));
+    auto file = std::filesystem::directory_entry(std::filesystem::u8path(c_str()));
     return (file.exists() && file.is_directory());
 }
 
