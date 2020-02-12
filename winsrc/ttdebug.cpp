@@ -2,7 +2,7 @@
 // Name:      ttdebug.cpp
 // Purpose:   Various debugging functionality
 // Author:    Ralph Walden
-// Copyright: Copyright (c) 1998-2019 KeyWorks Software (Ralph Walden)
+// Copyright: Copyright (c) 1998-2020 KeyWorks Software (Ralph Walden)
 // License:   Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
@@ -11,22 +11,20 @@
 #include <stdio.h>
 
 #include "../include/ttdebug.h"        // ttASSERT macros
-#include "../include/ttstr.h"          // ttCStr
+#include "../include/ttstring.h"       // ttString, ttCwd, ttStrVector
 #include "../include/ttcritsection.h"  // CCritSection
 
-#if defined(wxGUI)
-#include <wx/msgdlg.h>
-#endif
+// Note that include this file locks us into a Windows-only build
+#include "../include/ttlibwin.h"
 
-bool(_cdecl* pttAssertHandlerA)(const char* pszMsg, const char* pszFile, const char* pszFunction, int line) = nullptr;
-bool(_cdecl* pttAssertHandlerW)(const wchar_t* pszMsg, const char* pszFile, const char* pszFunction, int line) = nullptr;
+#include "../utf8/unchecked.h"
 
 const UINT tt::WMP_TRACE_GENERAL = WM_USER + 0x1f3;
 const UINT tt::WMP_TRACE_MSG = WM_USER + 0x1f5;
 const UINT tt::WMP_CLEAR_TRACE = WM_USER + 0x1f9;  // clears the ttTrace window
 
-// DO NOT CHANGE THESE TWO NAMES! Multiple applications expect these names and will no longer send trace messages if
-// you change them.
+// DO NOT CHANGE THESE TWO NAMES! Multiple applications expect these names and will no longer send trace messages
+// if you change them.
 
 const char* tt::txtTraceClass = "KeyViewMsgs";
 const char* tt::txtTraceShareName = "hhw_share";
@@ -35,8 +33,8 @@ HWND        tt::hwndTrace = NULL;
 namespace ttdbg
 {
     ttCCritSection crtAssert;
-    bool           bNoAssert = false;  // Setting this to true will cause AssertionMsg to return without doing anything
-    bool           bNoRecurse = false;
+    bool bNoAssert = false;  // Setting this to true will cause AssertionMsg to return without doing anything
+    bool bNoRecurse = false;
 
     HANDLE         hTraceMapping = NULL;
     ttCCritSection g_csTrace;
@@ -45,113 +43,72 @@ namespace ttdbg
 }  // namespace ttdbg
 
 #if 0
-// [randalphwa - 3/5/2019] We don't currently expose this, but if a caller needs access to these variables, they could
-// copy this section into their own code to gain access. Alternatively, we could put it in ttdebug.h--I just don't
-// think it's going to be used often enough, and I'd rather not have clutter in ttdebug.h that almost no one will use.
+// [randalphwa - 3/5/2019] We don't currently expose this, but if a caller needs access to these variables, they
+// could copy this section into their own code to gain access. Alternatively, we could put it in ttdebug.h--I just
+// don't think it's going to be used often enough, and I'd rather not have clutter in ttdebug.h that almost no one
+// will use.
 
 namespace ttdbg
 {
     extern ttCCritSection crtAssert;
-    extern bool bNoAssert;      // Setting this to true will cause AssertionMsg to return without doing anything
+    extern bool bNoAssert;  // Setting this to true will cause AssertionMsg to return without doing anything
     extern bool bNoRecurse;
 
-    extern HANDLE hTraceMapping;
-    extern HWND hwndTrace;
+    extern HANDLE         hTraceMapping;
+    extern HWND           hwndTrace;
     extern ttCCritSection g_csTrace;
-    extern char* g_pszTraceMap;
-}
+    extern char*          g_pszTraceMap;
+}  // namespace ttdbg
 #endif
 
 using namespace ttdbg;
 
-// Displays a message box displaying the ASSERT with an option to ignore, break into a debugger, or exit the program
-
-bool ttAssertionMsg(const char* pszMsg, const char* pszFile, const char* pszFunction, int line)
+namespace tt
 {
-    if (ttdbg::bNoAssert)
-        return false;
-
-    // if pttAssertHandlerA calls us, then we need to use a normal assert message
-
-    if (pttAssertHandlerA && !bNoRecurse)
-    {
-        bNoRecurse = true;
-        bool bResult = pttAssertHandlerA(pszMsg, pszFile, pszFunction, line);
-        bNoRecurse = false;
-        return bResult;
-    }
-
-    crtAssert.Lock();
-
-    // We special case a null or empty pszMsg -- ttASSERT_NONEMPTY(ptr) takes advantage of this
-
-    if (!pszMsg)
-        pszMsg = "NULL pointer!";
-    else if (!*pszMsg)
-        pszMsg = "Empty string!";
-
-    char szBuf[2048];
-    sprintf_s(szBuf, sizeof(szBuf), "%s\r\n\r\n%s (%s): line %u", pszMsg, pszFile, pszFunction, line);
-
-#if defined(_WIN32) && !defined(wxGUI)
-
-    // wxWidgets does not have an equivalent of MB_ABORTRETRYIGNORE, nor will it work properly in a CONSOLE
-    // application, so we just call directly into the Windws API.
-
-    int answer = MessageBoxA(GetActiveWindow(), szBuf, "Retry to call DebugBreak()", MB_ABORTRETRYIGNORE);
-
-    if (answer == IDRETRY)
-    {
-        DebugBreak();
-        crtAssert.Unlock();
-        return false;
-    }
-    else if (answer == IDIGNORE)
-    {
-        crtAssert.Unlock();
-        return false;
-    }
-
-    crtAssert.Unlock();
-    ExitProcess((UINT) -1);
-
-#else   // not defined(_WIN32) || defined(wxGUI)
-    // this is the debug version, so we don't translate
-    int answer = wxMessageBox(szBuf, "Click Yes to break into debugger", wxYES_NO | wxICON_ERROR);
-    if (answer == wxYES)
-        wxTrap();
-
-    crtAssert.Unlock();
-    return false;
-#endif  // defined(_WIN32) && !defined(wxGUI)
+    extern std::wstring MsgBoxTitle;
 }
 
-bool ttAssertionMsg(const wchar_t* pwszMsg, const char* pszFile, const char* pszFunction, int line)
+// Don't use std::string_view for msg -- we special-case a null pointer
+bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond, const char* msg)
 {
     if (ttdbg::bNoAssert)
         return false;
 
-    if (pttAssertHandlerW)
-        return pttAssertHandlerW(pwszMsg, pszFile, pszFunction, line);
-
     crtAssert.Lock();
-    bool bResult;
-    {  // use a brace so that cszMsg gets deleted before we release the critical section
-        ttCStr cszMsg;
 
-        // We special case a null or empty pszMsg -- ttASSERT_NONEMPTY(ptr) takes advantage of this
+    ttString fname(filename);
+    fname.make_relative(std::filesystem::absolute(".").u8string());
 
-        if (!pwszMsg)
-            cszMsg = "NULL pointer!";
-        else if (!*pwszMsg)
-            cszMsg = "Empty string!";
-        else
-            cszMsg = pwszMsg;
+    std::stringstream str;
+    if (cond)
+        str << "Expression: " << cond << "\n\n";
+    if (msg)
+        str << "Comment: " << msg << "\n\n";
 
-        bResult = ttAssertionMsg((char*) cszMsg, pszFile, pszFunction, line);
-    }
+    str << "File: " << fname << "\n";
+    str << "Function: " << function << "\n";
+    str << "Line: " << line << "\n\n";
+    str << "Press Retry to break into a debugger.";
+
+    // Converting to utf16 requires begin() and end() which stringstream doesn't support
+    std::string copy(str.str());
+
+    std::wstring str16;
+    utf8::unchecked::utf8to16(copy.begin(), copy.end(), back_inserter(str16));
+    auto answer =
+        MessageBoxW(GetActiveWindow(), str16.c_str(), L"Assertion failed!", MB_ABORTRETRYIGNORE | MB_ICONSTOP);
+
     crtAssert.Unlock();
-    return bResult;
+    if (answer == IDRETRY)
+    {
+        return true;
+    }
+    else if (answer == IDABORT)
+    {
+        ExitProcess(static_cast<UINT>(-1));
+    }
+
+    return false;
 }
 
 void ttSetAsserts(bool bDisable)
@@ -159,30 +116,29 @@ void ttSetAsserts(bool bDisable)
     ttdbg::bNoAssert = bDisable;
 }
 
-/////////////////////// Windows-only code ////////////////////////////////
-
-#if defined(_WIN32)
-
-void ttdoReportLastError(const char* pszFile, const char* pszFunc, int line)
+bool ttdoReportLastError(const char* filename, const char* function, int line)
 {
     char* pszMsg;
 
-    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                  NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                  (LPTSTR) &pszMsg, 0, NULL);
+    FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(),
+                   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR) &pszMsg, 0, NULL);
 
-    ttAssertionMsg(pszMsg, pszFile, pszFunc, line);
+    auto result = ttAssertionMsg(filename, function, line, nullptr, pszMsg);
 
     LocalFree((HLOCAL) pszMsg);
+    return result;
 }
 
-int tt::CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc, int line)
+int tt::CheckItemID(HWND hwnd, int id, const char* pszID, const char* filename, const char* function, int line)
 {
     if (::GetDlgItem(hwnd, id) == NULL)
     {
-        ttCStr cszMsg;
-        cszMsg.printf("Invalid dialog control id: %s (%d)", pszID, id);
-        ttAssertionMsg(cszMsg, pszFile, pszFunc, line);
+        std::stringstream msg;
+        msg << "Invalid dialog control id: " << pszID << " (" << id << ')';
+        if (ttAssertionMsg(filename, function, line, pszID, msg.str().c_str()))
+        {
+            DebugBreak();
+        }
     }
     return id;
 }
@@ -191,7 +147,8 @@ int tt::CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, c
 
 void __cdecl ttTrace(const char* pszFormat, ...)
 {
-    // We don't want two threads trying to send text at the same time, so we wrap the function in a critical section
+    // We don't want two threads trying to send text at the same time, so we wrap the function in a critical
+    // section
 
     ttCCritLock lock(&g_csTrace);
 
@@ -224,13 +181,15 @@ void __cdecl ttTrace(const char* pszFormat, ...)
 
     if (!hTraceMapping)
     {
-        hTraceMapping = CreateFileMappingA(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 4096, tt::txtTraceShareName);
+        hTraceMapping =
+            CreateFileMappingA(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 4096, tt::txtTraceShareName);
         if (!hTraceMapping)
         {
             tt::hwndTrace = NULL;
             return;
         }
     }
+
     if (!ttdbg::g_pszTraceMap)
     {
         ttdbg::g_pszTraceMap = (char*) MapViewOfFile(hTraceMapping, FILE_MAP_WRITE, 0, 0, 0);
@@ -241,8 +200,8 @@ void __cdecl ttTrace(const char* pszFormat, ...)
         }
     }
 
-    ttStrCpy(ttdbg::g_pszTraceMap, 4092, csz);
-    ttStrCat(ttdbg::g_pszTraceMap, 4094, "\r\n");
+    ttStrCpy(ttdbg::g_pszTraceMap, 4092, csz.c_str());
+    ttStrCat(ttdbg::g_pszTraceMap, 4094, "\n");
 
     SendMessageA(tt::hwndTrace, tt::WMP_TRACE_MSG, 0, 0);
 
@@ -257,5 +216,3 @@ void ttTraceClear()
         return;
     SendMessageA(tt::hwndTrace, tt::WMP_CLEAR_TRACE, 0, 0);
 }
-
-#endif  // defined(_WIN32)

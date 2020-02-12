@@ -153,12 +153,12 @@ void ttCLineFile::Sort(int firstLine, int lastLine, int column)
     {
         if (!m_aptrs[itmp].pszLine)
         {
-            ttFAIL("Attempt to sort a line that doesn't exist");
+            ttFAIL_MSG("Attempt to sort a line that doesn't exist");
             return;
         }
         if ((int) ttStrLen(m_aptrs[itmp].pszLine) < column)
         {
-            ttFAIL("Column number is beyond the end of the line");
+            ttFAIL_MSG("Column number is beyond the end of the line");
             return;
         }
     }

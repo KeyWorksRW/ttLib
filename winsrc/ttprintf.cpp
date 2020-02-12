@@ -439,7 +439,7 @@ char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargLi
             }
             catch (...)
             {
-                ttFAIL("Exception in ProcessKFmt -- bad %%kq pointer");
+                ttFAIL_MSG("Exception in ProcessKFmt -- bad %%kq pointer");
             }
             break;
     }

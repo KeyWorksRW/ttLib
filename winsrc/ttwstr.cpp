@@ -31,7 +31,7 @@ namespace ttpriv
 
 void ttCWStr::AppendFileName(const wchar_t* pszFile)
 {
-    ttASSERT_NONEMPTY(pszFile);
+    assert(pszFile);
 
     if (!pszFile || !*pszFile)
         return;
@@ -58,7 +58,7 @@ wchar_t* ttCWStr::FindExt() const
 
 void ttCWStr::ChangeExtension(const wchar_t* pszExtension)
 {
-    ttASSERT_NONEMPTY(pszExtension);
+    assert(pszExtension);
 
     if (!pszExtension || !*pszExtension)
         return;
@@ -104,7 +104,7 @@ void ttCWStr::AddTrailingSlash()
 
 wchar_t* ttCWStr::FindLastSlash()
 {
-    ttASSERT_NONEMPTY(m_psz);
+    assert(m_psz);
 
     if (!m_psz || !*m_psz)
         return nullptr;
@@ -292,7 +292,7 @@ bool ttCWStr::CopyNarrow(const char* psz)
     if (m_psz)
         ttFree(m_psz);
 
-    ttASSERT_NONEMPTY(psz);
+    assert(psz);
 
     if (!psz || !*psz)
     {
@@ -348,7 +348,7 @@ void ttCWStr::operator=(const char* psz)
 
 void ttCWStr::operator=(const wchar_t* psz)
 {
-    ttASSERT_NONEMPTY(psz);
+    assert(psz);
     ttASSERT_MSG(m_psz != psz, "Attempt to assign ttCWStr to itself");
 
     if (m_psz && m_psz == psz)
@@ -729,7 +729,7 @@ bool ttCWStr::ReplaceStr(const wchar_t* pszOldText, const wchar_t* pszNewText, b
 
 wchar_t* ttCWStr::GetString(const wchar_t* pszString, wchar_t chBegin, wchar_t chEnd)
 {
-    ttASSERT_NONEMPTY(pszString);
+    assert(pszString);
 
     Delete();  // current string, if any, should be deleted no matter what
 
@@ -778,7 +778,7 @@ wchar_t* ttCWStr::GetString(const wchar_t* pszString, wchar_t chBegin, wchar_t c
 
 wchar_t* ttCWStr::GetQuotedString(const wchar_t* pszQuote)
 {
-    ttASSERT_NONEMPTY(pszQuote);
+    assert(pszQuote);
 
     if (!pszQuote || !*pszQuote)
     {

@@ -6,16 +6,20 @@
 // License:   Apache License (see LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
-#pragma once
-
-#include <string_view>
-
 /**
  * @file
  * The main difference between these and wxASSERT macros is that this one will display the last system error (if
  * any) rather than a stack trace, and on Windows it will not offer to break into the debugger if you are not
  * actually running a debugger.
  */
+
+#pragma once
+
+#if defined(ttASSERT)
+    #error Either include ttassert.h or ttdebug.h -- don't include both!
+#endif
+
+#include <string_view>
 
 /// In non-debug builds this will simply return.
 void ttAssert(std::string_view file, int line, std::string_view func, std::string_view cond,

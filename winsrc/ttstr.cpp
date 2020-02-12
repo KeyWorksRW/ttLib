@@ -732,7 +732,7 @@ char* ttCStr::GetResString(size_t idString)
     {
         ttCStr strMsg;
         strMsg.printf("Invalid string id: %zu", idString);
-        ttFAIL(strMsg);
+        ttFAIL_MSG(strMsg);
         if (m_psz)
             ttFree(m_psz);
         m_psz = ttStrDup("");

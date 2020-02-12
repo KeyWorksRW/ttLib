@@ -116,14 +116,6 @@ namespace ttch {
 
 class ttCStr;  // forward definition
 
-extern bool(_cdecl* pttAssertHandlerA)(const char* pszMsg, const char* pszFile, const char* pszFunction, int line);
-extern bool(_cdecl* pttAssertHandlerW)(const wchar_t* pszMsg, const char* pszFile, const char* pszFunction,
-                                       int line);
-
-typedef bool(_cdecl* TTASSERTHANDLERA)(const char* pszMsg, const char* pszFile, const char* pszFunction, int line);
-typedef bool(_cdecl* TTASSERTHANDLERW)(const wchar_t* pszMsg, const char* pszFile, const char* pszFunction,
-                                       int line);
-
 int    ttStrCat(char* pszDst, const char* pszSrc);
 int    ttStrCat(char* pszDst, size_t cbDest, const char* pszSrc);
 char*  ttStrChr(const char* psz, char ch);
@@ -256,16 +248,6 @@ char* ttFindExtPortion(const char* pszPath);
 char* ttFindFilePortion(const char* pszPath);
 // Handles both forward and back slashes.
 char* ttFindLastSlash(const char* pszPath);
-
-// Replace the ttLib assertion handler with your own.
-inline void ttSetAssertHandlerA(TTASSERTHANDLERA pFunc)
-{
-    pttAssertHandlerA = pFunc;
-}
-inline void ttSetAssertHandlerW(TTASSERTHANDLERW pFunc)
-{
-    pttAssertHandlerW = pFunc;
-}
 
 void ttInitCaller(const char* pszTitle);
 

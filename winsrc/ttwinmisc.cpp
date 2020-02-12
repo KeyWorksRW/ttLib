@@ -45,8 +45,8 @@ int tt::MsgBox(std::string_view utf8str, UINT uType)
 {
     std::wstring str16;
     utf8::unchecked::utf8to16(utf8str.begin(), utf8str.end(), back_inserter(str16));
-    return MessageBoxW(GetActiveWindow(), str16.c_str(), (!tt::MsgBoxTitle.empty() ? MsgBoxTitle.c_str() : L""),
-                       uType);
+    return MessageBoxW(GetActiveWindow(), str16.c_str(),
+                       (!tt::MsgBoxTitle.empty() ? tt::MsgBoxTitle.c_str() : L""), uType);
 }
 
 void tt::SetMsgBoxTitle(std::string_view utf8Title)
@@ -137,8 +137,8 @@ void tt::SetWndText(HWND hwnd, std::string_view utf8str)
     SetWindowTextW(hwnd, str16.c_str());
 }
 
-HINSTANCE tt::ShellRun(std::string_view filename, std::string_view args, std::string_view dir,
-                       HWND hwndParent, INT nShow)
+HINSTANCE tt::ShellRun(std::string_view filename, std::string_view args, std::string_view dir, HWND hwndParent,
+                       INT nShow)
 {
     std::wstring name16;
     utf8::unchecked::utf8to16(filename.begin(), filename.end(), back_inserter(name16));
