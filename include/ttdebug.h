@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <sstream>
+
 #if !defined(_WIN32)
     #error Include ttassert.h and use wxWidgets if you want ttASSERT macros on non-Windows OS
 #endif  // _WIN32
@@ -31,6 +33,12 @@ void ttTraceClear();
 bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond,
                     const char* msg = nullptr);
 bool ttdoReportLastError(const char* filename, const char* function, int line);
+
+inline bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond,
+                    const std::stringstream& msg)
+                    {
+                        return ttAssertionMsg(filename, function, line, cond, msg.str().c_str());
+                    }
 
 // Enables disables all assertion messages
 void ttSetAsserts(bool bDisable);
