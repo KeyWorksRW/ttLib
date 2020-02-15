@@ -62,7 +62,7 @@ namespace tt
     // clang-format on
 
     /// assert with a message
-    #define assertm(exp, msg) assert((msg, exp))
+    #define assertm(exp, msg) assert(((void) msg, exp))
 
 }  // namespace tt
 
