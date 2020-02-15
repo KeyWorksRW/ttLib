@@ -20,10 +20,6 @@
     #error Include ttassert.h and use wxWidgets if you want ttASSERT macros on non-Windows OS
 #endif  // _WIN32
 
-#if defined(ttASSERT)
-    #error Either include ttassert.h or ttdebug.h -- don't include both!
-#endif
-
 // formats a string and displays it in a ttTrace window (if ttTrace is running)
 void cdecl ttTrace(const char* pszFormat, ...);
 
