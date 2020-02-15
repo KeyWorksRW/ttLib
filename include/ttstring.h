@@ -141,11 +141,19 @@ public:
     /// Generates hash of current string using djb2 hash algorithm
     size_t gethash() const;
 
-    // Convert the entire string to lower case. Assumes the string is UTF8.
+    /// Convert the entire string to lower case. Assumes the string is UTF8.
     std::string_view MakeLower();
 
-    // Convert the entire string to upper case. Assumes the string is UTF8.
+    /// Convert the entire string to upper case. Assumes the string is UTF8.
     std::string_view MakeUpper();
+
+    /// Similer to sprintf, but without floating point support.
+    ///
+    /// %k flag will place a string argument in quotes, and format a numerical argument
+    /// with commas or periods (depending on the current localte).
+    ///
+    /// %z is considered unsigned unless the value is -1.
+    const std::string& cdecl Format(std::string_view format, ...);
 
 #if defined(__WXMSW__)
     wxString FromUTF8() const { return wxString::FromUTF8(*this); }

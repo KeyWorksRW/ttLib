@@ -20,5 +20,6 @@ Files:
     ttconsole.cpp   # class that sets/restores console foreground color
     ttenumstr.cpp   # ttEnumStr, ttEnumStr
     ttpath.cpp      # Contains functions for working with filesystem::path and filesystem::directory
+    ttformat.cpp    # ttString::Printf(...)
     ttstring.cpp    # std::string class with some additional functionality
     tttextfile.cpp  # Class for reading and writing text files.
