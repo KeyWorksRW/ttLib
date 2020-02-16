@@ -16,8 +16,7 @@
 
 // Note that include this file locks us into a Windows-only build
 #include "../include/ttlibwin.h"
-
-#include "../utf8/unchecked.h"
+#include "../include/utf8unchecked.h"
 
 const UINT tt::WMP_TRACE_GENERAL = WM_USER + 0x1f3;
 const UINT tt::WMP_TRACE_MSG = WM_USER + 0x1f5;

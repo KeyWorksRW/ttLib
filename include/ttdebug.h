@@ -27,7 +27,7 @@ void cdecl ttTrace(const char* pszFormat, ...);
 void ttTraceClear();
 
 bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond,
-                    const char* msg = nullptr);
+                    const char* msg);
 bool ttdoReportLastError(const char* filename, const char* function, int line);
 
 inline bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond,
@@ -59,20 +59,20 @@ namespace tt
 }  // namespace tt
 
 #ifdef _DEBUG
-    #define ttASSERT(cond)                                                       \
-        {                                                                        \
-            if (!(cond) && ttAssertionMsg(__FILE__, __func__, __LINE__, #cond)) \
-            {                                                                    \
-                DebugBreak();                                                    \
-            }                                                                    \
+    #define ttASSERT(cond)                                                      \
+        {                                                                       \
+            if (!(cond) && ttAssertionMsg(__FILE__, __func__, __LINE__, #cond, nullptr)) \
+            {                                                                   \
+                DebugBreak();                                                   \
+            }                                                                   \
         }
 
-    #define ttASSERT_MSG(cond, msg)                                            \
-        {                                                                      \
+    #define ttASSERT_MSG(cond, msg)                                                  \
+        {                                                                            \
             if (!(cond) && ttAssertionMsg(__FILE__, __func__, __LINE__, #cond, msg)) \
-            {                                                                  \
-                DebugBreak();                                                  \
-            }                                                                  \
+            {                                                                        \
+                DebugBreak();                                                        \
+            }                                                                        \
         }
 
     #define ttFAIL(msg)                                                 \
@@ -133,8 +133,8 @@ namespace tt
             }                                                      \
         }
 
-// this still executes the expression in non-DEBUG build, it just doesn't check result
-// #define ttVERIFY(exp) (void)((!!(exp)) || ttAssertionMsg(#exp, __FILE__, __func__, __LINE__))
+    // this still executes the expression in non-DEBUG build, it just doesn't check result
+    #define ttVERIFY(exp) (void)((!!(exp)) || ttAssertionMsg(__FILE__, __func__, __LINE__, #exp, nullptr))
 
     #define ttTRACE(msg)    ttTrace(msg)
     #define ttTRACE_CLEAR() ttTraceClear();
@@ -149,7 +149,7 @@ namespace tt
     #define ttFAIL(msg)
     #define ttFAIL_MSG(msg)
 
-// #define ttVERIFY(exp) ((void)(exp))
+    #define ttVERIFY(exp) ((void)(exp))
 
     #define ttTRACE(msg)
     #define ttTRACE_CLEAR()
