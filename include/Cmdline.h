@@ -14,6 +14,17 @@
 
 // https://github.com/abolz/CmdLine2
 
+// Derivative work Copyright(C) 2020 KeyWorks Software (Ralph Walden)
+
+// Note: do NOT run clang-format on this file! This file is coded with very different brace-wrapping than is used
+// for the rest of this repository. Switching the formatting will make it much harder to compare this derivative
+// version with the original.
+
+#pragma once
+
+#include "ttnamespace.h"
+#include "ttstring.h"
+
 #ifndef CL_CMDLINE_H
 #define CL_CMDLINE_H 1
 
@@ -88,7 +99,8 @@ class Cmdline;
 //
 //==================================================================================================
 
-// [KeyWorks - 02-15-2020] ttLib requires a C++17 compiler, so string_view is definitely available
+// [KeyWorks - 02-15-2020] ttLib requires a C++17 compiler, so string_view is definitely available.
+// As such, the string_view class that was here has been removed.
 
 using string_view = std::string_view;
 
@@ -1057,17 +1069,9 @@ CL_FORCE_INLINE bool IsAnyOf(Lhs const& lhs, Rhs1&& rhs1, Rhs&&... rhs) {
 
 #endif
 
-inline bool StartsWith(string_view str, string_view prefix) {
-    return str.size() >= prefix.size() && str.substr(0, prefix.size()) == prefix;
-}
-
-inline bool IsWhitespace(char ch) {
-    return ch == ' ' || ch == '\t' || ch == '\n' || ch == '\v' || ch == '\f' || ch == '\r';
-}
-
 template <typename It>
 It SkipWhitespace(It next, It last) {
-    while (next != last && IsWhitespace(*next)) {
+    while (next != last && tt::iswhitespace(*next)) {
         ++next;
     }
 
@@ -1506,6 +1510,14 @@ struct ConvertTo<std::basic_string<wchar_t, Traits, Alloc>> {
 };
 
 template <>
+struct ConvertTo<ttString> {
+    bool operator()(ParseContext const& ctx, ttString& value) const {
+        value.assign(ctx.arg.begin(), ctx.arg.end());
+        return true;
+    }
+};
+
+template <>
 struct ConvertTo<void> {
     template <typename T>
     bool operator()(ParseContext const& ctx, T& value) const {
@@ -1716,7 +1728,7 @@ auto Flag(T& var, char const* inverse_prefix = "no-") {
         if (!cl::impl::ConvertTo<>{}(ctx, var)) {
             return false;
         }
-        if (cl::impl::StartsWith(ctx.name, inverse_prefix)) {
+        if (tt::issamesubstr(ctx.name, inverse_prefix)) {
             var = !var;
         }
         return true;
@@ -1751,7 +1763,7 @@ It ParseArgUnix(It next, It last, Fn fn) {
             arg += ch;
         } else if (ch == '\'' || ch == '"' || ch == '\\') { // Toggle quoting?
             quote_char = (quote_char != '\0') ? '\0' : ch;
-        } else if (cl::impl::IsWhitespace(ch)) { // Arguments are separated by whitespace
+        } else if (tt::iswhitespace(ch)) { // Arguments are separated by whitespace
             ++next;
             break;
         } else {
@@ -1773,7 +1785,7 @@ It ParseProgramNameWindows(It next, It last, Fn fn) {
 
     std::string arg;
 
-    if (next != last && !cl::impl::IsWhitespace(*next)) {
+    if (next != last && !tt::iswhitespace(*next)) {
         bool const quoting = (*next == '"');
 
         if (quoting) {
@@ -1782,7 +1794,7 @@ It ParseProgramNameWindows(It next, It last, Fn fn) {
 
         for (; next != last; ++next) {
             auto const ch = *next;
-            if ((quoting && ch == '"') || (!quoting && cl::impl::IsWhitespace(ch))) {
+            if ((quoting && ch == '"') || (!quoting && tt::iswhitespace(ch))) {
                 ++next;
                 break;
             }
@@ -1854,7 +1866,7 @@ It ParseArgWindows(It next, It last, Fn fn) {
             arg.append(num_backslashes, '\\');
             num_backslashes = 0;
 
-            if (!quoting && cl::impl::IsWhitespace(ch)) {
+            if (!quoting && tt::iswhitespace(ch)) {
                 // Arguments are delimited by white space, which is either a
                 // space or a tab.
                 //
