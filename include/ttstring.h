@@ -109,7 +109,7 @@ public:
 
     /// Similar to find only it does a case-insensitve search and returns a view.
     /// The view is empty if the string was not found.
-    std::string_view strstri(std::string_view str) const  { return tt::findstr(*this, str, false); }
+    std::string_view strstri(std::string_view str) const { return tt::findstr(*this, str, false); }
 
     int atoi() const { return tt::atoi(*this); }
 
