@@ -13,6 +13,7 @@
 #include <cctype>
 
 #include "../include/ttstring.h"
+#include "../include/utf8unchecked.h"
 
 // Global empty string.
 const std::string ttEmptyString("");
@@ -581,8 +582,6 @@ size_t ttString::stepover(size_t start) const
     }
     return pos;
 }
-
-#include "../utf8/unchecked.h"
 
 std::wstring ttString::to_utf16() const
 {

@@ -21,8 +21,7 @@
 #include "../include/ttdebug.h"        // ttASSERT macros
 #include "../include/ttwstr.h"         // ttCWStr
 #include "../include/ttstring.h"       // ttString, ttCwd, ttStrVector
-
-#include "../utf8/unchecked.h"
+#include "../include/utf8unchecked.h"
 
 namespace tt
 {

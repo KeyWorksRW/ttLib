@@ -14,7 +14,7 @@
 #include <ios>
 
 #include "../include/ttstring.h"
-#include "../utf8/unchecked.h"
+#include "../include/utf8unchecked.h"
 
 enum WIDTH : size_t
 {
