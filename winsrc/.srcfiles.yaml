@@ -13,7 +13,7 @@ Options:
     Crt_dbg:    dll        # [static | dll] type of CRT to link to in debug builds
 
     IncDirs:    precompile;../include
-    TargetDir:  ./lib
+    TargetDir:  ../lib
 
 Files:
     .include ../src/.srcfiles.yaml
