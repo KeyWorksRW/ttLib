@@ -27,7 +27,7 @@ namespace tt
     inline bool isutf8(char ch) { return ((ch & 0xC0) != 0x80); }
 
     /// Returns true if character is a space, tab, eol or form feed character.
-    inline bool iswhitespace(char ch) { return (ch != 0 && std::strchr(" \t\r\n\f", ch)) ? true : false; };
+    inline bool iswhitespace(char ch) { return (ch != 0 && std::strchr(" \t\n\r\f", ch)) ? true : false; };
 
     /// Returns true if strings are identical
     bool issameas(std::string_view str1, std::string_view str2, bool CaseSensitive = true);
