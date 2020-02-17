@@ -55,28 +55,39 @@ void tt::SetMsgBoxTitle(std::string_view utf8Title)
 
 ttString tt::GetWndText(HWND hwnd)
 {
-    ttString str8;
+    ttString str;
+    tt::GetWndText(hwnd, str);
+    return str;
+}
 
+bool tt::GetWndText(HWND hwnd, ttString& str)
+{
     int cb = GetWindowTextLengthW(hwnd);
     if (cb > 0)
     {
         wchar_t* buffer = static_cast<wchar_t*>(std::malloc(cb));
         cb = GetWindowTextW(hwnd, buffer, cb);
         std::wstring_view str16(buffer, cb);
-        str8.from_utf16(str16);
+        str.from_utf16(str16);
         std::free(static_cast<void*>(buffer));
+        return true;
     }
     else
     {
-        str8.assign("");
+        str.assign(ttEmptyString);
+        return false;
     }
-    return str8;
 }
 
 ttString tt::GetListboxText(HWND hwnd, WPARAM index)
 {
-    ttString str8;
+    ttString str;
+    tt::GetListboxText(hwnd, index, str);
+    return str;
+}
 
+bool tt::GetListboxText(HWND hwnd, WPARAM index, ttString& str)
+{
     auto cb = SendMessageW(hwnd, LB_GETTEXTLEN, index, 0);
     if (cb != LB_ERR)
     {
@@ -85,26 +96,31 @@ ttString tt::GetListboxText(HWND hwnd, WPARAM index)
         if (cb != LB_ERR)
         {
             std::wstring_view str16(buffer, cb);
-            str8.from_utf16(str16);
+            str.from_utf16(str16);
         }
         else
         {
-            str8.assign("");
+            str.assign(ttEmptyString);
         }
 
         std::free(static_cast<void*>(buffer));
     }
     else
     {
-        str8.assign("");
+        str.assign(ttEmptyString);
     }
-    return str8;
+    return (cb != LB_ERR);
 }
 
 ttString tt::GetComboLBText(HWND hwnd, WPARAM index)
 {
-    ttString str8;
+    ttString str;
+    tt::GetComboLBText(hwnd, index, str);
+    return str;
+}
 
+bool tt::GetComboLBText(HWND hwnd, WPARAM index, ttString& str)
+{
     auto cb = SendMessageW(hwnd, CB_GETLBTEXTLEN, index, 0);
     if (cb != CB_ERR)
     {
@@ -113,20 +129,20 @@ ttString tt::GetComboLBText(HWND hwnd, WPARAM index)
         if (cb != CB_ERR)
         {
             std::wstring_view str16(buffer, cb);
-            str8.from_utf16(str16);
+            str.from_utf16(str16);
         }
         else
         {
-            str8.assign("");
+            str.assign(ttEmptyString);
         }
 
         std::free(static_cast<void*>(buffer));
     }
     else
     {
-        str8.assign("");
+        str.assign(ttEmptyString);
     }
-    return str8;
+    return (cb != CB_ERR);
 }
 
 void tt::SetWndText(HWND hwnd, std::string_view utf8str)

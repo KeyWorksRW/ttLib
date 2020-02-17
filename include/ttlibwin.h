@@ -55,15 +55,28 @@ namespace tt
     /// Converts window text to UTF8 and returns it in ttString
     ttString GetWndText(HWND hwnd);
 
+    /// Converts window text to UTF8 and assigns it to str
+    bool GetWndText(HWND hwnd, ttString& str);
+
     /// Sends LB_GETTEXT, converts the result to UTF8 and returns it in ttString.
     ///
     /// ttString will be empty() if index is invalid.
     ttString GetListboxText(HWND hwndLB, WPARAM index);
 
+    /// Sends LB_GETTEXT, converts the result to UTF8 and returns it in str.
+    ///
+    /// Returns false if index is invalid (and sets str to ttEmptyString)
+    bool GetListboxText(HWND hwndLB, WPARAM index, ttString& str);
+
     /// Sends CB_GETLBTEXT, converts the result to UTF8 and returns it in ttString.
     ///
     /// ttString will be empty() if index is invalid.
     ttString GetComboLBText(HWND hwndLB, WPARAM index);
+
+    /// Sends CB_GETLBTEXT, converts the result to UTF8 and returns it in str.
+    ///
+    /// Returns false if index is invalid (and sets str to ttEmptyString)
+    bool GetComboLBText(HWND hwndLB, WPARAM index, ttString& str);
 
     /// Converts the text to UTF16 before calling SetWindowTextW(...)
     void SetWndText(HWND hwnd, std::string_view utf8str);
