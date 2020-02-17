@@ -65,7 +65,7 @@ bool tt::GetWndText(HWND hwnd, ttString& str)
     int cb = GetWindowTextLengthW(hwnd);
     if (cb > 0)
     {
-        wchar_t* buffer = static_cast<wchar_t*>(std::malloc(cb));
+        wchar_t* buffer = static_cast<wchar_t*>(std::malloc((cb + 1) * sizeof(wchar_t)));
         cb = GetWindowTextW(hwnd, buffer, cb);
         std::wstring_view str16(buffer, cb);
         str.from_utf16(str16);
@@ -91,7 +91,7 @@ bool tt::GetListboxText(HWND hwnd, WPARAM index, ttString& str)
     auto cb = SendMessageW(hwnd, LB_GETTEXTLEN, index, 0);
     if (cb != LB_ERR)
     {
-        wchar_t* buffer = static_cast<wchar_t*>(std::malloc(cb));
+        wchar_t* buffer = static_cast<wchar_t*>(std::malloc((cb + 1) * sizeof(wchar_t)));
         cb = SendMessageW(hwnd, LB_GETTEXT, index, (WPARAM) buffer);
         if (cb != LB_ERR)
         {
@@ -124,7 +124,7 @@ bool tt::GetComboLBText(HWND hwnd, WPARAM index, ttString& str)
     auto cb = SendMessageW(hwnd, CB_GETLBTEXTLEN, index, 0);
     if (cb != CB_ERR)
     {
-        wchar_t* buffer = static_cast<wchar_t*>(std::malloc(cb));
+        wchar_t* buffer = static_cast<wchar_t*>(std::malloc((cb + 1) * sizeof(wchar_t)));
         cb = SendMessageW(hwnd, CB_GETLBTEXT, index, (WPARAM) buffer);
         if (cb != CB_ERR)
         {
