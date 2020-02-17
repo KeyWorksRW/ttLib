@@ -869,6 +869,15 @@ std::string_view tt::strstr(std::string_view strMain, std::string_view strSub)
 
 bool tt::issamestri(std::string_view str1, std::string_view str2)
 {
+    if (str1.empty())
+    {
+        return str2.empty();
+    }
+    else if (str2.empty())
+    {
+        return false;
+    }
+
     auto main = str1.begin();
     auto sub = str2.begin();
     while (sub != str2.end())
@@ -887,6 +896,15 @@ bool tt::issamestri(std::string_view str1, std::string_view str2)
 
 bool tt::issameas(std::string_view str1, std::string_view str2, bool CaseSensitive)
 {
+    if (str1.empty())
+    {
+        return str2.empty();
+    }
+    else if (str2.empty())
+    {
+        return false;
+    }
+
     if (CaseSensitive)
         return (str1.compare(str2) == 0);
 
