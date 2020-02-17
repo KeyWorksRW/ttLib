@@ -595,6 +595,47 @@ void ttString::from_utf16(std::wstring_view str)
     utf8::unchecked::utf16to8(str.begin(), str.end(), back_inserter(*this));
 }
 
+size_t ttStrVector::find(size_t start, std::string_view str, bool CaseSensitive)
+{
+    for (; start < size(); ++start)
+    {
+        if (tt::issameas(at(start), str, CaseSensitive))
+            return start;
+    }
+    return tt::npos;
+}
+
+size_t ttStrVector::findprefix(size_t start, std::string_view str, bool CaseSensitive)
+{
+    if (CaseSensitive)
+    {
+        for (; start < size(); ++start)
+        {
+            if (tt::issamesubstr(at(start), str))
+                return start;
+        }
+    }
+    else
+    {
+        for (; start < size(); ++start)
+        {
+            if (tt::issamesubstri(at(start), str))
+                return start;
+        }
+    }
+    return tt::npos;
+}
+
+size_t ttStrVector::contains(size_t start, std::string_view str, bool CaseSensitive)
+{
+    for (; start < size(); ++start)
+    {
+        if (tt::contains(at(start), str, CaseSensitive))
+            return start;
+    }
+    return tt::npos;
+}
+
 ////////////////////////// Functions below are tt:: namespace functions /////////////////////////////////////
 
 const char* tt::nextchar(const char* psz)
@@ -807,7 +848,6 @@ size_t tt::findstr_pos(std::string_view main, std::string_view sub, bool CaseSen
         return tt::npos;
     else
         return (main.size() - view.size());
-
 }
 
 bool tt::contains(std::string_view main, std::string_view sub, bool CaseSensitive)

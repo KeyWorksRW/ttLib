@@ -276,6 +276,15 @@ public:
         return true;
     }
 
+    /// Finds the position of the first string identical to the specified string.
+    size_t find(size_t start, std::string_view str, bool CaseSensitive = true);
+
+    /// Finds the position of the first string with specified prefix.
+    size_t findprefix(size_t start, std::string_view prefix, bool CaseSensitive = true);
+
+    /// Finds the position of the first string containing the specified sub-string.
+    size_t contains(size_t start, std::string_view substring, bool CaseSensitive = true);
+
     /// Unlike append(), this will add the string even if it already exists.
     void operator+=(std::string_view str) { push_back(str); }
 };
