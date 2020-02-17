@@ -30,6 +30,22 @@
     #include "ttcasemap.h"  // Macros for mapping Windows messages to functions
 #endif
 
+#if !defined(NDEBUG)
+    /// Place this within a dialog function to verify a control id is valid.
+    #define CHECK_DLG_ID(id)                                                          \
+        if (!::GetDlgItem(*this, id))                                                 \
+        {                                                                             \
+            std::stringstream msg;                                                    \
+            msg << "Invalid dialog control id: " << #id << " (" << id << ')';         \
+            if (ttAssertionMsg(__FILE__, __func__, __LINE__, #id, msg.str().c_str())) \
+            {                                                                         \
+                DebugBreak();                                                         \
+            }                                                                         \
+        }
+#else
+    #define CHECK_DLG_ID(id)
+#endif
+
 #ifndef __DLG_ID__
     #if !defined(NDEBUG)  // Starts debug section.
         #define DLG_ID(id) tt::CheckItemID(*this, id, #id, __FILE__, __func__, __LINE__)
@@ -77,7 +93,8 @@ public:
     }
 
     HWND GetDlgItem(int id) const { return ::GetDlgItem(m_hwnd, (int) id); }
-    int  GetControlTextLength(int id) const { return ::GetWindowTextLengthA(GetDlgItem(id)); }
+
+    int GetControlTextLength(int id) const { return ::GetWindowTextLengthA(GetDlgItem(id)); }
     BOOL GetControlRect(int id, RECT* prc) const { return ::GetWindowRect(GetDlgItem(id), prc); }
 
     void GetControlText(int id, char* pszText, int cchMax = MAX_PATH) const
@@ -104,7 +121,7 @@ public:
     void SetTitle(const wchar_t* pszTitle) { ::SetWindowTextW(*this, pszTitle ? pszTitle : L""); }
 
     ptrdiff_t GetControlInteger(int id) const;
-    void      SetControlInteger(int id, ptrdiff_t val) const;
+    void SetControlInteger(int id, ptrdiff_t val) const;
 
     void EnableControl(int id, BOOL fEnable = TRUE) const { (void) ::EnableWindow(GetDlgItem(id), fEnable); }
     void DisableControl(int id) const { (void) ::EnableWindow(GetDlgItem(id), FALSE); }
@@ -164,7 +181,7 @@ public:
     }
 
     HWND GetParent() { return m_hwndParent; }
-         operator HWND() const { return m_hwnd; }
+    operator HWND() const { return m_hwnd; }
 
 protected:
     // BEGIN_TTCMD_MAP in ttcasemap.h will override this
@@ -270,8 +287,8 @@ public:
     }
 
     LRESULT GetCount() const { return SendMessage(CB_GETCOUNT); }
-    void    ResetContent() const { SendMessage(CB_RESETCONTENT); }
-    void    Reset() const { SendMessage(CB_RESETCONTENT); }
+    void ResetContent() const { SendMessage(CB_RESETCONTENT); }
+    void Reset() const { SendMessage(CB_RESETCONTENT); }
 
     LRESULT Add(const char* psz) const
     {
@@ -524,7 +541,7 @@ public:
         return SendMessage(LB_SETCURSEL, index);
     }
     LRESULT GetTopIndex(void) const { return SendMessage(LB_GETTOPINDEX); }
-    void    SetTopIndex(WPARAM index) const { (void) SendMessage(LB_SETTOPINDEX, index); }
+    void SetTopIndex(WPARAM index) const { (void) SendMessage(LB_SETTOPINDEX, index); }
 
     // For multi-select list boxes
     LRESULT GetSel(WPARAM index) const
@@ -575,7 +592,7 @@ public:
     void DisableRedraw(void) { SendMessage(WM_SETREDRAW, FALSE); }
     void EnableRedraw(void) { SendMessage(WM_SETREDRAW, TRUE); }
 
-         operator HWND() const { return m_hwnd; }
+    operator HWND() const { return m_hwnd; }
     void operator+=(const char* psz) const { SendMessageA(LB_ADDSTRING, 0, (LPARAM) psz); }
 
     HWND m_hwnd;
