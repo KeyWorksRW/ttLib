@@ -238,6 +238,38 @@ void ttCDlg::CenterWindow(bool bCenterOnDesktop)
     ::MoveWindow(*this, left, top, cx, cy, FALSE);
 }
 
+LRESULT ttCListView::add(std::string_view str, LPARAM lparam)
+{
+    std::wstring str16;
+    utf8::unchecked::utf8to16(str.begin(), str.end(), back_inserter(str16));
+
+    LVITEMW lvi;
+    ZeroMemory(&lvi, sizeof(lvi));
+    lvi.mask = LVIF_TEXT;
+    lvi.pszText = (LPWSTR) str16.c_str();
+    lvi.iItem = 0x7fffffff;  // ensure the item is appended
+    if (lparam != -1)
+    {
+        lvi.mask |= LVIF_PARAM;
+        lvi.lParam = lparam;
+    }
+    return (LRESULT)::SendMessageW(m_hwnd, LVM_INSERTITEMW, 0, (LPARAM) &lvi);
+}
+
+BOOL ttCListView::addsubstring(std::string_view str, int iItem, int iSubItem)
+{
+    std::wstring str16;
+    utf8::unchecked::utf8to16(str.begin(), str.end(), back_inserter(str16));
+
+    LVITEMW lvi;
+    ZeroMemory(&lvi, sizeof(lvi));
+    lvi.mask = LVIF_TEXT;
+    lvi.pszText = (LPWSTR) str16.c_str();
+    lvi.iItem = iItem;
+    lvi.iSubItem = iSubItem;
+    return (BOOL)::SendMessageW(m_hwnd, LVM_SETITEMW, 0, (LPARAM) &lvi);
+}
+
 LRESULT ttCListView::AddString(const char* psz, LPARAM lParam)
 {
     ttASSERT(psz);
