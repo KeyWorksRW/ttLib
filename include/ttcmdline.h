@@ -1,4 +1,9 @@
-// Copyright 2019 Alexander Bolz
+/////////////////////////////////////////////////////////////////////////////
+// Name:      Cmdline
+// Purpose:   command line parser
+// Author:    Alexander Bolz
+// Copyright: Copyright (c) 2019 Alexander Bolz
+// License:   Apache License
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +17,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// https://github.com/abolz/CmdLine2
+// Github repository: https://github.com/abolz/CmdLine2
 
 // Derivative work Copyright(C) 2020 KeyWorks Software (Ralph Walden)
 
@@ -2434,14 +2439,22 @@ Cmdline::Status Cmdline::Handle1(string_view optstr, It& curr, EndIt last) {
     // This argument is considered to be positional if it doesn't start with
     // '-', if it is "-" itself, or if we have seen "--" already, or if the
     // argument doesn't look like a known option (see below).
-    bool const is_positional = (optstr[0] != '-' || optstr == "-" || dashdash_);
+    bool is_positional = (optstr[0] != '-' || optstr == "-" || dashdash_);
+#if defined(_WIN32)
+    // Windows command-line parsing often uses '/', but // would mean a URL positional
+    // argument
+    if (optstr[0] == '/' && (optstr.length() < 2 || optstr[1] != '/'))
+    {
+        is_positional = false;
+    }
+#endif  // _WIN32
     if (is_positional) {
         return HandlePositional(optstr);
     }
 
     auto const optstr_orig = optstr;
 
-    CL_ASSERT(optstr[0] == '-');
+    CL_ASSERT(optstr[0] == '-' || optstr[0] == '/');
     optstr.remove_prefix(1); // Remove the first dash.
 
     // If the name starts with a single dash, this is a short option and might
@@ -2654,7 +2667,6 @@ Cmdline::Status Cmdline::HandleOccurrence(OptionBase* opt, string_view name, It&
     if (curr != last) {
         auto const arg = cl::impl::ToUTF8(*curr);
 
-#if 1
         // If the string is of the form "--K=V" and "K" is the name of
         // an option, emit a warning.
         if (arg.size() >= 2 && arg[0] == '-') {
@@ -2670,7 +2682,6 @@ Cmdline::Status Cmdline::HandleOccurrence(OptionBase* opt, string_view name, It&
                 EmitDiag(Diagnostic::note, curr_index_, "use '--", name, opt->HasFlag(MayJoin::yes) ? "" : "=", arg, "' to suppress this warning");
             }
         }
-#endif
 
         return ParseOptionArgument(opt, name, arg);
     }
