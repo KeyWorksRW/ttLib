@@ -27,16 +27,16 @@
 
 #pragma once
 
-#include "ttnamespace.h"
-#include "ttstring.h"
-
 #ifndef CL_CMDLINE_H
 #define CL_CMDLINE_H 1
 
+#include "ttnamespace.h"
+#include "ttstring.h"
+
 #if _WIN32
-static_assert(sizeof(wchar_t) == 2, "Invalid configuration");
+    static_assert(sizeof(wchar_t) == 2, "Invalid configuration");
 #else
-static_assert(sizeof(wchar_t) == 4, "Invalid configuration");
+    static_assert(sizeof(wchar_t) == 4, "Invalid configuration");
 #endif
 
 #include <cassert>
@@ -56,24 +56,24 @@ static_assert(sizeof(wchar_t) == 4, "Invalid configuration");
 #include <vector>
 
 #if CL_WINDOWS_CONSOLE_COLORS && _WIN32
-#include <windows.h>
+    #include <windows.h>
 #endif
 
 #if __cpp_lib_string_view >= 201606
-#define CL_HAS_STD_STRING_VIEW 1
-#include <string_view>
+    #define CL_HAS_STD_STRING_VIEW 1
+    #include <string_view>
 #endif
 
 #if __cpp_lib_is_invocable >= 201703
-#define CL_HAS_STD_INVOCABLE 1
+    #define CL_HAS_STD_INVOCABLE 1
 #endif
 
 #if __cpp_deduction_guides >= 201606
-#define CL_HAS_DEDUCTION_GUIDES 1
+    #define CL_HAS_DEDUCTION_GUIDES 1
 #endif
 
 #if __cpp_fold_expressions >= 201603
-#define CL_HAS_FOLD_EXPRESSIONS 1
+    #define CL_HAS_FOLD_EXPRESSIONS 1
 #endif
 
 //#if __cpp_lib_to_chars >= 201611 || (_MSC_VER >= 1920 && defined(_HAS_CXX17))
@@ -82,18 +82,24 @@ static_assert(sizeof(wchar_t) == 4, "Invalid configuration");
 //#endif
 
 #if defined(__GNUC__) || defined(__clang__)
-#define CL_FORCE_INLINE __attribute__((always_inline)) inline
-#define CL_NEVER_INLINE __attribute__((noinline)) inline
+    #define CL_FORCE_INLINE __attribute__((always_inline)) inline
+    #define CL_NEVER_INLINE __attribute__((noinline)) inline
 #elif defined(_MSC_VER)
-#define CL_FORCE_INLINE __forceinline
-#define CL_NEVER_INLINE __declspec(noinline) inline
+    #define CL_FORCE_INLINE __forceinline
+    #define CL_NEVER_INLINE __declspec(noinline) inline
 #else
-#define CL_FORCE_INLINE inline
-#define CL_NEVER_INLINE inline
+    #define CL_FORCE_INLINE inline
+    #define CL_NEVER_INLINE inline
 #endif
 
-#ifndef CL_ASSERT
-#define CL_ASSERT(X) assert(X)
+#if !defined(CL_ASSERT)
+    #if defined(ttASSERT)
+        #define CL_ASSERT(exp)          ttASSERT(exp)
+        #define CL_ASSERT_MSG(exp, msg) ttASSERT_MSG(exp, msg)
+    #else
+        #define CL_ASSERT(exp)          assert(exp)
+        #define CL_ASSERT_MSG(exp, msg) assert(((void) msg, exp))
+    #endif
 #endif
 
 namespace cl {
@@ -909,7 +915,7 @@ struct ByWords {
     explicit ByWords(size_t length_)
         : length(length_)
     {
-        CL_ASSERT(length != 0 && "invalid parameter");
+        CL_ASSERT_MSG(length != 0, "invalid parameter");
     }
 
     DelimiterResult operator()(string_view str) const {
@@ -949,7 +955,7 @@ inline bool DoSplit(DoSplitResult& res, string_view str, DelimiterResult del) {
     CL_ASSERT(del.first + del.count <= str.size());
 
     auto const off = del.first + del.count;
-    CL_ASSERT(off > 0 && "invalid delimiter result");
+    CL_ASSERT_MSG(off > 0, "invalid delimiter result");
 
     res.tok = string_view(str.data(), del.first);
     res.str = string_view(str.data() + off, str.size() - off);
@@ -2048,12 +2054,12 @@ inline OptionBase* Cmdline::Add(OptionBase* opt) {
     CL_ASSERT(cl::impl::IsUTF8(opt->descr_.begin(), opt->descr_.end()));
 
     cl::impl::Split(opt->Name(), cl::impl::ByChar('|'), [&](string_view name) {
-        CL_ASSERT(!name.empty() && "Empty option names are not allowed");
-        CL_ASSERT(name[0] != '-' && "Option names must not start with a '-'");
-        CL_ASSERT(name.find('"') == string_view::npos && "An option name must not contain an '\"'");
+        CL_ASSERT_MSG(!name.empty(), "Empty option names are not allowed");
+        CL_ASSERT_MSG(name[0] != '-', "Option names must not start with a '-'");
+        CL_ASSERT_MSG(name.find('"') == string_view::npos, "An option name must not contain an '\"'");
         // TODO:
         // Abort/throw if an option with the given name already exists?
-        CL_ASSERT(FindOption(name) == nullptr && "Option already exists");
+        CL_ASSERT_MSG(FindOption(name) == nullptr, "Option already exists");
 
         if (opt->HasFlag(MayJoin::yes)) {
             auto const n = static_cast<int>(name.size());
@@ -2262,7 +2268,8 @@ inline void AppendLines(std::string& out, string_view text, size_t indent, size_
     cl::impl::Split(text, cl::impl::ByLines(), [&](string_view line) {
         // Find the position of the first tab-character in this line (if any).
         auto const tab_pos = line.find('\t');
-        CL_ASSERT((tab_pos == string_view::npos || line.find('\t', tab_pos + 1) == string_view::npos) && "Only a single tab-character per line is allowed");
+        CL_ASSERT_MSG((tab_pos == string_view::npos || line.find('\t', tab_pos + 1) == string_view::npos),
+             "Only a single tab-character per line is allowed");
 
         // Append the first (or only) part of this line.
         auto const col = cl::impl::AppendSingleLine(out, line.substr(0, tab_pos), indent, column_width, /*col*/ indent, do_indent);
