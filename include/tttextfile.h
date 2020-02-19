@@ -26,12 +26,12 @@ public:
     void ReadString(std::string_view str);
 
     /// Writes each line to the file adding a '\n' to the end of the line.
-    bool WriteFile(std::string_view filename);
+    bool WriteFile(std::string_view filename) const;
 
     /// Searches every line to see if it contains the sub-string.
     ///
     /// start is the zero-based offset to the line to start searching.
-    size_t FindLineContaining(size_t start, std::string_view str, bool CaseSensitive = true);
+    size_t FindLineContaining(std::string_view str, size_t start = 0, bool CaseSensitive = true) const;
 
 protected:
 
@@ -52,7 +52,7 @@ public:
     void ReadString(std::string_view str);
 
     /// Writes each line to the file adding a '\n' to the end of the line.
-    bool WriteFile(std::string_view filename);
+    bool WriteFile(std::string_view filename) const;
 
     /// Returns the string storing the entire file. If you change this string, all
     /// the string_view vector entries will be invalid!
@@ -61,7 +61,7 @@ public:
     /// Searches every line to see if it contains the sub-string.
     ///
     /// start is the zero-based offset to the line to start searching.
-    size_t FindLineContaining(size_t start, std::string_view str, bool CaseSensitive = true);
+    size_t FindLineContaining(std::string_view str, size_t start = 0, bool CaseSensitive = true) const;
 
 protected:
 
