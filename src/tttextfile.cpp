@@ -8,7 +8,6 @@
 
 #include "pch.h"
 
-#include <exception>
 #include <fstream>
 
 #include "../include/tttextfile.h"
@@ -24,7 +23,7 @@ bool ttTextFile::ReadFile(std::string_view filename)
     return true;
 }
 
-bool ttTextFile::WriteFile(std::string_view filename)
+bool ttTextFile::WriteFile(std::string_view filename) const
 {
     std::ofstream file(filename, std::ios::binary);
     if (!file.is_open())
@@ -60,7 +59,7 @@ void ttTextFile::ParseLines(std::string_view str)
                 line.assign(ttEmptyString);
             }
 
-            push_back(line);
+            push_back(move(line));
 
             // Some Apple format files only use \r. Windows files tend to use \r\n.
             if (pos + 1 < str.size() && str[pos + 1] == '\n')
@@ -78,13 +77,13 @@ void ttTextFile::ParseLines(std::string_view str)
             {
                 line.assign(ttEmptyString);
             }
-            push_back(line);
+            push_back(move(line));
             posBeginLine = pos + 1;
         }
     }
 }
 
-size_t ttTextFile::FindLineContaining(size_t start, std::string_view str, bool CaseSensitive)
+size_t ttTextFile::FindLineContaining(std::string_view str, size_t start, bool CaseSensitive) const
 {
     for (; start < size(); ++start)
     {
@@ -117,7 +116,7 @@ void ttViewFile::ReadString(std::string_view str)
     }
 }
 
-bool ttViewFile::WriteFile(std::string_view filename)
+bool ttViewFile::WriteFile(std::string_view filename) const
 {
     std::ofstream file(filename, std::ios::binary);
     if (!file.is_open())
@@ -171,7 +170,7 @@ void ttViewFile::ParseLines(std::string_view str)
     }
 }
 
-size_t ttViewFile::FindLineContaining(size_t start, std::string_view str, bool CaseSensitive)
+size_t ttViewFile::FindLineContaining(std::string_view str, size_t start, bool CaseSensitive) const
 {
     for (; start < size(); ++start)
     {
