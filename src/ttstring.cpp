@@ -243,16 +243,17 @@ size_t ttString::Replace(std::string_view oldtext, std::string_view newtext, boo
         erase(pos, oldtext.length());
         insert(pos, newtext);
         ++replacements;
+        pos += newtext.length();
         if (replaceAll)
         {
-            pos = CaseSensitive ? find(oldtext) : findi(oldtext, Utf8);
+            pos = CaseSensitive ? find(oldtext, pos) : findi(oldtext, pos, Utf8);
         }
     } while (replaceAll);
 
     return replacements;
 }
 
-size_t ttString::findi(std::string_view str, bool bUtf8) const
+size_t ttString::findi(std::string_view str, size_t posStart, bool bUtf8) const
 {
     if (str.empty())
         return npos;
@@ -260,7 +261,7 @@ size_t ttString::findi(std::string_view str, bool bUtf8) const
 
     if (!bUtf8)
     {
-        for (auto pos = 0U; pos < length(); ++pos)
+        for (auto pos = posStart; pos < length(); ++pos)
         {
             if (std::tolower(at(pos)) == chLower)
             {
@@ -280,7 +281,7 @@ size_t ttString::findi(std::string_view str, bool bUtf8) const
     else
     {
         auto utf8locale = std::locale("en_US.utf8");
-        for (auto pos = 0U; pos < length(); ++pos)
+        for (auto pos = posStart; pos < length(); ++pos)
         {
             if (std::tolower(at(pos), utf8locale) == chLower)
             {

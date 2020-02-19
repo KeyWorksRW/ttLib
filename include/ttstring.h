@@ -62,7 +62,7 @@ public:
     ///
     /// If bUtf8 is true, current string and string to search for are assumed to be
     /// coded as UTF8 strings.
-    size_t findi(std::string_view str, bool bUtf8 = false) const;
+    size_t findi(std::string_view str, size_t posStart = 0, bool bUtf8 = false) const;
 
     /// Returns true if the sub string exists
     ///
@@ -132,7 +132,7 @@ public:
     size_t ExtractSubString(std::string_view src, size_t offset = 0);
 
     /// Replace first (or all) occurrences of substring with another one
-    size_t Replace(std::string_view oldtext, std::string_view newtext, bool replaceAll = true,
+    size_t Replace(std::string_view oldtext, std::string_view newtext, bool replaceAll = false,
                    bool CaseSensitive = true, bool Utf8 = false);
 
     /// Replace everything from pos to the end of the current string with str
