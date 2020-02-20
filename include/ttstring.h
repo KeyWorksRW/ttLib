@@ -167,6 +167,9 @@ public:
     /// Returns a view to the current extension. View is empty if there is no extension.
     std::string_view extension() const;
 
+    /// Returns true if current filename contains the specified case-insensitive extension.
+    bool hasExtension(std::string_view ext) const { return tt::issameas(extension(), ext, false); }
+
     /// Returns a view to the current filename. View is empty if there is no filename.
     std::string_view filename() const;
 
