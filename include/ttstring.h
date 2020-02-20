@@ -149,8 +149,10 @@ public:
 
     /// Similer to sprintf, but without floating point support.
     ///
+    /// %v expects a std::string_view argument.
+    ///
     /// %k flag will place a string argument in quotes, and format a numerical argument
-    /// with commas or periods (depending on the current localte).
+    /// with commas or periods (depending on the current locale).
     ///
     /// %z is considered unsigned unless the value is -1.
     const std::string& cdecl Format(std::string_view format, ...);

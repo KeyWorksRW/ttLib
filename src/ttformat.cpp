@@ -170,6 +170,27 @@ const std::string& cdecl ttString::Format(std::string_view format, ...)
                         buffer << str8;
                 }
             }
+            else if (format.at(pos) == 'v')
+            {
+                if (width != WIDTH_LONG)
+                {
+                    if (kflag)
+                        buffer << std::quoted(va_arg(args, std::string_view));
+                    else
+                        buffer << va_arg(args, std::string_view);
+                }
+                else
+                {
+                    std::wstring str16;
+                    str16 += va_arg(args, std::wstring_view);
+                    std::string str8;
+                    utf8::unchecked::utf16to8(str16.begin(), str16.end(), back_inserter(str8));
+                    if (kflag)
+                        buffer << std::quoted(str8);
+                    else
+                        buffer << str8;
+                }
+            }
             else if (format.at(pos) == 'd' || format.at(pos) == 'i')
             {
                 std::locale previous;
