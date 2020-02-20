@@ -593,6 +593,8 @@ void ttString::from_utf16(std::wstring_view str)
     utf8::unchecked::utf16to8(str.begin(), str.end(), back_inserter(*this));
 }
 
+////////////////////////////// ttStrVector methods ///////////////////////////////
+
 size_t ttStrVector::find(size_t start, std::string_view str, bool CaseSensitive)
 {
     for (; start < size(); ++start)
