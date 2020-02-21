@@ -14,11 +14,18 @@
 
 #pragma once
 
+// clang-format off
+
+// This shouldn't be necessary, but every once in awhile the compiler ignores the #pragma once directive
+#ifndef _TT_LIB_DEBUG_H_GUARD_
+#define _TT_LIB_DEBUG_H_GUARD_
+
 #include <sstream>
 
 #if !defined(_WIN32)
     #error Include ttassert.h and use wxWidgets if you want ttASSERT macros on non-Windows OS
 #endif  // _WIN32
+// clang-format on
 
 // formats a string and displays it in a ttTrace window (if ttTrace is running)
 void cdecl ttTrace(const char* pszFormat, ...);
@@ -26,15 +33,14 @@ void cdecl ttTrace(const char* pszFormat, ...);
 // clears the ttTrace window if ttTrace is running
 void ttTraceClear();
 
-bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond,
-                    const char* msg);
+bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond, const char* msg);
 bool ttdoReportLastError(const char* filename, const char* function, int line);
 
 inline bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond,
-                    const std::stringstream& msg)
-                    {
-                        return ttAssertionMsg(filename, function, line, cond, msg.str().c_str());
-                    }
+                           const std::stringstream& msg)
+{
+    return ttAssertionMsg(filename, function, line, cond, msg.str().c_str());
+}
 
 // Enables disables all assertion messages
 void ttSetAsserts(bool bDisable);
@@ -58,114 +64,117 @@ namespace tt
     int CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc, int line);
 }  // namespace tt
 
-#ifdef _DEBUG
-    #define ttASSERT(cond)                                                      \
-        {                                                                       \
-            if (!(cond) && ttAssertionMsg(__FILE__, __func__, __LINE__, #cond, nullptr)) \
+    #ifdef _DEBUG
+        #define ttASSERT(cond)                                                               \
+            {                                                                                \
+                if (!(cond) && ttAssertionMsg(__FILE__, __func__, __LINE__, #cond, nullptr)) \
+                {                                                                            \
+                    DebugBreak();                                                            \
+                }                                                                            \
+            }
+
+        #define ttASSERT_MSG(cond, msg)                                                  \
+            {                                                                            \
+                if (!(cond) && ttAssertionMsg(__FILE__, __func__, __LINE__, #cond, msg)) \
+                {                                                                        \
+                    DebugBreak();                                                        \
+                }                                                                        \
+            }
+
+        #define ttFAIL(msg)                                                 \
+            if (ttAssertionMsg(__FILE__, __func__, __LINE__, nullptr, msg)) \
+            {                                                               \
+                DebugBreak();                                               \
+            }
+
+        #define ttFAIL_MSG(msg)                                                 \
             {                                                                   \
-                DebugBreak();                                                   \
-            }                                                                   \
-        }
+                if (ttAssertionMsg(__FILE__, __func__, __LINE__, nullptr, msg)) \
+                {                                                               \
+                    DebugBreak();                                               \
+                }                                                               \
+            }
 
-    #define ttASSERT_MSG(cond, msg)                                                  \
-        {                                                                            \
-            if (!(cond) && ttAssertionMsg(__FILE__, __func__, __LINE__, #cond, msg)) \
-            {                                                                        \
-                DebugBreak();                                                        \
-            }                                                                        \
-        }
+        #define ttASSERT_HRESULT(hr, msg)                                                     \
+            {                                                                                 \
+                if (FAILED(hr) && ttAssertionMsg(__FILE__, __func__, __LINE__, nullptr, msg)) \
+                {                                                                             \
+                    DebugBreak();                                                             \
+                }                                                                             \
+            }
 
-    #define ttFAIL(msg)                                                 \
-        if (ttAssertionMsg(__FILE__, __func__, __LINE__, nullptr, msg)) \
-        {                                                               \
-            DebugBreak();                                               \
-        }
+        #define ttASSERT_NONEMPTY(psz)                                                            \
+            {                                                                                     \
+                if ((!psz || !*psz) &&                                                            \
+                    ttAssertionMsg(__FILE__, __func__, __LINE__, #psz, "Null or empty pointer!")) \
+                {                                                                                 \
+                    DebugBreak();                                                                 \
+                }                                                                                 \
+            }
 
-    #define ttFAIL_MSG(msg)                                                 \
-        {                                                                   \
-            if (ttAssertionMsg(__FILE__, __func__, __LINE__, nullptr, msg)) \
-            {                                                               \
-                DebugBreak();                                               \
-            }                                                               \
-        }
+        #define ttASSERT_STRING(str)                                                                    \
+            {                                                                                           \
+                if (str.empty() && ttAssertionMsg(__FILE__, __func__, __LINE__, #str, "Empty string!")) \
+                {                                                                                       \
+                    DebugBreak();                                                                       \
+                }                                                                                       \
+            }
 
-    #define ttASSERT_HRESULT(hr, msg)                                                     \
-        {                                                                                 \
-            if (FAILED(hr) && ttAssertionMsg(__FILE__, __func__, __LINE__, nullptr, msg)) \
-            {                                                                             \
-                DebugBreak();                                                             \
-            }                                                                             \
-        }
+        /// In _DEBUG builds this will display an assertion dialog first then it will throw
+        /// an excpetion. In Release builds, only the exception is thrown.
+        #define ttTHROW(msg)                                                    \
+            {                                                                   \
+                if (ttAssertionMsg(__FILE__, __func__, __LINE__, nullptr, msg)) \
+                {                                                               \
+                    DebugBreak();                                               \
+                }                                                               \
+                throw msg;                                                      \
+            }
 
-    #define ttASSERT_NONEMPTY(psz)                                                                               \
-        {                                                                                                        \
-            if ((!psz || !*psz) && ttAssertionMsg(__FILE__, __func__, __LINE__, #psz, "Null or empty pointer!")) \
-            {                                                                                                    \
-                DebugBreak();                                                                                    \
-            }                                                                                                    \
-        }
+        /// Display the last system error from GetLastError()
+        #define ttLAST_ERROR()                                         \
+            {                                                          \
+                if (ttdoReportLastError(__FILE__, __func__, __LINE__)) \
+                {                                                      \
+                    DebugBreak();                                      \
+                }                                                      \
+            }
 
-    #define ttASSERT_STRING(str)                                                                    \
-        {                                                                                           \
-            if (str.empty() && ttAssertionMsg(__FILE__, __func__, __LINE__, #str, "Empty string!")) \
-            {                                                                                       \
-                DebugBreak();                                                                       \
-            }                                                                                       \
-        }
+        // this still executes the expression in non-DEBUG build, it just doesn't check result
+        #define ttVERIFY(exp) (void) ((!!(exp)) || ttAssertionMsg(__FILE__, __func__, __LINE__, #exp, nullptr))
 
-    /// In _DEBUG builds this will display an assertion dialog first then it will throw
-    /// an excpetion. In Release builds, only the exception is thrown.
-    #define ttTHROW(msg)                                                    \
-        {                                                                   \
-            if (ttAssertionMsg(__FILE__, __func__, __LINE__, nullptr, msg)) \
-            {                                                               \
-                DebugBreak();                                               \
-            }                                                               \
-            throw msg;                                                      \
-        }
+        #define ttTRACE(msg)    ttTrace(msg)
+        #define ttTRACE_CLEAR() ttTraceClear();
 
-    /// Display the last system error from GetLastError()
-    #define ttLAST_ERROR()                                         \
-        {                                                          \
-            if (ttdoReportLastError(__FILE__, __func__, __LINE__)) \
-            {                                                      \
-                DebugBreak();                                      \
-            }                                                      \
-        }
+        #define ttDISABLE_ASSERTS ttSetAsserts(true)
+        #define ttENABLE_ASSERTS  ttSetAsserts(false)
 
-    // this still executes the expression in non-DEBUG build, it just doesn't check result
-    #define ttVERIFY(exp) (void)((!!(exp)) || ttAssertionMsg(__FILE__, __func__, __LINE__, #exp, nullptr))
+    #else  // not _DEBUG
 
-    #define ttTRACE(msg)    ttTrace(msg)
-    #define ttTRACE_CLEAR() ttTraceClear();
+        #define ttASSERT(cond)
+        #define ttASSERT_MSG(cond, msg)
+        #define ttFAIL(msg)
+        #define ttFAIL_MSG(msg)
 
-    #define ttDISABLE_ASSERTS ttSetAsserts(true)
-    #define ttENABLE_ASSERTS  ttSetAsserts(false)
+        #define ttVERIFY(exp) ((void) (exp))
 
-#else  // not _DEBUG
+        #define ttTRACE(msg)
+        #define ttTRACE_CLEAR()
 
-    #define ttASSERT(cond)
-    #define ttASSERT_MSG(cond, msg)
-    #define ttFAIL(msg)
-    #define ttFAIL_MSG(msg)
+        #define ttASSERT_NONEMPTY(ptr)
+        #define ttASSERT_STRING(str)
 
-    #define ttVERIFY(exp) ((void)(exp))
+        #define ttDISABLE_ASSERTS
+        #define ttENABLE_ASSERTS
 
-    #define ttTRACE(msg)
-    #define ttTRACE_CLEAR()
+        #define ttASSERT_HRESULT(hr, pszMsg)
+        #define ttLAST_ERROR()
 
-    #define ttASSERT_NONEMPTY(ptr)
-    #define ttASSERT_STRING(str)
+        #define ttTHROW(msg) \
+            {                \
+                throw msg;   \
+            }
 
-    #define ttDISABLE_ASSERTS
-    #define ttENABLE_ASSERTS
+    #endif  // _DEBUG
 
-    #define ttASSERT_HRESULT(hr, pszMsg)
-    #define ttLAST_ERROR()
-
-    #define ttTHROW(msg) \
-        {                \
-            throw msg;   \
-        }
-
-#endif  // _DEBUG
+#endif _TT_LIB_DEBUG_H_GUARD_
