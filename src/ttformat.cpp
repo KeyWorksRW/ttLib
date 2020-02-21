@@ -29,7 +29,7 @@ enum WIDTH : size_t
     WIDTH_LONG_DOUBLE
 };
 
-const std::string& cdecl ttString::Format(std::string_view format, ...)
+ttString& cdecl ttString::Format(std::string_view format, ...)
 {
     std::va_list args;
     va_start(args, format);

@@ -67,11 +67,11 @@ int ttString::comparei(std::string_view str) const
     return (main != end() ? 1 : 0);
 }
 
-void ttString::trim(bool fromRight)
+ttString& ttString::trim(TRIM_TYPE type)
 {
     if (empty())
-        return;
-    if (fromRight)
+        return *this;
+    if (type & TRIM_RIGHT)
     {
         auto len = length();
         for (--len; len != std::string::npos; --len)
@@ -84,12 +84,12 @@ void ttString::trim(bool fromRight)
         if (len + 1 < length())
             erase(len + 1, length() - len);
     }
-    else
+    if (type & TRIM_LEFT)
     {
         // Assume that most strings won't start with whitespace, so return as quickly as possible if that is the
         // case.
         if (!tt::iswhitespace(at(0)))
-            return;
+            return *this;
 
         size_t pos;
         for (pos = 1; pos < length(); ++pos)
@@ -99,6 +99,7 @@ void ttString::trim(bool fromRight)
         }
         replace(0, length(), substr(pos, length() - pos));
     }
+    return *this;
 }
 
 /**
@@ -301,7 +302,7 @@ size_t ttString::findi(std::string_view str, size_t posStart, bool bUtf8) const
     return npos;
 }
 
-bool ttString::contains(std::string_view sub, bool CaseSensitive)
+bool ttString::contains(std::string_view sub, bool CaseSensitive) const
 {
     return tt::contains(*this, sub, CaseSensitive);
 }
@@ -323,7 +324,7 @@ size_t ttString::gethash() const
     return hash;
 }
 
-std::string_view ttString::MakeLower()
+ttString& ttString::MakeLower()
 {
     auto utf8locale = std::locale("en_US.utf8");
     for (auto iter = begin(); iter != end(); ++iter)
@@ -333,7 +334,7 @@ std::string_view ttString::MakeLower()
     return *this;
 }
 
-std::string_view ttString::MakeUpper()
+ttString& ttString::MakeUpper()
 {
     auto utf8locale = std::locale("en_US.utf8");
     for (auto iter = begin(); iter != end(); ++iter)
@@ -347,15 +348,16 @@ std::string_view ttString::MakeUpper()
 ///
 /// Note: Windows handles paths that use forward slashes, so backslashes are normally
 /// unnecessary.
-void ttString::backslashestoforward()
+ttString& ttString::backslashestoforward()
 {
     for (auto pos = find('\\'); pos != std::string::npos; pos = find('\\'))
     {
         replace(pos, 1, "/");
     }
+    return *this;
 }
 
-std::string_view ttString::replace_extension(std::string_view newExtension)
+ttString& ttString::replace_extension(std::string_view newExtension)
 {
     if (empty())
     {
@@ -444,7 +446,7 @@ std::string_view ttString::filename() const
     return { data() + pos + 1, length() - (pos + 1) };
 }
 
-std::string_view ttString::replace_filename(std::string_view newFilename)
+ttString& ttString::replace_filename(std::string_view newFilename)
 {
     if (empty())
     {
@@ -479,7 +481,7 @@ std::string_view ttString::replace_filename(std::string_view newFilename)
     return *this;
 }
 
-std::string_view ttString::append_filename(std::string_view filename)
+ttString& ttString::append_filename(std::string_view filename)
 {
     if (filename.empty())
         return *this;
@@ -496,7 +498,7 @@ std::string_view ttString::append_filename(std::string_view filename)
     return *this;
 }
 
-std::string_view ttString::assignCwd()
+ttString& ttString::assignCwd()
 {
     assign(std::filesystem::absolute(".").u8string());
     return *this;
@@ -504,7 +506,7 @@ std::string_view ttString::assignCwd()
 
 /// Uses const std::string& instead of std::string_view because std::filesystem::relative
 /// will not accept a string_view.
-std::string_view ttString::make_relative(const std::string& relative_to)
+ttString& ttString::make_relative(const std::string& relative_to)
 {
     if (!empty())
     {
@@ -515,7 +517,7 @@ std::string_view ttString::make_relative(const std::string& relative_to)
     return *this;
 }
 
-std::string_view ttString::make_absolute()
+ttString& ttString::make_absolute()
 {
     if (!empty())
     {
@@ -593,6 +595,16 @@ void ttString::from_utf16(std::wstring_view str)
     utf8::unchecked::utf16to8(str.begin(), str.end(), back_inserter(*this));
 }
 
+std::string_view ttString::subview(size_t start, size_t len)
+{
+    if (start >= size())
+        return {};
+#ifdef min
+    return std::string_view(data() + start, min(size() - start, len));
+#else
+    return std::string_view(data() + start, std::min(size() - start, len));
+#endif
+}
 ////////////////////////////// ttStrVector methods ///////////////////////////////
 
 size_t ttStrVector::find(size_t start, std::string_view str, bool CaseSensitive)

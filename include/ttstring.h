@@ -32,6 +32,13 @@ class ttString : public std::string
 public:
     // Public functions
 
+    enum TRIM_TYPE : size_t
+    {
+        TRIM_RIGHT = 1 << 0,
+        TRIM_LEFT = 1 << 1,
+        TRIM_BOTH = (TRIM_LEFT | TRIM_RIGHT)
+    };
+
     ttString(void) {}
     ttString(const char* psz) { assign(psz); }
     ttString(std::string_view str) { assign(str); }
@@ -67,7 +74,7 @@ public:
     /// Returns true if the sub string exists
     ///
     /// Same as find/findi but with a boolean return instead of a position.
-    bool contains(std::string_view sub, bool CaseSensitive = true);
+    bool contains(std::string_view sub, bool CaseSensitive = true) const;
 
     /// Find any one of the characters in a set. Returns offset if found, npos if not.
     ///
@@ -105,11 +112,11 @@ public:
     bool issamesubstri(std::string_view str) const;
 
     /// Similar to find only it returns a view. The view is empty if the string was not found.
-    std::string_view strstr(std::string_view str) const { return tt::findstr(*this, str, true); }
+    size_t strstr(std::string_view str) const { return tt::findstr_pos(*this, str, true); }
 
     /// Similar to find only it does a case-insensitve search and returns a view.
     /// The view is empty if the string was not found.
-    std::string_view strstri(std::string_view str) const { return tt::findstr(*this, str, false); }
+    size_t strstri(std::string_view str) const { return tt::findstr_pos(*this, str, false); }
 
     int atoi() const { return tt::atoi(*this); }
 
@@ -117,7 +124,7 @@ public:
     ///
     /// The default is to remove trailing whitespace. trim(false) will remove
     /// leading whitespace.
-    void trim(bool fromRight = true);
+    ttString& trim(TRIM_TYPE type = TRIM_RIGHT);
 
     /// Assigns the string between chBegin and chEnd. This is typically used to copy the
     /// contents of a quoted string. Returns the position of the ending character in src.
@@ -136,16 +143,20 @@ public:
                    bool CaseSensitive = true, bool Utf8 = false);
 
     /// Replace everything from pos to the end of the current string with str
-    std::string& replaceAll(size_t pos, std::string_view str) { return replace(pos, length() - pos, str); }
+    ttString& replaceAll(size_t pos, std::string_view str)
+    {
+        replace(pos, length() - pos, str);
+        return *this;
+    }
 
     /// Generates hash of current string using djb2 hash algorithm
     size_t gethash() const;
 
     /// Convert the entire string to lower case. Assumes the string is UTF8.
-    std::string_view MakeLower();
+    ttString& MakeLower();
 
     /// Convert the entire string to upper case. Assumes the string is UTF8.
-    std::string_view MakeUpper();
+    ttString& MakeUpper();
 
     /// Similer to sprintf, but without floating point support.
     ///
@@ -155,24 +166,34 @@ public:
     /// with commas or periods (depending on the current locale).
     ///
     /// %z is considered unsigned unless the value is -1.
-    const std::string& cdecl Format(std::string_view format, ...);
+    ttString& cdecl Format(std::string_view format, ...);
 
 #if defined(__WXMSW__)
     wxString FromUTF8() const { return wxString::FromUTF8(*this); }
 #endif
 
+    /// Caution: view is only valid until ttString is modified or destroyed!
+    std::string_view subview(size_t start, size_t len = tt::npos);
+
     /// Converts all backslashes in the string to forward slashes.
     ///
     /// Note: Windows works just fine using forward slashes instead of backslashes.
-    void backslashestoforward();
-
-    /// Returns a view to the current extension. View is empty if there is no extension.
-    std::string_view extension() const;
+    ttString& backslashestoforward();
 
     /// Returns true if current filename contains the specified case-insensitive extension.
     bool hasExtension(std::string_view ext) const { return tt::issameas(extension(), ext, false); }
 
+    /// Returns true if current filename contains the specified case-insensitive file name.
+    bool hasFilename(std::string_view name) const { return tt::issameas(filename(), name, false); }
+
+    /// Returns a view to the current extension. View is empty if there is no extension.
+    ///
+    /// Caution: view is only valid until ttString is modified or destroyed.
+    std::string_view extension() const;
+
     /// Returns a view to the current filename. View is empty if there is no filename.
+    ///
+    /// Caution: view is only valid until ttString is modified or destroyed.
     std::string_view filename() const;
 
     /// Replaces any existing extension with a new extension, or appends the extension if the
@@ -181,27 +202,27 @@ public:
     /// If newExtension is empty, any existing extension will be removed.
     ///
     /// Returns view to the entire string.
-    std::string_view replace_extension(std::string_view newExtension);
+    ttString& replace_extension(std::string_view newExtension);
 
     /// Replaces the filename portion of the string. Returns a view to the entire string.
-    std::string_view replace_filename(std::string_view newFilename);
+    ttString& replace_filename(std::string_view newFilename);
 
     /// Removes the filename portion of the string. Returns a view to the entire string.
-    std::string_view remove_filename() { return replace_filename(""); }
+    ttString& remove_filename() { return replace_filename(""); }
 
     /// Appends the filename -- assumes current string is a path. This will add a trailing
     /// slash (if needed) before adding the filename.
-    std::string_view append_filename(std::string_view filename);
+    ttString& append_filename(std::string_view filename);
 
     /// Makes the current path relative to the supplied path. Supplied path should not
     /// contain a filename.
-    std::string_view make_relative(const std::string& relative_to);
+    ttString& make_relative(const std::string& relative_to);
 
     /// Changes any current path to an absolute path.
-    std::string_view make_absolute();
+    ttString& make_absolute();
 
     /// Replaces any current string with the full path to the current working directory.
-    std::string_view assignCwd();
+    ttString& assignCwd();
 
     /// Returns true if the current string refers to an existing file.
     bool fileExists() const;
