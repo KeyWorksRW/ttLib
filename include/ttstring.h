@@ -32,13 +32,6 @@ class ttString : public std::string
 public:
     // Public functions
 
-    enum TRIM_TYPE : size_t
-    {
-        TRIM_RIGHT = 1 << 0,
-        TRIM_LEFT = 1 << 1,
-        TRIM_BOTH = (TRIM_LEFT | TRIM_RIGHT)
-    };
-
     ttString(void) {}
     ttString(const char* psz) { assign(psz); }
     ttString(std::string_view str) { assign(str); }
@@ -114,17 +107,26 @@ public:
     /// Similar to find only it returns a view. The view is empty if the string was not found.
     size_t strstr(std::string_view str) const { return tt::findstr_pos(*this, str, true); }
 
+    /// Similar to find only it returns a view. The view is empty if the string was not found.
+    size_t strstr(tt::cview view) const { return tt::findstr_pos(*this, view, true); }
+
     /// Similar to find only it does a case-insensitve search and returns a view.
     /// The view is empty if the string was not found.
     size_t strstri(std::string_view str) const { return tt::findstr_pos(*this, str, false); }
 
     int atoi() const { return tt::atoi(*this); }
 
+    enum class TRIM : size_t
+    {
+        right,
+        left,
+        both
+    };
+
     /// Removes whitespace: ' ', \t, \r, \\n, \f
     ///
-    /// The default is to remove trailing whitespace. trim(false) will remove
-    /// leading whitespace.
-    ttString& trim(TRIM_TYPE type = TRIM_RIGHT);
+    /// where: TRIM::right, TRIM::left, or TRIM::both
+    ttString& trim(TRIM where = TRIM::right);
 
     /// Assigns the string between chBegin and chEnd. This is typically used to copy the
     /// contents of a quoted string. Returns the position of the ending character in src.

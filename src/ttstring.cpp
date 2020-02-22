@@ -67,11 +67,11 @@ int ttString::comparei(std::string_view str) const
     return (main != end() ? 1 : 0);
 }
 
-ttString& ttString::trim(TRIM_TYPE type)
+ttString& ttString::trim(TRIM where)
 {
     if (empty())
         return *this;
-    if (type & TRIM_RIGHT)
+    if (where == TRIM::right || where == TRIM::both)
     {
         auto len = length();
         for (--len; len != std::string::npos; --len)
@@ -84,7 +84,7 @@ ttString& ttString::trim(TRIM_TYPE type)
         if (len + 1 < length())
             erase(len + 1, length() - len);
     }
-    if (type & TRIM_LEFT)
+    if (where == TRIM::left || where == TRIM::both)
     {
         // Assume that most strings won't start with whitespace, so return as quickly as possible if that is the
         // case.
