@@ -20,6 +20,8 @@
 
 namespace tt
 {
+    static constexpr auto npos = std::string::npos;
+
     enum class CHECK_CASE
     {
         yes,

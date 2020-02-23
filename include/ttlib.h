@@ -31,8 +31,6 @@
 
 namespace tt
 {
-    static constexpr size_t npos = size_t(-1);
-
     /// strings limited to 16,777,215 bytes (16 megabytes)
     static constexpr size_t MAX_STRING_LEN = 0x00FFFFFF;
 
