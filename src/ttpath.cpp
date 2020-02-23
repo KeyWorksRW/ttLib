@@ -76,11 +76,19 @@ bool tt::ChangeDir(std::string_view newdir)
 {
     if (newdir.empty())
         return false;
-    auto dir = std::filesystem::directory_entry(std::filesystem::path(newdir));
-    if (dir.exists() && dir.is_directory())
+    try
     {
-        std::filesystem::current_path(dir);
-        return true;
+        // BUGBUG: [KeyWorks - 02-22-2020] On Windows, assume newdir is a UTF8 string, and convert it to
+        // a wstring before handing it to path.
+        auto dir = std::filesystem::directory_entry(std::filesystem::path(newdir));
+        if (dir.exists() && dir.is_directory())
+        {
+            std::filesystem::current_path(dir);
+            return true;
+        }
+    }
+    catch (const std::exception& /* e */)
+    {
     }
     return false;
 }
@@ -89,14 +97,28 @@ bool tt::dirExists(std::string_view dir)
 {
     if (dir.empty())
         return false;
-    auto path = std::filesystem::directory_entry(std::filesystem::path(dir));
-    return (path.exists() && path.is_directory());
+    try
+    {
+        auto path = std::filesystem::directory_entry(std::filesystem::path(dir));
+        return (path.exists() && path.is_directory());
+    }
+    catch (const std::exception& /* e */)
+    {
+    }
+    return false;
 }
 
 bool tt::fileExists(std::string_view filename)
 {
     if (filename.empty())
         return false;
-    auto path = std::filesystem::directory_entry(std::filesystem::path(filename));
-    return (path.exists() && !path.is_directory());
+    try
+    {
+        auto path = std::filesystem::directory_entry(std::filesystem::path(filename));
+        return (path.exists() && !path.is_directory());
+    }
+    catch (const std::exception& /* e */)
+    {
+    }
+    return false;
 }
