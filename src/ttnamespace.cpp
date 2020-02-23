@@ -186,12 +186,12 @@ std::string_view tt::strstri(std::string_view strMain, std::string_view strSub)
     return {};
 }
 
-std::string_view tt::findstr(std::string_view main, std::string_view sub, bool CaseSensitive)
+std::string_view tt::findstr(std::string_view main, std::string_view sub, CHECK_CASE checkcase)
 {
     if (sub.empty())
         return {};
 
-    if (CaseSensitive)
+    if (checkcase == CHECK_CASE::yes)
     {
         auto pos = main.find(sub);
         if (pos < main.length())
@@ -221,18 +221,18 @@ std::string_view tt::findstr(std::string_view main, std::string_view sub, bool C
     return {};
 }
 
-size_t tt::findstr_pos(std::string_view main, std::string_view sub, bool CaseSensitive)
+size_t tt::findstr_pos(std::string_view main, std::string_view sub, CHECK_CASE checkcase)
 {
-    auto view = tt::findstr(main, sub, CaseSensitive);
+    auto view = tt::findstr(main, sub, checkcase);
     if (view.empty())
         return tt::npos;
     else
         return (main.size() - view.size());
 }
 
-bool tt::contains(std::string_view main, std::string_view sub, bool CaseSensitive)
+bool tt::contains(std::string_view main, std::string_view sub, CHECK_CASE checkcase)
 {
-    return !tt::findstr(main, sub, CaseSensitive).empty();
+    return !tt::findstr(main, sub, checkcase).empty();
 }
 
 std::string_view tt::strstr(std::string_view strMain, std::string_view strSub)
@@ -274,7 +274,7 @@ bool tt::issamestri(std::string_view str1, std::string_view str2)
     return (main != str1.end() ? false : true);
 }
 
-bool tt::issameas(std::string_view str1, std::string_view str2, bool CaseSensitive)
+bool tt::issameas(std::string_view str1, std::string_view str2, CHECK_CASE checkcase)
 {
     if (str1.empty())
     {
@@ -285,7 +285,7 @@ bool tt::issameas(std::string_view str1, std::string_view str2, bool CaseSensiti
         return false;
     }
 
-    if (CaseSensitive)
+    if (checkcase == CHECK_CASE::yes)
         return (str1.compare(str2) == 0);
 
     auto main = str1.begin();

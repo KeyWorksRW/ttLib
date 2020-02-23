@@ -31,10 +31,10 @@ public:
     /// Searches every line to see if it contains the sub-string.
     ///
     /// start is the zero-based offset to the line to start searching.
-    size_t FindLineContaining(std::string_view str, size_t start = 0, bool CaseSensitive = true) const;
+    size_t FindLineContaining(std::string_view str, size_t start = 0,
+                              tt::CHECK_CASE checkcase = tt::CHECK_CASE::yes) const;
 
 protected:
-
     // Converts lines into a vector of std::string members. Lines can end with \n, \r, or \r\n.
     void ParseLines(std::string_view str);
 };
@@ -61,10 +61,10 @@ public:
     /// Searches every line to see if it contains the sub-string.
     ///
     /// start is the zero-based offset to the line to start searching.
-    size_t FindLineContaining(std::string_view str, size_t start = 0, bool CaseSensitive = true) const;
+    size_t FindLineContaining(std::string_view str, size_t start = 0,
+                              tt::CHECK_CASE checkcase = tt::CHECK_CASE::yes) const;
 
 protected:
-
     // Converts lines into a vector of std::string members. Lines can end with \n, \r, or \r\n.
     void ParseLines(std::string_view str);
 

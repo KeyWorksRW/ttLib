@@ -10,7 +10,10 @@
 
 #include <fstream>
 
+#include "../include/ttnamespace.h"
 #include "../include/tttextfile.h"
+
+using namespace tt;
 
 bool ttTextFile::ReadFile(std::string_view filename)
 {
@@ -83,11 +86,11 @@ void ttTextFile::ParseLines(std::string_view str)
     }
 }
 
-size_t ttTextFile::FindLineContaining(std::string_view str, size_t start, bool CaseSensitive) const
+size_t ttTextFile::FindLineContaining(std::string_view str, size_t start, CHECK_CASE checkcase) const
 {
     for (; start < size(); ++start)
     {
-        if (tt::contains(at(start), str, CaseSensitive))
+        if (tt::contains(at(start), str, checkcase))
             return start;
     }
     return tt::npos;
@@ -170,11 +173,11 @@ void ttViewFile::ParseLines(std::string_view str)
     }
 }
 
-size_t ttViewFile::FindLineContaining(std::string_view str, size_t start, bool CaseSensitive) const
+size_t ttViewFile::FindLineContaining(std::string_view str, size_t start, CHECK_CASE checkcase) const
 {
     for (; start < size(); ++start)
     {
-        if (tt::contains(at(start), str, CaseSensitive))
+        if (tt::contains(at(start), str, checkcase))
             return start;
     }
     return tt::npos;

@@ -67,7 +67,7 @@ public:
     /// Returns true if the sub string exists
     ///
     /// Same as find/findi but with a boolean return instead of a position.
-    bool contains(std::string_view sub, bool CaseSensitive = true) const;
+    bool contains(std::string_view sub, tt::CHECK_CASE checkcase = tt::CHECK_CASE::yes) const;
 
     /// Find any one of the characters in a set. Returns offset if found, npos if not.
     ///
@@ -105,14 +105,11 @@ public:
     bool issamesubstri(std::string_view str) const;
 
     /// Similar to find only it returns a view. The view is empty if the string was not found.
-    size_t strstr(std::string_view str) const { return tt::findstr_pos(*this, str, true); }
-
-    /// Similar to find only it returns a view. The view is empty if the string was not found.
-    size_t strstr(tt::cview view) const { return tt::findstr_pos(*this, view, true); }
+    size_t strstr(std::string_view str) const { return tt::findstr_pos(*this, str, tt::CHECK_CASE::yes); }
 
     /// Similar to find only it does a case-insensitve search and returns a view.
     /// The view is empty if the string was not found.
-    size_t strstri(std::string_view str) const { return tt::findstr_pos(*this, str, false); }
+    size_t strstri(std::string_view str) const { return tt::findstr_pos(*this, str, tt::CHECK_CASE::no); }
 
     int atoi() const { return tt::atoi(*this); }
 
@@ -142,7 +139,7 @@ public:
 
     /// Replace first (or all) occurrences of substring with another one
     size_t Replace(std::string_view oldtext, std::string_view newtext, bool replaceAll = false,
-                   bool CaseSensitive = true, bool Utf8 = false);
+                   tt::CHECK_CASE checkcase = tt::CHECK_CASE::yes, bool Utf8 = false);
 
     /// Replace everything from pos to the end of the current string with str
     ttString& replaceAll(size_t pos, std::string_view str)
@@ -183,10 +180,10 @@ public:
     ttString& backslashestoforward();
 
     /// Returns true if current filename contains the specified case-insensitive extension.
-    bool hasExtension(std::string_view ext) const { return tt::issameas(extension(), ext, false); }
+    bool hasExtension(std::string_view ext) const { return tt::issameas(extension(), ext, tt::CHECK_CASE::yes); }
 
     /// Returns true if current filename contains the specified case-insensitive file name.
-    bool hasFilename(std::string_view name) const { return tt::issameas(filename(), name, false); }
+    bool hasFilename(std::string_view name) const { return tt::issameas(filename(), name, tt::CHECK_CASE::yes); }
 
     /// Returns a view to the current extension. View is empty if there is no extension.
     ///
@@ -305,13 +302,13 @@ public:
     }
 
     /// Finds the position of the first string identical to the specified string.
-    size_t find(size_t start, std::string_view str, bool CaseSensitive = true);
+    size_t find(size_t start, std::string_view str, tt::CHECK_CASE checkcase = tt::CHECK_CASE::yes);
 
     /// Finds the position of the first string with specified prefix.
-    size_t findprefix(size_t start, std::string_view prefix, bool CaseSensitive = true);
+    size_t findprefix(size_t start, std::string_view prefix, tt::CHECK_CASE checkcase = tt::CHECK_CASE::yes);
 
     /// Finds the position of the first string containing the specified sub-string.
-    size_t contains(size_t start, std::string_view substring, bool CaseSensitive = true);
+    size_t contains(size_t start, std::string_view substring, tt::CHECK_CASE checkcase = tt::CHECK_CASE::yes);
 
     /// Unlike append(), this will add the string even if it already exists.
     void operator+=(std::string_view str) { push_back(str); }

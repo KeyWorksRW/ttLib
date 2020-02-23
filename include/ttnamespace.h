@@ -20,6 +20,13 @@
 
 namespace tt
 {
+    enum class CHECK_CASE
+    {
+        yes,
+        no,
+        no_utf8  // string comparisons are done by converting all characters to lowercase UTF8
+    };
+
     /// Only valid for ANSI or UTF8 characters
     inline bool isdigit(char ch) { return ((ch >= '0' && ch <= '9') || ch == '-'); }
 
@@ -30,7 +37,7 @@ namespace tt
     inline bool iswhitespace(char ch) { return (ch != 0 && std::strchr(" \t\n\r\f", ch)) ? true : false; };
 
     /// Returns true if strings are identical
-    bool issameas(std::string_view str1, std::string_view str2, bool CaseSensitive = true);
+    bool issameas(std::string_view str1, std::string_view str2, CHECK_CASE checkcase = CHECK_CASE::yes);
 
     /// Same as compare only it returns a boolean instead of the difference.
     inline bool issamestr(std::string_view str1, std::string_view str2) { return (str1.compare(str2) == 0); }
@@ -47,15 +54,17 @@ namespace tt
     /// Return a view to the portion of the string beginning with the sub string.
     ///
     /// Return view is empty if substring is not found.
-    std::string_view findstr(std::string_view main, std::string_view sub, bool CaseSensitive = true);
+    std::string_view findstr(std::string_view main, std::string_view sub,
+                             tt::CHECK_CASE checkcase = tt::CHECK_CASE::no);
 
     /// Returns the position of sub within main, or tt::npos if not found.
-    size_t findstr_pos(std::string_view main, std::string_view sub, bool CaseSensitive = true);
+    size_t findstr_pos(std::string_view main, std::string_view sub,
+                       tt::CHECK_CASE checkcase = tt::CHECK_CASE::yes);
 
     /// Returns true if the sub string exists withing the main string.
     ///
     /// Same as findstr but with a boolean return instead of a string_view.
-    bool contains(std::string_view main, std::string_view sub, bool CaseSensitive = true);
+    bool contains(std::string_view main, std::string_view sub, tt::CHECK_CASE checkcase = tt::CHECK_CASE::yes);
 
     /// Return a view to the portion of the string beginning with the sub string.
     ///
