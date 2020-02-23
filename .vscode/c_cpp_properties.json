@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "Default",
+             "cStandard": "c11",
+             "cppStandard": "c++17",
+             "defines": [
+                "_WIN32",
+                "_DEBUG"
+             ],
+             "includePath": [
+                "${workspaceRoot}/winsrc/precompile",
+                "${workspaceRoot}/include",
+                "${workspaceRoot}/winsrc",
+                "${workspaceRoot}/src",
+                "${default}"
+            ]
+         }
+     ],
+     "version": 4
+}
