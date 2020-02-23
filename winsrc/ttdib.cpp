@@ -18,6 +18,12 @@
     #error "This header file can only be used when compiling for Windows"
 #endif
 
+#if defined(NDEBUG)
+    #pragma comment(lib, "ttLibwin.lib")
+#else
+    #pragma comment(lib, "ttLibwinD.lib")
+#endif
+
 #include "../include/ttheap.h"
 #include "../include/ttdib.h"
 

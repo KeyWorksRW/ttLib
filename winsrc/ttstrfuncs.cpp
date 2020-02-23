@@ -8,6 +8,12 @@
 
 #include "pch.h"  // precompiled header
 
+#if defined(NDEBUG)
+    #pragma comment(lib, "ttLibwin.lib")
+#else
+    #pragma comment(lib, "ttLibwinD.lib")
+#endif
+
 #include <cassert>
 
 #include "../include/ttheap.h"  // ttCHeap

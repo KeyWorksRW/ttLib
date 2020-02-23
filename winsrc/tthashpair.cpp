@@ -8,6 +8,12 @@
 
 #include "pch.h"
 
+#if defined(NDEBUG)
+    #pragma comment(lib, "ttLibwin.lib")
+#else
+    #pragma comment(lib, "ttLibwinD.lib")
+#endif
+
 #include "../include/tthashpair.h"  // ttCHashPair
 #include "../include/ttheap.h"      // memory allocation routines
 

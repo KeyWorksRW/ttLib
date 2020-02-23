@@ -14,6 +14,12 @@
 
 #include "pch.h"
 
+#if defined(NDEBUG)
+    #pragma comment(lib, "ttLibwin.lib")
+#else
+    #pragma comment(lib, "ttLibwinD.lib")
+#endif
+
 #include "../include/ttxml.h"
 #include "../include/ttfile.h"  // ttCFile
 #include "../include/ttmem.h"   // ttMem, ttCTMem

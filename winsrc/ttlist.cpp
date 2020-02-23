@@ -17,6 +17,16 @@
 
 #include "pch.h"
 
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
+
+#if defined(NDEBUG)
+    #pragma comment(lib, "ttLibwin.lib")
+#else
+    #pragma comment(lib, "ttLibwinD.lib")
+#endif
+
 #include "../include/ttlist.h"         // ttCList, ttCDblList, ttCStrIntList
 #include "../include/ttcritsection.h"  // ttCCritSection, ttCCritLock
 

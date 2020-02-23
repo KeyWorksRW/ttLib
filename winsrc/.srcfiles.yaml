@@ -1,4 +1,4 @@
-# Requires ttBld.exe version 1.0.0 or higher to process
+# Requires ttBld.exe version 1.4.0 or higher to process
 
 Options:
     Project:    ttLibwin   # project target name
@@ -16,10 +16,9 @@ Options:
     TargetDir:  ../lib
 
 Files:
-    .include ../src/.srcfiles.yaml
-
     # These files should be moved to ../src once they can be compiled without Windows
 
+    ttbasethread.cpp    # ttCBaseThread class
     tthashpair.cpp      # ttCHashPair
     ttmultithread.cpp   # ttCMultiThrd class
     ttprintf.cpp        # printf
@@ -35,7 +34,6 @@ Files:
 
 # Windows only files
 
-    ttbasethread.cpp    # ttCBaseThread class
     ttdebug.cpp         # debug and assertion handling
     ttdib.cpp           # ttCDib class
     ttdirdlg.cpp        # dialog for selecting a directory

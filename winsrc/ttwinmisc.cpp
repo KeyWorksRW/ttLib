@@ -11,7 +11,13 @@
 #include "pch.h"  // precompiled header
 
 #if !defined(_WIN32)
-    #error "This file can only be compiled for Windows"
+    #error "This header file can only be used when compiling for Windows"
+#endif
+
+#if defined(NDEBUG)
+    #pragma comment(lib, "ttLibwin.lib")
+#else
+    #pragma comment(lib, "ttLibwinD.lib")
 #endif
 
 #include <shellapi.h>

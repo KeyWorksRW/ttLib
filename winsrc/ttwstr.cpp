@@ -8,6 +8,16 @@
 
 #include "pch.h"
 
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
+
+#if defined(NDEBUG)
+    #pragma comment(lib, "ttLibwin.lib")
+#else
+    #pragma comment(lib, "ttLibwinD.lib")
+#endif
+
 #include <direct.h>  // for _getcwd
 
 #include "../include/ttdebug.h"  // for ttASSERTS

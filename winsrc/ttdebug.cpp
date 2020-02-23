@@ -8,6 +8,16 @@
 
 #include "pch.h"  // precompiled header
 
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
+
+#if defined(NDEBUG)
+    #pragma comment(lib, "ttLibwin.lib")
+#else
+    #pragma comment(lib, "ttLibwinD.lib")
+#endif
+
 #include <stdio.h>
 
 #include "../include/ttdebug.h"        // ttASSERT macros
@@ -58,7 +68,7 @@ namespace ttdbg
     extern ttCCritSection g_csTrace;
     extern char*          g_pszTraceMap;
 }  // namespace ttdbg
-#endif
+#endif  // end #if 0
 
 using namespace ttdbg;
 

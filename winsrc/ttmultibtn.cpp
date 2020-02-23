@@ -8,6 +8,16 @@
 
 #include "pch.h"
 
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
+
+#if defined(NDEBUG)
+    #pragma comment(lib, "ttLibwin.lib")
+#else
+    #pragma comment(lib, "ttLibwinD.lib")
+#endif
+
 #if defined(_WIN32)
 
     #include "../include/ttmultibtn.h"  // ttCMultiBtn
