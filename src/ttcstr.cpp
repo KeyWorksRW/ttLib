@@ -615,7 +615,7 @@ void cstr::from_utf16(std::wstring_view str)
     utf8::unchecked::utf16to8(str.begin(), str.end(), back_inserter(*this));
 }
 
-std::string_view cstr::subview(size_t start, size_t len)
+std::string_view cstr::subview(size_t start, size_t len) const
 {
     if (start >= size())
         return {};

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:      tt::cstr
-// Purpose:   Class for handling zero-terminated char strings.
+// Purpose:   Classes for handling zero-terminated char strings.
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2020 KeyWorks Software (Ralph Walden)
 // License:   Apache License (see LICENSE)
@@ -14,6 +14,7 @@
 /// places where std::string<char> is used. It provides additional functionality including utf8/16 conversions,
 /// file name handling, etc.
 
+#include <cassert>
 #include <filesystem>
 #include <string>
 #include <string_view>
@@ -173,7 +174,7 @@ namespace tt
 #endif
 
         /// Caution: view is only valid until cstr is modified or destroyed!
-        std::string_view subview(size_t start, size_t len = tt::npos);
+        std::string_view subview(size_t start, size_t len = tt::npos) const;
 
         /// Converts all backslashes in the string to forward slashes.
         ///
