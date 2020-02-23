@@ -8,10 +8,16 @@
 
 #include "pch.h"
 
-#if defined(NDEBUG)
-    #pragma comment(lib, "ttLibwin.lib")
-#else
-    #pragma comment(lib, "ttLibwinD.lib")
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
+
+#if !defined(TTALL_LIB)
+    #if defined(NDEBUG)
+        #pragma comment(lib, "ttLibwin.lib")
+    #else
+        #pragma comment(lib, "ttLibwinD.lib")
+    #endif
 #endif
 
 #include <cassert>
@@ -137,8 +143,8 @@ size_t ttGetCPUCount()
 DWORD __stdcall _ttMultiThread(void* pv)
 {
     ttCMultiThrd* pThis = (ttCMultiThrd*) pv;
-    DWORD         thrdID = GetCurrentThreadId();
-    auto          pos = pThis->m_threadMap.FindKey(thrdID);
+    DWORD thrdID = GetCurrentThreadId();
+    auto pos = pThis->m_threadMap.FindKey(thrdID);
     assert(pos >= 0);  // theoretically impossible
     ttCMultiThrd::MULTI_THRD_INFO* pThrdInfo = pThis->m_threadMap.GetValueAt(pos);
 

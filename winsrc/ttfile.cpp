@@ -12,10 +12,12 @@
     #error "This header file can only be used when compiling for Windows"
 #endif
 
-#if defined(NDEBUG)
-    #pragma comment(lib, "ttLibwin.lib")
-#else
-    #pragma comment(lib, "ttLibwinD.lib")
+#if !defined(TTALL_LIB)
+    #if defined(NDEBUG)
+        #pragma comment(lib, "ttLibwin.lib")
+    #else
+        #pragma comment(lib, "ttLibwinD.lib")
+    #endif
 #endif
 
 #include <cassert>
@@ -147,7 +149,7 @@ bool ttCFile::WriteFile(const char* pszFile)
     }
 
     DWORD cbWritten;
-    BOOL  bResult = ::WriteFile(hf, m_pbuf, (DWORD)(m_pCurrent - m_pbuf), &cbWritten, NULL);
+    BOOL bResult = ::WriteFile(hf, m_pbuf, (DWORD)(m_pCurrent - m_pbuf), &cbWritten, NULL);
     CloseHandle(hf);
     m_ioResult = bResult ? ERROR_NONE : ERROR_CANT_WRITE;
     return bResult ? true : false;
@@ -288,7 +290,7 @@ DWORD GetFileSize(IStream* pStream)
     liOffset.LowPart = 0;
     liOffset.HighPart = 0;
     ULARGE_INTEGER liNewPos;
-    HRESULT        hr = pStream->Seek(liOffset, FILE_END, &liNewPos);
+    HRESULT hr = pStream->Seek(liOffset, FILE_END, &liNewPos);
     if (FAILED(hr))
     {
         ttASSERT_MSG(!FAILED(hr), "Seek failed");
@@ -316,7 +318,7 @@ HRESULT ttCFile::ReadFile(IStream* pStream)  // _WINDOWS_ only
     else
         AllocateBuffer(cbFile + CB_END_PAD);
 
-    ULONG   cbRead;
+    ULONG cbRead;
     HRESULT hr = pStream->Read(m_pCurrent, cbFile, &cbRead);
     if (FAILED(hr))
     {
@@ -341,7 +343,7 @@ bool ttCFile::ReadResource(DWORD idResource)
         return false;
     }
     uint32_t cbFile = SizeofResource(GetModuleHandle(NULL), hrsrc);
-    HGLOBAL  hglb = LoadResource(GetModuleHandle(NULL), hrsrc);
+    HGLOBAL hglb = LoadResource(GetModuleHandle(NULL), hrsrc);
     ttASSERT(hglb);
     if (!hglb)
     {
@@ -447,7 +449,7 @@ void cdecl ttCFile::printf(const char* pszFormat, ...)
     if (!pszFormat || !*pszFormat)
         return;
 
-    ttCStr  csz;
+    ttCStr csz;
     va_list argList;
     va_start(argList, pszFormat);
     ttVPrintf(csz.GetPPtr(), pszFormat, argList);
@@ -531,7 +533,7 @@ void ttCFile::InsertStr(const char* pszText, char* pszPosition)
     if (!pszText || !*pszText || !pszPosition || pszPosition < m_pbuf || pszPosition > m_pbuf + m_cbAllocated)
         return;
 
-    size_t    cb = ttStrLen(pszText);
+    size_t cb = ttStrLen(pszText);
     ptrdiff_t offset = pszPosition - m_pbuf;
     while ((m_pCurrent - m_pbuf) + cb >= m_cbAllocated)
         AllocateMoreMemory();
@@ -648,7 +650,7 @@ bool ttCFile::UnicodeToAnsi()
 
     size_t cb = ttStrLen((wchar_t*) (m_pbuf + 2)) * sizeof(wchar_t);
     size_t cbLen;
-    int    err = wcstombs_s(&cbLen, nullptr, cb, (wchar_t*) (m_pbuf + 2), cb);
+    int err = wcstombs_s(&cbLen, nullptr, cb, (wchar_t*) (m_pbuf + 2), cb);
     // cb = wcstombs(nullptr, (wchar_t*) (m_pbuf + 2), cb);
     ttASSERT(err != -1);
     if (err == -1)

@@ -21,10 +21,12 @@
     #error "This header file can only be used when compiling for Windows"
 #endif
 
-#if defined(NDEBUG)
-    #pragma comment(lib, "ttLibwin.lib")
-#else
-    #pragma comment(lib, "ttLibwinD.lib")
+#if !defined(TTALL_LIB)
+    #if defined(NDEBUG)
+        #pragma comment(lib, "ttLibwin.lib")
+    #else
+        #pragma comment(lib, "ttLibwinD.lib")
+    #endif
 #endif
 
 #include "../include/ttlist.h"         // ttCList, ttCDblList, ttCStrIntList
@@ -96,7 +98,7 @@ size_t ttCList::Add(const char* pszKey)
     if (isNoDuplicates())
     {
         ttCStr cszKey;
-        char*  pszNormalized = NormalizeString(pszKey, cszKey);  // return will point to either pszKey or cszKey
+        char* pszNormalized = NormalizeString(pszKey, cszKey);  // return will point to either pszKey or cszKey
 
         size_t hash = ttHashFromSz(pszNormalized);
         size_t pos = m_HashPair.GetVal(hash);
@@ -125,14 +127,14 @@ size_t ttCList::GetPos(const char* pszKey) const
     if (isNoDuplicates())
     {
         ttCStr cszKey;
-        char*  pszNormalized = NormalizeString(pszKey, cszKey);  // return will point to either pszKey or cszKey
+        char* pszNormalized = NormalizeString(pszKey, cszKey);  // return will point to either pszKey or cszKey
         return m_HashPair.GetVal(pszNormalized);
     }
 
     if (m_flags & FLG_IGNORE_CASE || m_flags & FLG_URL_STRINGS)
     {
         ttCStr cszKey;
-        char*  pszNormalized = NormalizeString(pszKey, cszKey);  // return will point to either pszKey or cszKey
+        char* pszNormalized = NormalizeString(pszKey, cszKey);  // return will point to either pszKey or cszKey
 
         ttCStr cszList;
         for (size_t pos = 0; pos < m_cItems; ++pos)
@@ -176,7 +178,7 @@ void ttCList::Remove(size_t pos)
                 --phshPair[posHsh].val;
         }
         ttCStr cszKey;
-        char*  pszNormalized =
+        char* pszNormalized =
             NormalizeString(m_aptrs[pos], cszKey);  // return will point to either pszKey or cszKey
         m_HashPair.Remove(pszNormalized);
     }
@@ -233,7 +235,7 @@ void ttCList::Replace(size_t pos, const char* pszKey)
     if (isNoDuplicates())
     {
         ttCStr cszKey;
-        char*  pszNormalized = NormalizeString(pszKey, cszKey);
+        char* pszNormalized = NormalizeString(pszKey, cszKey);
         m_HashPair.Add(pszNormalized, pos);
     }
 }
@@ -252,8 +254,8 @@ void ttCList::Swap(size_t posA, size_t posB)
         // CHashPair can find them
 
         ttCStr cszA, cszB;
-        char*  pszNormalizedA = NormalizeString(m_aptrs[posA], cszA);
-        char*  pszNormalizedB = NormalizeString(m_aptrs[posB], cszB);
+        char* pszNormalizedA = NormalizeString(m_aptrs[posA], cszA);
+        char* pszNormalizedB = NormalizeString(m_aptrs[posB], cszB);
 
         m_HashPair.SetVal(pszNormalizedA, posA);
         m_HashPair.SetVal(pszNormalizedB, posB);
@@ -286,7 +288,7 @@ void ttCList::InsertAt(size_t pos, const char* pszKey)
         }
 
         ttCStr cszKey;
-        char*  pszNormalized = NormalizeString(pszKey, cszKey);
+        char* pszNormalized = NormalizeString(pszKey, cszKey);
         m_HashPair.Add(pszNormalized, pos);
     }
 

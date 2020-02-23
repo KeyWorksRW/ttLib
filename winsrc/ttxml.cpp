@@ -14,10 +14,16 @@
 
 #include "pch.h"
 
-#if defined(NDEBUG)
-    #pragma comment(lib, "ttLibwin.lib")
-#else
-    #pragma comment(lib, "ttLibwinD.lib")
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
+
+#if !defined(TTALL_LIB)
+    #if defined(NDEBUG)
+        #pragma comment(lib, "ttLibwin.lib")
+    #else
+        #pragma comment(lib, "ttLibwinD.lib")
+    #endif
 #endif
 
 #include "../include/ttxml.h"
@@ -38,9 +44,10 @@ using namespace tt;
 typedef struct
 {
     HTML_ELEMENT element;
-    const char*  pszElementName;
+    const char* pszElementName;
 } ELEMENT_PAIRS;
 
+// clang-format off
 namespace
 {
     const ELEMENT_PAIRS aElementPairs[] = {
@@ -535,6 +542,7 @@ namespace
         { ELEMENT_UNKNOWN, NULL }
     };
 }  // end of anonymous namespace
+// clang-format on
 
 HTML_ELEMENT ttCParseXML::ParseElementTag(const char* pszName, const char* pszCurLoc, bool bEndTag)
 {
@@ -551,7 +559,8 @@ HTML_ELEMENT ttCParseXML::ParseElementTag(const char* pszName, const char* pszCu
         return ELEMENT_MSH_TAG;
     }
 
-    // The tag name is unknown. We look for a close tag with the same name, and if found, we assume this is an XML tag.
+    // The tag name is unknown. We look for a close tag with the same name, and if found, we assume this is an XML
+    // tag.
 
     if (pszCurLoc && ttStrLen(pszName) < 254)
     {
@@ -603,9 +612,9 @@ void _StrWnorm(char** s)
 
     // Now we "normalize" by combining multiple spaces into a single space
 
-    size_t         n = ttStrByteLen(*s);
+    size_t n = ttStrByteLen(*s);
     ttCTMem<char*> pszNorm(sizeof(char) * n);
-    size_t         j = 1;
+    size_t j = 1;
     pszNorm[0] = (*s)[0];
     n--;                            // ignore zero-terminating character
     for (size_t i = 1; i < n; ++i)  // For each character, starting at offset 1.
@@ -644,21 +653,22 @@ ttCXMLBranch* ttCParseXML::GraftBranch(ttCXMLBranch* pParent, XMLENTITY eType)
     ttASSERT(pParent);
     if (!pParent)
         return NULL;                                 // Must have a parent.
-    if (pParent->cChildren == pParent->cChildSpace)  //Out of pointer space.
+    if (pParent->cChildren == pParent->cChildSpace)  // Out of pointer space.
     {
-        ttCXMLBranch** t = (ttCXMLBranch**) ttReAlloc(pParent->aChildren,
-                                                      sizeof(ttCXMLBranch*) * (pParent->cChildSpace + GROW_SIZE));  // Grow pointer space.
+        ttCXMLBranch** t = (ttCXMLBranch**) ttReAlloc(
+            pParent->aChildren,
+            sizeof(ttCXMLBranch*) * (pParent->cChildSpace + GROW_SIZE));  // Grow pointer space.
 
-        if (t)  //Reallocation succeeded.
+        if (t)  // Reallocation succeeded.
         {
             pParent->aChildren = t;
-            pParent->cChildSpace += GROW_SIZE;  //Update the available space.
+            pParent->cChildSpace += GROW_SIZE;  // Update the available space.
         }
     }
     ttCXMLBranch* pChild = NewBranch(eType);          // Allocate a new child.
     pChild->parent = pParent;                         // Set it's parent pointer.
     pParent->aChildren[pParent->cChildren] = pChild;  // Set the parent's child pointer.
-    pParent->cChildren++;                             //One more child.
+    pParent->cChildren++;                             // One more child.
     return pChild;
 }
 
@@ -668,20 +678,14 @@ ttCXMLBranch* ttCParseXML::NewBranch(XMLENTITY eType)
     p->pKeyXML = this;
     p->type = eType;  // Set the desired type.
     p->element = ELEMENT_UNKNOWN;
-    if (
-        eType != ENTITY_ROOT &&  // None of these will have attributes.
-        eType != ENTITY_PCDATA &&
-        eType != ENTITY_CDATA &&
-        eType != ENTITY_INCLUDE &&
-        eType != ENTITY_COMMENT)
+    if (eType != ENTITY_ROOT &&  // None of these will have attributes.
+        eType != ENTITY_PCDATA && eType != ENTITY_CDATA && eType != ENTITY_INCLUDE && eType != ENTITY_COMMENT)
     {
         p->aAttributes = (XMLATTR**) ttMalloc(sizeof(XMLATTR*));  // Allocate one attribute pointer.
         p->cAttributeSpace = 1;
     }
-    if (
-        eType == ENTITY_ELEMENT ||  //Only these will have children.
-        eType == ENTITY_DOCTYPE ||
-        eType == ENTITY_ROOT)
+    if (eType == ENTITY_ELEMENT ||  // Only these will have children.
+        eType == ENTITY_DOCTYPE || eType == ENTITY_ROOT)
     {
         p->aChildren = (ttCXMLBranch**) ttMalloc(sizeof(ttCXMLBranch*));  // Allocate one child.
         p->cChildSpace = 1;
@@ -699,7 +703,8 @@ XMLATTR* ttCParseXML::AddAttribute(ttCXMLBranch* pBranch, LONG lGrow)
         return NULL;
     if (pBranch->cAttributes == pBranch->cAttributeSpace)
     {  // Out of space, so grow.
-        XMLATTR** t = (XMLATTR**) ttReAlloc(pBranch->aAttributes, sizeof(ttCXMLBranch*) * (pBranch->cAttributeSpace + lGrow));
+        XMLATTR** t = (XMLATTR**) ttReAlloc(pBranch->aAttributes,
+                                            sizeof(ttCXMLBranch*) * (pBranch->cAttributeSpace + lGrow));
         if (t)
         {
             pBranch->aAttributes = t;
@@ -1086,9 +1091,9 @@ ttCXMLBranch* ttCParseXML::AddDataChild(ttCXMLBranch* pParent, const char* pszNa
     return pSubChild;
 }
 
-// Note that we do NOT FreeAlloc the memory for this node, since we don't have a pointer to CKeyXML that handles memory
-// management If the caller needs to FreeAlloc this memory, he should FreeAlloc the pointer to the deleted child and
-// its attributes either before or after this call.
+// Note that we do NOT FreeAlloc the memory for this node, since we don't have a pointer to CKeyXML that handles
+// memory management If the caller needs to FreeAlloc this memory, he should FreeAlloc the pointer to the deleted
+// child and its attributes either before or after this call.
 
 bool ttCXMLBranch::RemoveChildAt(size_t i)
 {
@@ -1128,7 +1133,8 @@ HRESULT ttCParseXML::ParseXmlFile(const char* pszFile)
         return STG_E_FILENOTFOUND;
 
     // CAUTION: ParseXmlString() doesn't allocate strings -- it instead uses pointers into the string buffer it is
-    // provided (m_kf in this case). That means the results are only valid while the string buffer remains in memory.
+    // provided (m_kf in this case). That means the results are only valid while the string buffer remains in
+    // memory.
 
     ParseXmlString(m_kf);
 
@@ -1146,7 +1152,8 @@ HRESULT ttCParseXML::ParseHtmlFile(const char* pszFile)
         return STG_E_FILENOTFOUND;
 
     // CAUTION: ParseHtmlString() doesn't allocate strings -- it instead uses pointers into the string buffer it is
-    // provided (m_kf in this case). That means the results are only valid while the string buffer remains in memory.
+    // provided (m_kf in this case). That means the results are only valid while the string buffer remains in
+    // memory.
 
     ParseHtmlString(m_kf);
 
@@ -1237,8 +1244,8 @@ ttCXMLBranch* ttCXMLBranch::FindNextElement(HTML_ELEMENT Element)
     return nullptr;
 }
 
-// Parse through all the children to see if any of them have the named attribute (pszAttribute). If pszValue is non-null,
-// then if the attribute is found it must also have the same value as pszValue.
+// Parse through all the children to see if any of them have the named attribute (pszAttribute). If pszValue is
+// non-null, then if the attribute is found it must also have the same value as pszValue.
 
 ttCXMLBranch* ttCXMLBranch::FindFirstAttribute(const char* pszAttribute, const char* pszValue)
 {
@@ -1267,7 +1274,7 @@ ttCXMLBranch* ttCXMLBranch::FindFirstAttribute(const char* pszAttribute, const c
             {
                 ttCXMLBranch* pBranch = aChildren[i]->FindFirstAttribute(pszAttribute, pszValue);
                 if (pBranch)
-                    return pBranch;  //Found.
+                    return pBranch;  // Found.
             }
         }
     }
@@ -1291,19 +1298,23 @@ void ttCParseXML::SetDocType(size_t type)
     switch (type)
     {
         case DOCTYPE_XHTML_STRICT:
-            m_cszDocType = "<!DOCTYPE html PUBLIC \042-//W3C//DTD XHTML 1.0 Strict//EN\042 \042http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\042>";
+            m_cszDocType = "<!DOCTYPE html PUBLIC \042-//W3C//DTD XHTML 1.0 Strict//EN\042 "
+                           "\042http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\042>";
             break;
 
         case DOCTYPE_XHTML_TRANSITIONAL:
-            m_cszDocType = "<!DOCTYPE html PUBLIC \042-//W3C//DTD XHTML 1.0 Transitional//EN\042 \042http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\042>";
+            m_cszDocType = "<!DOCTYPE html PUBLIC \042-//W3C//DTD XHTML 1.0 Transitional//EN\042 "
+                           "\042http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\042>";
             break;
 
         case DOCTYPE_HTML_STRICT:
-            m_cszDocType = "<!DOCTYPE HTML PUBLIC \042-//W3C//DTD HTML 4.01//EN\042 \042http://www.w3.org/TR/html4/strict.dtd\042>";
+            m_cszDocType = "<!DOCTYPE HTML PUBLIC \042-//W3C//DTD HTML 4.01//EN\042 "
+                           "\042http://www.w3.org/TR/html4/strict.dtd\042>";
             break;
 
         case DOCTYPE_HTML_TRANSITIONAL:
-            m_cszDocType = "<!DOCTYPE HTML PUBLIC \042-//W3C//DTD HTML 4.01 Transitional//EN\042 \042http://www.w3.org/TR/html4/loose.dtd\042>";
+            m_cszDocType = "<!DOCTYPE HTML PUBLIC \042-//W3C//DTD HTML 4.01 Transitional//EN\042 "
+                           "\042http://www.w3.org/TR/html4/loose.dtd\042>";
             break;
 
         default:
@@ -1361,12 +1372,12 @@ inline bool IsFormatableElement(ttCXMLBranch* pBranch)
     return false;
 }
 
-#define IsClose(c) (c == '/')
-#define IsConnective(c) (c == '=')
-#define IsSpecial(c) (c == '!')
-#define IsPi(c) (c == '?')
-#define IsQuote(c) (c == '"' || c == '\'')
-#define IsLeftBracket(c) (c == '[')
+#define IsClose(c)        (c == '/')
+#define IsConnective(c)   (c == '=')
+#define IsSpecial(c)      (c == '!')
+#define IsPi(c)           (c == '?')
+#define IsQuote(c)        (c == '"' || c == '\'')
+#define IsLeftBracket(c)  (c == '[')
 #define IsRightBracket(c) (c == ']')
 #define SkipWS()                         \
     {                                    \
@@ -1415,7 +1426,7 @@ char* ttCParseXML::ParseXmlString(char* psz, ttCXMLBranch* pRoot)
     {
         pBranch = pRoot;  // Tree branch cursor.
     }
-    char  cChar = 0;    // Current char, in cases where we must null-terminate before we test.
+    char cChar = 0;     // Current char, in cases where we must null-terminate before we test.
     char* pMark = psz;  // Marked string position for temporary look-ahead.
 
     while (*psz != 0)
@@ -1468,7 +1479,7 @@ char* ttCParseXML::ParseXmlString(char* psz, ttCXMLBranch* pRoot)
                             ++psz;  // Scan for terminating '-->'.
                         if (*psz == 0)
                             return psz;
-                        *psz = 0;                               // Zero-terminate this segment at the first terminating '-'.
+                        *psz = 0;  // Zero-terminate this segment at the first terminating '-'.
                         if ((m_uOptions & PARSE_TRIM_COMMENT))  // Trim whitespace.
                         {
                             if ((m_uOptions & PARSE_NORMALIZE))
@@ -1522,14 +1533,16 @@ char* ttCParseXML::ParseXmlString(char* psz, ttCXMLBranch* pRoot)
                                                     {
                                                         Push(ENTITY_INCLUDE);    // Graft a new branch on the tree.
                                                         pBranch->pszData = psz;  // Save the offset.
-                                                        while (!(IsRightBracket(*psz) && IsRightBracket(*(psz + 1)) &&
+                                                        while (!(IsRightBracket(*psz) &&
+                                                                 IsRightBracket(*(psz + 1)) &&
                                                                  IsLeave(*(psz + 2))))
                                                             ++psz;  // Scan for terminating ']]>'.
                                                         if (IsRightBracket(*psz))
                                                         {
                                                             *psz = 0;  // Zero-terminate this segment.
                                                             ++psz;
-                                                            if ((m_uOptions & PARSE_TRIM_CDATA))  // Trim whitespace.
+                                                            if ((m_uOptions &
+                                                                 PARSE_TRIM_CDATA))  // Trim whitespace.
                                                             {
                                                                 if ((m_uOptions & PARSE_NORMALIZE))
                                                                     _StrWnorm(&pBranch->pszData);
@@ -1539,10 +1552,12 @@ char* ttCParseXML::ParseXmlString(char* psz, ttCXMLBranch* pRoot)
                                                         }
                                                         Pop();  // Pop since this is a standalone.
                                                     }
-                                                    else  // Flagged for discard, but we still have to scan for the terminator.
+                                                    else  // Flagged for discard, but we still have to scan for the
+                                                          // terminator.
                                                     {
                                                         while (*psz != 0 && *(psz + 1) != 0 && *(psz + 2) != 0 &&
-                                                               !(IsRightBracket(*psz) && IsRightBracket(*(psz + 1)) &&
+                                                               !(IsRightBracket(*psz) &&
+                                                                 IsRightBracket(*(psz + 1)) &&
                                                                  IsLeave(*(psz + 2))))
                                                             ++psz;  // Scan for terminating ']]>'.
                                                         ++psz;
@@ -1599,7 +1614,8 @@ char* ttCParseXML::ParseXmlString(char* psz, ttCXMLBranch* pRoot)
                                                 }
                                                 Pop();  // Pop since this is a standalone.
                                             }
-                                            else  // Flagged for discard, but we still have to scan for the terminator.
+                                            else  // Flagged for discard, but we still have to scan for the
+                                                  // terminator.
                                             {
                                                 while (*psz != 0 && *(psz + 1) != 0 && *(psz + 2) != 0 &&
                                                        !(IsRightBracket(*psz) && IsRightBracket(*(psz + 1)) &&
@@ -1693,9 +1709,11 @@ char* ttCParseXML::ParseXmlString(char* psz, ttCXMLBranch* pRoot)
                                                     ++psz;
                                                     SkipWS();  // Eat whitespace.
                                                     if (IsQuote(*psz))
-                                                        goto LOC_DOCTYPE_QUOTE;  // Another quoted section to store.
+                                                        goto LOC_DOCTYPE_QUOTE;  // Another quoted section to
+                                                                                 // store.
                                                     else if (IsSymbol(*psz))
-                                                        goto LOC_DOCTYPE_SYMBOL;  // Not wellformed, but just parse it.
+                                                        goto LOC_DOCTYPE_SYMBOL;  // Not wellformed, but just parse
+                                                                                  // it.
                                                 }
                                             }
                                             if (IsLeftBracket(*psz))  //'...[...'
@@ -1704,7 +1722,7 @@ char* ttCParseXML::ParseXmlString(char* psz, ttCXMLBranch* pRoot)
                                                 if ((m_uOptions & PARSE_DOCTYPE))
                                                     pBranch->pszData = psz;  // Store the offset.
                                                 int bd = 1;                  // Bracket depth counter.
-                                                while (*psz != 0)            // Loop till we're out of all brackets.
+                                                while (*psz != 0)  // Loop till we're out of all brackets.
                                                 {
                                                     if (IsRightBracket(*psz))
                                                         --bd;
@@ -1720,11 +1738,15 @@ char* ttCParseXML::ParseXmlString(char* psz, ttCXMLBranch* pRoot)
                                                     if ((m_uOptions & PARSE_DTD) || (m_uOptions & PARSE_DTD_ONLY))
                                                     {
                                                         if ((m_uOptions & PARSE_DTD))
-                                                            ParseXmlString(pBranch->pszData, pBranch);  // Parse it.
+                                                            ParseXmlString(pBranch->pszData,
+                                                                           pBranch);  // Parse it.
                                                         if ((m_uOptions & PARSE_DTD_ONLY))
-                                                            return (psz + 1);  // Flagged to parse DTD only, so leave here.
+                                                            return (
+                                                                psz +
+                                                                1);  // Flagged to parse DTD only, so leave here.
                                                     }
-                                                    else if ((m_uOptions & PARSE_TRIM_DOCTYPE))  // Trim whitespace.
+                                                    else if ((m_uOptions &
+                                                              PARSE_TRIM_DOCTYPE))  // Trim whitespace.
                                                     {
                                                         if ((m_uOptions & PARSE_NORMALIZE))
                                                             _StrWnorm(&pBranch->pszData);
@@ -1791,7 +1813,8 @@ char* ttCParseXML::ParseXmlString(char* psz, ttCXMLBranch* pRoot)
                             if (isSpace(cChar))
                             {
                                 SkipWS();                    // Eat whitespace.
-                                if (e == ENTITY_DTD_ENTITY)  // Special case; may have multiple quoted sections w/anything inside.
+                                if (e == ENTITY_DTD_ENTITY)  // Special case; may have multiple quoted sections
+                                                             // w/anything inside.
                                 {
                                     pBranch->pszData = psz;  // Just store everything here.
                                     BOOL qq = FALSE;         // Quote in/out flag.
@@ -1957,7 +1980,7 @@ char* ttCParseXML::ParseXmlString(char* psz, ttCXMLBranch* pRoot)
                 LOC_PCDATA:             //'>...<'
                     pMark = psz;        // Save this offset while searching for a terminator.
                     SkipWS();           // Eat whitespace if no genuine PCDATA here.
-                    if (IsEnter(*psz))  //We hit a '<...', with only whitespace, so don't bother storing anything.
+                    if (IsEnter(*psz))  // We hit a '<...', with only whitespace, so don't bother storing anything.
                     {
                         if (IsClose(*(psz + 1)))  //'</...'
                         {
@@ -1969,8 +1992,8 @@ char* ttCParseXML::ParseXmlString(char* psz, ttCXMLBranch* pRoot)
                         else
                             goto LOC_SEARCH;  // Expect a new element enter, so go scan for it.
                     }
-                    psz = pMark;               //We hit something other than whitespace; restore the original offset.
-                    Push(ENTITY_PCDATA);       // Graft a new branch on the tree.
+                    psz = pMark;          // We hit something other than whitespace; restore the original offset.
+                    Push(ENTITY_PCDATA);  // Graft a new branch on the tree.
                     pBranch->pszData = psz;    // Save the offset.
                     ScanUntil(IsEnter(*psz));  //'...<'
                     cChar = *psz;
@@ -1985,7 +2008,7 @@ char* ttCParseXML::ParseXmlString(char* psz, ttCXMLBranch* pRoot)
                             StrWtrim(&pBranch->pszData);
                     }
                     Pop();               // Pop since this is a standalone.
-                    if (IsEnter(cChar))  //Did we hit a '<...'?
+                    if (IsEnter(cChar))  // Did we hit a '<...'?
                     {
                         if (IsClose(*psz))
                         {  //'</...'
@@ -1996,7 +2019,8 @@ char* ttCParseXML::ParseXmlString(char* psz, ttCXMLBranch* pRoot)
                         }
 
                         if (*psz)
-                            goto LOC_CLASSIFY;  //We hit a '<!...'. We must test this here if we want comments intermixed w/PCDATA.
+                            goto LOC_CLASSIFY;  // We hit a '<!...'. We must test this here if we want comments
+                                                // intermixed w/PCDATA.
                         else
                             return psz;
                     }
@@ -2027,40 +2051,22 @@ char* ttCParseXML::ParseXmlString(char* psz, ttCXMLBranch* pRoot)
 
 bool IsEndTagForbidden(HTML_ELEMENT element)  // returns true of the element does not have a close tag
 {
-    if (element == ELEMENT_AREA ||
-        element == ELEMENT_BASE ||
-        element == ELEMENT_BASEFONT ||
-        element == ELEMENT_BGSOUND ||
-        element == ELEMENT_BR ||
-        element == ELEMENT_COL ||
-        element == ELEMENT_FRAME ||
-        element == ELEMENT_HR ||
-        element == ELEMENT_IMG ||
-        element == ELEMENT_INPUT ||
-        element == ELEMENT_ISINDEX ||
-        element == ELEMENT_LINK ||
-        element == ELEMENT_META ||
+    if (element == ELEMENT_AREA || element == ELEMENT_BASE || element == ELEMENT_BASEFONT ||
+        element == ELEMENT_BGSOUND || element == ELEMENT_BR || element == ELEMENT_COL ||
+        element == ELEMENT_FRAME || element == ELEMENT_HR || element == ELEMENT_IMG || element == ELEMENT_INPUT ||
+        element == ELEMENT_ISINDEX || element == ELEMENT_LINK || element == ELEMENT_META ||
         element == ELEMENT_PARAM)
         return true;
     else
         return false;
 }
 
-bool DoesEndTagCloseChildren(HTML_ELEMENT element)  // returns true if the element should force closed any child elements
+bool DoesEndTagCloseChildren(
+    HTML_ELEMENT element)  // returns true if the element should force closed any child elements
 {
-    if (
-        element == ELEMENT_BODY ||
-        element == ELEMENT_DIR ||
-        element == ELEMENT_DL ||
-        element == ELEMENT_HEAD ||
-        element == ELEMENT_HTML ||
-        element == ELEMENT_MENU ||
-        element == ELEMENT_OBJECT ||
-        element == ELEMENT_OL ||
-        element == ELEMENT_P ||
-        element == ELEMENT_TABLE ||
-        element == ELEMENT_TR ||
-        element == ELEMENT_UL)
+    if (element == ELEMENT_BODY || element == ELEMENT_DIR || element == ELEMENT_DL || element == ELEMENT_HEAD ||
+        element == ELEMENT_HTML || element == ELEMENT_MENU || element == ELEMENT_OBJECT || element == ELEMENT_OL ||
+        element == ELEMENT_P || element == ELEMENT_TABLE || element == ELEMENT_TR || element == ELEMENT_UL)
         return true;
     else
         return false;
@@ -2072,8 +2078,8 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
     if (!psz)
         return psz;
     ttCXMLBranch* pBranch;
-    bool          bInScriptSection = false;
-    HTML_ELEMENT  elemNew;
+    bool bInScriptSection = false;
+    HTML_ELEMENT elemNew;
 
     if (!pRoot)
     {
@@ -2085,7 +2091,7 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
     {
         pBranch = pRoot;  // Tree branch cursor.
     }
-    char  cChar = 0;    // Current char, in cases where we must null-terminate before we test.
+    char cChar = 0;     // Current char, in cases where we must null-terminate before we test.
     char* pMark = psz;  // Marked string position for temporary look-ahead.
 
     while (*psz != 0)
@@ -2198,22 +2204,26 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
                                                     {
                                                         Push(ENTITY_INCLUDE);    // Graft a new branch on the tree.
                                                         pBranch->pszData = psz;  // Save the offset.
-                                                        while (!(IsRightBracket(*psz) && IsRightBracket(*(psz + 1)) &&
+                                                        while (!(IsRightBracket(*psz) &&
+                                                                 IsRightBracket(*(psz + 1)) &&
                                                                  IsLeave(*(psz + 2))))
                                                             ++psz;  // Scan for terminating ']]>'.
                                                         if (IsRightBracket(*psz))
                                                         {
                                                             *psz = 0;  // Zero-terminate this segment.
                                                             ++psz;
-                                                            if ((m_uOptions & PARSE_TRIM_CDATA))  // Trim whitespace.
+                                                            if ((m_uOptions &
+                                                                 PARSE_TRIM_CDATA))  // Trim whitespace.
                                                                 _StrWnorm(&pBranch->pszData);
                                                         }
                                                         Pop();  // Pop since this is a standalone.
                                                     }
-                                                    else  // Flagged for discard, but we still have to scan for the terminator.
+                                                    else  // Flagged for discard, but we still have to scan for the
+                                                          // terminator.
                                                     {
                                                         while (*psz != 0 && *(psz + 1) != 0 && *(psz + 2) != 0 &&
-                                                               !(IsRightBracket(*psz) && IsRightBracket(*(psz + 1)) &&
+                                                               !(IsRightBracket(*psz) &&
+                                                                 IsRightBracket(*(psz + 1)) &&
                                                                  IsLeave(*(psz + 2))))
                                                             ++psz;  // Scan for terminating ']]>'.
                                                         ++psz;
@@ -2265,7 +2275,8 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
                                                 }
                                                 Pop();  // Pop since this is a standalone.
                                             }
-                                            else  // Flagged for discard, but we still have to scan for the terminator.
+                                            else  // Flagged for discard, but we still have to scan for the
+                                                  // terminator.
                                             {
                                                 while (*psz != 0 && *(psz + 1) != 0 && *(psz + 2) != 0 &&
                                                        !(IsRightBracket(*psz) && IsRightBracket(*(psz + 1)) &&
@@ -2417,7 +2428,8 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
                             if (isSpace(cChar))
                             {
                                 SkipWS();                    // Eat whitespace.
-                                if (e == ENTITY_DTD_ENTITY)  // Special case; may have multiple quoted sections w/anything inside.
+                                if (e == ENTITY_DTD_ENTITY)  // Special case; may have multiple quoted sections
+                                                             // w/anything inside.
                                 {
                                     pBranch->pszData = psz;  // Just store everything here.
                                     BOOL qq = FALSE;         // Quote in/out flag.
@@ -2482,7 +2494,8 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
                     // We only see table or list elements if the form is part of a table or list -- a nested table
                     // or list would not have our FORM as a parent
 
-                    if (elemNew == ELEMENT_TD || elemNew == ELEMENT_TR || elemNew == ELEMENT_LI || elemNew == ELEMENT_DT)
+                    if (elemNew == ELEMENT_TD || elemNew == ELEMENT_TR || elemNew == ELEMENT_LI ||
+                        elemNew == ELEMENT_DT)
                         Pop();
                 }
 
@@ -2683,7 +2696,8 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
 
                             // Don't close <P> if there is no open <P>
 
-                            if (pBranch->element != ELEMENT_P && ParseElementTag(pszStart, psz + 1, true) == ELEMENT_P)
+                            if (pBranch->element != ELEMENT_P &&
+                                ParseElementTag(pszStart, psz + 1, true) == ELEMENT_P)
                             {
                                 psz++;
                                 goto LOC_PCDATA;
@@ -2691,8 +2705,8 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
 
                             // HTML 4.01 specifies that a number of tags cannot contain end tags. That does not,
                             // however, prevent people from authoring those end tags. We need to check for that
-                            // condition here, and not close the current element if a forbidden end tag was specified
-                            // (because the element that can't have and end tag is already closed).
+                            // condition here, and not close the current element if a forbidden end tag was
+                            // specified (because the element that can't have and end tag is already closed).
 
                             HTML_ELEMENT elemClose = ParseElementTag(pszStart, psz + 1, true);
                             if (!IsEndTagForbidden(elemClose))
@@ -2726,8 +2740,8 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
                                     }
                                 }
 
-                                // Some end tags automatically close any open child tags. We check for unclosed child
-                                // tags here and force them closed
+                                // Some end tags automatically close any open child tags. We check for unclosed
+                                // child tags here and force them closed
 
                                 if (pBranch->element != elemClose && pBranch->parent &&
                                     DoesEndTagCloseChildren(elemClose))
@@ -2735,7 +2749,8 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
                                     do
                                     {
                                         Pop();
-                                    } while (pBranch->element != elemClose && pBranch->parent->type != ENTITY_ROOT);
+                                    } while (pBranch->element != elemClose &&
+                                             pBranch->parent->type != ENTITY_ROOT);
                                 }
                                 Pop();
                             }
@@ -2761,16 +2776,16 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
                             goto LOC_SEARCH;  // Expect a new element enter, so go scan for it.
                         }
                     }
-                    psz = pMark;               //We hit something other than whitespace; restore the original offset.
-                    Push(ENTITY_PCDATA);       // Graft a new branch on the tree.
+                    psz = pMark;          // We hit something other than whitespace; restore the original offset.
+                    Push(ENTITY_PCDATA);  // Graft a new branch on the tree.
                     pBranch->pszData = psz;    // Save the offset.
                     ScanUntil(IsEnter(*psz));  //'...<'
 
-                    // HTML script can contain '<' and other characters. We don't want to parse each and every one of
-                    // those, so instead when we encounter a '<' character, we look to see if the next non-space
+                    // HTML script can contain '<' and other characters. We don't want to parse each and every one
+                    // of those, so instead when we encounter a '<' character, we look to see if the next non-space
                     // character begins a /script string, and if so, we assume that is the end of the script.
-                    // Theoretically, a script could have a quoted end script tag, e.g., document.write("</script") --
-                    // but that's unlikely enough that we shouldn't have to worry about it.
+                    // Theoretically, a script could have a quoted end script tag, e.g., document.write("</script")
+                    // -- but that's unlikely enough that we shouldn't have to worry about it.
 
                     while (bInScriptSection)
                     {
@@ -2793,7 +2808,7 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
                         return psz;
                     // Note that unlike XML, we don't normalize the string
                     Pop();               // Pop since this is a standalone.
-                    if (IsEnter(cChar))  //Did we hit a '<...'?
+                    if (IsEnter(cChar))  // Did we hit a '<...'?
                     {
                         if (IsClose(*psz))  //'</...'
                         {
@@ -2819,10 +2834,8 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
 
                             if (pBranch->GetElementTag() == ELEMENT_LI)
                             {
-                                if (CloseElement == ELEMENT_OL ||
-                                    CloseElement == ELEMENT_UL ||
-                                    CloseElement == ELEMENT_DIR ||
-                                    CloseElement == ELEMENT_MENU)
+                                if (CloseElement == ELEMENT_OL || CloseElement == ELEMENT_UL ||
+                                    CloseElement == ELEMENT_DIR || CloseElement == ELEMENT_MENU)
                                 {
                                     Pop();
                                     // You cannot have a nested LI -- if found, it means the previous nested item
@@ -2836,12 +2849,14 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
                             {
                                 Pop();
                             }
-                            else if (pBranch->GetElementTag() == ELEMENT_DT || pBranch->GetElementTag() == ELEMENT_DD)
+                            else if (pBranch->GetElementTag() == ELEMENT_DT ||
+                                     pBranch->GetElementTag() == ELEMENT_DD)
                             {
                                 if (CloseElement == ELEMENT_DL)
                                     Pop();
                             }
-                            else if (pBranch->GetElementTag() == ELEMENT_TD || pBranch->GetElementTag() == ELEMENT_TH)
+                            else if (pBranch->GetElementTag() == ELEMENT_TD ||
+                                     pBranch->GetElementTag() == ELEMENT_TH)
                             {
                                 if (CloseElement == ELEMENT_TABLE)
                                 {
@@ -2882,7 +2897,8 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
                                 if (NewElement == ELEMENT_LI)
                                     Pop();
                             }
-                            else if (pBranch->GetElementTag() == ELEMENT_DT || pBranch->GetElementTag() == ELEMENT_DD)
+                            else if (pBranch->GetElementTag() == ELEMENT_DT ||
+                                     pBranch->GetElementTag() == ELEMENT_DD)
                             {
                                 if (NewElement == ELEMENT_DT || NewElement == ELEMENT_DD)
                                     Pop();
@@ -2909,12 +2925,14 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
                             }
                             else if (pBranch->GetElementTag() == ELEMENT_TD)
                             {
-                                if (NewElement == ELEMENT_TR || NewElement == ELEMENT_TH || NewElement == ELEMENT_TD)
+                                if (NewElement == ELEMENT_TR || NewElement == ELEMENT_TH ||
+                                    NewElement == ELEMENT_TD)
                                     Pop();
                             }
                             else if (pBranch->GetElementTag() == ELEMENT_TH)
                             {
-                                if (NewElement == ELEMENT_TR || NewElement == ELEMENT_TH || NewElement == ELEMENT_TD)
+                                if (NewElement == ELEMENT_TR || NewElement == ELEMENT_TH ||
+                                    NewElement == ELEMENT_TD)
                                     Pop();
                             }
                             else if (pBranch->GetElementTag() == ELEMENT_COLGROUP)
@@ -2932,11 +2950,13 @@ char* ttCParseXML::ParseHtmlString(char* psz, ttCXMLBranch* pRoot)
                                 if (NewElement == ELEMENT_P)  // we don't allow nested paragraphs
                                     Pop();
                             }
-                            goto LOC_CLASSIFY;  //We hit a '<!...'. We must test this here if we want comments intermixed w/PCDATA.
+                            goto LOC_CLASSIFY;  // We hit a '<!...'. We must test this here if we want comments
+                                                // intermixed w/PCDATA.
                         }
 
                         if (*psz)
-                            goto LOC_CLASSIFY;  //We hit a '<!...'. We must test this here if we want comments intermixed w/PCDATA.
+                            goto LOC_CLASSIFY;  // We hit a '<!...'. We must test this here if we want comments
+                                                // intermixed w/PCDATA.
                         else
                             return psz;
                     }

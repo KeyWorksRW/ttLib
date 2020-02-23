@@ -18,10 +18,12 @@
     #error "This header file can only be used when compiling for Windows"
 #endif
 
-#if defined(NDEBUG)
-    #pragma comment(lib, "ttLibwin.lib")
-#else
-    #pragma comment(lib, "ttLibwinD.lib")
+#if !defined(TTALL_LIB)
+    #if defined(NDEBUG)
+        #pragma comment(lib, "ttLibwin.lib")
+    #else
+        #pragma comment(lib, "ttLibwinD.lib")
+    #endif
 #endif
 
 #include "../include/ttheap.h"
@@ -77,8 +79,8 @@ BYTE* ttCDib::GetBits()
 
 HDIB ttCDib::Create(DWORD dwWidth, DWORD dwHeight, WORD wBitCount)
 {
-    LPBITMAPINFOHEADER lpbi;   // pointer to BITMAPINFOHEADER
-    DWORD              dwLen;  // size of memory block
+    LPBITMAPINFOHEADER lpbi;  // pointer to BITMAPINFOHEADER
+    DWORD dwLen;              // size of memory block
 
     if (hDib)
         ttFree(hDib);
@@ -291,9 +293,9 @@ BYTE ttCDib::GetNearestIndex(RGBQUAD c)
     if ((hDib == NULL) || (m_nColors == 0))
         return 0;
     BYTE* iDst = (BYTE*) hDib + sizeof(BITMAPINFOHEADER);
-    long  distance = 200000;
-    BYTE  i, j = 0;
-    long  k, l;
+    long distance = 200000;
+    BYTE i, j = 0;
+    long k, l;
     for (i = 0, l = 0; i < m_nColors; i++, l += sizeof(RGBQUAD))
     {
         k = (iDst[l] - c.rgbBlue) * (iDst[l] - c.rgbBlue) +
@@ -445,10 +447,10 @@ void ttCDib::SetGrayPalette()
 {
     if ((hDib == NULL) || (m_nColors == 0))
         return;
-    RGBQUAD  pal[256];
+    RGBQUAD pal[256];
     RGBQUAD* ppal;
-    BYTE*    iDst;
-    int      ni;
+    BYTE* iDst;
+    int ni;
     ppal = (RGBQUAD*) &pal[0];
     iDst = (BYTE*) hDib + sizeof(BITMAPINFOHEADER);
     for (ni = 0; ni < m_nColors; ni++)
@@ -464,8 +466,8 @@ void ttCDib::BlendPalette(COLORREF cr, long perc)
 {
     if ((hDib == NULL) || (m_nColors == 0))
         return;
-    BYTE*    iDst = (BYTE*) hDib + sizeof(BITMAPINFOHEADER);
-    long     i, r, g, b;
+    BYTE* iDst = (BYTE*) hDib + sizeof(BITMAPINFOHEADER);
+    long i, r, g, b;
     RGBQUAD* pPal = (RGBQUAD*) iDst;
     r = GetRValue(cr & 0xFF);
     g = GetGValue(cr & 0xFFFF);

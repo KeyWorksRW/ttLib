@@ -8,17 +8,23 @@
 
 #include "pch.h"
 
-#if defined(NDEBUG)
-    #pragma comment(lib, "ttLibwin.lib")
-#else
-    #pragma comment(lib, "ttLibwinD.lib")
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
+
+#if !defined(TTALL_LIB)
+    #if defined(NDEBUG)
+        #pragma comment(lib, "ttLibwin.lib")
+    #else
+        #pragma comment(lib, "ttLibwinD.lib")
+    #endif
 #endif
 
 #include <cassert>
 #include <string>
 
-#include "../include/ttdebug.h"     // ttASSERT macros
-#include "../include/ttstr.h"       // ttCStr
+#include "../include/ttdebug.h"  // ttASSERT macros
+#include "../include/ttstr.h"    // ttCStr
 
 #if __cplusplus >= 201703L
     #include <filesystem>
@@ -207,7 +213,7 @@ char* ttCStr::GetCWD()
     DWORD cb = GetCurrentDirectoryA(MAX_PATH, m_psz);
     m_psz[cb] = 0;  // in case GetCurrentDirectory() failed
 #else
-    wxString    str = wxGetCwd();
+    wxString str = wxGetCwd();
     const char* psz = str.utf8_str();
     if (!psz)
         m_psz = ttStrDup("./");  // in case getcwd() failed
@@ -338,7 +344,7 @@ bool ttCStr::ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCa
 
     if (cbNew == 0)  // delete the old text since new text is empty
     {
-        char*     pszEnd = m_psz + ttStrByteLen(m_psz);
+        char* pszEnd = m_psz + ttStrByteLen(m_psz);
         ptrdiff_t cb = pszEnd - pszPos;
         memmove(pszPos, pszPos + cbOld, cb);
         m_psz = (char*) ttReAlloc(m_psz, ttStrByteLen(m_psz));
@@ -365,7 +371,7 @@ bool ttCStr::ReplaceStr(const char* pszOldText, const char* pszNewText, bool bCa
         while (cbNew--)
             *pszPos++ = *pszNewText++;
 
-        char*     pszEnd = m_psz + ttStrByteLen(m_psz);
+        char* pszEnd = m_psz + ttStrByteLen(m_psz);
         ptrdiff_t cb = pszEnd - pszPos;
         memmove(pszPos, pszPos + cbOld, cb);
         m_psz = (char*) ttReAlloc(m_psz, ttStrByteLen(m_psz));
@@ -443,7 +449,7 @@ char ttCStr::operator[](size_t pos)
 
 char* cdecl ttCStr::printfAppend(const char* pszFormat, ...)
 {
-    ttCStr  csz;
+    ttCStr csz;
     va_list argList;
     va_start(argList, pszFormat);
     ttVPrintf(&csz.m_psz, pszFormat, argList);

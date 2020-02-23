@@ -10,16 +10,22 @@
 
 #include "pch.h"
 
-#if defined(NDEBUG)
-    #pragma comment(lib, "ttLibwin.lib")
-#else
-    #pragma comment(lib, "ttLibwinD.lib")
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
+
+#if !defined(TTALL_LIB)
+    #if defined(NDEBUG)
+        #pragma comment(lib, "ttLibwin.lib")
+    #else
+        #pragma comment(lib, "ttLibwinD.lib")
+    #endif
 #endif
 
 #include <cassert>
 
-#include "../include/ttheap.h"   // ttCHeap
-#include "../include/ttstr.h"    // ttCStr
+#include "../include/ttheap.h"  // ttCHeap
+#include "../include/ttstr.h"   // ttCStr
 
 class ttPrintfPtr
 {
@@ -54,7 +60,7 @@ public:
 
     operator char*() { return (char*) m_psz; };
 
-    char*  m_psz;
+    char* m_psz;
     char** m_ppszDst;
     size_t m_cAvail;
 };
@@ -75,7 +81,7 @@ void ttPrintfPtr::Need(size_t cb)
 namespace ttpriv
 {
     char* ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargList, bool* pbPlural);
-    void  AddCommasToNumber(char* pszNum, char* pszDst, size_t cbDst);
+    void AddCommasToNumber(char* pszNum, char* pszDst, size_t cbDst);
 }  // namespace ttpriv
 
 char* cdecl ttPrintf(char** ppszDst, const char* pszFormat, ...)
@@ -90,13 +96,13 @@ char* cdecl ttPrintf(char** ppszDst, const char* pszFormat, ...)
 #define CB_MAX_FMT_WIDTH 20  // Largest formatted width we allow
 
 #ifndef _MAX_U64TOSTR_BASE10_COUNT
-#define _MAX_U64TOSTR_BASE10_COUNT (20 + 1)
+    #define _MAX_U64TOSTR_BASE10_COUNT (20 + 1)
 #endif
 
 // Note that the limit here of 64k is smaller then the kstr functions that use 16m (_KSTRMAX)
 
 #define MAX_STRING (64 * 1024)  // Use this to limit the length of a single string as a security precaution
-#define DEST_SIZE (ttsize(sptr) - sizeof(char))
+#define DEST_SIZE  (ttsize(sptr) - sizeof(char))
 
 void ttVPrintf(char** ppszDst, const char* pszFormat, va_list argList)
 {
@@ -108,7 +114,7 @@ void ttVPrintf(char** ppszDst, const char* pszFormat, va_list argList)
     ttPrintfPtr sptr(ppszDst);
 
     const char* pszEnd = pszFormat;
-    char        szNumBuf[50];  // buffer used for converting numbers including plenty of room for commas
+    char szNumBuf[50];  // buffer used for converting numbers including plenty of room for commas
 
     bool bPlural = true;
     while (*pszEnd)
@@ -149,17 +155,19 @@ void ttVPrintf(char** ppszDst, const char* pszFormat, va_list argList)
             bLarge = true;
             pszEnd++;  // ignore the prefix
         }
-        if (*pszEnd == 'z' || *pszEnd == 'I')  // use to specify size_t argument with width dependent on _W64 definition
+        if (*pszEnd == 'z' ||
+            *pszEnd == 'I')  // use to specify size_t argument with width dependent on _W64 definition
         {
             bSize_t = true;
             pszEnd++;  // ignore the prefix
         }
-        else if ((pszEnd[1] == 'i' || pszEnd[1] == 'd' || pszEnd[1] == 'u' || pszEnd[1] == 'x' || pszEnd[1] == 'X'))
+        else if ((pszEnd[1] == 'i' || pszEnd[1] == 'd' || pszEnd[1] == 'u' || pszEnd[1] == 'x' ||
+                  pszEnd[1] == 'X'))
         {
             pszEnd++;  // ignore the prefix
         }
 
-        char      chPad = ' ';
+        char chPad = ' ';
         ptrdiff_t cbMin = -1;
 
         if (*pszEnd == '0')
@@ -198,8 +206,8 @@ void ttVPrintf(char** ppszDst, const char* pszFormat, va_list argList)
         else if (*pszEnd == 'd' || *pszEnd == 'i')
         {
 #if defined(_WIN64) || defined(__x86_64__) || defined(__ppc64__)
-            // note that we don't have to do any special processing if not compiling 64-bit app, as size_t will be same
-            // as int
+            // note that we don't have to do any special processing if not compiling 64-bit app, as size_t will be
+            // same as int
 
             if (bSize_t)
                 ttItoa(va_arg(argList, _int64), szNumBuf, sizeof(szNumBuf) - 1);
@@ -210,7 +218,7 @@ void ttVPrintf(char** ppszDst, const char* pszFormat, va_list argList)
 #endif  // defined(_WIN64) || defined(__x86_64__) || defined(__ppc64__)
             if (cbMin >= 0)
             {
-                char   szTmp[CB_MAX_FMT_WIDTH + 1];
+                char szTmp[CB_MAX_FMT_WIDTH + 1];
                 size_t diff = cbMin - ttStrLen(szNumBuf);
                 if (diff > 0)
                 {
@@ -230,7 +238,7 @@ void ttVPrintf(char** ppszDst, const char* pszFormat, va_list argList)
             ttUtoa(va_arg(argList, unsigned int), szNumBuf, sizeof(szNumBuf));
             if (cbMin >= 0)
             {
-                char   szTmp[CB_MAX_FMT_WIDTH + 1];
+                char szTmp[CB_MAX_FMT_WIDTH + 1];
                 size_t diff = cbMin - ttStrLen(szNumBuf);
                 if (diff > 0)
                 {
@@ -250,7 +258,7 @@ void ttVPrintf(char** ppszDst, const char* pszFormat, va_list argList)
             ttHextoa(va_arg(argList, int), szNumBuf, false);
             if (cbMin >= 0)
             {
-                char   szTmp[CB_MAX_FMT_WIDTH + 1];
+                char szTmp[CB_MAX_FMT_WIDTH + 1];
                 size_t diff = cbMin - ttStrLen(szNumBuf);
                 if (diff > 0)
                 {
@@ -272,7 +280,7 @@ void ttVPrintf(char** ppszDst, const char* pszFormat, va_list argList)
             ttHextoa(va_arg(argList, int), szNumBuf, true);
             if (cbMin >= 0)
             {
-                char   szTmp[CB_MAX_FMT_WIDTH + 1];
+                char szTmp[CB_MAX_FMT_WIDTH + 1];
                 size_t diff = cbMin - ttStrLen(szNumBuf);
                 if (diff > 0)
                 {
@@ -293,13 +301,14 @@ void ttVPrintf(char** ppszDst, const char* pszFormat, va_list argList)
                 goto WideChar;
             const char* psz = va_arg(argList, char*);
 
-            if (!psz || psz <= (const char*) 0xFFFF
+            if (!psz ||
+                psz <= (const char*) 0xFFFF
 #if defined(_WIN32)
-                // IsBadReadPtr() is technically obsolete, but it prevents a crash if caller forgets to supply enough
-                // parameters.
+                // IsBadReadPtr() is technically obsolete, but it prevents a crash if caller forgets to supply
+                // enough parameters.
 
                 || IsBadReadPtr(psz, 1)
-#endif                                   // defined(_WIN32)
+#endif  // defined(_WIN32)
             )
             {
                 // NULL pointer passed
@@ -330,8 +339,8 @@ void ttVPrintf(char** ppszDst, const char* pszFormat, va_list argList)
         }
         else
         {
-            // This is a potential security risk since we don't know what size of argument to retrieve from va_arg().
-            // We simply print the rest of the format string and don't pop any arguments off.
+            // This is a potential security risk since we don't know what size of argument to retrieve from
+            // va_arg(). We simply print the rest of the format string and don't pop any arguments off.
 
             assert(!"Invalid format string for printf");
 #ifdef _DEBUG
@@ -425,9 +434,9 @@ char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargLi
         {
             char* pszMsg;
 
-            if (FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                               NULL, va_arg(*pargList, int), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                               (char*) &pszMsg, 0, NULL) != 0)
+            if (FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL,
+                               va_arg(*pargList, int), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*) &pszMsg,
+                               0, NULL) != 0)
             {
                 sptr.strCat(pszMsg);
                 LocalFree((HLOCAL) pszMsg);
@@ -455,13 +464,14 @@ char* ttpriv::ProcessKFmt(ttPrintfPtr& sptr, const char* pszEnd, va_list* pargLi
     return (char*) (pszEnd + 1);
 }
 
-// pszNum and pszDst can be the same or different. They need to be different if the pszNum buffer is only large enough
-// to hold the number and not the commas.
+// pszNum and pszDst can be the same or different. They need to be different if the pszNum buffer is only large
+// enough to hold the number and not the commas.
 
 void ttpriv::AddCommasToNumber(char* pszNum, char* pszDst, size_t cbDst)
 {
     if (pszDst != pszNum)
-        ttStrCpy(pszDst, cbDst, pszNum);  // copy the number, performa all additional work in-place in the destination buffer
+        ttStrCpy(pszDst, cbDst,
+                 pszNum);  // copy the number, performa all additional work in-place in the destination buffer
 
     ptrdiff_t cbNum = ttStrLen(pszDst);  // needs to be signed because it can go negative
     if (cbNum < 4)

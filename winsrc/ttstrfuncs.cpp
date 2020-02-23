@@ -8,10 +8,16 @@
 
 #include "pch.h"  // precompiled header
 
-#if defined(NDEBUG)
-    #pragma comment(lib, "ttLibwin.lib")
-#else
-    #pragma comment(lib, "ttLibwinD.lib")
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
+
+#if !defined(TTALL_LIB)
+    #if defined(NDEBUG)
+        #pragma comment(lib, "ttLibwin.lib")
+    #else
+        #pragma comment(lib, "ttLibwinD.lib")
+    #endif
 #endif
 
 #include <cassert>
@@ -20,7 +26,6 @@
 #include "../include/ttstr.h"   // ttCStr
 
 using namespace ttch;  // CH_constants
-
 
 // We use our own "safe" string handling instead of strsafe.h. Rather then returning an error, we try to do
 // the "right" thing that will allow the program to continue, but without a buffer overun, or GPF caused by
@@ -482,8 +487,8 @@ char* ttStrStrI(const char* pszMain, const char* pszSub)
         return (char*) pszMain;  // matches what strstr does
     char* pszTmp1;
     char* pszTmp2;
-    char  lowerch = (char) tolower(*pszSub);
-    char  upperch = (char) toupper(*pszSub);
+    char lowerch = (char) tolower(*pszSub);
+    char upperch = (char) toupper(*pszSub);
 
     while (*pszMain)
     {
@@ -529,8 +534,8 @@ wchar_t* ttStrStrI(const wchar_t* pszMain, const wchar_t* pszSub)
         return (wchar_t*) pszMain;  // matches what strstr does
     wchar_t* pszTmp1;
     wchar_t* pszTmp2;
-    wchar_t  lowerch = (char) towlower(*pszSub);
-    wchar_t  upperch = (char) towupper(*pszSub);
+    wchar_t lowerch = (char) towlower(*pszSub);
+    wchar_t upperch = (char) towupper(*pszSub);
 
     while (*pszMain)
     {
@@ -584,7 +589,7 @@ char* ttStrStr(const char* pszMain, const char* pszSub)
 
     const char* pszTmp1;
     const char* pszTmp2;
-    char        first_ch = *pszSub;
+    char first_ch = *pszSub;
 
     while (*pszMain)
     {
@@ -634,7 +639,7 @@ wchar_t* ttStrStr(const wchar_t* pszMain, const wchar_t* pszSub)
 
     const wchar_t* pszTmp1;
     const wchar_t* pszTmp2;
-    wchar_t        first_ch = *pszSub;
+    wchar_t first_ch = *pszSub;
 
     while (*pszMain)
     {

@@ -12,10 +12,12 @@
     #error "This header file can only be used when compiling for Windows"
 #endif
 
-#if defined(NDEBUG)
-    #pragma comment(lib, "ttLibwin.lib")
-#else
-    #pragma comment(lib, "ttLibwinD.lib")
+#if !defined(TTALL_LIB)
+    #if defined(NDEBUG)
+        #pragma comment(lib, "ttLibwin.lib")
+    #else
+        #pragma comment(lib, "ttLibwinD.lib")
+    #endif
 #endif
 
 #include "../include/ttdebug.h"  // ASSERTs
@@ -121,7 +123,7 @@ char* ttCHeap::ttStrDup(const char* psz)
         psz = "";
 
     size_t cb = ttStrByteLen(psz);
-    char*  pszDst = (char*) ttMalloc(cb);
+    char* pszDst = (char*) ttMalloc(cb);
     memcpy(pszDst, psz, cb);
     return pszDst;
 }
@@ -133,7 +135,7 @@ wchar_t* ttCHeap::ttStrDup(const wchar_t* pwsz)
     if (!pwsz || !*pwsz)
         pwsz = L"";
 
-    size_t   cb = ttStrByteLen(pwsz);
+    size_t cb = ttStrByteLen(pwsz);
     wchar_t* pwszDst = (wchar_t*) ttMalloc(cb);
     memcpy(pwszDst, pwsz, cb);
     return pwszDst;

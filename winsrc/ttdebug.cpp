@@ -12,10 +12,12 @@
     #error "This header file can only be used when compiling for Windows"
 #endif
 
-#if defined(NDEBUG)
-    #pragma comment(lib, "ttLibwin.lib")
-#else
-    #pragma comment(lib, "ttLibwinD.lib")
+#if !defined(TTALL_LIB)
+    #if defined(NDEBUG)
+        #pragma comment(lib, "ttLibwin.lib")
+    #else
+        #pragma comment(lib, "ttLibwinD.lib")
+    #endif
 #endif
 
 #include <stdio.h>
@@ -37,7 +39,7 @@ const UINT tt::WMP_CLEAR_TRACE = WM_USER + 0x1f9;  // clears the ttTrace window
 
 const char* tt::txtTraceClass = "KeyViewMsgs";
 const char* tt::txtTraceShareName = "hhw_share";
-HWND        tt::hwndTrace = NULL;
+HWND tt::hwndTrace = NULL;
 
 namespace ttdbg
 {
@@ -45,10 +47,10 @@ namespace ttdbg
     bool bNoAssert = false;  // Setting this to true will cause AssertionMsg to return without doing anything
     bool bNoRecurse = false;
 
-    HANDLE         hTraceMapping = NULL;
+    HANDLE hTraceMapping = NULL;
     ttCCritSection g_csTrace;
-    char*          g_pszTraceMap = nullptr;
-    DWORD          g_cLastTickCheck = 0;  // used to determine whether to check for hwndTrace again
+    char* g_pszTraceMap = nullptr;
+    DWORD g_cLastTickCheck = 0;  // used to determine whether to check for hwndTrace again
 }  // namespace ttdbg
 
 #if 0
@@ -182,7 +184,7 @@ void __cdecl ttTrace(const char* pszFormat, ...)
         }
     }
 
-    ttCStr  csz;
+    ttCStr csz;
     va_list argList;
     va_start(argList, pszFormat);
     ttVPrintf(csz.GetPPtr(), pszFormat, argList);

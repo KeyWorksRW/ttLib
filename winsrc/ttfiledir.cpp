@@ -12,10 +12,12 @@
     #error "This header file can only be used when compiling for Windows"
 #endif
 
-#if defined(NDEBUG)
-    #pragma comment(lib, "ttLibwin.lib")
-#else
-    #pragma comment(lib, "ttLibwinD.lib")
+#if !defined(TTALL_LIB)
+    #if defined(NDEBUG)
+        #pragma comment(lib, "ttLibwin.lib")
+    #else
+        #pragma comment(lib, "ttLibwinD.lib")
+    #endif
 #endif
 
 #include "../include/ttdebug.h"  // for ttASSERTS
@@ -183,7 +185,7 @@ void ttConvertToRelative(const char* pszRoot, const char* pszFile, ttCStr& cszRe
     cszRoot.AddTrailingSlash();  // it is imperative that we end with a slash
 
     size_t pos;
-    char*  pszLastSlash = nullptr;
+    char* pszLastSlash = nullptr;
 
     for (pos = 0; cszRoot[pos] && tolower(cszRoot[pos]) == tolower(cszFile[pos]); ++pos)
     {

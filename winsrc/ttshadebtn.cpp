@@ -21,10 +21,12 @@
     #error "This header file can only be used when compiling for Windows"
 #endif
 
-#if defined(NDEBUG)
-    #pragma comment(lib, "ttLibwin.lib")
-#else
-    #pragma comment(lib, "ttLibwinD.lib")
+#if !defined(TTALL_LIB)
+    #if defined(NDEBUG)
+        #pragma comment(lib, "ttLibwin.lib")
+    #else
+        #pragma comment(lib, "ttLibwinD.lib")
+    #endif
 #endif
 
 #include "../include/ttstr.h"       // ttCStr
@@ -278,7 +280,7 @@ void ttCShadeBtn::SetIcon(const char* pszIconName, UINT nIconAlign, UINT nIconDo
 
 void ttCShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, BYTE coloring, COLORREF color)
 {
-    long  sXSize, sYSize, bytes, j, i, k, h;
+    long sXSize, sYSize, bytes, j, i, k, h;
     BYTE *iDst, *posDst;
 
     RECT rect;
@@ -294,7 +296,7 @@ void ttCShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, 
     COLORREF hicr = GetSysColor(COLOR_BTNHIGHLIGHT);  // get the button base colors
     COLORREF midcr = GetSysColor(COLOR_BTNFACE);
     COLORREF locr = GetSysColor(COLOR_BTNSHADOW);
-    long     r, g, b;  // build the shaded palette
+    long r, g, b;  // build the shaded palette
     for (i = 0; i < 129; i++)
     {
         r = ((128 - i) * GetRValue(locr & 0xFF) + i * GetRValue(midcr & 0xFF)) / 128;
@@ -531,10 +533,10 @@ COLORREF ttCShadeBtn::SetTextColor(COLORREF new_color)
 void ttCShadeBtn::OnPaint()
 {
     PAINTSTRUCT ps;
-    HDC         hdcPaint = BeginPaint(*this, &ps);
+    HDC hdcPaint = BeginPaint(*this, &ps);
 
     ttCStr cszCaption;
-    RECT   rcClient;
+    RECT rcClient;
     GetClientRect(*this, &rcClient);
 
     int cx = abs(rcClient.right - rcClient.left);
@@ -545,7 +547,7 @@ void ttCShadeBtn::OnPaint()
 
     HDC hdcMem;  // create a memory DC to avoid flicker
     hdcMem = CreateCompatibleDC(hdcPaint);
-    HANDLE  hBitmap = CreateCompatibleBitmap(hdcPaint, cx, cy);
+    HANDLE hBitmap = CreateCompatibleBitmap(hdcPaint, cx, cy);
     HBITMAP hOldBitmap = (HBITMAP) SelectObject(hdcMem, hBitmap);  // select the destination for MemDC
 
     cszCaption.GetWndText(*this);  // get button text

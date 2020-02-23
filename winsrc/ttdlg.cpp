@@ -12,10 +12,12 @@
     #error "This header file can only be used when compiling for Windows"
 #endif
 
-#if defined(NDEBUG)
-    #pragma comment(lib, "ttLibwin.lib")
-#else
-    #pragma comment(lib, "ttLibwinD.lib")
+#if !defined(TTALL_LIB)
+    #if defined(NDEBUG)
+        #pragma comment(lib, "ttLibwin.lib")
+    #else
+        #pragma comment(lib, "ttLibwinD.lib")
+    #endif
 #endif
 
 #include <VersionHelpers.h>
@@ -23,7 +25,7 @@
 #include "../include/ttdlg.h"
 
 static HMONITOR ttKeyMonitorFromWindow(HWND hwnd, DWORD dwFlags);
-static BOOL     ttKeyMonitorFromPoint(HMONITOR hMonitor, LPMONITORINFO lpmi);
+static BOOL ttKeyMonitorFromPoint(HMONITOR hMonitor, LPMONITORINFO lpmi);
 
 ttCDlg::ttCDlg(UINT idTemplate)
 {
@@ -216,7 +218,7 @@ void ttCDlg::CenterWindow(bool bCenterOnDesktop)
 
     // Make certain the dialog doesn't spawn between two monitors
 
-    RECT     rcDesktop;
+    RECT rcDesktop;
     HMONITOR hmon = ttKeyMonitorFromWindow(*this, MONITOR_DEFAULTTOPRIMARY);
     if (hmon)
     {

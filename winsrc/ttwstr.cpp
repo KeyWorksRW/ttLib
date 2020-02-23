@@ -12,10 +12,12 @@
     #error "This header file can only be used when compiling for Windows"
 #endif
 
-#if defined(NDEBUG)
-    #pragma comment(lib, "ttLibwin.lib")
-#else
-    #pragma comment(lib, "ttLibwinD.lib")
+#if !defined(TTALL_LIB)
+    #if defined(NDEBUG)
+        #pragma comment(lib, "ttLibwin.lib")
+    #else
+        #pragma comment(lib, "ttLibwinD.lib")
+    #endif
 #endif
 
 #include <direct.h>  // for _getcwd
@@ -25,7 +27,7 @@
 #include "../include/ttstr.h"  // ttCStr
 
 #ifndef _MAX_U64TOSTR_BASE10_COUNT
-#define _MAX_U64TOSTR_BASE10_COUNT (20 + 1)
+    #define _MAX_U64TOSTR_BASE10_COUNT (20 + 1)
 #endif
 
 using namespace ttch;  // used for the CH_ constants
@@ -61,7 +63,8 @@ wchar_t* ttCWStr::FindExt() const
     wchar_t* psz = ttStrChrR(m_psz, '.');
     if (!psz)
         return nullptr;
-    if (psz == m_psz || *(psz - 1) == L'.' || psz[1] == L'\\' || psz[1] == L'/')  // ignore .file, ./file, and ../file
+    if (psz == m_psz || *(psz - 1) == L'.' || psz[1] == L'\\' ||
+        psz[1] == L'/')  // ignore .file, ./file, and ../file
         return nullptr;
     return psz;
 }
@@ -93,7 +96,8 @@ void ttCWStr::RemoveExtension()
         wchar_t* psz = ttStrChrR(m_psz, L'.');
         if (psz)
         {
-            if (psz == m_psz || *(psz - 1) == L'.' || psz[1] == L'\\' || psz[1] == L'/')  // ignore .file, ./file, and ../file
+            if (psz == m_psz || *(psz - 1) == L'.' || psz[1] == L'\\' ||
+                psz[1] == L'/')  // ignore .file, ./file, and ../file
                 return;
             *psz = 0;
         }
@@ -126,7 +130,8 @@ wchar_t* ttCWStr::FindLastSlash()
     else if (!pszLastFwdSlash)
         return pszLastBackSlash ? pszLastBackSlash : nullptr;
     else
-        return pszLastFwdSlash > pszLastBackSlash ? pszLastFwdSlash : pszLastBackSlash;  // Impossible for them to be equal
+        return pszLastFwdSlash > pszLastBackSlash ? pszLastFwdSlash :
+                                                    pszLastBackSlash;  // Impossible for them to be equal
 }
 
 wchar_t* ttCWStr::GetCWD()
@@ -136,7 +141,7 @@ wchar_t* ttCWStr::GetCWD()
     DWORD cb = GetCurrentDirectoryW(MAX_PATH, m_psz);
     m_psz[cb] = 0;  // in case GetCurrentDirectory() failed
 #else
-    wxString    str = wxGetCwd();
+    wxString str = wxGetCwd();
     const char* psz = str.wc_str();
     if (!psz)
         m_psz = ttStrDup(L"./");  // in case getcwd() failed
@@ -520,9 +525,9 @@ const wchar_t* ttCWStr::ProcessKFmt(const wchar_t* pszEnd, va_list* pargList)
         {
             wchar_t* pszMsg;
 
-            FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                           NULL, va_arg(*pargList, int), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                           (wchar_t*) &pszMsg, 0, NULL);
+            FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL,
+                           va_arg(*pargList, int), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*) &pszMsg,
+                           0, NULL);
             ttStrCpy(szwBuf, sizeof(szwBuf), pszMsg);
             LocalFree((HLOCAL) pszMsg);
         }
@@ -533,7 +538,7 @@ const wchar_t* ttCWStr::ProcessKFmt(const wchar_t* pszEnd, va_list* pargList)
             try
             {
                 const wchar_t* psz = va_arg(*pargList, const wchar_t*);
-                size_t         cb = ttStrLen(m_psz) + ttStrLen(psz) + (3 * sizeof(wchar_t));
+                size_t cb = ttStrLen(m_psz) + ttStrLen(psz) + (3 * sizeof(wchar_t));
                 if (cb > ttSize(m_psz))
                 {
                     cb >>= 7;
@@ -574,7 +579,8 @@ void ttpriv::AddCommasToNumber(wchar_t* pszNum, wchar_t* pszDst, size_t cbDst)
 {
     size_t cchDst = cbDst / sizeof(wchar_t);
     if (pszDst != pszNum)
-        ttStrCpy(pszDst, cbDst, pszNum);  // copy the number, performa all additional work in-place in the destination buffer
+        ttStrCpy(pszDst, cbDst,
+                 pszNum);  // copy the number, performa all additional work in-place in the destination buffer
 
     size_t cchNum = ttStrLen(pszDst);  // needs to be signed because it can go negative
     if (cchNum < 4)
@@ -598,7 +604,8 @@ void ttpriv::AddCommasToNumber(wchar_t* pszNum, wchar_t* pszDst, size_t cbDst)
         cchStart += 3;
     while (cchStart < cchNum)
     {
-        memmove(pszDst + cchStart + 1, pszDst + cchStart, ttStrByteLen(pszDst + cchStart) + sizeof(wchar_t));  // make space for a comma
+        memmove(pszDst + cchStart + 1, pszDst + cchStart,
+                ttStrByteLen(pszDst + cchStart) + sizeof(wchar_t));  // make space for a comma
         pszDst[cchStart] = ',';
         ++cchNum;       // track that we added a comma for loop comparison
         cchStart += 4;  // 3 numbers plus the comma
@@ -702,7 +709,7 @@ bool ttCWStr::ReplaceStr(const wchar_t* pszOldText, const wchar_t* pszNewText, b
 
     if (cbNew == 0)  // delete the old text since new text is empty
     {
-        wchar_t*  pszEnd = m_psz + ttStrByteLen(m_psz);
+        wchar_t* pszEnd = m_psz + ttStrByteLen(m_psz);
         ptrdiff_t cb = pszEnd - pszPos;
         memmove(pszPos, pszPos + cbOld, cb);
         m_psz = (wchar_t*) ttReAlloc(m_psz, ttStrByteLen(m_psz));
@@ -729,7 +736,7 @@ bool ttCWStr::ReplaceStr(const wchar_t* pszOldText, const wchar_t* pszNewText, b
         while (cbNew--)
             *pszPos++ = *pszNewText++;
 
-        wchar_t*  pszEnd = m_psz + ttStrByteLen(m_psz);
+        wchar_t* pszEnd = m_psz + ttStrByteLen(m_psz);
         ptrdiff_t cb = pszEnd - pszPos;
         memmove(pszPos, pszPos + cbOld, cb);
         m_psz = (wchar_t*) ttReAlloc(m_psz, ttStrByteLen(m_psz));
@@ -753,7 +760,8 @@ wchar_t* ttCWStr::GetString(const wchar_t* pszString, wchar_t chBegin, wchar_t c
         return nullptr;
     else
     {
-        m_psz = (wchar_t*) ttMalloc(cb);  // this won't return if it fails, so you will never get a nullptr on return
+        m_psz =
+            (wchar_t*) ttMalloc(cb);  // this won't return if it fails, so you will never get a nullptr on return
         *m_psz = 0;
     }
 

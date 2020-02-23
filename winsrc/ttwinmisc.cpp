@@ -14,10 +14,12 @@
     #error "This header file can only be used when compiling for Windows"
 #endif
 
-#if defined(NDEBUG)
-    #pragma comment(lib, "ttLibwin.lib")
-#else
-    #pragma comment(lib, "ttLibwinD.lib")
+#if !defined(TTALL_LIB)
+    #if defined(NDEBUG)
+        #pragma comment(lib, "ttLibwin.lib")
+    #else
+        #pragma comment(lib, "ttLibwinD.lib")
+    #endif
 #endif
 
 #include <shellapi.h>
@@ -31,7 +33,7 @@
 
 namespace tt
 {
-    const char*    pszMsgTitle;   // utf8  title for message boxes
+    const char* pszMsgTitle;      // utf8  title for message boxes
     const wchar_t* pwszMsgTitle;  // utf16 title for message boxes
 
     std::wstring MsgBoxTitle;
@@ -193,7 +195,7 @@ int ttMsgBox(UINT idResource, UINT uType)
 // Soon to be deprecated -- use std::stringstream and then call tt::MsgBox
 int __cdecl ttMsgBoxFmt(const char* pszFormat, UINT uType, ...)
 {
-    ttCStr  csz;
+    ttCStr csz;
     va_list argList;
     va_start(argList, uType);
     ttVPrintf(csz.GetPPtr(), pszFormat, argList);
@@ -208,7 +210,7 @@ int __cdecl ttMsgBoxFmt(int idResource, UINT uType, ...)
     ttCStr cszTmp;
     cszTmp.GetResString(idResource);
 
-    ttCStr  csz;
+    ttCStr csz;
     va_list argList;
     va_start(argList, uType);
     ttVPrintf(csz.GetPPtr(), cszTmp, argList);

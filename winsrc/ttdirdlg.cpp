@@ -14,10 +14,12 @@
     #error "This header file can only be used when compiling for Windows"
 #endif
 
-#if defined(NDEBUG)
-    #pragma comment(lib, "ttLibwin.lib")
-#else
-    #pragma comment(lib, "ttLibwinD.lib")
+#if !defined(TTALL_LIB)
+    #if defined(NDEBUG)
+        #pragma comment(lib, "ttLibwin.lib")
+    #else
+        #pragma comment(lib, "ttLibwinD.lib")
+    #endif
 #endif
 
 #include "../include/ttdirdlg.h"  // ttCDirDlg
@@ -33,7 +35,7 @@ ttCDirDlg::ttCDirDlg()
 bool ttCDirDlg::GetFolderName(HWND hwndParent)
 {
     IFileOpenDialog* pfd;
-    auto             hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd));
+    auto hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd));
     if (FAILED(hr))
     {
         ttASSERT_HRESULT(hr, "Could not create IFileOpenDialog interface");
