@@ -322,9 +322,7 @@ ttString& cdecl ttString::Format(std::string_view format, ...)
     }
     catch (const std::exception& /* e */)
     {
-        std::stringstream msg;
-        msg << "Printf failed at: " << format.substr(pos);
-        assertm(false, msg);
+        assert(!"exception in ttString.Format()");
     }
 
     va_end(args);

@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      tt::cstr
+// Name:      ttlib::cstr
 // Purpose:   Classes for handling zero-terminated char strings.
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2020 KeyWorks Software (Ralph Walden)
@@ -10,7 +10,7 @@
 
 /// @file
 ///
-/// The tt::cstr class handles zero-terminated char strings. It inherits from std::string and can be used in most
+/// The ttlib::cstr class handles zero-terminated char strings. It inherits from std::string and can be used in most
 /// places where std::string<char> is used. It provides additional functionality including utf8/16 conversions,
 /// file name handling, etc.
 
@@ -20,18 +20,12 @@
 #include <string_view>
 
 #include "ttcview.h"
-#include "ttnamespace.h"
 
 #if defined(__WXMSW__)
     #include <wx/string.h>
 #endif
 
-namespace tt
-{
-    extern std::string emptystring;
-}  // namespace tt
-
-namespace tt
+namespace ttlib
 {
     /// @brief This class inherits from **std::string** and provides additional string handling functionality.
     class cstr : public std::string
@@ -40,7 +34,7 @@ namespace tt
         cstr(void) {}
         cstr(const char* psz) { assign(psz); }
         cstr(std::string_view view) { assign(view, view.size()); }
-        cstr(tt::cview view) { assign(view, view.size()); }
+        cstr(ttlib::cview view) { assign(view, view.size()); }
         cstr(const cstr& str) { assign(str.c_str(), str.size()); }
 
         cstr(const std::filesystem::path& path) { assign(path.string(), path.string().size()); }
@@ -59,14 +53,14 @@ namespace tt
 
 #if defined(_TT_TCSTR)
         // ttCStr is obsolete, but we'll support it until all callers have replaced it.
-        cstr(ttCStr& csz) { assign(csz.c_str() ? csz.c_str() : tt::emptystring); }
+        cstr(ttCStr& csz) { assign(csz.c_str() ? csz.c_str() : ttlib::emptystring); }
 #endif
 
-        /// Caution: tt::cview is only valid until tt::cstr is modified or destroyed.
-        tt::cview subview(size_t start = 0)
+        /// Caution: ttlib::cview is only valid until ttlib::cstr is modified or destroyed.
+        ttlib::cview subview(size_t start = 0)
         {
             assert(start < length());
-            return tt::cview(c_str() + start, length() - start);
+            return ttlib::cview(c_str() + start, length() - start);
         }
 
         std::wstring to_utf16() const;
@@ -76,10 +70,10 @@ namespace tt
         int comparei(std::string_view str) const;
 
         /// Locates the position of a substring.
-        size_t locate(std::string_view str, size_t posStart = 0, tt::CHECK_CASE check = tt::CHECK_CASE::yes) const;
+        size_t locate(std::string_view str, size_t posStart = 0, ttlib::CHECK_CASE check = ttlib::CHECK_CASE::yes) const;
 
         /// Returns true if the sub string exists
-        bool contains(std::string_view sub, tt::CHECK_CASE checkcase = tt::CHECK_CASE::yes)
+        bool contains(std::string_view sub, ttlib::CHECK_CASE checkcase = ttlib::CHECK_CASE::yes)
         {
             return (locate(sub, 0, checkcase) != npos);
         }
@@ -108,12 +102,12 @@ namespace tt
         size_t stepover(size_t start = 0) const;
 
         /// Returns true if the sub-string is identical to the first part of the main string
-        bool issameas(std::string_view str, tt::CHECK_CASE checkcase = tt::CHECK_CASE::yes) const;
+        bool issameas(std::string_view str, ttlib::CHECK_CASE checkcase = ttlib::CHECK_CASE::yes) const;
 
         /// Returns true if the sub-string is identical to the first part of the main string
-        bool issameprefix(std::string_view str, tt::CHECK_CASE checkcase = tt::CHECK_CASE::yes) const;
+        bool issameprefix(std::string_view str, ttlib::CHECK_CASE checkcase = ttlib::CHECK_CASE::yes) const;
 
-        int atoi() const { return tt::atoi(*this); }
+        int atoi() const { return ttlib::atoi(*this); }
 
         enum class TRIM : size_t
         {
@@ -141,7 +135,7 @@ namespace tt
 
         /// Replace first (or all) occurrences of substring with another one
         size_t Replace(std::string_view oldtext, std::string_view newtext, bool replaceAll = false,
-                       tt::CHECK_CASE checkcase = tt::CHECK_CASE::yes);
+                       ttlib::CHECK_CASE checkcase = ttlib::CHECK_CASE::yes);
 
         /// Replace everything from pos to the end of the current string with str
         cstr& replaceAll(size_t pos, std::string_view str)
@@ -174,7 +168,7 @@ namespace tt
 #endif
 
         /// Caution: view is only valid until cstr is modified or destroyed!
-        std::string_view subview(size_t start, size_t len = tt::npos) const;
+        std::string_view subview(size_t start, size_t len = ttlib::npos) const;
 
         /// Converts all backslashes in the string to forward slashes.
         ///
@@ -184,13 +178,13 @@ namespace tt
         /// Returns true if current filename contains the specified case-insensitive extension.
         bool hasExtension(std::string_view ext) const
         {
-            return tt::issameas(extension(), ext, tt::CHECK_CASE::no);
+            return ttlib::issameas(extension(), ext, ttlib::CHECK_CASE::no);
         }
 
         /// Returns true if current filename contains the specified case-insensitive file name.
         bool hasFilename(std::string_view name) const
         {
-            return tt::issameas(filename(), name, tt::CHECK_CASE::no);
+            return ttlib::issameas(filename(), name, ttlib::CHECK_CASE::no);
         }
 
         /// Returns a view to the current extension. View is empty if there is no extension.
@@ -239,7 +233,7 @@ namespace tt
     };
 
     /// Retrieves the current working directory and restores it in the dtor.
-    class cwd : public tt::cstr
+    class cwd : public ttlib::cstr
     {
     public:
         cwd() { assignCwd(); }
@@ -252,7 +246,7 @@ namespace tt
 
     /// Contains a vector of cstr classes with some additional functionality such
     /// as only adding a string if it doesn't already exist.
-    class cstrVector : public std::vector<tt::cstr>
+    class cstrVector : public std::vector<ttlib::cstr>
     {
     public:
         /// Same as find(pos, ch) but with a boolean result
@@ -264,7 +258,7 @@ namespace tt
         /// Only appends the string if it doesn't already exist.
         ///
         /// Returns true if the string was added, false if it already existed.
-        bool append(std::string_view str, tt::CHECK_CASE checkcase = tt::CHECK_CASE::yes)
+        bool append(std::string_view str, ttlib::CHECK_CASE checkcase = ttlib::CHECK_CASE::yes)
         {
             if (find(0, str, checkcase) != npos)
             {
@@ -295,16 +289,16 @@ namespace tt
         }
 
         /// Finds the position of the first string identical to the specified string.
-        size_t find(size_t start, std::string_view str, tt::CHECK_CASE checkcase = tt::CHECK_CASE::yes);
+        size_t find(size_t start, std::string_view str, ttlib::CHECK_CASE checkcase = ttlib::CHECK_CASE::yes);
 
         /// Finds the position of the first string with specified prefix.
-        size_t findprefix(size_t start, std::string_view prefix, tt::CHECK_CASE checkcase = tt::CHECK_CASE::yes);
+        size_t findprefix(size_t start, std::string_view prefix, ttlib::CHECK_CASE checkcase = ttlib::CHECK_CASE::yes);
 
         /// Finds the position of the first string containing the specified sub-string.
-        size_t contains(size_t start, std::string_view substring, tt::CHECK_CASE checkcase = tt::CHECK_CASE::yes);
+        size_t contains(size_t start, std::string_view substring, ttlib::CHECK_CASE checkcase = ttlib::CHECK_CASE::yes);
 
         /// Unlike append(), this will add the string even if it already exists.
         void operator+=(std::string_view str) { push_back(str); }
     };
 
-}  // namespace tt
+}  // namespace ttlib

@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      tt::cstr class
+// Name:      ttlib::cstr class
 // Purpose:   Class for handling zero-terminated char strings.
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2020 KeyWorks Software (Ralph Walden)
@@ -16,10 +16,12 @@
 #include <locale>
 #include <sstream>
 
+#include "../include/ttlibspace.h"
+
 #include "../include/ttcstr.h"
 #include "../include/utf8unchecked.h"
 
-using namespace tt;
+using namespace ttlib;
 
 bool cstr::issameas(std::string_view str, CHECK_CASE checkcase) const
 {
@@ -69,7 +71,7 @@ bool cstr::issameprefix(std::string_view str, CHECK_CASE checkcase) const
         }
         return true;
     }
-    assertm(false, "Unknown CHECK_CASE value");
+    assert(!"Unknown CHECK_CASE value");
     return false;
 }
 
@@ -112,13 +114,13 @@ cstr& cstr::trim(TRIM where)
     {
         // Assume that most strings won't start with whitespace, so return as quickly as possible if that is the
         // case.
-        if (!tt::iswhitespace(at(0)))
+        if (!ttlib::iswhitespace(at(0)))
             return *this;
 
         size_t pos;
         for (pos = 1; pos < length(); ++pos)
         {
-            if (!tt::iswhitespace(at(pos)))
+            if (!ttlib::iswhitespace(at(pos)))
                 break;
         }
         replace(0, length(), substr(pos, length() - pos));
@@ -135,15 +137,15 @@ size_t cstr::AssignSubString(std::string_view src, char chBegin, char chEnd)
 {
     if (src.empty())
     {
-        assign(tt::emptystring);
+        assign(ttlib::emptystring);
         return npos;
     }
 
     size_t pos = 0;
     // step over any leading whitespace unless chBegin is a whitespace character
-    if (!tt::iswhitespace(chBegin))
+    if (!ttlib::iswhitespace(chBegin))
     {
-        while (tt::iswhitespace(src[pos]))
+        while (ttlib::iswhitespace(src[pos]))
             ++pos;
     }
 
@@ -188,13 +190,13 @@ size_t cstr::ExtractSubString(std::string_view src, size_t start)
 {
     if (src.empty())
     {
-        assign(tt::emptystring);
+        assign(ttlib::emptystring);
         return npos;
     }
 
     // start by finding the first non-whitespace character
     size_t pos = start;
-    while (pos < src.length() && tt::iswhitespace(src[pos]))
+    while (pos < src.length() && ttlib::iswhitespace(src[pos]))
     {
         ++pos;
     }
@@ -250,7 +252,7 @@ size_t cstr::ExtractSubString(std::string_view src, size_t start)
  * @param CaseSensitive -- indicates whether or not to use a case-insensitive search
  * @return Number of replacements made
  */
-size_t cstr::Replace(std::string_view oldtext, std::string_view newtext, bool replaceAll, tt::CHECK_CASE checkcase)
+size_t cstr::Replace(std::string_view oldtext, std::string_view newtext, bool replaceAll, ttlib::CHECK_CASE checkcase)
 {
     if (oldtext.empty())
         return false;
@@ -734,14 +736,14 @@ cstr& cdecl cstr::Format(std::string_view format, ...)
                 ++pos;
             }
 
-            if (tt::isdigit(format[pos]))
+            if (ttlib::isdigit(format[pos]))
             {
-                auto fieldWidth = tt::atoi(format.substr(pos));
+                auto fieldWidth = ttlib::atoi(format.substr(pos));
                 buffer << std::setw(fieldWidth);
                 do
                 {
                     ++pos;
-                } while (pos < format.length() && tt::isdigit(format[pos]));
+                } while (pos < format.length() && ttlib::isdigit(format[pos]));
             }
 
             // For both %lc and %ls we assume a UTF16 string and convert it to UTF8.
@@ -932,9 +934,7 @@ cstr& cdecl cstr::Format(std::string_view format, ...)
     }
     catch (const std::exception& /* e */)
     {
-        std::stringstream msg;
-        msg << "Printf failed at: " << format.substr(pos);
-        assertm(false, msg);
+        assert(!"exception in ttlib::cstr.Format()");
     }
 
     va_end(args);
@@ -950,10 +950,10 @@ size_t cstrVector::find(size_t start, std::string_view str, CHECK_CASE checkcase
 {
     for (; start < size(); ++start)
     {
-        if (tt::issameas(at(start), str, checkcase))
+        if (ttlib::issameas(at(start), str, checkcase))
             return start;
     }
-    return tt::npos;
+    return ttlib::npos;
 }
 
 size_t cstrVector::findprefix(size_t start, std::string_view str, CHECK_CASE checkcase)
@@ -962,7 +962,7 @@ size_t cstrVector::findprefix(size_t start, std::string_view str, CHECK_CASE che
     {
         for (; start < size(); ++start)
         {
-            if (tt::issamesubstr(at(start), str))
+            if (ttlib::issamesubstr(at(start), str))
                 return start;
         }
     }
@@ -970,19 +970,19 @@ size_t cstrVector::findprefix(size_t start, std::string_view str, CHECK_CASE che
     {
         for (; start < size(); ++start)
         {
-            if (tt::issamesubstri(at(start), str))
+            if (ttlib::issamesubstri(at(start), str))
                 return start;
         }
     }
-    return tt::npos;
+    return ttlib::npos;
 }
 
 size_t cstrVector::contains(size_t start, std::string_view str, CHECK_CASE checkcase)
 {
     for (; start < size(); ++start)
     {
-        if (tt::contains(at(start), str, checkcase))
+        if (ttlib::contains(at(start), str, checkcase))
             return start;
     }
-    return tt::npos;
+    return ttlib::npos;
 }

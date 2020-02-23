@@ -21,6 +21,7 @@ Files:
     ttcview.cpp      # string_view functionality on a zero-terminated char string.
     ttenumstr.cpp    # ttEnumStr, ttEnumStr
     ttformat.cpp     # ttString::Printf(...)
+    ttlibspace.cpp   # ttlib namespace functions
     ttpath.cpp       # Contains functions for working with filesystem::path and filesystem::directory
     ttnamespace.cpp  # tt namespace functions
     ttstring.cpp     # std::string class with some additional functionality

@@ -19,7 +19,7 @@
 #include <filesystem>
 #include <string_view>
 
-namespace tt
+namespace ttlib
 {
     template<class char_t, class Traits = std::char_traits<char>>
     class basic_cview : private std::basic_string_view<char, Traits>

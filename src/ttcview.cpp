@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      tt::cview
+// Name:      ttlib::cview
 // Purpose:   string_view functionality on a zero-terminated char string.
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2020 KeyWorks Software (Ralph Walden)
@@ -13,7 +13,7 @@
 
 #include "../include/ttcview.h"
 
-using namespace tt;
+using namespace ttlib;
 
 template<>
 bool cview::viewspace()
@@ -23,7 +23,7 @@ bool cview::viewspace()
     size_t pos;
     for (pos = 0; pos < length(); ++pos)
     {
-        if (tt::iswhitespace(at(pos)))
+        if (ttlib::iswhitespace(at(pos)))
             break;
     }
     if (pos >= length())
@@ -43,7 +43,7 @@ bool cview::viewnonspace()
     size_t pos;
     for (pos = 0; pos < length(); ++pos)
     {
-        if (!tt::iswhitespace(at(pos)))
+        if (!ttlib::iswhitespace(at(pos)))
             break;
     }
     if (pos >= length())
@@ -63,7 +63,7 @@ bool cview::viewnextword()
     size_t pos;
     for (pos = 0; pos < length(); ++pos)
     {
-        if (tt::iswhitespace(at(pos)))
+        if (ttlib::iswhitespace(at(pos)))
             break;
     }
     if (pos >= length())
@@ -74,7 +74,7 @@ bool cview::viewnextword()
     {
         for (++pos; pos < length(); ++pos)
         {
-            if (!tt::iswhitespace(at(pos)))
+            if (!ttlib::iswhitespace(at(pos)))
                 break;
         }
         if (pos >= length())
@@ -93,7 +93,7 @@ bool cview::viewdigit()
     size_t pos;
     for (pos = 0; pos < length(); ++pos)
     {
-        if (tt::isdigit(at(pos)))
+        if (ttlib::isdigit(at(pos)))
             break;
     }
     if (pos >= length())
@@ -113,7 +113,7 @@ bool cview::viewnondigit()
     size_t pos;
     for (pos = 0; pos < length(); ++pos)
     {
-        if (!tt::isdigit(at(pos)))
+        if (!ttlib::isdigit(at(pos)))
             break;
     }
     if (pos >= length())

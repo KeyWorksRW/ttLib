@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      tt::winff class
+// Name:      ttlib::winff class
 // Purpose:   Wrapper around Windows FindFile
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2020 KeyWorks Software (Ralph Walden)
@@ -19,7 +19,7 @@
 ///
 ///    Example usage:
 ///
-///    tt::winff ff("*.*");
+///    ttlib::winff ff("*.*");
 ///    if (ff.isvalid()) {
 ///        do {
 ///            if (ff.isdir())
@@ -41,7 +41,7 @@
     #define INVALID_HANDLE_VALUE ((HANDLE)(LONG_PTR) -1)
 #endif
 
-namespace tt
+namespace ttlib
 {
     class winff : public WIN32_FIND_DATAW
     {
@@ -88,11 +88,13 @@ namespace tt
             return isvalid();
         }
 
-        const char* c_str() { return m_filename.c_str(); }
+        const char* c_str() const { return m_filename.c_str(); }
         operator const char*() const { m_filename.c_str(); }
         operator DWORD() const { return dwFileAttributes; }
 
-        const tt::cstr& getfilename() { return m_filename; }
+        // Caution: this is NOT a copy! It returns a pointer to the internal cstr buffer. Any
+        // changes you make will be overwritten by a call to next() or newpattern().
+        const ttlib::cstr& getcstr() { return m_filename; }
 
         bool isarchive() const { return (dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE) ? true : false; }
         bool iscompressed() const { return (dwFileAttributes & FILE_ATTRIBUTE_COMPRESSED) ? true : false; }
@@ -110,6 +112,6 @@ namespace tt
     private:
         HANDLE m_hfind;
 
-        tt::cstr m_filename;
+        ttlib::cstr m_filename;
     };
-}  // namespace tt
+}  // end namespace ttlib
