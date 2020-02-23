@@ -11,6 +11,7 @@
 #include <cctype>
 #include <locale>
 
+#include "../include/ttlibspace.h"
 #include "../include/ttcview.h"
 
 using namespace ttlib;
