@@ -19,6 +19,7 @@
 #include <string>
 #include <string_view>
 
+#include "ttlibspace.h"
 #include "ttcview.h"
 
 #if defined(__WXMSW__)

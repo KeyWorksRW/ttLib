@@ -51,8 +51,8 @@ public:
     void SetInitialDir(const char* pszFolder);
     void SetInitialFileName(const char* psz)
     {
-        ttASSERT(ttStrLen(psz) < MAX_PATH);
         m_cszFileName = psz;
+        ttASSERT(m_cszFileName.length() < MAX_PATH);
     }
     void ShowCreatePrompt()
     {
@@ -92,8 +92,8 @@ public:
     void AddFlags(DWORD flags) { m_pofn->Flags |= flags; }
 
     OPENFILENAMEA* GetOF() { return m_pofn; }
-                   operator OPENFILENAMEA*() const { return m_pofn; }
-                   operator char*() const { return (char*) m_cszFileName; }
+    operator OPENFILENAMEA*() const { return m_pofn; }
+    operator char*() const { return (char*) m_cszFileName; }
 
 private:
     void FixExtension();
@@ -114,8 +114,8 @@ protected:
     OPENFILENAMEA* m_pofn;
 
     ttCMultiBtn m_ShadedBtns;
-    UINT        m_idOpenIcon;
-    UINT        m_idCancelIcon;
+    UINT m_idOpenIcon;
+    UINT m_idCancelIcon;
 
     bool m_bRepositionWindow;
     bool m_bShadeBtns;

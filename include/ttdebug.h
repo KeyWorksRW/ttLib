@@ -177,4 +177,4 @@ namespace tt
 
     #endif  // _DEBUG
 
-#endif _TT_LIB_DEBUG_H_GUARD_
+#endif // _TT_LIB_DEBUG_H_GUARD_
