@@ -159,9 +159,9 @@ namespace ttlib
 
     #if defined(_WIN32)
 
-    // Caution! If you use any of the following functions, you MUST link with ttLibwin.lib NOT ttlib.lib
+        // Caution! If you use any of the following functions, you MUST link with ttLibwin.lib NOT ttlib.lib
 
-    #include <windows.h>
+        #include <windows.h>
 
     /// Sets title to use in all calls to ttlib::MsgBox
     void SetMsgBoxTitle(std::string_view utf8Title);
@@ -205,5 +205,20 @@ namespace ttlib
     #endif  // end _WIN32 section
 
 }  // namespace ttlib
+
+// Some useful macros if you don't already have them
+
+    #ifndef assertm
+   /// assert with a message
+        #define assertm(exp, msg) assert(((void) msg, exp))
+    #endif
+
+    #if defined(NDEBUG)
+        #define DBG_PARAM(param) /* param */
+    #else
+   /// Use this macro around a function parameter that you only use in DEBUG builds. In
+   /// non-debug builds, the argument is commented out.
+        #define DBG_PARAM(param) param
+    #endif
 
 #endif  // _TTLIB_NAMESPACE_H_GUARD_
