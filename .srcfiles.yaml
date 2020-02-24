@@ -52,6 +52,7 @@ Files:
     winsrc/ttshadebtn.cpp      # ttCShadeBtn class
     winsrc/ttwin.cpp           # ttCWin class
     winsrc/ttwinmisc.cpp       # Miscellaneous functions for use on Windows
+    winsrc/ttwinspace.cpp      # Windows-only ttlib namespace functions
     winsrc/ttwstr.cpp          # Wide-character string class
 
 # ttLib files
