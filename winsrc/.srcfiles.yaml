@@ -16,21 +16,26 @@ Options:
     TargetDir:  ../lib
 
 Files:
-    # These files should be moved to ../src once they can be compiled without Windows
+
+# The ../src/ files used to build ttLib.lib
+
+    ../src/ttconsole.cpp    # class that sets/restores console foreground color
+    ../src/ttcstr.cpp       # Class for handling zero-terminated char strings.
+    ../src/ttcview.cpp      # string_view functionality on a zero-terminated char string.
+    ../src/ttenumstr.cpp    # ttEnumStr, ttEnumStr
+    ../src/ttformat.cpp     # ttString::Printf(...)
+    ../src/ttlibspace.cpp   # ttlib namespace functions
+    ../src/ttpath.cpp       # Contains functions for working with filesystem::path and filesystem::directory
+    ../src/ttnamespace.cpp  # tt namespace functions
+    ../src/ttstring.cpp     # std::string class with some additional functionality
+    ../src/tttextfile.cpp   # Classes for reading and writing text files.
+    ../src/ttTR.cpp         # Function for translating strings
+    ../src/ttcvector.cpp    # Vector class for storing ttlib::cstr strings
+
+    # These files should be moved to ../src once they can be compiled/used without Windows
 
     ttbasethread.cpp    # ttCBaseThread class
-    tthashpair.cpp      # ttCHashPair
     ttmultithread.cpp   # ttCMultiThrd class
-    ttprintf.cpp        # printf
-    ttstr.cpp           # ttCStr class
-    ttmisc.cpp          # miscellaneous functions
-    ttstrfuncs.cpp      # string handling and ttStr class
-
-    # This is obsolete and should be replaced with pugixml!
-    ttxml.cpp
-
-    # This is obsolete and should be replaced by ttlib::textfile or ttlib::viewfile
-    ttlinefile.cpp
 
 # Windows only files
 
@@ -38,14 +43,24 @@ Files:
     ttdib.cpp           # ttCDib class
     ttdirdlg.cpp        # dialog for selecting a directory
     ttdlg.cpp           # ttCDlg class
-    ttfile.cpp          # ttCFile class
-    ttfiledir.cpp       # file and directory handling
     ttfiledlg.cpp       # ttCFileDlg class
-    ttheap.cpp          # ttCHeap class
-    ttlist.cpp          # ttCList class
     ttmultibtn.cpp      # ttCMultiBtn class
     ttshadebtn.cpp      # ttCShadeBtn class
     ttwin.cpp           # ttCWin class
-    ttwinmisc.cpp       # Miscellaneous functions for use on Windows
     ttwinspace.cpp      # Windows-only ttlib namespace functions
+
+# The following modules are slated for removal as soon as all callers stop using them.
+
+    ttfile.cpp          # ttCFile class
+    ttfiledir.cpp       # file and directory handling
+    tthashpair.cpp      # ttCHashPair
+    ttheap.cpp          # ttCHeap class
+    ttlinefile.cpp      # Line-oriented file class
+    ttlist.cpp          # ttCList class
+    ttmisc.cpp          # miscellaneous functions
+    ttprintf.cpp        # printf
+    ttstr.cpp           # ttCStr class
+    ttstrfuncs.cpp      # C-style string handling
+    ttwinmisc.cpp       # Miscellaneous functions for use on Windows
     ttwstr.cpp          # Wide-character string class
+    ttxml.cpp

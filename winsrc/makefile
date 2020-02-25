@@ -38,17 +38,22 @@ BldScriptD=$(bdir)/$(cmplr)_dbg.ninja
 
 ########## release section ##########
 
-release: $(BldScript) ttLib
+release: $(BldScript) ttLibwin
 
-ttLib:
+ttLibwin:
 	ninja -f $(BldScript)
 
 ########## debug section ##########
 
-debug: $(BldScriptD) ttLibD
+debug: $(BldScriptD) ttLibwinD
 
-ttLibD:
+ttLibwinD:
 	ninja -f $(BldScriptD)
+
+########## localization ##########
+
+locale:
+	xgettext -k_ -k_tt -k_ttp:1,2 -kttTR -i -c --omit-header -fxgen.lst
 
 ########## clean release section ##########
 

@@ -14,13 +14,6 @@
     #error "This module can only be compiled for Windows"
 #endif
 
-#if !defined(TTALL_LIB)
-    #if defined(NDEBUG)
-        #pragma comment(lib, "ttLibwin.lib")
-    #else
-        #pragma comment(lib, "ttLibwinD.lib")
-    #endif
-#endif
 #include "../include/ttlibwin.h"
 
 #include "../include/ttdirdlg.h"  // ttCDirDlg

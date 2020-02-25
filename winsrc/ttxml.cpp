@@ -18,14 +18,6 @@
     #error "This module can only be compiled for Windows"
 #endif
 
-#if !defined(TTALL_LIB)
-    #if defined(NDEBUG)
-        #pragma comment(lib, "ttLibwin.lib")
-    #else
-        #pragma comment(lib, "ttLibwinD.lib")
-    #endif
-#endif
-
 #include "../include/ttlibwin.h"    // Master header file for ttLibwin.lib
 #include "../include/ttxml.h"
 #include "../include/ttfile.h"  // ttCFile

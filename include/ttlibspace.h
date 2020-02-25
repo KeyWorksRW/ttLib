@@ -9,6 +9,7 @@
 #pragma once
 
 // clang-format off
+
 #ifndef _TTLIB_NAMESPACE_H_GUARD_
 #define _TTLIB_NAMESPACE_H_GUARD_
 
@@ -16,6 +17,22 @@
 #include <string_view>
 
 #include <filesystem>  // directory_entry
+
+// Some useful macros if you don't already have them
+
+#ifndef assertm
+/// assert with a message
+    #define assertm(exp, msg) assert(((void) msg, exp))
+#endif
+
+#if defined(NDEBUG)
+    #define DBG_PARAM(param) /* param */
+#else
+/// Use this macro around a function parameter that you only use in DEBUG builds. In
+/// non-debug builds, the argument is commented out.
+    #define DBG_PARAM(param) param
+#endif
+
 // clang-format on
 
 namespace ttlib
@@ -155,10 +172,16 @@ namespace ttlib
     bool dirExists(std::string_view dir);
     bool fileExists(std::string_view filename);
 
-    /////////////// Following section can only be used when compiling for Windows ///////////////
+}  // namespace ttlib
 
-    #if defined(_WIN32)
+/////////////// Following section can only be used when compiling for Windows ///////////////
 
+// clang-format off
+
+#if defined(_WIN32)
+
+namespace ttlib
+{
         // Caution! If you use any of the following functions, you MUST link with ttLibwin.lib NOT ttlib.lib
 
         #include <windows.h>
@@ -202,23 +225,8 @@ namespace ttlib
     HINSTANCE ShellRun(std::string_view filename, std::string_view args, std::string_view directory,
                        INT nShow = SW_SHOWNORMAL, HWND hwndParent = NULL);
 
-    #endif  // end _WIN32 section
-
 }  // namespace ttlib
 
-// Some useful macros if you don't already have them
-
-    #ifndef assertm
-   /// assert with a message
-        #define assertm(exp, msg) assert(((void) msg, exp))
-    #endif
-
-    #if defined(NDEBUG)
-        #define DBG_PARAM(param) /* param */
-    #else
-   /// Use this macro around a function parameter that you only use in DEBUG builds. In
-   /// non-debug builds, the argument is commented out.
-        #define DBG_PARAM(param) param
-    #endif
+#endif  // end _WIN32 section
 
 #endif  // _TTLIB_NAMESPACE_H_GUARD_
