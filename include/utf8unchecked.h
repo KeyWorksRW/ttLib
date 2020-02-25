@@ -1,4 +1,5 @@
 // Copyright 2006 Nemanja Trifunovic
+// Purpose: provide unchecked UTF conversions
 
 /*
 Permission is hereby granted, free of charge, to any person or organization

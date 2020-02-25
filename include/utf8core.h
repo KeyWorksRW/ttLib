@@ -1,4 +1,5 @@
 // Copyright 2006 Nemanja Trifunovic
+// Purpose: core UTF functionality used by utf8checked.h and utf8unchecked.h
 
 /*
 Permission is hereby granted, free of charge, to any person or organization
