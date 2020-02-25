@@ -33,8 +33,8 @@ public:
     ttCMultiBtn() {}
     ~ttCMultiBtn();
 
-    void         SetIcon(int idBtn, int idIcon, UINT nIconAlign = BS_LEFT);
-    void         SetIcon(int idBtn, const char* pszIconName, UINT nIconAlign = BS_LEFT);
+    void SetIcon(int idBtn, int idIcon, UINT nIconAlign = BS_LEFT);
+    void SetIcon(int idBtn, const char* pszIconName, UINT nIconAlign = BS_LEFT);
     ttCShadeBtn* FindShadeBtn(int id);
 
     typedef enum
@@ -60,5 +60,5 @@ private:
     // Class members
 
     ttCArray<ttCShadeBtn*> m_aBtns;
-    BTN_SHADE              m_btnShade;
+    BTN_SHADE m_btnShade;
 };

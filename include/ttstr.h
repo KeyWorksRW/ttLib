@@ -12,8 +12,8 @@
 
 // The string is stored in a zero-terminated char buffer.
 
-// The printf()/vprintf() methods are similar to the CRT versions only these don't support precision, width, or padding
-// These methods support c, C, d, u, x, X, s, S
+// The printf()/vprintf() methods are similar to the CRT versions only these don't support precision, width, or
+// padding These methods support c, C, d, u, x, X, s, S
 
 // clang-format off
 
@@ -39,7 +39,7 @@
 
 #pragma once
 
-#define _TT_TCSTR   // Used by ttString to determine if constructor is available or not
+#define _TT_TCSTR  // Used by ttlib::cstr to determine if constructor is available or not
 
 #include <cstring>
 
@@ -75,20 +75,20 @@ public:
 
     // std::string equivalents
 
-    char*  append(const char* psz);
-    char   back() { return (!empty() ? m_psz[size() - 1] : 0); }
-    char*  c_str() { return m_psz; }  // Note that this ALWAYS returns a char* type unlike std::string.c_str()
-    void   clear() { Delete(); }
-    char*  data() { return m_psz; }   // Note that this ALWAYS returns a char* type unlike std::string.data()
-    bool   empty() const { return (!m_psz || !m_psz[0]); }
-    char   front() { return (m_psz ? m_psz[0] : 0); }
+    char* append(const char* psz);
+    char back() { return (!empty() ? m_psz[size() - 1] : 0); }
+    char* c_str() { return m_psz; }  // Note that this ALWAYS returns a char* type unlike std::string.c_str()
+    void clear() { Delete(); }
+    char* data() { return m_psz; }  // Note that this ALWAYS returns a char* type unlike std::string.data()
+    bool empty() const { return (!m_psz || !m_psz[0]); }
+    char front() { return (m_psz ? m_psz[0] : 0); }
     size_t length() const { return (m_psz ? std::strlen(m_psz) : 0); }
-    void   reserve(size_t cap) { ReSize(cap); }
-    void   shrink_to_fit() { ReSize(size()); }
+    void reserve(size_t cap) { ReSize(cap); }
+    void shrink_to_fit() { ReSize(size()); }
     size_t size() const { return length(); }
-    int    compare(const char* psz) const { return (m_psz ? std::strcmp(m_psz, psz) : 1); }
+    int compare(const char* psz) const { return (m_psz ? std::strcmp(m_psz, psz) : 1); }
     size_t find(const char* psz) const;
-    bool   starts_with(const char* psz) const;
+    bool starts_with(const char* psz) const;
 
     // TODO: [KeyWorks - 11-27-2019]
     // size_t capacity(); // this would require adding a m_cap member and tracking all memory size.
@@ -167,7 +167,7 @@ public:
 
 #if defined(_WIN32)
     char* GetResString(size_t idString);
-    bool  GetWndText(HWND hwnd);
+    bool GetWndText(HWND hwnd);
 
     // This will always return a pointer, but if an error occurred, it will point to an empty string
     char* GetListBoxText(HWND hwnd) { return GetListBoxText(hwnd, ::SendMessage(hwnd, LB_GETCURSEL, 0, 0)); }
@@ -207,7 +207,7 @@ public:
     void ReSize(size_t cb);
     // returns 0 if there is no string
     size_t SizeBuffer() { return ttSize(m_psz); }
-    void   Delete()
+    void Delete()
     {
         if (m_psz)
         {
@@ -217,7 +217,7 @@ public:
     }
 
     // for when casting to char* is problematic
-    char*  GetPtr() { return m_psz; }
+    char* GetPtr() { return m_psz; }
     char** GetPPtr() { return &m_psz; }  // use with extreme caution!
 
     operator char*() const { return (char*) m_psz; }

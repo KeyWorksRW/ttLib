@@ -21,7 +21,7 @@
 #include <string_view>
 #include <sstream>
 
-#include "ttstr.h"    // ttCStr
+#include "ttstr.h"  // ttCStr
 
 #if defined(_WIN32)
     #include <Wininet.h>
@@ -32,6 +32,9 @@
 class ttCFile
 {
 public:
+#if !defined(TTLIB_INTERNAL_BUILD)
+    [[deprecated("Use ttlib::textfile instead of this class")]]
+#endif
     ttCFile();
     ttCFile(ptrdiff_t cb);
     ~ttCFile();
@@ -64,11 +67,12 @@ public:
     bool ReadStrFile(const char* pszText);
 
 #if defined(_WIN32)
-    bool ReadURL(const char* pszURL, HINTERNET hInternet = NULL);  // ERROR_INVALID_NAME, ERROR_SERVICE_DOES_NOT_EXIST
-                                                                   // if cannot access, ERROR_CANTOPEN if URL not found
-    HRESULT ReadFile(IStream* pStream);  // ERROR_INVALID_PARAMETER, ERROR_SEEK_FAILURE, ERROR_CANTREAD
-    bool    ReadResource(DWORD idResource);
-    size_t  GetURLFileSize() { return m_cbUrlFile; }
+    bool ReadURL(const char* pszURL,
+                 HINTERNET hInternet = NULL);  // ERROR_INVALID_NAME, ERROR_SERVICE_DOES_NOT_EXIST
+                                               // if cannot access, ERROR_CANTOPEN if URL not found
+    HRESULT ReadFile(IStream* pStream);        // ERROR_INVALID_PARAMETER, ERROR_SEEK_FAILURE, ERROR_CANTREAD
+    bool ReadResource(DWORD idResource);
+    size_t GetURLFileSize() { return m_cbUrlFile; }
     HRESULT GetErrorResult() { return m_ioResult; }
 #endif  // defined(_WIN32)
 
@@ -88,11 +92,11 @@ public:
         m_bReadlineReady = true;
     }
     char* GetLnPtr() { return m_pszLine; }
-    bool  IsEndOfFile() const { return (!m_pCurrent || !*m_pCurrent) ? true : false; }
+    bool IsEndOfFile() const { return (!m_pCurrent || !*m_pCurrent) ? true : false; }
 
     // Returns zero 0 if no line has been successfully read. The first call to ReadLine will
     // set this value to 1, and the value will be incremented with each additional call.
-    int  GetLastReadLine() { return m_curReadLine; }
+    int GetLastReadLine() { return m_curReadLine; }
     void SetLastReadLine(int line) { m_curReadLine = line; }
 
     // Returns nullptr if blank, comment, section diveder, or %YAML line. Otherwises returns
@@ -112,7 +116,7 @@ public:
 
     // Use when writing data
     size_t GetCurLineLength();
-    char   GetPrevChar()
+    char GetPrevChar()
     {
         if (m_pCurrent && m_pCurrent > m_pbuf)
             return m_pCurrent[-1];
@@ -135,12 +139,15 @@ public:
     void Delete();
 
     size_t GetCurSize() const { return m_cbAllocated; }
-    char*  GetBeginPosition() const { return m_pbuf; }
-    char*  GetEndPosition() const { return m_pEnd; }
+    char* GetBeginPosition() const { return m_pbuf; }
+    char* GetEndPosition() const { return m_pEnd; }
 
     // Used for InsertStr().
     char* GetCurPosition() { return m_pCurrent; }
-    bool IsUnicode() { return (m_pbuf && m_pEnd > m_pbuf + 2 && (BYTE) m_pbuf[0] == 0xFF && (BYTE) m_pbuf[1] == 0xFE); }
+    bool IsUnicode()
+    {
+        return (m_pbuf && m_pEnd > m_pbuf + 2 && (BYTE) m_pbuf[0] == 0xFF && (BYTE) m_pbuf[1] == 0xFE);
+    }
 
     void SetCurPosition(char* psz)
     {
@@ -151,8 +158,8 @@ public:
             m_pCurrent = psz;
     }
 
-    // Calling readLine() will modify the contents -- which means you can't compare two ttCFile objects if you parsed
-    // one with readLine(). To allow for this, call MakeCopy() after you have read the file into memory, and
+    // Calling readLine() will modify the contents -- which means you can't compare two ttCFile objects if you
+    // parsed one with readLine(). To allow for this, call MakeCopy() after you have read the file into memory, and
     // RestoreCopy() if you need to reset the file contents to they way they were before readLine() was called.
     void MakeCopy();
 

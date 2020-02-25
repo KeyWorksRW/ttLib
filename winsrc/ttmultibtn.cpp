@@ -9,7 +9,7 @@
 #include "pch.h"
 
 #if !defined(_WIN32)
-    #error "This header file can only be used when compiling for Windows"
+    #error "This module can only be compiled for Windows"
 #endif
 
 #if !defined(TTALL_LIB)
@@ -20,10 +20,14 @@
     #endif
 #endif
 
-#if defined(_WIN32)
+#include <sstream>
 
-    #include "../include/ttmultibtn.h"  // ttCMultiBtn
-    #include "../include/ttshadebtn.h"  // ttCShadeBtn
+#include "../include/ttlibwin.h"
+
+#include "../include/ttlibspace.h"
+#include "../include/ttdebug.h"
+#include "../include/ttmultibtn.h"  // ttCMultiBtn
+#include "../include/ttshadebtn.h"  // ttCShadeBtn
 
 BOOL WINAPI ttpriv::EnumBtnProc(HWND hwnd, LPARAM lval)
 {
@@ -75,9 +79,11 @@ void ttCMultiBtn::SetIcon(int idBtn, int idIcon, UINT nIconAlign)
             return;
         }
     }
-    #if !defined(NDEBUG)  // Starts debug section.
-    ttTrace("ttCMultiBtn::SetIcon was unable to find the button id: %d", idBtn);
-    #endif
+#if !defined(NDEBUG)  // Starts debug section.
+    std::stringstream msg;
+    msg << "ttCMultiBtn::SetIcon was unable to find the button id: ", idBtn;
+    ttlib::wintrace(msg.str());
+#endif
 }
 
 void ttCMultiBtn::SetIcon(int idBtn, const char* pszIconName, UINT nIconAlign)
@@ -94,9 +100,11 @@ void ttCMultiBtn::SetIcon(int idBtn, const char* pszIconName, UINT nIconAlign)
             return;
         }
     }
-    #if !defined(NDEBUG)  // Starts debug section.
-    ttTrace("ttCMultiBtn::SetIcon was unable to find the button id: %d", idBtn);
-    #endif
+#if !defined(NDEBUG)  // Starts debug section.
+    std::stringstream msg;
+    msg << "ttCMultiBtn::SetIcon was unable to find the button id: ", idBtn;
+    ttlib::wintrace(msg.str());
+#endif
 }
 
 ttCShadeBtn* ttCMultiBtn::FindShadeBtn(int id)
@@ -112,5 +120,3 @@ ttCShadeBtn* ttCMultiBtn::FindShadeBtn(int id)
     }
     return NULL;
 }
-
-#endif  // !defined(_WIN32)

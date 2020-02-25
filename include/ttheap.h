@@ -12,6 +12,7 @@
     #error "This header file can only be used when compiling for Windows"
 #endif
 
+#include "ttlibwin.h"    // Master header file for ttLibwin.lib
 #include <wtypes.h>
 
 /*

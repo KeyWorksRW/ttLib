@@ -9,7 +9,7 @@
 #include "pch.h"
 
 #if !defined(_WIN32)
-    #error "This header file can only be used when compiling for Windows"
+    #error "This module can only be compiled for Windows"
 #endif
 
 #if !defined(TTALL_LIB)
@@ -19,6 +19,8 @@
         #pragma comment(lib, "ttLibwinD.lib")
     #endif
 #endif
+
+#include "../include/ttlibwin.h"
 
 #include "../include/ttdebug.h"  // ttASSERT macros
 #include "../include/ttstr.h"    // ttCStr
@@ -132,7 +134,7 @@ bool ttCWin::CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWN
         ::CreateWindowExA(dwExStyle, m_pszClassName, pszTitle, dwStyle, CW_USEDEFAULT, CW_USEDEFAULT,
                           CW_USEDEFAULT, CW_USEDEFAULT, hwndParent, hmenu, m_hinst, (void*) this);
 
-    return ttIsValidWindow(m_hwnd);
+    return (m_hwnd && IsWindow(m_hwnd));
 }
 
 bool ttCWin::SubClass(HWND hwnd)

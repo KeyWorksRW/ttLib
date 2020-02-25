@@ -8,6 +8,7 @@
 
 #include "pch.h"
 
+#include <cassert>
 #include <cstdarg>
 #include <sstream>
 #include <iomanip>

@@ -442,7 +442,7 @@ inline bool ttIsValidWindow(HWND hwnd)
 
 ///////////////// The following code is obsolete -- it's here until all caller's get changed
 
-#include "../include/ttstr.h"
+#include "ttstr.h"
 
 // clang-format on
 

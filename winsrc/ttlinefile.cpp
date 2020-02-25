@@ -9,7 +9,7 @@
 #include "pch.h"
 
 #if !defined(_WIN32)
-    #error "This header file can only be used when compiling for Windows"
+    #error "This module can only be compiled for Windows"
 #endif
 
 #if !defined(TTALL_LIB)
@@ -20,7 +20,8 @@
     #endif
 #endif
 
-#include "../include/ttfile.h"  // ttCFile
+#include "../include/ttlibwin.h"    // Master header file for ttLibwin.lib
+#include "../include/ttfile.h"      // ttCFile
 #include "../include/ttlinefile.h"  // ttCLineFile
 
 ttCLineFile::ttCLineFile()

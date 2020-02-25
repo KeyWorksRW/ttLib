@@ -18,7 +18,7 @@
 #include "pch.h"
 
 #if !defined(_WIN32)
-    #error "This header file can only be used when compiling for Windows"
+    #error "This module can only be compiled for Windows"
 #endif
 
 #if !defined(TTALL_LIB)
@@ -29,6 +29,7 @@
     #endif
 #endif
 
+#include "../include/ttlibwin.h"    // Master header file for ttLibwin.lib
 #include "../include/ttlist.h"         // ttCList, ttCDblList, ttCStrIntList
 #include "../include/ttcritsection.h"  // ttCCritSection, ttCCritLock
 

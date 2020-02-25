@@ -19,6 +19,9 @@
 class ttCLineFile : public ttCHeap
 {
 public:
+#if !defined(TTLIB_INTERNAL_BUILD)
+    [[deprecated("Use ttlib::textfile instead of this class")]]
+#endif
     ttCLineFile();
     ttCLineFile(HANDLE hHeap);
 
@@ -36,7 +39,7 @@ public:
     // Largest line number you can read
     int GetMaxLine() { return m_cLines - 1; }
     // Total number of lines
-    int  GetCount() const { return m_cLines; }
+    int GetCount() const { return m_cLines; }
     bool InRange(int pos) const { return (pos < m_cLines && m_cLines > 0); }
 
     // sort lines into alphabetical order
@@ -95,7 +98,7 @@ private:
 
     // Class members
 
-    ttCStr  m_cszReadFile;
+    ttCStr m_cszReadFile;
     ttCFile m_file;
 
     int m_cLines;

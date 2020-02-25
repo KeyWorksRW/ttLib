@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "ttstring.h"
+#include "ttcstr.h"
 
 /// @file
 /// These two classes break a string containing substrings into a vector of substrings.
@@ -29,7 +29,7 @@
 /// paths separated by a semicolon. Handing the PATH$ string to either of these classes
 /// would give you a vector of each individual path.
 
-class ttEnumStr : public std::vector<ttString>
+class ttEnumStr : public std::vector<ttlib::cstr>
 {
 public:
     ttEnumStr(std::string_view str, char separator = ';');

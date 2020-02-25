@@ -11,7 +11,7 @@
 #include "pch.h"
 
 #if !defined(_WIN32)
-    #error "This header file can only be used when compiling for Windows"
+    #error "This module can only be compiled for Windows"
 #endif
 
 #if !defined(TTALL_LIB)
@@ -21,6 +21,7 @@
         #pragma comment(lib, "ttLibwinD.lib")
     #endif
 #endif
+#include "../include/ttlibwin.h"
 
 #include "../include/ttdirdlg.h"  // ttCDirDlg
 #include "../include/ttdebug.h"   // ttASSERT macros

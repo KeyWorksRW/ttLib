@@ -31,7 +31,7 @@
 #define CL_CMDLINE_H 1
 
 #include "ttnamespace.h"
-#include "ttstring.h"
+#include "ttcstr.h"
 
 #if _WIN32
     static_assert(sizeof(wchar_t) == 2, "Invalid configuration");
@@ -1521,8 +1521,8 @@ struct ConvertTo<std::basic_string<wchar_t, Traits, Alloc>> {
 };
 
 template <>
-struct ConvertTo<ttString> {
-    bool operator()(ParseContext const& ctx, ttString& value) const {
+struct ConvertTo<ttlib::cstr> {
+    bool operator()(ParseContext const& ctx, ttlib::cstr& value) const {
         value.assign(ctx.arg.begin(), ctx.arg.end());
         return true;
     }

@@ -9,7 +9,7 @@
 #include "pch.h"
 
 #if !defined(_WIN32)
-    #error "This header file can only be used when compiling for Windows"
+    #error "This module can only be compiled for Windows"
 #endif
 
 #if !defined(TTALL_LIB)
@@ -21,6 +21,8 @@
 #endif
 
 #include <VersionHelpers.h>
+
+#include "../include/ttlibwin.h"
 
 #include "../include/ttdlg.h"
 
@@ -80,7 +82,7 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
         SetWindowLongPtrA(hdlg, DWLP_USER, (LONG_PTR) lParam);
         ttCDlg* pThis = (ttCDlg*) lParam;
         pThis->m_hwnd = hdlg;
-        if (!ttIsValidWindow(pThis->m_hwndParent))
+        if (!(pThis->m_hwndParent && IsWindow(pThis->m_hwndParent)))
             pThis->m_hwndParent = GetActiveWindow();
 
         LRESULT lResult = 0;
