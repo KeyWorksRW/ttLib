@@ -96,6 +96,34 @@ size_t textfile::FindLineContaining(std::string_view str, size_t start, ttlib::C
     return ttlib::npos;
 }
 
+bool textfile::issameas(viewfile other, CHECK_CASE checkcase)
+{
+    if (size() != other.size())
+        return false;
+
+    size_t pos = 0;
+    for (; pos < other.size(); ++pos)
+    {
+        if (!ttlib::issameas(at(pos), other[pos], checkcase))
+            break;
+    }
+    return (pos == size());
+}
+
+bool textfile::issameas(textfile other, CHECK_CASE checkcase)
+{
+    if (size() != other.size())
+        return false;
+
+    size_t pos = 0;
+    for (; pos < other.size(); ++pos)
+    {
+        if (!ttlib::issameas(at(pos), other[pos], checkcase))
+            break;
+    }
+    return (pos == size());
+}
+
 /////////////////////// ttViewFile /////////////////////////////////
 
 bool viewfile::ReadFile(std::string_view filename)
@@ -180,4 +208,32 @@ size_t viewfile::FindLineContaining(std::string_view str, size_t start, ttlib::C
             return start;
     }
     return ttlib::npos;
+}
+
+bool viewfile::issameas(viewfile other, CHECK_CASE checkcase)
+{
+    if (size() != other.size())
+        return false;
+
+    size_t pos = 0;
+    for (; pos < other.size(); ++pos)
+    {
+        if (!ttlib::issameas(at(pos), other[pos], checkcase))
+            break;
+    }
+    return (pos == size());
+}
+
+bool viewfile::issameas(textfile other, CHECK_CASE checkcase)
+{
+    if (size() != other.size())
+        return false;
+
+    size_t pos = 0;
+    for (; pos < other.size(); ++pos)
+    {
+        if (!ttlib::issameas(at(pos), other[pos], checkcase))
+            break;
+    }
+    return (pos == size());
 }
