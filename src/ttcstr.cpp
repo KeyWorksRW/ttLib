@@ -251,7 +251,8 @@ size_t cstr::ExtractSubString(std::string_view src, size_t start)
  * @param CaseSensitive -- indicates whether or not to use a case-insensitive search
  * @return Number of replacements made
  */
-size_t cstr::Replace(std::string_view oldtext, std::string_view newtext, bool replaceAll, ttlib::CHECK_CASE checkcase)
+size_t cstr::Replace(std::string_view oldtext, std::string_view newtext, bool replaceAll,
+                     ttlib::CHECK_CASE checkcase)
 {
     if (oldtext.empty())
         return false;
@@ -269,7 +270,8 @@ size_t cstr::Replace(std::string_view oldtext, std::string_view newtext, bool re
         pos += newtext.length();
         if (replaceAll)
         {
-            pos = pos = locate(oldtext, 0, checkcase);;
+            pos = pos = locate(oldtext, 0, checkcase);
+            ;
         }
     } while (replaceAll);
 
