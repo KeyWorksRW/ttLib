@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttlib::cstr class
+// Name:      ttcstr.cpp
 // Purpose:   Class for handling zero-terminated char strings.
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2020 KeyWorks Software (Ralph Walden)
@@ -17,7 +17,6 @@
 #include <sstream>
 
 #include "../include/ttlibspace.h"
-
 #include "../include/ttcstr.h"
 #include "../include/utf8unchecked.h"
 
@@ -942,47 +941,4 @@ cstr& cdecl cstr::Format(std::string_view format, ...)
     this->assign(buffer.str());
 
     return *this;
-}
-
-////////////////////////////// cstrVector methods ///////////////////////////////
-
-size_t cstrVector::find(size_t start, std::string_view str, CHECK_CASE checkcase)
-{
-    for (; start < size(); ++start)
-    {
-        if (ttlib::issameas(at(start), str, checkcase))
-            return start;
-    }
-    return ttlib::npos;
-}
-
-size_t cstrVector::findprefix(size_t start, std::string_view str, CHECK_CASE checkcase)
-{
-    if (checkcase == CHECK_CASE::yes)
-    {
-        for (; start < size(); ++start)
-        {
-            if (ttlib::issamesubstr(at(start), str))
-                return start;
-        }
-    }
-    else
-    {
-        for (; start < size(); ++start)
-        {
-            if (ttlib::issamesubstri(at(start), str))
-                return start;
-        }
-    }
-    return ttlib::npos;
-}
-
-size_t cstrVector::contains(size_t start, std::string_view str, CHECK_CASE checkcase)
-{
-    for (; start < size(); ++start)
-    {
-        if (ttlib::contains(at(start), str, checkcase))
-            return start;
-    }
-    return ttlib::npos;
 }

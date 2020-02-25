@@ -34,7 +34,7 @@ Files:
     # This is obsolete and should be replaced with pugixml!
     winsrc/ttxml.cpp
 
-    # This is obsolete and should be replaced by ttTextFile or ttTextView
+    # This is obsolete and should be replaced by ttlib::textfile or ttlib::viewfile
     winsrc/ttlinefile.cpp
 
 # Windows only files
@@ -65,5 +65,6 @@ Files:
     src/ttpath.cpp       # Contains functions for working with filesystem::path and filesystem::directory
     src/ttnamespace.cpp  # tt namespace functions
     src/ttstring.cpp     # std::string class with some additional functionality
-    src/tttextfile.cpp   # Class for reading and writing text files.
+    src/tttextfile.cpp   # Classes for reading and writing text files.
     src/ttTR.cpp         # Function for translating strings
+    src/ttcvector.cpp    # Vector class for storing ttlib::cstr strings

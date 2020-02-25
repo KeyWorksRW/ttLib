@@ -10,9 +10,9 @@
 
 /// @file
 ///
-/// The ttlib::cstr class handles zero-terminated char strings. It inherits from std::string and can be used in most
-/// places where std::string<char> is used. It provides additional functionality including utf8/16 conversions,
-/// file name handling, etc.
+/// The ttlib::cstr class handles zero-terminated char strings. It inherits from std::string and can be used in
+/// most places where std::string<char> is used. It provides additional functionality including utf8/16
+/// conversions, file name handling, etc.
 
 #include <cassert>
 #include <filesystem>
@@ -71,7 +71,8 @@ namespace ttlib
         int comparei(std::string_view str) const;
 
         /// Locates the position of a substring.
-        size_t locate(std::string_view str, size_t posStart = 0, ttlib::CHECK_CASE check = ttlib::CHECK_CASE::yes) const;
+        size_t locate(std::string_view str, size_t posStart = 0,
+                      ttlib::CHECK_CASE check = ttlib::CHECK_CASE::yes) const;
 
         /// Returns true if the sub string exists
         bool contains(std::string_view sub, ttlib::CHECK_CASE checkcase = ttlib::CHECK_CASE::yes)
@@ -176,6 +177,13 @@ namespace ttlib
         /// Note: Windows works just fine using forward slashes instead of backslashes.
         cstr& backslashestoforward();
 
+        /// Add a trailing forward slash (default is only if there isn't one already)
+        void addtrailingslash(bool always = false)
+        {
+            if (always || back() != '/')
+                push_back('/');
+        }
+
         /// Returns true if current filename contains the specified case-insensitive extension.
         bool hasExtension(std::string_view ext) const
         {
@@ -233,73 +241,30 @@ namespace ttlib
         bool dirExists() const;
     };
 
-    /// Retrieves the current working directory and restores it in the dtor.
+    /////////////////////////////////// cwd class /////////////////////////////////////////
+
+    /// Retrieves the current working directory and optionally restores it in the dtor.
     class cwd : public ttlib::cstr
     {
     public:
-        cwd() { assignCwd(); }
+        cwd(bool restore = false)
+        {
+            m_restore = restore;
+            assignCwd();
+        }
         ~cwd()
         {
-            std::filesystem::path cwd(c_str());
-            std::filesystem::current_path(cwd);
-        }
-    };
-
-    /// Contains a vector of cstr classes with some additional functionality such
-    /// as only adding a string if it doesn't already exist.
-    class cstrVector : public std::vector<ttlib::cstr>
-    {
-    public:
-        /// Same as find(pos, ch) but with a boolean result
-        bool bfind(size_type pos, char ch) const { return (at(pos).find(ch) != npos); }
-
-        /// Same as find(pos, str) but with a boolean result
-        bool bfind(size_type pos, std::string_view str) const { return (at(pos).find(str) != npos); }
-
-        /// Only appends the string if it doesn't already exist.
-        ///
-        /// Returns true if the string was added, false if it already existed.
-        bool append(std::string_view str, ttlib::CHECK_CASE checkcase = ttlib::CHECK_CASE::yes)
-        {
-            if (find(0, str, checkcase) != npos)
+            if (m_restore)
             {
-                return false;
+                std::filesystem::path cwd(c_str());
+                std::filesystem::current_path(cwd);
             }
-            push_back(str);
-            return true;
         }
 
-        /// Only adds the filename if it doesn't already exist. On Windows, the case of the
-        /// filename is ignored when checking to see if the filename already exists.
-        ///
-        /// Returns true if the file was added, false if it already existed.
-        bool addfilename(std::string_view filename)
-        {
-            for (auto iter : *this)
-            {
-#if defined(_WIN32)
-                if (iter.comparei(filename) == 0)
-                    return false;
-#else
-                if (iter.compare(filename) == 0)
-                    return false;
-#endif  // _WIN32
-            }
-            push_back(filename);
-            return true;
-        }
+        bool ChangeDir() { return ttlib::ChangeDir(*this); }
 
-        /// Finds the position of the first string identical to the specified string.
-        size_t find(size_t start, std::string_view str, ttlib::CHECK_CASE checkcase = ttlib::CHECK_CASE::yes);
-
-        /// Finds the position of the first string with specified prefix.
-        size_t findprefix(size_t start, std::string_view prefix, ttlib::CHECK_CASE checkcase = ttlib::CHECK_CASE::yes);
-
-        /// Finds the position of the first string containing the specified sub-string.
-        size_t contains(size_t start, std::string_view substring, ttlib::CHECK_CASE checkcase = ttlib::CHECK_CASE::yes);
-
-        /// Unlike append(), this will add the string even if it already exists.
-        void operator+=(std::string_view str) { push_back(str); }
+    private:
+        bool m_restore;
     };
 
 }  // namespace ttlib

@@ -25,5 +25,6 @@ Files:
     ttpath.cpp       # Contains functions for working with filesystem::path and filesystem::directory
     ttnamespace.cpp  # tt namespace functions
     ttstring.cpp     # std::string class with some additional functionality
-    tttextfile.cpp   # Class for reading and writing text files.
+    tttextfile.cpp   # Classes for reading and writing text files.
     ttTR.cpp         # Function for translating strings
+    ttcvector.cpp    # Vector class for storing ttlib::cstr strings
