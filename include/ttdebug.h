@@ -23,15 +23,22 @@
 #include <sstream>
 
 #if !defined(_WIN32)
-    #error Include ttassert.h and use wxWidgets if you want ttASSERT macros on non-Windows OS
+    #error The functions and macros in this header file are only available on Windows
 #endif  // _WIN32
 // clang-format on
 
-// formats a string and displays it in a ttTrace window (if ttTrace is running)
-void cdecl ttTrace(const char* pszFormat, ...);
+    #include "../include/ttcview.h"
 
-// clears the ttTrace window if ttTrace is running
-void ttTraceClear();
+namespace ttlib
+{
+    /// Displays message in ttTrace.exe window if it is running.
+    void wintrace(ttlib::cview msg);
+    /// Clears all text in ttTrace.exe window (if it is running).
+    void wintraceclear();
+
+    // ttASSERTS are enabled by default -- you can change that state with this function.
+    void allow_asserts(bool allowasserts = false);
+}  // namespace ttlib
 
 bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond, const char* msg);
 bool ttdoReportLastError(const char* filename, const char* function, int line);
@@ -42,12 +49,29 @@ inline bool ttAssertionMsg(const char* filename, const char* function, int line,
     return ttAssertionMsg(filename, function, line, cond, msg.str().c_str());
 }
 
-// Enables disables all assertion messages
-void ttSetAsserts(bool bDisable);
-
 __declspec(noreturn) void ttOOM(void);
 
+// tt namespace is deprecated and should be replaced with ttlib namespace
 namespace tt
+{
+    // handle to ttTrace main window (if it was running when ttTrace was called
+    [[deprecated]] extern HWND hwndTrace;
+
+    [[deprecated]] extern const UINT
+        WMP_TRACE_GENERAL;                             // WM_USER + 0x1f3;    // general message to send to ttTrace
+    [[deprecated]] extern const UINT WMP_TRACE_MSG;    // WM_USER + 0x1f5;    // trace message to send to ttTrace
+    [[deprecated]] extern const UINT WMP_CLEAR_TRACE;  // WM_USER + 0x1f9;    // clears the ttTrace window
+
+    // class name of window to send trace messages to
+    [[deprecated]] extern const char* txtTraceClass;
+    // name of shared memory to write to
+    [[deprecated]] extern const char* txtTraceShareName;
+
+    [[deprecated]] int CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc,
+                                   int line);
+}  // namespace tt
+
+namespace ttlib
 {
     // handle to ttTrace main window (if it was running when ttTrace was called
     extern HWND hwndTrace;
@@ -62,7 +86,7 @@ namespace tt
     extern const char* txtTraceShareName;
 
     int CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc, int line);
-}  // namespace tt
+}  // namespace ttlib
 
     #ifdef _DEBUG
         #define ttASSERT(cond)                                                               \
@@ -177,4 +201,4 @@ namespace tt
 
     #endif  // _DEBUG
 
-#endif // _TT_LIB_DEBUG_H_GUARD_
+#endif  // _TT_LIB_DEBUG_H_GUARD_
