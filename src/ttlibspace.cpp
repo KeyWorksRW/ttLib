@@ -13,6 +13,7 @@
 #include <cctype>
 
 #include "../include/ttlibspace.h"
+#include "../include/utf8unchecked.h"
 
 // Global empty string.
 const std::string ttlib::emptystring("");
@@ -420,10 +421,14 @@ bool ttlib::ChangeDir(std::string_view newdir)
         return false;
     try
     {
-        // BUGBUG: [KeyWorks - 02-22-2020] On Windows, assume newdir is a UTF8 string, and convert it to
-        // a wstring before handing it to path.
+#if defined(_WIN32)
+        std::wstring str16;
+        utf8::unchecked::utf8to16(newdir.begin(), newdir.end(), back_inserter(str16));
+        auto dir = std::filesystem::directory_entry(std::filesystem::path(str16));
+#else
         auto dir = std::filesystem::directory_entry(std::filesystem::path(newdir));
-        if (dir.exists() && dir.is_directory())
+#endif
+        if (dir.exists())
         {
             std::filesystem::current_path(dir);
             return true;
