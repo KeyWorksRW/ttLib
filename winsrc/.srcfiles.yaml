@@ -29,7 +29,7 @@ Files:
     # This is obsolete and should be replaced with pugixml!
     ttxml.cpp
 
-    # This is obsolete and should be replaced by ttTextFile or ttTextView
+    # This is obsolete and should be replaced by ttlib::textfile or ttlib::viewfile
     ttlinefile.cpp
 
 # Windows only files

@@ -1,8 +1,8 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttTextFile
-// Purpose:   Class for reading and writing text files.
+// Name:      ttlib::textfile, ttlib::viewfile
+// Purpose:   Classes for reading and writing text files.
 // Author:    Ralph Walden
-// Copyright: Copyright (c) 2019 KeyWorks Software (Ralph Walden)
+// Copyright: Copyright (c) 2019-2020 KeyWorks Software (Ralph Walden)
 // License:   Apache License (see LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
@@ -10,12 +10,12 @@
 
 #include <fstream>
 
-#include "../include/ttnamespace.h"
+#include "../include/ttlibspace.h"
 #include "../include/tttextfile.h"
 
-using namespace tt;
+using namespace ttlib;
 
-bool ttTextFile::ReadFile(std::string_view filename)
+bool textfile::ReadFile(std::string_view filename)
 {
     clear();
     std::ifstream file(filename, std::ios::binary);
@@ -26,7 +26,7 @@ bool ttTextFile::ReadFile(std::string_view filename)
     return true;
 }
 
-bool ttTextFile::WriteFile(std::string_view filename) const
+bool textfile::WriteFile(std::string_view filename) const
 {
     std::ofstream file(filename, std::ios::binary);
     if (!file.is_open())
@@ -39,27 +39,27 @@ bool ttTextFile::WriteFile(std::string_view filename) const
     return true;
 }
 
-void ttTextFile::ReadString(std::string_view str)
+void textfile::ReadString(std::string_view str)
 {
     if (!str.empty())
         ParseLines(str);
 }
 
-void ttTextFile::ParseLines(std::string_view str)
+void textfile::ParseLines(std::string_view str)
 {
     size_t posBeginLine = 0;
     for (size_t pos = 0; pos < str.size(); ++pos)
     {
         if (str[pos] == '\r')
         {
-            ttString line;
+            ttlib::cstr line;
             if (pos > posBeginLine)
             {
                 line.assign(str.substr(posBeginLine, pos - posBeginLine));
             }
             else
             {
-                line.assign(ttEmptyString);
+                line.assign(ttlib::emptystring);
             }
 
             push_back(move(line));
@@ -71,14 +71,14 @@ void ttTextFile::ParseLines(std::string_view str)
         }
         else if (str[pos] == '\n')
         {
-            ttString line;
+            ttlib::cstr line;
             if (pos > posBeginLine)
             {
                 line.assign(str.substr(posBeginLine, pos - posBeginLine));
             }
             else
             {
-                line.assign(ttEmptyString);
+                line.assign(ttlib::emptystring);
             }
             push_back(move(line));
             posBeginLine = pos + 1;
@@ -86,20 +86,19 @@ void ttTextFile::ParseLines(std::string_view str)
     }
 }
 
-size_t ttTextFile::FindLineContaining(std::string_view str, size_t start, CHECK_CASE checkcase) const
+size_t textfile::FindLineContaining(std::string_view str, size_t start, ttlib::CHECK_CASE checkcase) const
 {
     for (; start < size(); ++start)
     {
-        if (tt::contains(at(start), str, checkcase))
+        if (ttlib::contains(at(start), str, checkcase))
             return start;
     }
-    return tt::npos;
+    return ttlib::npos;
 }
-
 
 /////////////////////// ttViewFile /////////////////////////////////
 
-bool ttViewFile::ReadFile(std::string_view filename)
+bool viewfile::ReadFile(std::string_view filename)
 {
     clear();
     std::ifstream file(filename, std::ios::binary);
@@ -110,7 +109,7 @@ bool ttViewFile::ReadFile(std::string_view filename)
     return true;
 }
 
-void ttViewFile::ReadString(std::string_view str)
+void viewfile::ReadString(std::string_view str)
 {
     if (!str.empty())
     {
@@ -119,7 +118,7 @@ void ttViewFile::ReadString(std::string_view str)
     }
 }
 
-bool ttViewFile::WriteFile(std::string_view filename) const
+bool viewfile::WriteFile(std::string_view filename) const
 {
     std::ofstream file(filename, std::ios::binary);
     if (!file.is_open())
@@ -132,7 +131,7 @@ bool ttViewFile::WriteFile(std::string_view filename) const
     return true;
 }
 
-void ttViewFile::ParseLines(std::string_view str)
+void viewfile::ParseLines(std::string_view str)
 {
     size_t posBeginLine = 0;
     for (size_t pos = 0; pos < str.size(); ++pos)
@@ -173,12 +172,12 @@ void ttViewFile::ParseLines(std::string_view str)
     }
 }
 
-size_t ttViewFile::FindLineContaining(std::string_view str, size_t start, CHECK_CASE checkcase) const
+size_t viewfile::FindLineContaining(std::string_view str, size_t start, ttlib::CHECK_CASE checkcase) const
 {
     for (; start < size(); ++start)
     {
-        if (tt::contains(at(start), str, checkcase))
+        if (ttlib::contains(at(start), str, checkcase))
             return start;
     }
-    return tt::npos;
+    return ttlib::npos;
 }
