@@ -28,8 +28,8 @@
 
 namespace ttlib
 {
-    /// @brief This class inherits from **std::string** and provides additional string handling functionality.
-    class cstr : public std::string
+    /// @brief basic_string with additional methods.
+    class cstr : public std::basic_string<char, std::char_traits<char>, std::allocator<char>>
     {
     public:
         cstr(void) {}
@@ -37,6 +37,7 @@ namespace ttlib
         cstr(std::string_view view) { assign(view, view.size()); }
         cstr(ttlib::cview view) { assign(view, view.size()); }
         cstr(const cstr& str) { assign(str.c_str(), str.size()); }
+        cstr(const std::string& str) { assign(str.c_str(), str.size()); }
 
         cstr(const std::filesystem::path& path) { assign(path.string(), path.string().size()); }
         cstr(const std::filesystem::directory_entry& dir)
