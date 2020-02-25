@@ -240,31 +240,4 @@ namespace ttlib
         /// Returns true if the current string refers to an existing directory.
         bool dirExists() const;
     };
-
-    /////////////////////////////////// cwd class /////////////////////////////////////////
-
-    /// Retrieves the current working directory and optionally restores it in the dtor.
-    class cwd : public ttlib::cstr
-    {
-    public:
-        cwd(bool restore = false)
-        {
-            m_restore = restore;
-            assignCwd();
-        }
-        ~cwd()
-        {
-            if (m_restore)
-            {
-                std::filesystem::path cwd(c_str());
-                std::filesystem::current_path(cwd);
-            }
-        }
-
-        bool ChangeDir() { return ttlib::ChangeDir(*this); }
-
-    private:
-        bool m_restore;
-    };
-
 }  // namespace ttlib
