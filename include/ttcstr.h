@@ -155,6 +155,11 @@ namespace ttlib
         /// Convert the entire string to upper case. Assumes the string is UTF8.
         cstr& MakeUpper();
 
+        /// Assign the specified environment variable, returning true if found.
+        ///
+        /// Current string is replaced if found, cleared if not.
+        bool assignEnvVar(ttlib::cview env_var);
+
         /// Similer to sprintf, but without floating point support.
         ///
         /// %v expects a std::string_view argument.
@@ -231,7 +236,7 @@ namespace ttlib
         /// Changes any current path to an absolute path.
         cstr& make_absolute();
 
-        /// Replaces any current string with the full path to the current working directory.
+        /// Replaces current string with the full path to the current working directory.
         cstr& assignCwd();
 
         /// Returns true if the current string refers to an existing file.

@@ -14,6 +14,7 @@
 #include <iomanip>
 #include <ios>
 #include <locale>
+#include <cstdlib>
 #include <sstream>
 
 #include "../include/ttlibspace.h"
@@ -627,6 +628,18 @@ std::string_view cstr::subview(size_t start, size_t len) const
 #else
     return std::string_view(data() + start, std::min(size() - start, len));
 #endif
+}
+
+bool cstr::assignEnvVar(ttlib::cview env_var)
+{
+    clear();
+    if (env_var.empty())
+        return false;
+    char* pszEnv = std::getenv(env_var);
+    if (!pszEnv)
+        return false;
+    assign(pszEnv);
+    return true;
 }
 
 cstr& cdecl cstr::Format(std::string_view format, ...)
