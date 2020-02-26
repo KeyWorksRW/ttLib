@@ -78,7 +78,7 @@ const char* ttTranslate(const char* psz)
     return psz;
 }
 
-void ttTRclear()
+void ttTRclear() noexcept
 {
     tt_translations.clear();
 }

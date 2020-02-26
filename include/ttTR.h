@@ -41,7 +41,7 @@ inline const char* _ttp(const char* psz, const char* pszPlural, unsigned int n)
 }
 
 /// Clears all previously translated strings. Required after changing locale.
-void ttTRclear();
+void ttTRclear() noexcept;
 
 /// Shorter version of wxTRANSLATE() macro which does the same thing.
 ///

@@ -15,6 +15,7 @@
 
 #include <string>
 #include <string_view>
+#include <stdlib.h>  // for std::abs(long)
 
 #include <filesystem>  // directory_entry
 
@@ -62,15 +63,15 @@ namespace ttlib
     };
 
     /// Only valid for ANSI or UTF8 characters
-    inline bool isdigit(char ch) { return ((ch >= '0' && ch <= '9') || ch == '-'); }
+    constexpr inline bool isdigit(char ch) noexcept { return ((ch >= '0' && ch <= '9') || ch == '-'); }
 
     /// Is ch the start of a utf8 sequence?
-    inline bool isutf8(char ch) { return ((ch & 0xC0) != 0x80); }
+    constexpr inline bool isutf8(char ch) noexcept { return ((ch & 0xC0) != 0x80); }
 
     /// Returns true if character is a space, tab, eol or form feed character.
     inline bool iswhitespace(char ch) { return (ch != 0 && std::strchr(" \t\n\r\f", ch)) ? true : false; };
 
-    inline bool ispunctuation(char ch)
+    constexpr inline bool ispunctuation(char ch) noexcept
     {
         return (ch == '.' || ch == ',' || ch == ';' || ch == ':' || ch == '?' || ch == '!');
     }
@@ -114,36 +115,36 @@ namespace ttlib
     std::string_view strstri(std::string_view strMain, std::string_view strSub);
 
     /// Returns a pointer to the next character in a UTF8 string.
-    const char* nextut8fchar(const char* psz);
+    const char* nextut8fchar(const char* psz) noexcept;
 
     /// Returns view to the next whitespace character. View is empty if there are no more
     /// whitespaces.
-    std::string_view findspace(std::string_view str);
+    std::string_view findspace(std::string_view str) noexcept;
 
     /// Returns position of next whitespace character or npos if not found.
     size_t findspace_pos(std::string_view str);
 
     /// Returns view to the next non-whitespace character. View is empty if there are no
     /// non-whitespace characters.
-    std::string_view findnonspace(std::string_view str);
+    std::string_view findnonspace(std::string_view str) noexcept;
 
     /// Returns position of next non-whitespace character or npos if not found.
-    size_t findnonspace_pos(std::string_view str);
+    size_t findnonspace_pos(std::string_view str) noexcept;
 
     /// Equivalent to findnonspace(findspace(str)).
     std::string_view stepover(std::string_view str);
 
     /// Equivalent to findnonspace(findspace(str)) returning the position or npos.
-    size_t stepover_pos(std::string_view str);
+    size_t stepover_pos(std::string_view str) noexcept;
 
     /// Generates hash of string using djb2 hash algorithm
-    size_t gethash(std::string_view str);
+    size_t gethash(std::string_view str) noexcept;
 
     /// Converts a string into an integer.
     ///
     /// If string begins with '0x' it is assumed to be hexadecimal and is converted.
     /// String may begin with a '-' or '+' to indicate the sign of the integer.
-    int atoi(std::string_view str);
+    int atoi(std::string_view str) noexcept;
 
     /// Return a view to a filename's extension. View is empty if there is no extension.
     std::string_view findext(std::string_view str);

@@ -18,7 +18,7 @@
 // Global empty string.
 const std::string ttlib::emptystring("");
 
-const char* ttlib::nextut8fchar(const char* psz)
+const char* ttlib::nextut8fchar(const char* psz) noexcept
 {
     if (!psz)
         return nullptr;
@@ -30,7 +30,7 @@ const char* ttlib::nextut8fchar(const char* psz)
     return psz + i;
 }
 
-size_t ttlib::gethash(std::string_view str)
+size_t ttlib::gethash(std::string_view str) noexcept
 {
     if (str.empty())
         return 0;
@@ -45,7 +45,7 @@ size_t ttlib::gethash(std::string_view str)
     return hash;
 }
 
-std::string_view ttlib::findspace(std::string_view str)
+std::string_view ttlib::findspace(std::string_view str) noexcept
 {
     if (str.empty())
         return {};
@@ -70,7 +70,7 @@ size_t ttlib::findspace_pos(std::string_view str)
         return (str.size() - view.size());
 }
 
-std::string_view ttlib::findnonspace(std::string_view str)
+std::string_view ttlib::findnonspace(std::string_view str) noexcept
 {
     if (str.empty())
         return {};
@@ -86,7 +86,7 @@ std::string_view ttlib::findnonspace(std::string_view str)
         return str.substr(pos);
 }
 
-size_t ttlib::findnonspace_pos(std::string_view str)
+size_t ttlib::findnonspace_pos(std::string_view str) noexcept
 {
     auto view = ttlib::findnonspace(str);
     if (view.empty())
@@ -120,7 +120,7 @@ std::string_view ttlib::stepover(std::string_view str)
         return str.substr(pos);
 }
 
-size_t ttlib::stepover_pos(std::string_view str)
+size_t ttlib::stepover_pos(std::string_view str) noexcept
 {
     auto view = ttlib::stepover(str);
     if (view.empty())
@@ -304,7 +304,7 @@ bool ttlib::issameas(std::string_view str1, std::string_view str2, CHECK_CASE ch
     return (main != str1.end() ? false : true);
 }
 
-int ttlib::atoi(std::string_view str)
+int ttlib::atoi(std::string_view str) noexcept
 {
     assert(!str.empty());
     if (str.empty())

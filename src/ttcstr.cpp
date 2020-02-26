@@ -102,7 +102,8 @@ cstr& cstr::trim(TRIM where)
         auto len = length();
         for (--len; len != std::string::npos; --len)
         {
-            char ch = at(len);
+            // char ch = at(len);
+            char ch = c_str()[len];
             if (ch != ' ' && ch != '\t' && ch != '\r' && ch != '\n' && ch != '\f')
                 break;
         }
@@ -114,13 +115,13 @@ cstr& cstr::trim(TRIM where)
     {
         // Assume that most strings won't start with whitespace, so return as quickly as possible if that is the
         // case.
-        if (!ttlib::iswhitespace(at(0)))
+        if (!ttlib::iswhitespace(front()))
             return *this;
 
         size_t pos;
         for (pos = 1; pos < length(); ++pos)
         {
-            if (!ttlib::iswhitespace(at(pos)))
+            if (!ttlib::iswhitespace(c_str()[pos]))
                 break;
         }
         replace(0, length(), substr(pos, length() - pos));
@@ -331,7 +332,7 @@ size_t cstr::locate(std::string_view str, size_t posStart, CHECK_CASE checkcase)
     return npos;
 }
 
-size_t cstr::gethash() const
+size_t cstr::gethash() const noexcept
 {
     if (empty())
         return 0;
@@ -424,7 +425,7 @@ cstr& cstr::replace_extension(std::string_view newExtension)
     return *this;
 }
 
-std::string_view cstr::extension() const
+std::string_view cstr::extension() const noexcept
 {
     if (empty())
         return {};
@@ -437,13 +438,13 @@ std::string_view cstr::extension() const
     else if (pos + 1 >= length())
         return {};
     // .. is not a valid extension (it's usually part of a folder as in "../dir/")
-    else if (at(pos + 1) == '.')
+    else if (c_str()[pos + 1] == '.')
         return {};
 
-    return { data() + pos, length() - pos };
+    return { c_str() + pos, length() - pos };
 }
 
-std::string_view cstr::filename() const
+std::string_view cstr::filename() const noexcept
 {
     if (empty())
         return {};
@@ -467,7 +468,7 @@ std::string_view cstr::filename() const
             return *this;
     }
 
-    return { data() + pos + 1, length() - (pos + 1) };
+    return { c_str() + pos + 1, length() - (pos + 1) };
 }
 
 cstr& cstr::replace_filename(std::string_view newFilename)
@@ -619,14 +620,14 @@ void cstr::from_utf16(std::wstring_view str)
     utf8::unchecked::utf16to8(str.begin(), str.end(), back_inserter(*this));
 }
 
-std::string_view cstr::subview(size_t start, size_t len) const
+std::string_view cstr::subview(size_t start, size_t len) const noexcept
 {
     if (start >= size())
         return {};
 #ifdef min
-    return std::string_view(data() + start, min(size() - start, len));
+    return std::string_view(c_str() + start, min(size() - start, len));
 #else
-    return std::string_view(data() + start, std::min(size() - start, len));
+    return std::string_view(c_str() + start, std::min(size() - start, len));
 #endif
 }
 

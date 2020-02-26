@@ -148,7 +148,7 @@ namespace ttlib
         }
 
         /// Generates hash of current string using djb2 hash algorithm
-        size_t gethash() const;
+        size_t gethash() const noexcept;
 
         /// Convert the entire string to lower case. Assumes the string is UTF8.
         cstr& MakeLower();
@@ -176,7 +176,7 @@ namespace ttlib
 #endif
 
         /// Caution: view is only valid until cstr is modified or destroyed!
-        std::string_view subview(size_t start, size_t len = ttlib::npos) const;
+        std::string_view subview(size_t start, size_t len) const noexcept;
 
         /// Converts all backslashes in the string to forward slashes.
         ///
@@ -205,12 +205,12 @@ namespace ttlib
         /// Returns a view to the current extension. View is empty if there is no extension.
         ///
         /// Caution: view is only valid until cstr is modified or destroyed.
-        std::string_view extension() const;
+        std::string_view extension() const noexcept;
 
         /// Returns a view to the current filename. View is empty if there is no filename.
         ///
         /// Caution: view is only valid until cstr is modified or destroyed.
-        std::string_view filename() const;
+        std::string_view filename() const noexcept;
 
         /// Replaces any existing extension with a new extension, or appends the extension if the
         /// name doesn't currently have an extension.
