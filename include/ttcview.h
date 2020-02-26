@@ -7,14 +7,16 @@
 /////////////////////////////////////////////////////////////////////////////
 
 /// @file
-/// Provides a view of a zero-terminated char string.
+/// Provides a view of a zero-terminated char string. Includes a c_str() function and a const char*() operator
+/// to make it easier to pass to functions expecting a C-style string.
 ///
 /// Unlike std::string_view, there is no remove_suffix() function since you cannot change the length of the buffer
-/// (it would no longer be zero-terminated.). There is a subview() function which returns tt::cview, but you can
-/// only specify the starting position, not the length.
+/// (it would no longer be zero-terminated.). There is a subview() function which returns a cview, but you can
+/// only specify the starting position, not the length. You can use substr() to get a non-zero terminated
+/// std::string_view.
 ///
 /// Caution: as with std::string_view, the view is only valid as long as the string you are viewing has not
-/// been modified or destroyed.
+/// been modified or destroyed. This is also true of substr() and subview().
 
 #pragma once
 
@@ -51,10 +53,15 @@ namespace ttlib
         // A string view is not guarenteed to be zero-terminated.
         cview(std::string_view str) = delete;
 
+        /// View is zero-terminated, so c_str() can be used wherever std::string.c_str()
+        /// would be used.
+        constexpr const_pointer c_str() const noexcept { return data(); };
+
+        /// Can be used to pass the view to a function that expects a C-style string.
+        operator const char*() const noexcept { return data(); }
+
         // You can't remove a suffix and still have the view zero-terminated
         constexpr void remove_suffix(size_type n) = delete;
-
-        constexpr const_pointer c_str() const noexcept { return data(); };
 
         // Note: all view...() functions start from the beginning of the view. On success
         // they change the view and return true. On failure, the view remains unchanged.
@@ -85,20 +92,11 @@ namespace ttlib
         bool viewfilename() noexcept;
 
         /// Returns a zero-terminated view. Unlike substr(), you can only specify the starting position.
-        ///
-        /// Caution: the returned view is only valid if the original string has not been modified or
-        /// destroyed.
         cview subview(size_t start = 0) const noexcept
         {
             if (start >= size())
                 return "";
-            return { c_str() + start };
+            return cview(c_str() + start, length() - start);
         }
-
-        /// Useful for passing the view to a function that expects a C-style string.
-        ///
-        /// Caution: assigning this to a pointer is very risky since the original string could be modified
-        /// or destroyed making the pointer assignment (and this view) invalid.
-        operator const char*() noexcept { return data(); }
     };
 }  // namespace ttlib
