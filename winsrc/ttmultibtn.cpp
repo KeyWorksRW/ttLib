@@ -73,7 +73,7 @@ void ttCMultiBtn::SetIcon(int idBtn, int idIcon, UINT nIconAlign)
     }
 #if !defined(NDEBUG)  // Starts debug section.
     std::stringstream msg;
-    msg << "ttCMultiBtn::SetIcon was unable to find the button id: ", idBtn;
+    msg << "ttCMultiBtn::SetIcon was unable to find the button id: " << idBtn;
     ttlib::wintrace(msg.str());
 #endif
 }
@@ -94,7 +94,7 @@ void ttCMultiBtn::SetIcon(int idBtn, const char* pszIconName, UINT nIconAlign)
     }
 #if !defined(NDEBUG)  // Starts debug section.
     std::stringstream msg;
-    msg << "ttCMultiBtn::SetIcon was unable to find the button id: ", idBtn;
+    msg << "ttCMultiBtn::SetIcon was unable to find the button id: " << idBtn;
     ttlib::wintrace(msg.str());
 #endif
 }
