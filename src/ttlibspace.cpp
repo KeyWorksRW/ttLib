@@ -491,7 +491,13 @@ bool ttlib::dirExists(std::string_view dir)
         return false;
     try
     {
+#if defined(_WIN32)
+        std::wstring str16;
+        utf8::unchecked::utf8to16(dir.begin(), dir.end(), back_inserter(str16));
+        auto path = std::filesystem::directory_entry(std::filesystem::path(str16));
+#else
         auto path = std::filesystem::directory_entry(std::filesystem::path(dir));
+#endif
         return (path.exists() && path.is_directory());
     }
     catch (const std::exception& /* e */)
@@ -506,7 +512,13 @@ bool ttlib::fileExists(std::string_view filename)
         return false;
     try
     {
+#if defined(_WIN32)
+        std::wstring str16;
+        utf8::unchecked::utf8to16(filename.begin(), filename.end(), back_inserter(str16));
+        auto path = std::filesystem::directory_entry(std::filesystem::path(str16));
+#else
         auto path = std::filesystem::directory_entry(std::filesystem::path(filename));
+#endif
         return (path.exists() && !path.is_directory());
     }
     catch (const std::exception& /* e */)
