@@ -131,7 +131,7 @@ size_t ttlib::stepover_pos(std::string_view str) noexcept
         return (str.size() - view.size());
 }
 
-bool ttlib::issameprefix(std::string_view strMain, std::string_view strSub, CHECK_CASE checkcase)
+bool ttlib::issameprefix(std::string_view strMain, std::string_view strSub, CASE checkcase)
 {
     if (strSub.empty())
         return strMain.empty();
@@ -139,7 +139,7 @@ bool ttlib::issameprefix(std::string_view strMain, std::string_view strSub, CHEC
     if (strMain.empty() || strMain.length() < strSub.length())
         return false;
 
-    if (checkcase == CHECK_CASE::yes)
+    if (checkcase == CASE::exact)
     {
         auto iterMain = strMain.begin();
         for (auto iterSub : strSub)
@@ -149,7 +149,7 @@ bool ttlib::issameprefix(std::string_view strMain, std::string_view strSub, CHEC
         }
         return true;
     }
-    else if (checkcase == CHECK_CASE::no)
+    else if (checkcase == CASE::either)
     {
         auto iterMain = strMain.begin();
         for (auto iterSub : strSub)
@@ -159,7 +159,7 @@ bool ttlib::issameprefix(std::string_view strMain, std::string_view strSub, CHEC
         }
         return true;
     }
-    else if (checkcase == CHECK_CASE::no_utf8)
+    else if (checkcase == CASE::utf8)
     {
         auto utf8locale = std::locale("en_US.utf8");
         auto iterMain = strMain.begin();
@@ -170,7 +170,7 @@ bool ttlib::issameprefix(std::string_view strMain, std::string_view strSub, CHEC
         }
         return true;
     }
-    assert(!"Unknown CHECK_CASE value");
+    assert(!"Unknown CASE value");
     return false;
 }
 
@@ -231,12 +231,12 @@ std::string_view ttlib::strstri(std::string_view strMain, std::string_view strSu
     return {};
 }
 
-std::string_view ttlib::findstr(std::string_view main, std::string_view sub, CHECK_CASE checkcase)
+std::string_view ttlib::findstr(std::string_view main, std::string_view sub, CASE checkcase)
 {
     if (sub.empty())
         return {};
 
-    if (checkcase == CHECK_CASE::yes)
+    if (checkcase == CASE::exact)
     {
         auto pos = main.find(sub);
         if (pos < main.length())
@@ -266,7 +266,7 @@ std::string_view ttlib::findstr(std::string_view main, std::string_view sub, CHE
     return {};
 }
 
-size_t ttlib::findstr_pos(std::string_view main, std::string_view sub, CHECK_CASE checkcase)
+size_t ttlib::findstr_pos(std::string_view main, std::string_view sub, CASE checkcase)
 {
     auto view = ttlib::findstr(main, sub, checkcase);
     if (view.empty())
@@ -275,7 +275,7 @@ size_t ttlib::findstr_pos(std::string_view main, std::string_view sub, CHECK_CAS
         return (main.size() - view.size());
 }
 
-bool ttlib::contains(std::string_view main, std::string_view sub, CHECK_CASE checkcase)
+bool ttlib::contains(std::string_view main, std::string_view sub, CASE checkcase)
 {
     return !ttlib::findstr(main, sub, checkcase).empty();
 }
@@ -319,7 +319,7 @@ bool ttlib::issamestri(std::string_view str1, std::string_view str2)
     return (main != str1.end() ? false : true);
 }
 
-bool ttlib::issameas(std::string_view str1, std::string_view str2, CHECK_CASE checkcase)
+bool ttlib::issameas(std::string_view str1, std::string_view str2, CASE checkcase)
 {
     if (str1.empty())
     {
@@ -330,7 +330,7 @@ bool ttlib::issameas(std::string_view str1, std::string_view str2, CHECK_CASE ch
         return false;
     }
 
-    if (checkcase == CHECK_CASE::yes)
+    if (checkcase == CASE::exact)
         return (str1.compare(str2) == 0);
 
     auto main = str1.begin();
@@ -448,7 +448,7 @@ void ttlib::backslashestoforward(std::string& str)
     }
 }
 
-bool ttlib::hasextension(std::filesystem::directory_entry name, std::string_view extension, CHECK_CASE checkcase)
+bool ttlib::hasextension(std::filesystem::directory_entry name, std::string_view extension, CASE checkcase)
 {
     if (!name.is_directory())
     {

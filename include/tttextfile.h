@@ -58,10 +58,10 @@ namespace ttlib
         ///
         /// startline is the zero-based offset to the line to start searching.
         size_t FindLineContaining(std::string_view str, size_t startline = 0,
-                                  ttlib::CHECK_CASE checkcase = ttlib::CHECK_CASE::yes) const;
+                                  ttlib::CASE checkcase = ttlib::CASE::exact) const;
 
-        bool issameas(ttlib::textfile other, ttlib::CHECK_CASE checkcase = ttlib::CHECK_CASE::yes) const;
-        bool issameas(ttlib::viewfile other, ttlib::CHECK_CASE checkcase = ttlib::CHECK_CASE::yes) const;
+        bool issameas(ttlib::textfile other, ttlib::CASE checkcase = ttlib::CASE::exact) const;
+        bool issameas(ttlib::viewfile other, ttlib::CASE checkcase = ttlib::CASE::exact) const;
 
         ttlib::cstr& GetTempLine()
         {
@@ -124,10 +124,10 @@ namespace ttlib
         ///
         /// startline is the zero-based offset to the line to start searching.
         size_t FindLineContaining(std::string_view str, size_t startline = 0,
-                                  ttlib::CHECK_CASE checkcase = ttlib::CHECK_CASE::yes) const;
+                                  ttlib::CASE checkcase = ttlib::CASE::exact) const;
 
-        bool issameas(ttlib::textfile other, ttlib::CHECK_CASE checkcase = ttlib::CHECK_CASE::yes) const;
-        bool issameas(ttlib::viewfile other, ttlib::CHECK_CASE checkcase = ttlib::CHECK_CASE::yes) const;
+        bool issameas(ttlib::textfile other, ttlib::CASE checkcase = ttlib::CASE::exact) const;
+        bool issameas(ttlib::viewfile other, ttlib::CASE checkcase = ttlib::CASE::exact) const;
 
         const std::string& GetContainer() { return m_buffer; }
 

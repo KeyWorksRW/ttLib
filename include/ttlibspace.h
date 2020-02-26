@@ -42,11 +42,11 @@ namespace ttlib
 
     extern const std::string emptystring;
 
-    enum class CHECK_CASE
+    enum class CASE : size_t
     {
-        yes,
-        no,
-        no_utf8  // string comparisons are done by converting all characters to lowercase UTF8
+        exact,
+        either,
+        utf8  // comparisons are done by converting characters to lowercase UTF8
     };
 
     /// Equivalent to Windows RECT structure -- this makes it available on non-Windows
@@ -81,7 +81,7 @@ namespace ttlib
     }
 
     /// Returns true if strings are identical
-    bool issameas(std::string_view str1, std::string_view str2, CHECK_CASE checkcase = CHECK_CASE::yes);
+    bool issameas(std::string_view str1, std::string_view str2, CASE checkcase = CASE::exact);
 
     /// Same as compare only it returns a boolean instead of the difference.
     [[deprecated("Use issameas()")]] inline bool issamestr(std::string_view str1,
@@ -95,7 +95,7 @@ namespace ttlib
                                                                       std::string_view str2);
 
     /// Returns true if the sub-string is identical to the first part of the main string
-    bool issameprefix(std::string_view strMain, std::string_view strSub, CHECK_CASE checkcase = CHECK_CASE::yes);
+    bool issameprefix(std::string_view strMain, std::string_view strSub, CASE checkcase = CASE::exact);
 
     /// Returns true if the sub-string is identical to the first part of the main string
     [[deprecated("Use issameprefix()")]] bool issamesubstr(std::string_view strMain, std::string_view strSub);
@@ -106,15 +106,15 @@ namespace ttlib
     /// Return a view to the portion of the string beginning with the sub string.
     ///
     /// Return view is empty if substring is not found.
-    std::string_view findstr(std::string_view main, std::string_view sub, CHECK_CASE checkcase = CHECK_CASE::yes);
+    std::string_view findstr(std::string_view main, std::string_view sub, CASE checkcase = CASE::exact);
 
     /// Returns the position of sub within main, or npos if not found.
-    size_t findstr_pos(std::string_view main, std::string_view sub, CHECK_CASE checkcase = CHECK_CASE::yes);
+    size_t findstr_pos(std::string_view main, std::string_view sub, CASE checkcase = CASE::exact);
 
     /// Returns true if the sub string exists withing the main string.
     ///
     /// Same as findstr but with a boolean return instead of a string_view.
-    bool contains(std::string_view main, std::string_view sub, CHECK_CASE checkcase = CHECK_CASE::yes);
+    bool contains(std::string_view main, std::string_view sub, CASE checkcase = CASE::exact);
 
     /// Return a view to the portion of the string beginning with the sub string.
     ///
@@ -177,7 +177,7 @@ namespace ttlib
     /// Performs a check to see if a directory entry is a filename and contains the
     /// specified extension.
     bool hasextension(std::filesystem::directory_entry name, std::string_view extension,
-                      CHECK_CASE checkcase = CHECK_CASE::yes);
+                      CASE checkcase = CASE::exact);
 
     /// Confirms newdir exists and is a directory and then changes to that directory.
     ///

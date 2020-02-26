@@ -229,14 +229,14 @@ size_t ttString::ExtractSubString(std::string_view src, size_t start)
  * @param Utf8 -- set to true if bCaseSensitive is false and strings are UTF8
  * @return Number of replacements made
  */
-size_t ttString::Replace(std::string_view oldtext, std::string_view newtext, bool replaceAll, CHECK_CASE checkcase,
+size_t ttString::Replace(std::string_view oldtext, std::string_view newtext, bool replaceAll, CASE checkcase,
                          bool Utf8)
 {
     if (oldtext.empty())
         return false;
 
     size_t replacements = 0;
-    size_t pos = checkcase == CHECK_CASE::yes ? find(oldtext) : findi(oldtext, Utf8);
+    size_t pos = checkcase == CASE::exact ? find(oldtext) : findi(oldtext, Utf8);
 
     do
     {
@@ -249,7 +249,7 @@ size_t ttString::Replace(std::string_view oldtext, std::string_view newtext, boo
         pos += newtext.length();
         if (replaceAll)
         {
-            pos = checkcase == CHECK_CASE::yes ? find(oldtext, pos) : findi(oldtext, pos, Utf8);
+            pos = checkcase == CASE::exact ? find(oldtext, pos) : findi(oldtext, pos, Utf8);
         }
     } while (replaceAll);
 
@@ -304,7 +304,7 @@ size_t ttString::findi(std::string_view str, size_t posStart, bool bUtf8) const
     return npos;
 }
 
-bool ttString::contains(std::string_view sub, CHECK_CASE checkcase) const
+bool ttString::contains(std::string_view sub, CASE checkcase) const
 {
     return tt::contains(*this, sub, checkcase);
 }
@@ -609,7 +609,7 @@ std::string_view ttString::subview(size_t start, size_t len)
 }
 ////////////////////////////// ttStrVector methods ///////////////////////////////
 
-size_t ttStrVector::find(size_t start, std::string_view str, CHECK_CASE checkcase)
+size_t ttStrVector::find(size_t start, std::string_view str, CASE checkcase)
 {
     for (; start < size(); ++start)
     {
@@ -619,9 +619,9 @@ size_t ttStrVector::find(size_t start, std::string_view str, CHECK_CASE checkcas
     return tt::npos;
 }
 
-size_t ttStrVector::findprefix(size_t start, std::string_view str, CHECK_CASE checkcase)
+size_t ttStrVector::findprefix(size_t start, std::string_view str, CASE checkcase)
 {
-    if (checkcase == CHECK_CASE::yes)
+    if (checkcase == CASE::exact)
     {
         for (; start < size(); ++start)
         {
@@ -640,7 +640,7 @@ size_t ttStrVector::findprefix(size_t start, std::string_view str, CHECK_CASE ch
     return tt::npos;
 }
 
-size_t ttStrVector::contains(size_t start, std::string_view str, CHECK_CASE checkcase)
+size_t ttStrVector::contains(size_t start, std::string_view str, CASE checkcase)
 {
     for (; start < size(); ++start)
     {

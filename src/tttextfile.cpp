@@ -86,7 +86,7 @@ void textfile::ParseLines(std::string_view str)
     }
 }
 
-size_t textfile::FindLineContaining(std::string_view str, size_t start, ttlib::CHECK_CASE checkcase) const
+size_t textfile::FindLineContaining(std::string_view str, size_t start, ttlib::CASE checkcase) const
 {
     for (; start < size(); ++start)
     {
@@ -96,7 +96,7 @@ size_t textfile::FindLineContaining(std::string_view str, size_t start, ttlib::C
     return ttlib::npos;
 }
 
-bool textfile::issameas(viewfile other, CHECK_CASE checkcase) const
+bool textfile::issameas(viewfile other, CASE checkcase) const
 {
     if (size() != other.size())
         return false;
@@ -110,7 +110,7 @@ bool textfile::issameas(viewfile other, CHECK_CASE checkcase) const
     return (pos == size());
 }
 
-bool textfile::issameas(textfile other, CHECK_CASE checkcase) const
+bool textfile::issameas(textfile other, CASE checkcase) const
 {
     if (size() != other.size())
         return false;
@@ -200,7 +200,7 @@ void viewfile::ParseLines(std::string_view str)
     }
 }
 
-size_t viewfile::FindLineContaining(std::string_view str, size_t start, ttlib::CHECK_CASE checkcase) const
+size_t viewfile::FindLineContaining(std::string_view str, size_t start, ttlib::CASE checkcase) const
 {
     for (; start < size(); ++start)
     {
@@ -210,7 +210,7 @@ size_t viewfile::FindLineContaining(std::string_view str, size_t start, ttlib::C
     return ttlib::npos;
 }
 
-bool viewfile::issameas(viewfile other, CHECK_CASE checkcase) const
+bool viewfile::issameas(viewfile other, CASE checkcase) const
 {
     if (size() != other.size())
         return false;
@@ -224,7 +224,7 @@ bool viewfile::issameas(viewfile other, CHECK_CASE checkcase) const
     return (pos == size());
 }
 
-bool viewfile::issameas(textfile other, CHECK_CASE checkcase) const
+bool viewfile::issameas(textfile other, CASE checkcase) const
 {
     if (size() != other.size())
         return false;

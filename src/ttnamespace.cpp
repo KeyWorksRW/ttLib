@@ -186,12 +186,12 @@ std::string_view tt::strstri(std::string_view strMain, std::string_view strSub)
     return {};
 }
 
-std::string_view tt::findstr(std::string_view main, std::string_view sub, CHECK_CASE checkcase)
+std::string_view tt::findstr(std::string_view main, std::string_view sub, CASE checkcase)
 {
     if (sub.empty())
         return {};
 
-    if (checkcase == CHECK_CASE::yes)
+    if (checkcase == CASE::exact)
     {
         auto pos = main.find(sub);
         if (pos < main.length())
@@ -221,7 +221,7 @@ std::string_view tt::findstr(std::string_view main, std::string_view sub, CHECK_
     return {};
 }
 
-size_t tt::findstr_pos(std::string_view main, std::string_view sub, CHECK_CASE checkcase)
+size_t tt::findstr_pos(std::string_view main, std::string_view sub, CASE checkcase)
 {
     auto view = tt::findstr(main, sub, checkcase);
     if (view.empty())
@@ -230,7 +230,7 @@ size_t tt::findstr_pos(std::string_view main, std::string_view sub, CHECK_CASE c
         return (main.size() - view.size());
 }
 
-bool tt::contains(std::string_view main, std::string_view sub, CHECK_CASE checkcase)
+bool tt::contains(std::string_view main, std::string_view sub, CASE checkcase)
 {
     return !tt::findstr(main, sub, checkcase).empty();
 }
@@ -274,7 +274,7 @@ bool tt::issamestri(std::string_view str1, std::string_view str2)
     return (main != str1.end() ? false : true);
 }
 
-bool tt::issameas(std::string_view str1, std::string_view str2, CHECK_CASE checkcase)
+bool tt::issameas(std::string_view str1, std::string_view str2, CASE checkcase)
 {
     if (str1.empty())
     {
@@ -285,7 +285,7 @@ bool tt::issameas(std::string_view str1, std::string_view str2, CHECK_CASE check
         return false;
     }
 
-    if (checkcase == CHECK_CASE::yes)
+    if (checkcase == CASE::exact)
         return (str1.compare(str2) == 0);
 
     auto main = str1.begin();

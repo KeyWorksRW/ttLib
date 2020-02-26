@@ -22,11 +22,11 @@ namespace tt
 {
     static constexpr auto npos = std::string::npos;
 
-    enum class CHECK_CASE
+    enum class CASE
     {
-        yes,
-        no,
-        no_utf8  // string comparisons are done by converting all characters to lowercase UTF8
+        exact,
+        either,
+        utf8  // comparisons are done by converting characters to lowercase UTF8
     };
 
     /// Only valid for ANSI or UTF8 characters
@@ -39,7 +39,7 @@ namespace tt
     inline bool iswhitespace(char ch) { return (ch != 0 && std::strchr(" \t\n\r\f", ch)) ? true : false; };
 
     /// Returns true if strings are identical
-    bool issameas(std::string_view str1, std::string_view str2, CHECK_CASE checkcase = CHECK_CASE::yes);
+    bool issameas(std::string_view str1, std::string_view str2, CASE checkcase = CASE::exact);
 
     /// Same as compare only it returns a boolean instead of the difference.
     inline bool issamestr(std::string_view str1, std::string_view str2) { return (str1.compare(str2) == 0); }
@@ -56,17 +56,15 @@ namespace tt
     /// Return a view to the portion of the string beginning with the sub string.
     ///
     /// Return view is empty if substring is not found.
-    std::string_view findstr(std::string_view main, std::string_view sub,
-                             tt::CHECK_CASE checkcase = tt::CHECK_CASE::no);
+    std::string_view findstr(std::string_view main, std::string_view sub, tt::CASE checkcase = tt::CASE::either);
 
     /// Returns the position of sub within main, or tt::npos if not found.
-    size_t findstr_pos(std::string_view main, std::string_view sub,
-                       tt::CHECK_CASE checkcase = tt::CHECK_CASE::yes);
+    size_t findstr_pos(std::string_view main, std::string_view sub, tt::CASE checkcase = tt::CASE::exact);
 
     /// Returns true if the sub string exists withing the main string.
     ///
     /// Same as findstr but with a boolean return instead of a string_view.
-    bool contains(std::string_view main, std::string_view sub, tt::CHECK_CASE checkcase = tt::CHECK_CASE::yes);
+    bool contains(std::string_view main, std::string_view sub, tt::CASE checkcase = tt::CASE::exact);
 
     /// Return a view to the portion of the string beginning with the sub string.
     ///

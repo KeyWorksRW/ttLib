@@ -13,7 +13,7 @@
 
 using namespace ttlib;
 
-size_t cstrVector::find(size_t start, std::string_view str, CHECK_CASE checkcase) const
+size_t cstrVector::find(size_t start, std::string_view str, CASE checkcase) const
 {
     for (; start < size(); ++start)
     {
@@ -23,13 +23,13 @@ size_t cstrVector::find(size_t start, std::string_view str, CHECK_CASE checkcase
     return ttlib::npos;
 }
 
-size_t cstrVector::findprefix(size_t start, std::string_view str, CHECK_CASE checkcase) const
+size_t cstrVector::findprefix(size_t start, std::string_view str, CASE checkcase) const
 {
-    if (checkcase == CHECK_CASE::yes)
+    if (checkcase == CASE::exact)
     {
         for (; start < size(); ++start)
         {
-            if (ttlib::issamesubstr(at(start), str))
+            if (ttlib::issameprefix(at(start), str, checkcase))
                 return start;
         }
     }
@@ -37,14 +37,14 @@ size_t cstrVector::findprefix(size_t start, std::string_view str, CHECK_CASE che
     {
         for (; start < size(); ++start)
         {
-            if (ttlib::issamesubstri(at(start), str))
+            if (ttlib::issameprefix(at(start), str, checkcase))
                 return start;
         }
     }
     return ttlib::npos;
 }
 
-size_t cstrVector::contains(size_t start, std::string_view str, CHECK_CASE checkcase) const
+size_t cstrVector::contains(size_t start, std::string_view str, CASE checkcase) const
 {
     for (; start < size(); ++start)
     {

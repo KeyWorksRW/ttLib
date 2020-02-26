@@ -23,7 +23,7 @@
 
 using namespace ttlib;
 
-bool cstr::issameas(std::string_view str, CHECK_CASE checkcase) const
+bool cstr::issameas(std::string_view str, CASE checkcase) const
 {
     if (size() != str.size() || empty())
         return false;
@@ -32,7 +32,7 @@ bool cstr::issameas(std::string_view str, CHECK_CASE checkcase) const
     return issameprefix(str, checkcase);
 }
 
-bool cstr::issameprefix(std::string_view str, CHECK_CASE checkcase) const
+bool cstr::issameprefix(std::string_view str, CASE checkcase) const
 {
     if (str.empty())
         return empty();
@@ -40,7 +40,7 @@ bool cstr::issameprefix(std::string_view str, CHECK_CASE checkcase) const
     if (empty() || length() < str.length())
         return false;
 
-    if (checkcase == CHECK_CASE::yes)
+    if (checkcase == CASE::exact)
     {
         auto iterMain = begin();
         for (auto iterSub : str)
@@ -50,7 +50,7 @@ bool cstr::issameprefix(std::string_view str, CHECK_CASE checkcase) const
         }
         return true;
     }
-    else if (checkcase == CHECK_CASE::no)
+    else if (checkcase == CASE::either)
     {
         auto iterMain = begin();
         for (auto iterSub : str)
@@ -60,7 +60,7 @@ bool cstr::issameprefix(std::string_view str, CHECK_CASE checkcase) const
         }
         return true;
     }
-    else if (checkcase == CHECK_CASE::no_utf8)
+    else if (checkcase == CASE::utf8)
     {
         auto utf8locale = std::locale("en_US.utf8");
         auto iterMain = begin();
@@ -71,7 +71,7 @@ bool cstr::issameprefix(std::string_view str, CHECK_CASE checkcase) const
         }
         return true;
     }
-    assert(!"Unknown CHECK_CASE value");
+    assert(!"Unknown CASE value");
     return false;
 }
 
@@ -253,8 +253,7 @@ size_t cstr::ExtractSubString(std::string_view src, size_t start)
  * @param CaseSensitive -- indicates whether or not to use a case-insensitive search
  * @return Number of replacements made
  */
-size_t cstr::Replace(std::string_view oldtext, std::string_view newtext, bool replaceAll,
-                     ttlib::CHECK_CASE checkcase)
+size_t cstr::Replace(std::string_view oldtext, std::string_view newtext, bool replaceAll, ttlib::CASE checkcase)
 {
     if (oldtext.empty())
         return false;
@@ -280,15 +279,15 @@ size_t cstr::Replace(std::string_view oldtext, std::string_view newtext, bool re
     return replacements;
 }
 
-size_t cstr::locate(std::string_view str, size_t posStart, CHECK_CASE checkcase) const
+size_t cstr::locate(std::string_view str, size_t posStart, CASE checkcase) const
 {
     if (str.empty() || posStart >= size())
         return npos;
 
-    if (checkcase == CHECK_CASE::yes)
+    if (checkcase == CASE::exact)
         return find(str, posStart);
 
-    if (checkcase == CHECK_CASE::no)
+    if (checkcase == CASE::either)
     {
         auto chLower = std::tolower(str[0]);
         for (auto pos = posStart; pos < length(); ++pos)

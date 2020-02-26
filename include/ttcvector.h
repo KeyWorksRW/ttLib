@@ -34,7 +34,7 @@ namespace ttlib
         /// Only appends the string if it doesn't already exist.
         ///
         /// Returns true if the string was added, false if it already existed.
-        bool append(std::string_view str, ttlib::CHECK_CASE checkcase = ttlib::CHECK_CASE::yes)
+        bool append(std::string_view str, ttlib::CASE checkcase = ttlib::CASE::exact)
         {
             if (find(0, str, checkcase) != npos)
             {
@@ -65,16 +65,14 @@ namespace ttlib
         }
 
         /// Finds the position of the first string identical to the specified string.
-        size_t find(size_t start, std::string_view str,
-                    ttlib::CHECK_CASE checkcase = ttlib::CHECK_CASE::yes) const;
+        size_t find(size_t start, std::string_view str, ttlib::CASE checkcase = ttlib::CASE::exact) const;
 
         /// Finds the position of the first string with specified prefix.
-        size_t findprefix(size_t start, std::string_view prefix,
-                          ttlib::CHECK_CASE checkcase = ttlib::CHECK_CASE::yes) const;
+        size_t findprefix(size_t start, std::string_view prefix, ttlib::CASE checkcase = ttlib::CASE::exact) const;
 
         /// Finds the position of the first string containing the specified sub-string.
         size_t contains(size_t start, std::string_view substring,
-                        ttlib::CHECK_CASE checkcase = ttlib::CHECK_CASE::yes) const;
+                        ttlib::CASE checkcase = ttlib::CASE::exact) const;
 
         /// Unlike append(), this will add the string even if it already exists.
         void operator+=(std::string_view str) { push_back(str); }
