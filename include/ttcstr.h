@@ -59,7 +59,7 @@ namespace ttlib
 #endif
 
         /// Caution: ttlib::cview is only valid until ttlib::cstr is modified or destroyed.
-        ttlib::cview subview(size_t start = 0)
+        ttlib::cview subview(size_t start = 0) const noexcept
         {
             assert(start < length());
             return ttlib::cview(c_str() + start, length() - start);
@@ -204,12 +204,12 @@ namespace ttlib
         /// Returns a view to the current extension. View is empty if there is no extension.
         ///
         /// Caution: view is only valid until cstr is modified or destroyed.
-        std::string_view extension() const noexcept;
+        ttlib::cview extension() const noexcept;
 
         /// Returns a view to the current filename. View is empty if there is no filename.
         ///
         /// Caution: view is only valid until cstr is modified or destroyed.
-        std::string_view filename() const noexcept;
+        ttlib::cview filename() const noexcept;
 
         /// Replaces any existing extension with a new extension, or appends the extension if the
         /// name doesn't currently have an extension.

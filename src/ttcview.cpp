@@ -16,8 +16,7 @@
 
 using namespace ttlib;
 
-template<>
-bool cview::viewspace()
+bool cview::viewspace() noexcept
 {
     if (empty())
         return false;
@@ -36,8 +35,7 @@ bool cview::viewspace()
     }
 }
 
-template<>
-bool cview::viewnonspace()
+bool cview::viewnonspace() noexcept
 {
     if (empty())
         return false;
@@ -56,8 +54,7 @@ bool cview::viewnonspace()
     }
 }
 
-template<>
-bool cview::viewnextword()
+bool cview::viewnextword() noexcept
 {
     if (empty())
         return false;
@@ -86,8 +83,7 @@ bool cview::viewnextword()
     }
 }
 
-template<>
-bool cview::viewdigit()
+bool cview::viewdigit() noexcept
 {
     if (empty())
         return false;
@@ -106,8 +102,7 @@ bool cview::viewdigit()
     }
 }
 
-template<>
-bool cview::viewnondigit()
+bool cview::viewnondigit() noexcept
 {
     if (empty())
         return false;
@@ -126,8 +121,7 @@ bool cview::viewnondigit()
     }
 }
 
-template<>
-bool cview::viewextension()
+bool cview::viewextension() noexcept
 {
     if (empty())
         return false;
@@ -144,8 +138,7 @@ bool cview::viewextension()
     return true;
 }
 
-template<>
-bool cview::viewfilename()
+bool cview::viewfilename() noexcept
 {
     if (empty())
         return false;

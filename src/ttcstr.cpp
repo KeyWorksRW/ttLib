@@ -424,29 +424,29 @@ cstr& cstr::replace_extension(std::string_view newExtension)
     return *this;
 }
 
-std::string_view cstr::extension() const noexcept
+ttlib::cview cstr::extension() const noexcept
 {
     if (empty())
-        return {};
+        return "";
 
     auto pos = find_last_of('.');
     if (pos == npos)
-        return {};
+        return "";
 
     // . by itself is a folder
     else if (pos + 1 >= length())
-        return {};
+        return "";
     // .. is not a valid extension (it's usually part of a folder as in "../dir/")
     else if (c_str()[pos + 1] == '.')
-        return {};
+        return "";
 
     return { c_str() + pos, length() - pos };
 }
 
-std::string_view cstr::filename() const noexcept
+ttlib::cview cstr::filename() const noexcept
 {
     if (empty())
-        return {};
+        return "";
 
     auto pos = find_last_of('/');
 
@@ -464,7 +464,7 @@ std::string_view cstr::filename() const noexcept
     {
         pos = find_last_of(':');
         if (pos == npos)
-            return *this;
+            return { c_str(), length() };
     }
 
     return { c_str() + pos + 1, length() - (pos + 1) };
