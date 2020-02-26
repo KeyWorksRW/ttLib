@@ -58,8 +58,8 @@ namespace ttlib
         int32_t right;
         int32_t bottom;
 
-        inline int32_t GetWidth() { return std::abs(right - left); }
-        inline int32_t GetHeight() { return std::abs(bottom - top); }
+        inline int32_t GetWidth() const { return std::abs(right - left); }
+        inline int32_t GetHeight() const { return std::abs(bottom - top); }
     };
 
     /// Only valid for ANSI or UTF8 characters
@@ -69,8 +69,12 @@ namespace ttlib
     constexpr inline bool isutf8(char ch) noexcept { return ((ch & 0xC0) != 0x80); }
 
     /// Returns true if character is a space, tab, eol or form feed character.
-    inline bool iswhitespace(char ch) { return (ch != 0 && std::strchr(" \t\n\r\f", ch)) ? true : false; };
+    constexpr inline bool iswhitespace(char ch) noexcept
+    {
+        return (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' || ch == '\f');
+    }
 
+    /// Returns true if character is a period, comma, semi-colon, colon, question or exclamation
     constexpr inline bool ispunctuation(char ch) noexcept
     {
         return (ch == '.' || ch == ',' || ch == ';' || ch == ':' || ch == '?' || ch == '!');
@@ -80,21 +84,29 @@ namespace ttlib
     bool issameas(std::string_view str1, std::string_view str2, CHECK_CASE checkcase = CHECK_CASE::yes);
 
     /// Same as compare only it returns a boolean instead of the difference.
-    inline bool issamestr(std::string_view str1, std::string_view str2) { return (str1.compare(str2) == 0); }
+    [[deprecated("Use issameas()")]] inline bool issamestr(std::string_view str1,
+                                                                            std::string_view str2)
+    {
+        return (str1.compare(str2) == 0);
+    }
 
     /// Same as issamestr only case insensitive comparison of ASCII characters
-    bool issamestri(std::string_view str1, std::string_view str2);
+    [[deprecated("Use issameas()")]] bool issamestri(std::string_view str1,
+                                                                      std::string_view str2);
 
     /// Returns true if the sub-string is identical to the first part of the main string
-    bool issamesubstr(std::string_view strMain, std::string_view strSub);
+    bool issameprefix(std::string_view strMain, std::string_view strSub, CHECK_CASE checkcase = CHECK_CASE::yes);
+
+    /// Returns true if the sub-string is identical to the first part of the main string
+    [[deprecated("Use issameprefix()")]] bool issamesubstr(std::string_view strMain, std::string_view strSub);
 
     /// Case-insensitive sub string comparison
-    bool issamesubstri(std::string_view strMain, std::string_view strSub);
+    [[deprecated("Use issameprefix()")]] bool issamesubstri(std::string_view strMain, std::string_view strSub);
 
     /// Return a view to the portion of the string beginning with the sub string.
     ///
     /// Return view is empty if substring is not found.
-    std::string_view findstr(std::string_view main, std::string_view sub, CHECK_CASE checkcase = CHECK_CASE::no);
+    std::string_view findstr(std::string_view main, std::string_view sub, CHECK_CASE checkcase = CHECK_CASE::yes);
 
     /// Returns the position of sub within main, or npos if not found.
     size_t findstr_pos(std::string_view main, std::string_view sub, CHECK_CASE checkcase = CHECK_CASE::yes);
@@ -107,12 +119,14 @@ namespace ttlib
     /// Return a view to the portion of the string beginning with the sub string.
     ///
     /// Return view is empty if substring is not found.
-    std::string_view strstr(std::string_view strMain, std::string_view strSub);
+    [[deprecated("Use findstr()")]] std::string_view strstr(std::string_view strMain,
+                                                                            std::string_view strSub);
 
     /// Case-insensitive search for a sub string.
     ///
     /// Return view is empty if substring is not found.
-    std::string_view strstri(std::string_view strMain, std::string_view strSub);
+    [[deprecated("Use findstr()")]] std::string_view strstri(std::string_view strMain,
+                                                                              std::string_view strSub);
 
     /// Returns a pointer to the next character in a UTF8 string.
     const char* nextut8fchar(const char* psz) noexcept;
@@ -160,9 +174,10 @@ namespace ttlib
     /// unnecessary.
     void backslashestoforward(std::string& str);
 
-    /// Performs a case-insensitive check to see if a directory entry is a filename and
-    /// contains the specified extension.
-    bool hasextension(std::filesystem::directory_entry name, std::string_view extension);
+    /// Performs a check to see if a directory entry is a filename and contains the
+    /// specified extension.
+    bool hasextension(std::filesystem::directory_entry name, std::string_view extension,
+                      CHECK_CASE checkcase = CHECK_CASE::yes);
 
     /// Confirms newdir exists and is a directory and then changes to that directory.
     ///

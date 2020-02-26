@@ -15,6 +15,8 @@
 #include "../include/ttlibspace.h"
 #include "../include/utf8unchecked.h"
 
+using namespace ttlib;
+
 // Global empty string.
 const std::string ttlib::emptystring("");
 
@@ -127,6 +129,49 @@ size_t ttlib::stepover_pos(std::string_view str) noexcept
         return ttlib::npos;
     else
         return (str.size() - view.size());
+}
+
+bool ttlib::issameprefix(std::string_view strMain, std::string_view strSub, CHECK_CASE checkcase)
+{
+    if (strSub.empty())
+        return strMain.empty();
+
+    if (strMain.empty() || strMain.length() < strSub.length())
+        return false;
+
+    if (checkcase == CHECK_CASE::yes)
+    {
+        auto iterMain = strMain.begin();
+        for (auto iterSub : strSub)
+        {
+            if (*iterMain++ != iterSub)
+                return false;
+        }
+        return true;
+    }
+    else if (checkcase == CHECK_CASE::no)
+    {
+        auto iterMain = strMain.begin();
+        for (auto iterSub : strSub)
+        {
+            if (std::tolower(*iterMain++) != std::tolower(iterSub))
+                return false;
+        }
+        return true;
+    }
+    else if (checkcase == CHECK_CASE::no_utf8)
+    {
+        auto utf8locale = std::locale("en_US.utf8");
+        auto iterMain = strMain.begin();
+        for (auto iterSub : strSub)
+        {
+            if (std::tolower(*iterMain++, utf8locale) != std::tolower(iterSub, utf8locale))
+                return false;
+        }
+        return true;
+    }
+    assert(!"Unknown CHECK_CASE value");
+    return false;
 }
 
 bool ttlib::issamesubstr(std::string_view strMain, std::string_view strSub)
@@ -403,14 +448,14 @@ void ttlib::backslashestoforward(std::string& str)
     }
 }
 
-bool ttlib::hasextension(std::filesystem::directory_entry name, std::string_view extension)
+bool ttlib::hasextension(std::filesystem::directory_entry name, std::string_view extension, CHECK_CASE checkcase)
 {
     if (!name.is_directory())
     {
         auto ext = name.path().extension();
         if (ext.empty())
             return false;
-        return ttlib::issamestri(ext.string(), extension);
+        return ttlib::issameas(ext.string(), extension, checkcase);
     }
     return false;
 }
