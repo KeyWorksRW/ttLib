@@ -73,7 +73,10 @@ namespace ttlib
         void WriteTempLine()
         {
             if (!m_tempLine.empty())
+            {
                 push_back(std::move(m_tempLine));
+                m_tempLine.clear();
+            }
             else
                 addblankline();
         }
@@ -84,6 +87,7 @@ namespace ttlib
         {
             m_tempLine.append(text);
             push_back(std::move(m_tempLine));
+            m_tempLine.clear();
         }
 
         void addblankline() { push_back(""); }
