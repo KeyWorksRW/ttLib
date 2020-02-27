@@ -38,7 +38,8 @@
 
 namespace ttlib
 {
-    static constexpr auto npos = std::string::npos;
+    /// Use to compare a size_t against -1
+    constexpr size_t npos = static_cast<size_t>(-1);
 
     extern const std::string emptystring;
 
