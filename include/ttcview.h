@@ -29,26 +29,16 @@ namespace ttlib
     class cview : public std::basic_string_view<char, std::char_traits<char>>
     {
         using bsv = std::basic_string_view<char, std::char_traits<char>>;
+
     public:
-        cview(std::string str)
-            : bsv(str.c_str(), str.length())
-        {
-        }
+        // clang-format off
 
-        cview(std::stringstream str)
-            : bsv(str.str().c_str(), str.str().length())
-        {
-        }
+        cview(std::string str) : bsv(str.c_str(), str.length()) { }
+        cview(std::stringstream str) : bsv(str.str().c_str(), str.str().length()) { }
+        cview(const char* str, size_t len) : bsv(str, len) { }
+        cview(const char* str) : bsv(str) { }
 
-        cview(const char* str, size_t len)
-            : bsv(str, len)
-        {
-        }
-
-        cview(const char* str)
-            : bsv(str)
-        {
-        }
+        // clang-format on
 
         // A string view is not guarenteed to be zero-terminated.
         cview(std::string_view str) = delete;

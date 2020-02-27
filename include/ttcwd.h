@@ -19,6 +19,7 @@ namespace ttlib
     class cwd : public ttlib::cstr
     {
     public:
+        // Specify true to restore the directory in the destructor
         cwd(bool restore = false)
         {
             assignCwd();
