@@ -532,7 +532,7 @@ cstr& cstr::assignCwd()
 /// will not accept a string_view.
 cstr& cstr::make_relative(const std::string& relative_to)
 {
-    if (!empty())
+    if (!empty() && !relative_to.empty())
     {
         auto current = std::filesystem::u8path(c_str());
         auto relto = std::filesystem::u8path(relative_to);
