@@ -31,19 +31,20 @@ namespace ttlib
     /// @brief basic_string with additional methods.
     class cstr : public std::basic_string<char, std::char_traits<char>, std::allocator<char>>
     {
-    public:
-        cstr(void) {}
-        cstr(const char* psz) { assign(psz); }
-        cstr(std::string_view view) { assign(view, view.size()); }
-        cstr(ttlib::cview view) { assign(view, view.size()); }
-        cstr(const cstr& str) { assign(str.c_str(), str.size()); }
-        cstr(const std::string& str) { assign(str.c_str(), str.size()); }
+        using bs = std::basic_string<char, std::char_traits<char>, std::allocator<char>>;
 
-        cstr(const std::filesystem::path& path) { assign(path.string(), path.string().size()); }
-        cstr(const std::filesystem::directory_entry& dir)
-        {
-            assign(dir.path().string(), dir.path().string().size());
-        }
+    public:
+        // clang-format off
+        cstr(void) : bs() {}
+        cstr(const char* psz) : bs(psz) { }
+        cstr(std::string_view view) : bs(view) { }
+        cstr(ttlib::cview view) : bs(view) { }
+        cstr(const cstr& str) : bs(str) { }
+        cstr(const std::string& str) : bs(str) { }
+        cstr(const std::filesystem::path& path) : bs(path.string(), path.string().size() ) { }
+        cstr(const std::filesystem::directory_entry& dir) : bs(dir.path().string(), dir.path().string().size()) { }
+
+        // clang-format on
 
 #if defined(__WXMSW__)
         /// Converts wxString to a UTF8 string.
