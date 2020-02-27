@@ -18,7 +18,7 @@
 using namespace ttlib;
 
 // Global empty string.
-const std::string ttlib::emptystring("");
+const std::string ttlib::emptystring{ std::string() };
 
 const char* ttlib::nextut8fchar(const char* psz) noexcept
 {
