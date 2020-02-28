@@ -76,7 +76,7 @@ namespace ttlib
         size_t locate(std::string_view str, size_t posStart = 0, ttlib::CASE check = ttlib::CASE::exact) const;
 
         /// Returns true if the sub string exists
-        bool contains(std::string_view sub, ttlib::CASE checkcase = ttlib::CASE::exact)
+        bool contains(std::string_view sub, ttlib::CASE checkcase = ttlib::CASE::exact) const
         {
             return (locate(sub, 0, checkcase) != npos);
         }
