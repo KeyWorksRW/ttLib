@@ -64,6 +64,15 @@ namespace ttlib
             return true;
         }
 
+        bool hasFilename(std::string_view filename)
+        {
+#if defined(_WIN32)
+            return (find(0, filename, ttlib::CASE::either) != ttlib::npos);
+#else
+            return (find(0, filename, ttlib::CASE::exact) != ttlib::npos);
+#endif  // _WIN32
+        }
+
         /// Finds the position of the first string identical to the specified string.
         size_t find(size_t start, std::string_view str, ttlib::CASE checkcase = ttlib::CASE::exact) const;
 
