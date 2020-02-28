@@ -89,8 +89,10 @@ namespace ttlib
         }
 
         const char* c_str() const { return m_filename.c_str(); }
-        operator const char*() const { m_filename.c_str(); }
+        operator const char*() const { return m_filename.c_str(); }
         operator DWORD() const { return dwFileAttributes; }
+
+        const ttlib::cstr& GetFileName() { return m_filename; }
 
         // Caution: this is NOT a copy! It returns a pointer to the internal cstr buffer. Any
         // changes you make will be overwritten by a call to next() or newpattern().
