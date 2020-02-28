@@ -63,7 +63,12 @@ namespace ttlib
         inline int32_t GetHeight() const { return std::abs(bottom - top); }
     };
 
-    /// Only valid for ANSI or UTF8 characters
+    /// Only valid for ANSI characters
+    constexpr inline bool isalpha(char ch) noexcept
+    {
+        return ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z'));
+    }
+
     constexpr inline bool isdigit(char ch) noexcept { return ((ch >= '0' && ch <= '9') || ch == '-'); }
 
     /// Is ch the start of a utf8 sequence?
@@ -85,15 +90,13 @@ namespace ttlib
     bool issameas(std::string_view str1, std::string_view str2, CASE checkcase = CASE::exact);
 
     /// Same as compare only it returns a boolean instead of the difference.
-    [[deprecated("Use issameas()")]] inline bool issamestr(std::string_view str1,
-                                                                            std::string_view str2)
+    [[deprecated("Use issameas()")]] inline bool issamestr(std::string_view str1, std::string_view str2)
     {
         return (str1.compare(str2) == 0);
     }
 
     /// Same as issamestr only case insensitive comparison of ASCII characters
-    [[deprecated("Use issameas()")]] bool issamestri(std::string_view str1,
-                                                                      std::string_view str2);
+    [[deprecated("Use issameas()")]] bool issamestri(std::string_view str1, std::string_view str2);
 
     /// Returns true if the sub-string is identical to the first part of the main string
     bool issameprefix(std::string_view strMain, std::string_view strSub, CASE checkcase = CASE::exact);
@@ -120,14 +123,12 @@ namespace ttlib
     /// Return a view to the portion of the string beginning with the sub string.
     ///
     /// Return view is empty if substring is not found.
-    [[deprecated("Use findstr()")]] std::string_view strstr(std::string_view strMain,
-                                                                            std::string_view strSub);
+    [[deprecated("Use findstr()")]] std::string_view strstr(std::string_view strMain, std::string_view strSub);
 
     /// Case-insensitive search for a sub string.
     ///
     /// Return view is empty if substring is not found.
-    [[deprecated("Use findstr()")]] std::string_view strstri(std::string_view strMain,
-                                                                              std::string_view strSub);
+    [[deprecated("Use findstr()")]] std::string_view strstri(std::string_view strMain, std::string_view strSub);
 
     /// Returns a pointer to the next character in a UTF8 string.
     const char* nextut8fchar(const char* psz) noexcept;
