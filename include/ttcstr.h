@@ -112,6 +112,12 @@ namespace ttlib
 
         int atoi() const { return ttlib::atoi(*this); }
 
+        /// If character is found, line is truncated from the character on, and then
+        /// any trailing space is removed;
+        void eraseFrom(char ch);
+
+        void eraseFrom(std::string_view sub);
+
         enum class TRIM : size_t
         {
             right,

@@ -642,6 +642,26 @@ bool cstr::assignEnvVar(ttlib::cview env_var)
     return true;
 }
 
+void cstr::eraseFrom(char ch)
+{
+    auto pos = find(ch);
+    if (pos != ttlib::npos)
+    {
+        erase(pos);
+        trim();
+    }
+}
+
+void cstr::eraseFrom(std::string_view sub)
+{
+    auto pos = find(sub);
+    if (pos != ttlib::npos)
+    {
+        erase(pos);
+        trim();
+    }
+}
+
 cstr& cdecl cstr::Format(std::string_view format, ...)
 {
     enum WIDTH : size_t
