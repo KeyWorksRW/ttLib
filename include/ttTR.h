@@ -32,7 +32,7 @@
 namespace ttlib
 {
     /// Returns either a translated string, or the original string if no translation is available.
-    const std::string& translate(const std::string& str);
+    const char* translate(const std::string& str);
 
     /// Clears all previously translated strings. Required after changing locale.
     void clearTranslations() noexcept;
@@ -46,7 +46,7 @@ namespace ttlib
 #define ttTR(txt) txt
 
 /// If count == 1, returns a translation of single, otherwise it returns a translation of plural.
-inline const std::string& _ttp(const std::string& single, const std::string& plural, unsigned int count)
+inline const char* _ttp(const std::string& single, const std::string& plural, unsigned int count)
 {
     return (count == 1 ? _tt(single) : _tt(plural));
 }

@@ -20,15 +20,15 @@
 
 std::map<const std::string, std::string> tt_translations;
 
-const std::string& ttlib::translate(const std::string& str)
+const char* ttlib::translate(const std::string& str)
 {
     if (str.empty())
-        return str;
+        return str.c_str();
 
     auto found = tt_translations.find(str);
     if (found != tt_translations.end())
     {
-        return found->second;
+        return found->second.c_str();
     }
     else
     {
@@ -68,14 +68,14 @@ const std::string& ttlib::translate(const std::string& str)
         auto translated = tt_translations.insert({ str, str });
         if (translated.second)
         {
-            return translated.first->second;
+            return translated.first->second.c_str();
         }
 #endif  // _WX_DEFS_H_
     }
 
     // We only get here if the passed string ptr is null, or the unordered_map was unable to insert
     // the string.
-    return str;
+    return str.c_str();
 }
 
 const char* ttTranslate(const char* psz)
