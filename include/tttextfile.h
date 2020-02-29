@@ -64,6 +64,12 @@ namespace ttlib
         bool issameas(ttlib::viewfile other, ttlib::CASE checkcase = ttlib::CASE::exact) const;
 
         cstr& addEmptyLine() { return emplace_back(ttlib::emptystring); }
+        cstr& insertEmptyLine(size_t pos)
+        {
+            assertm(pos <= size(), "pos is beyond the end");
+            emplace(begin() + pos, ttlib::emptystring);
+            return at(pos);
+        }
 
     protected:
         // Converts lines into a vector of std::string members. Lines can end with \n, \r, or \r\n.
