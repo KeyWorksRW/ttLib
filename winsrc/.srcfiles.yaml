@@ -47,6 +47,7 @@ Files:
     ttmultibtn.cpp      # ttCMultiBtn class
     ttshadebtn.cpp      # ttCShadeBtn class
     ttwin.cpp           # ttCWin class
+    ttwindlg.cpp        # Class for creating a Modal or Modeless dialog box
     ttwinspace.cpp      # Windows-only ttlib namespace functions
 
 # The following modules are slated for removal as soon as all callers stop using them.
