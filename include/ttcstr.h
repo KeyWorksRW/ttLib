@@ -19,8 +19,8 @@
 #include <string>
 #include <string_view>
 
-#include "ttlibspace.h"
 #include "ttcview.h"
+#include "ttlibspace.h"
 
 #if defined(__WXMSW__)
     #include <wx/string.h>
@@ -221,10 +221,11 @@ namespace ttlib
         /// Replaces any existing extension with a new extension, or appends the extension if the
         /// name doesn't currently have an extension.
         ///
-        /// If newExtension is empty, any existing extension will be removed.
-        ///
         /// Returns view to the entire string.
         cstr& replace_extension(std::string_view newExtension);
+
+        /// Replaces the extension portion of the string. Returns a view to the entire string.
+        cstr& remove_extension() { return replace_extension(std::string_view {}); };
 
         /// Replaces the filename portion of the string. Returns a view to the entire string.
         cstr& replace_filename(std::string_view newFilename);
