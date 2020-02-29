@@ -20,6 +20,7 @@
 
 #include "../include/ttlibspace.h"
 #include "../include/utf8unchecked.h"
+#include "../include/ttdebug.h"
 
 namespace ttlib
 {
@@ -136,6 +137,25 @@ void ttlib::SetWndText(HWND hwnd, std::string_view utf8str)
     std::wstring str16;
     utf8::unchecked::utf8to16(utf8str.begin(), utf8str.end(), back_inserter(str16));
     SetWindowTextW(hwnd, str16.c_str());
+}
+
+std::string ttlib::LoadTextResource(DWORD idResource, HMODULE hmodResource)
+{
+    std::string str;
+    auto hrsrc = FindResourceA(hmodResource, MAKEINTRESOURCEA(idResource), (char*) RT_RCDATA);
+    ttASSERT(hrsrc);
+    if (!hrsrc)
+        return str;
+    HGLOBAL hglb = LoadResource(hmodResource, hrsrc);
+    ttASSERT(hglb);
+    if (!hglb)
+        return str;
+    auto pbuf = LockResource(hglb);
+    ttASSERT(hglb);
+    if (!pbuf)
+        return str;
+    str.assign(static_cast<char*>(pbuf), static_cast<size_t>(SizeofResource(hmodResource, hrsrc)));
+    return str;
 }
 
 HINSTANCE ttlib::ShellRun(std::string_view filename, std::string_view args, std::string_view dir, INT nShow,
