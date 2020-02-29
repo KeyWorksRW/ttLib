@@ -360,7 +360,7 @@ int ttlib::atoi(std::string_view str) noexcept
     int total = 0;
     size_t pos = 0;
 
-    if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X'))
+    if (str[0] == '0' && str.length() > 1 && (str[1] == 'x' || str[1] == 'X'))
     {
         pos += 2;  // skip over 0x prefix in hexadecimal strings
 
