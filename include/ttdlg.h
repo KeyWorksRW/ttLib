@@ -88,10 +88,10 @@ public:
     void SetBtnIcon(int idBtn, const char* pszIconName, UINT nIconAlign = BS_LEFT);
 
     // Call within OnEnd() to cancel ending the dialog
-    void CancelEnd() { m_bCancelEnd = true; }
+    void CancelEnd() { m_isCancelEnd = true; }
     BOOL CloseDialog(size_t result = IDOK)
     {
-        return (m_bModeless ? DestroyWindow(*this) : ::EndDialog(*this, (int) result));
+        return (m_isModeless ? DestroyWindow(*this) : ::EndDialog(*this, (int) result));
     }
 
     HWND GetDlgItem(int id) const { return ::GetDlgItem(m_hwnd, (int) id); }
@@ -183,19 +183,19 @@ public:
 
     void ttDDX_Text(int id, ttCStr& csz)
     {
-        (m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz));
+        (m_isInitializing ? SetControlText(id, csz) : GetControlText(id, &csz));
     }
     void ttDDX_Text(int id, ttCWStr& csz)
     {
-        (m_bInitializing ? SetControlText(id, csz) : GetControlText(id, &csz));
+        (m_isInitializing ? SetControlText(id, csz) : GetControlText(id, &csz));
     }
     void ttDDX_Check(int id, bool& bFlag)
     {
-        (m_bInitializing ? SetCheck(id, bFlag) : (void) (bFlag = GetCheck(id)));
+        (m_isInitializing ? SetCheck(id, bFlag) : (void) (bFlag = GetCheck(id)));
     }
     void ttDDX_Int(int id, ptrdiff_t* pVal)
     {
-        (m_bInitializing ? SetControlInteger(id, *pVal) : (void) (*pVal = GetControlInteger(id)));
+        (m_isInitializing ? SetControlInteger(id, *pVal) : (void) (*pVal = GetControlInteger(id)));
     }
 
     HWND GetParent() { return m_hwndParent; }
@@ -224,9 +224,9 @@ protected:
 
     int m_idTemplate;
 
-    bool m_bCancelEnd;
-    bool m_bInitializing;
-    bool m_bModeless;
+    bool m_isCancelEnd;
+    bool m_isInitializing;
+    bool m_isModeless;
 };  // end of ttCDlg
 
 class ttCComboBox

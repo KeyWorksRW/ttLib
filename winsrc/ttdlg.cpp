@@ -26,8 +26,8 @@ ttCDlg::ttCDlg(UINT idTemplate)
     m_idTemplate = idTemplate;
     m_hwnd = NULL;
     m_hwndParent = NULL;
-    m_bInitializing = false;
-    m_bModeless = false;
+    m_isInitializing = false;
+    m_isModeless = false;
     m_pShadedBtns = nullptr;
 };
 
@@ -38,7 +38,7 @@ INT_PTR ttCDlg::DoModal(HWND hwndParent)
     if (hwndParent)
         m_hwndParent = hwndParent;
 
-    m_bModeless = false;
+    m_isModeless = false;
     INT_PTR result = ::DialogBoxParamA(GetModuleHandle(NULL), MAKEINTRESOURCEA(m_idTemplate), m_hwndParent,
                                        (DLGPROC) ttpriv::DlgProc, (LPARAM) this);
 
@@ -62,7 +62,7 @@ HWND ttCDlg::DoModeless(HWND hwndParent)
 {
     if (hwndParent)
         m_hwndParent = hwndParent;
-    m_bModeless = true;
+    m_isModeless = true;
     return ::CreateDialogParamA(GetModuleHandle(NULL), MAKEINTRESOURCEA(m_idTemplate), m_hwndParent,
                                 (DLGPROC) ttpriv::DlgProc, (LPARAM) this);
 }
@@ -81,10 +81,10 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
         if (pThis->OnMsgMap(msg, wParam, lParam, lResult))
             return lResult;
 
-        pThis->m_bInitializing = true;  // needed to make sure ttDDX_ macros work correctly
-        pThis->m_bCancelEnd = false;
+        pThis->m_isInitializing = true;  // needed to make sure ttDDX_ macros work correctly
+        pThis->m_isCancelEnd = false;
         pThis->OnBegin();
-        pThis->m_bInitializing = false;
+        pThis->m_isInitializing = false;
         return TRUE;
     }
 
@@ -102,7 +102,7 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 #if !defined(NDEBUG)  // Starts debug section.
         // This allows a destructor to verify that the window was destroyed before the destructor was called
 
-        if (pThis->m_bModeless)
+        if (pThis->m_isModeless)
             pThis->m_hwnd = nullptr;
 #endif
     }
@@ -121,10 +121,10 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
             switch (LOWORD(wParam))
             {
                 case IDOK:
-                    pThis->m_bInitializing = false;
+                    pThis->m_isInitializing = false;
                     pThis->OnOK();
-                    if (pThis->m_bCancelEnd)
-                        pThis->m_bCancelEnd = false;
+                    if (pThis->m_isCancelEnd)
+                        pThis->m_isCancelEnd = false;
                     else
                         pThis->CloseDialog(
                             IDOK);  // do NOT call EndDialog--it will fail if this is a modeless dialog
@@ -132,8 +132,8 @@ INT_PTR WINAPI ttpriv::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam
 
                 case IDCANCEL:
                     pThis->OnCancel();
-                    if (pThis->m_bCancelEnd)
-                        pThis->m_bCancelEnd = false;
+                    if (pThis->m_isCancelEnd)
+                        pThis->m_isCancelEnd = false;
                     else
                         pThis->CloseDialog(IDCANCEL);
                     break;
