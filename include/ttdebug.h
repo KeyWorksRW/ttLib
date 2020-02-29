@@ -67,8 +67,10 @@ namespace tt
     // name of shared memory to write to
     [[deprecated]] extern const char* txtTraceShareName;
 
-    [[deprecated]] int CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc,
-                                   int line);
+    #if !defined(TTLIB_INTERNAL_BUILD)
+    [[deprecated("Use CHECK_DLG_ID instead")]]
+    #endif
+    int CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc, int line);
 }  // namespace tt
 
 namespace ttlib
