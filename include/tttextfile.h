@@ -63,41 +63,11 @@ namespace ttlib
         bool issameas(ttlib::textfile other, ttlib::CASE checkcase = ttlib::CASE::exact) const;
         bool issameas(ttlib::viewfile other, ttlib::CASE checkcase = ttlib::CASE::exact) const;
 
-        ttlib::cstr& GetTempLine()
-        {
-            m_tempLine.clear();
-            return m_tempLine;
-        }
-
-        /// Adds the temporary string and clears it.
-        void WriteTempLine()
-        {
-            if (!m_tempLine.empty())
-            {
-                push_back(std::move(m_tempLine));
-                m_tempLine.clear();
-            }
-            else
-                addblankline();
-        }
-
-        /// Appends text to the end of the temporary string, then adds the entire
-        /// string and clears it.
-        void WriteTempLine(std::string_view text)
-        {
-            m_tempLine.append(text);
-            push_back(std::move(m_tempLine));
-            m_tempLine.clear();
-        }
-
-        void addblankline() { push_back(""); }
+        cstr& addEmptyLine() { return emplace_back(ttlib::emptystring); }
 
     protected:
         // Converts lines into a vector of std::string members. Lines can end with \n, \r, or \r\n.
         void ParseLines(std::string_view str);
-
-    private:
-        ttlib::cstr m_tempLine;
     };
 }  // namespace ttlib
 

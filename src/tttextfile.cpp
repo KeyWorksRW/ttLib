@@ -52,17 +52,15 @@ void textfile::ParseLines(std::string_view str)
     {
         if (str[pos] == '\r')
         {
-            ttlib::cstr line;
+            emplace_back();
             if (pos > posBeginLine)
             {
-                line.assign(str.substr(posBeginLine, pos - posBeginLine));
+                back().assign(str.substr(posBeginLine, pos - posBeginLine));
             }
             else
             {
-                line.assign(ttlib::emptystring);
+                back().assign(ttlib::emptystring);
             }
-
-            push_back(move(line));
 
             // Some Apple format files only use \r. Windows files tend to use \r\n.
             if (pos + 1 < str.size() && str[pos + 1] == '\n')
@@ -71,16 +69,15 @@ void textfile::ParseLines(std::string_view str)
         }
         else if (str[pos] == '\n')
         {
-            ttlib::cstr line;
+            emplace_back();
             if (pos > posBeginLine)
             {
-                line.assign(str.substr(posBeginLine, pos - posBeginLine));
+                back().assign(str.substr(posBeginLine, pos - posBeginLine));
             }
             else
             {
-                line.assign(ttlib::emptystring);
+                back().assign(ttlib::emptystring);
             }
-            push_back(move(line));
             posBeginLine = pos + 1;
         }
     }
@@ -166,17 +163,14 @@ void viewfile::ParseLines(std::string_view str)
     {
         if (str[pos] == '\r')
         {
-            std::string_view view;
             if (pos > posBeginLine)
             {
-                view = str.substr(posBeginLine, pos - posBeginLine);
+                emplace_back(str.data() + posBeginLine, pos - posBeginLine);
             }
             else
             {
-                view = {};
+                emplace_back(nullptr, 0);
             }
-
-            push_back(view);
 
             // Some Apple format files only use \r. Windows files tend to use \r\n.
             if (pos + 1 < str.size() && str[pos + 1] == '\n')
@@ -185,16 +179,14 @@ void viewfile::ParseLines(std::string_view str)
         }
         else if (str[pos] == '\n')
         {
-            std::string_view view;
             if (pos > posBeginLine)
             {
-                view = str.substr(posBeginLine, pos - posBeginLine);
+                emplace_back(str.data() + posBeginLine, pos - posBeginLine);
             }
             else
             {
-                view = {};
+                emplace_back(nullptr, 0);
             }
-            push_back(view);
             posBeginLine = pos + 1;
         }
     }
