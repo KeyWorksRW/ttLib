@@ -193,16 +193,22 @@ namespace ttlib
 }  // namespace ttlib
 
 /////////////// Following section can only be used when compiling for Windows ///////////////
+///
+/// CAUTION: If you use any of the following functions, you MUST link to ttLibwin not ttLib as
+/// all the underlying code that supports them is only available in the Windows version of the
+/// library.
+///
+/////////////////////////////////////////////////////////////////////////////////////////////
 
 // clang-format off
 
 #if defined(_WIN32)
 
+#include <windows.h>
+
 namespace ttlib
 {
-        // Caution! If you use any of the following functions, you MUST link with ttLibwin.lib NOT ttlib.lib
-
-        #include <windows.h>
+    // Caution! If you use any of the following functions, you MUST link with ttLibwin.lib NOT ttlib.lib
 
     /// Sets title to use in all calls to ttlib::MsgBox
     void SetMsgBoxTitle(std::string_view utf8Title);
@@ -238,6 +244,11 @@ namespace ttlib
 
     /// Converts the text to UTF16 before calling SetWindowTextW(...)
     void SetWndText(HWND hwnd, std::string_view utf8str);
+
+    /// Loads the specified UTF8 text string from a resource (calls Windows LoadResource API).
+    ///
+    /// Return string will be empty if an error occurred.
+    std::string LoadTextResource(DWORD idResource, HMODULE hmodResource = NULL);
 
     /// Converts all text to UTF16 before calling ShellExecuteW(...)
     HINSTANCE ShellRun(std::string_view filename, std::string_view args, std::string_view directory,
