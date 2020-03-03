@@ -220,6 +220,12 @@ public:
     char* GetPtr() { return m_psz; }
     char** GetPPtr() { return &m_psz; }  // use with extreme caution!
 
+    operator const std::string&()
+    {
+        m_std.assign(m_psz ? m_psz : "");
+        return m_std;
+    }
+
     operator char*() const { return (char*) m_psz; }
     operator void*() const { return (void*) m_psz; }
 
@@ -268,4 +274,8 @@ private:
     // Class members
 
     char* m_psz;
+
+    // Hack alert! This is only used by the operator const std::string&(). It's reset every time that operator is
+    // called.
+    std::string m_std;
 };
