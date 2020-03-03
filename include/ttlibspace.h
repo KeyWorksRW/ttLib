@@ -214,7 +214,13 @@ namespace ttlib
     void SetMsgBoxTitle(std::string_view utf8Title);
 
     /// Converts the message to UTF16 and displays it in a Windows message box (MessageBox(...))
+    ///
+    /// Caption is whatever was set by last call to ttlib::SetMsgBoxTitle().
     int MsgBox(std::string_view utf8str, UINT uType = MB_OK | MB_ICONWARNING);
+
+    /// Converts the message and caption to UTF16 and displays them in a Windows message box
+    /// (MessageBox(...))
+    int MsgBox(std::string_view utf8str, std::string_view utf8Caption, UINT uType = MB_OK | MB_ICONWARNING);
 
     /// Converts window text to UTF8 and returns it in a std::string container
     std::string GetWndText(HWND hwnd);

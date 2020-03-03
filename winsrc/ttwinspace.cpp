@@ -40,6 +40,15 @@ int ttlib::MsgBox(std::string_view utf8str, UINT uType)
                        (!ttlib::MsgBoxTitle.empty() ? ttlib::MsgBoxTitle.c_str() : L""), uType);
 }
 
+int ttlib::MsgBox(std::string_view utf8str, std::string_view utf8Caption, UINT uType)
+{
+    std::wstring str16;
+    utf8::unchecked::utf8to16(utf8str.begin(), utf8str.end(), back_inserter(str16));
+    std::wstring caption16;
+    utf8::unchecked::utf8to16(utf8Caption.begin(), utf8Caption.end(), back_inserter(caption16));
+
+    return MessageBoxW(GetActiveWindow(), str16.c_str(), caption16.c_str(), uType);
+}
 bool ttlib::GetWndText(HWND hwnd, std::string& str)
 {
     int cb = GetWindowTextLengthW(hwnd);
