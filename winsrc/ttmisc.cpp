@@ -92,7 +92,7 @@ ttCEnumStr::ttCEnumStr(const char* psz, char chSeparator)
 
 void ttCEnumStr::ResetEnum(char chSeparator)
 {
-    if (m_csz.IsEmpty())
+    if (m_csz.empty())
     {
         m_pszCur = nullptr;
         m_pszEnd = nullptr;
@@ -112,7 +112,7 @@ void ttCEnumStr::SetNewStr(const char* psz, char chSeparator)
     if (psz)
         m_csz = psz;
     else
-        m_csz.Delete();
+        m_csz.clear();
     m_pszEnd = nullptr;
     m_chSeparator = chSeparator;
     ResetEnum(chSeparator);
@@ -120,8 +120,8 @@ void ttCEnumStr::SetNewStr(const char* psz, char chSeparator)
 
 bool ttCEnumStr::Enum(const char** ppszCurrent)
 {
-    assert(!m_csz.IsNull());
-    if (m_csz.IsNull())
+    assert(!m_csz.empty());
+    if (m_csz.empty())
     {
         if (ppszCurrent)
             *ppszCurrent = nullptr;
@@ -130,7 +130,7 @@ bool ttCEnumStr::Enum(const char** ppszCurrent)
 
     if (m_pszCur == nullptr)  // means we haven't been called before, or ResetEnum() was called to reset
     {
-        m_pszCur = m_csz;
+        m_pszCur = const_cast<char*>(m_csz.c_str());
         m_pszEnd = ttStrChr(m_pszCur, m_chSeparator);
         if (m_pszEnd)
             *m_pszEnd = 0;

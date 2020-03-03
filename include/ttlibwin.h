@@ -473,7 +473,7 @@ private:
     // Class members
 
     char*  m_pszCur;
-    ttCStr m_csz;
+    std::string m_csz;
     char*  m_pszEnd;
     char   m_chSeparator;
 };
