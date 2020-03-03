@@ -16,12 +16,12 @@
 
 #include <shellapi.h>
 
-#include "../include/ttlibwin.h"    // Master header file for ttLibwin.lib
 #include "../include/ttcritsection.h"  // CCritSection, CCritLock
-#include "../include/ttstr.h"          // ttCStr
 #include "../include/ttdebug.h"        // ttASSERT macros
-#include "../include/ttwstr.h"         // ttCWStr
+#include "../include/ttlibwin.h"       // Master header file for ttLibwin.lib
+#include "../include/ttstr.h"          // ttCStr
 #include "../include/ttstring.h"       // ttString, ttCwd, ttStrVector
+#include "../include/ttwstr.h"         // ttCWStr
 #include "../include/utf8unchecked.h"
 
 namespace tt
@@ -48,6 +48,7 @@ int tt::MsgBox(std::string_view utf8str, UINT uType)
     return MessageBoxW(GetActiveWindow(), str16.c_str(),
                        (!tt::MsgBoxTitle.empty() ? tt::MsgBoxTitle.c_str() : L""), uType);
 }
+
 
 void tt::SetMsgBoxTitle(std::string_view utf8Title)
 {
