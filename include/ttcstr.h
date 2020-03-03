@@ -67,7 +67,9 @@ namespace ttlib
         }
 
         std::wstring to_utf16() const;
-        void from_utf16(std::wstring_view str);
+
+        [[deprecated("use assignUTF16")]] void from_utf16(std::wstring_view str);
+        void assignUTF16(std::wstring_view str);
 
         /// Case-insensitive comparison.
         int comparei(std::string_view str) const;

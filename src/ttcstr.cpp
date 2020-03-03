@@ -616,6 +616,13 @@ std::wstring cstr::to_utf16() const
 
 void cstr::from_utf16(std::wstring_view str)
 {
+    clear();
+    utf8::unchecked::utf16to8(str.begin(), str.end(), back_inserter(*this));
+}
+
+void cstr::assignUTF16(std::wstring_view str)
+{
+    clear();
     utf8::unchecked::utf16to8(str.begin(), str.end(), back_inserter(*this));
 }
 
