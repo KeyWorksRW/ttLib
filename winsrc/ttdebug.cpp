@@ -43,7 +43,8 @@ namespace ttdbg
 }  // namespace ttdbg
 
 // Don't use std::string_view for msg -- we special-case a null pointer
-bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond, const char* msg)
+// bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond, const char* msg)
+bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond, const std::string& msg)
 {
     if (!ttdbg::allowAsserts)
         return false;
@@ -56,7 +57,7 @@ bool ttAssertionMsg(const char* filename, const char* function, int line, const 
     std::stringstream str;
     if (cond)
         str << "Expression: " << cond << "\n\n";
-    if (msg)
+    if (!msg.empty())
         str << "Comment: " << msg << "\n\n";
 
     str << "File: " << fname << "\n";
