@@ -54,7 +54,14 @@ namespace ttlib
             utf8::unchecked::utf8to16(filepattern.begin(), filepattern.end(), back_inserter(str16));
             m_hfind = FindFirstFileExW(str16.c_str(), FindExInfoBasic, this, FindExSearchNameMatch, nullptr,
                                        FIND_FIRST_EX_LARGE_FETCH);
-            m_filename.from_utf16(cFileName);
+
+            // Use same rule as std::filesystem directory_iterator and skip . and ..
+            if (cFileName[0] == L'.' && !cFileName[1])
+                next();
+            else if (cFileName[0] == L'.' && cFileName[1] == L'.' && !cFileName[2])
+                next();
+            else
+                m_filename.assignUTF16(cFileName);
         }
         ~winff()
         {
@@ -66,7 +73,12 @@ namespace ttlib
         {
             if (FindNextFileW(m_hfind, this))
             {
-                m_filename.from_utf16(cFileName);
+                // Use same rule as std::filesystem directory_iterator and skip . and ..
+                if (cFileName[0] == L'.' && !cFileName[0])
+                    return next();
+                else if (cFileName[0] == L'.' && cFileName[1] == L'.' && !cFileName[2])
+                    return next();
+                m_filename.assignUTF16(cFileName);
                 return true;
             }
             else
@@ -84,7 +96,15 @@ namespace ttlib
             utf8::unchecked::utf8to16(filepattern.begin(), filepattern.end(), back_inserter(str16));
             m_hfind = FindFirstFileExW(str16.c_str(), FindExInfoBasic, this, FindExSearchNameMatch, nullptr,
                                        FIND_FIRST_EX_LARGE_FETCH);
-            m_filename.from_utf16(cFileName);
+            m_filename.assignUTF16(cFileName);
+
+            // Use same rule as std::filesystem directory_iterator and skip . and ..
+            if (cFileName[0] == L'.' && !cFileName[1])
+                next();
+            else if (cFileName[0] == L'.' && cFileName[1] == L'.' && !cFileName[2])
+                next();
+            else
+                m_filename.assignUTF16(cFileName);
             return isvalid();
         }
 
@@ -92,11 +112,17 @@ namespace ttlib
         operator const char*() const { return m_filename.c_str(); }
         operator DWORD() const { return dwFileAttributes; }
 
-        const ttlib::cstr& GetFileName() { return m_filename; }
+        // Override [] to return char instead of w_char
+
+        char operator[](int pos) { return m_filename.at(pos); }
+        char operator[](size_t pos) { return m_filename.at(pos); }
+
+        bool operator==(std::string_view name) { return m_filename.issameas(name); }
+        bool operator!=(std::string_view name) { return !m_filename.issameas(name); }
 
         // Caution: this is NOT a copy! It returns a pointer to the internal cstr buffer. Any
         // changes you make will be overwritten by a call to next() or newpattern().
-        const ttlib::cstr& getcstr() { return m_filename; }
+        ttlib::cstr& getcstr() { return m_filename; }
 
         bool isarchive() const { return (dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE) ? true : false; }
         bool iscompressed() const { return (dwFileAttributes & FILE_ATTRIBUTE_COMPRESSED) ? true : false; }
