@@ -28,6 +28,7 @@
 // clang-format on
 
     #include "../include/ttcview.h"
+    #include "../include/ttstr.h"
 
 namespace ttlib
 {
@@ -40,7 +41,8 @@ namespace ttlib
     void allow_asserts(bool allowasserts = false);
 }  // namespace ttlib
 
-bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond, const char* msg);
+// bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond, const char* msg);
+bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond, const std::string& msg);
 bool ttdoReportLastError(const char* filename, const char* function, int line);
 
 inline bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond,
