@@ -38,6 +38,8 @@
 
 namespace ttlib
 {
+    class cview;  // forward definition
+
     /// Use to compare a size_t against -1
     constexpr size_t npos = static_cast<size_t>(-1);
 
@@ -148,10 +150,22 @@ namespace ttlib
     size_t findnonspace_pos(std::string_view str) noexcept;
 
     /// Equivalent to findnonspace(findspace(str)).
-    std::string_view stepover(std::string_view str);
+    std::string_view stepover(std::string_view str) noexcept;
 
     /// Equivalent to findnonspace(findspace(str)) returning the position or npos.
     size_t stepover_pos(std::string_view str) noexcept;
+
+    /// Returns a zero-terminated view of the first whitespace character. View is empty if
+    /// there is no whitespace character.
+    cview viewSpace(const std::string& str, size_t startpos = 0) noexcept;
+
+    /// Returns a zero-terminated view of the first non-whitespace character. View is empty
+    /// if there is no non-whitespace character.
+    cview viewNonspace(const std::string& str, size_t startpos = 0) noexcept;
+
+    /// Locates the next whitespace character, and returns a zero-terminated view to the
+    /// first non-whitespace character after that whitespace character.
+    cview viewStepover(const std::string& str, size_t startpos = 0) noexcept;
 
     /// Generates hash of string using djb2 hash algorithm
     size_t gethash(std::string_view str) noexcept;

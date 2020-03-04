@@ -8,17 +8,18 @@
 
 #include "pch.h"
 
-#include <locale>
 #include <cassert>
 #include <cctype>
+#include <locale>
 
+#include "../include/ttcview.h"
 #include "../include/ttlibspace.h"
 #include "../include/utf8unchecked.h"
 
 using namespace ttlib;
 
 // Global empty string.
-const std::string ttlib::emptystring{ std::string() };
+const std::string ttlib::emptystring { std::string() };
 
 const char* ttlib::nextut8fchar(const char* psz) noexcept
 {
@@ -41,7 +42,7 @@ size_t ttlib::gethash(std::string_view str) noexcept
 
     size_t hash = 5381;
 
-    for (auto iter : str)
+    for (auto iter: str)
         hash = ((hash << 5) + hash) ^ iter;
 
     return hash;
@@ -97,7 +98,7 @@ size_t ttlib::findnonspace_pos(std::string_view str) noexcept
         return (str.size() - view.size());
 }
 
-std::string_view ttlib::stepover(std::string_view str)
+std::string_view ttlib::stepover(std::string_view str) noexcept
 {
     if (str.empty())
         return {};
@@ -131,6 +132,63 @@ size_t ttlib::stepover_pos(std::string_view str) noexcept
         return (str.size() - view.size());
 }
 
+ttlib::cview ttlib::viewSpace(const std::string& str, size_t startpos) noexcept
+{
+    if (str.empty() || startpos > str.length())
+        return ttlib::cview(ttlib::emptystring.c_str(), 0);
+    size_t pos;
+    for (pos = startpos; pos < str.length(); ++pos)
+    {
+        if (ttlib::iswhitespace(str.at(pos)))
+            break;
+    }
+    if (pos >= str.length())
+        return ttlib::cview(ttlib::emptystring.c_str(), 0);
+    else
+        return ttlib::cview(str.c_str() + pos, str.length() - pos);
+}
+
+ttlib::cview ttlib::viewNonspace(const std::string& str, size_t startpos) noexcept
+{
+    if (str.empty())
+        return ttlib::cview(ttlib::emptystring.c_str(), 0);
+    size_t pos;
+    for (pos = startpos; pos < str.length(); ++pos)
+    {
+        if (!ttlib::iswhitespace(str.at(pos)))
+            break;
+    }
+    if (pos >= str.length())
+        return ttlib::cview(ttlib::emptystring.c_str(), 0);
+    else
+        return ttlib::cview(str.c_str() + pos, str.length() - pos);
+}
+
+ttlib::cview ttlib::viewStepover(const std::string& str, size_t startpos) noexcept
+{
+    if (str.empty())
+        return ttlib::cview(ttlib::emptystring.c_str(), 0);
+
+    size_t pos;
+    for (pos = startpos; pos < str.length(); ++pos)
+    {
+        if (ttlib::iswhitespace(str.at(pos)))
+            break;
+    }
+    if (pos >= str.length())
+        return ttlib::cview(ttlib::emptystring.c_str(), 0);
+
+    for (; pos < str.length(); ++pos)
+    {
+        if (!ttlib::iswhitespace(str.at(pos)))
+            break;
+    }
+    if (pos >= str.length())
+        return ttlib::cview(ttlib::emptystring.c_str(), 0);
+    else
+        return ttlib::cview(str.c_str() + pos, str.length() - pos);
+}
+
 bool ttlib::issameprefix(std::string_view strMain, std::string_view strSub, CASE checkcase)
 {
     if (strSub.empty())
@@ -142,7 +200,7 @@ bool ttlib::issameprefix(std::string_view strMain, std::string_view strSub, CASE
     if (checkcase == CASE::exact)
     {
         auto iterMain = strMain.begin();
-        for (auto iterSub : strSub)
+        for (auto iterSub: strSub)
         {
             if (*iterMain++ != iterSub)
                 return false;
@@ -152,7 +210,7 @@ bool ttlib::issameprefix(std::string_view strMain, std::string_view strSub, CASE
     else if (checkcase == CASE::either)
     {
         auto iterMain = strMain.begin();
-        for (auto iterSub : strSub)
+        for (auto iterSub: strSub)
         {
             if (std::tolower(*iterMain++) != std::tolower(iterSub))
                 return false;
@@ -163,7 +221,7 @@ bool ttlib::issameprefix(std::string_view strMain, std::string_view strSub, CASE
     {
         auto utf8locale = std::locale("en_US.utf8");
         auto iterMain = strMain.begin();
-        for (auto iterSub : strSub)
+        for (auto iterSub: strSub)
         {
             if (std::tolower(*iterMain++, utf8locale) != std::tolower(iterSub, utf8locale))
                 return false;
