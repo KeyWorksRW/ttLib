@@ -56,6 +56,8 @@ namespace ttlib
                                        FIND_FIRST_EX_LARGE_FETCH);
 
             // Use same rule as std::filesystem directory_iterator and skip . and ..
+            // If this is an empty directory, then the find handle will be closed and isvalid()
+            // will return false.
             if (cFileName[0] == L'.' && !cFileName[1])
                 next();
             else if (cFileName[0] == L'.' && cFileName[1] == L'.' && !cFileName[2])
@@ -74,7 +76,7 @@ namespace ttlib
             if (FindNextFileW(m_hfind, this))
             {
                 // Use same rule as std::filesystem directory_iterator and skip . and ..
-                if (cFileName[0] == L'.' && !cFileName[0])
+                if (cFileName[0] == L'.' && !cFileName[1])
                     return next();
                 else if (cFileName[0] == L'.' && cFileName[1] == L'.' && !cFileName[2])
                     return next();
@@ -83,6 +85,9 @@ namespace ttlib
             }
             else
             {
+                if (m_hfind != INVALID_HANDLE_VALUE)
+                    FindClose(m_hfind);
+                m_hfind = INVALID_HANDLE_VALUE;
                 m_filename.clear();
                 return false;
             }
@@ -136,6 +141,9 @@ namespace ttlib
 
         /// Call this before retrieving the filename if you want all backslashes converted to forward slahes.
         void backslashestoforward() { m_filename.backslashestoforward(); }
+
+        /// Returns a 64-bit file size value.
+        int64_t GetFullFileSize() { return (((int64_t) nFileSizeHigh) << 32) + (int64_t) nFileSizeLow; }
 
     private:
         HANDLE m_hfind;
