@@ -21,8 +21,10 @@
 #pragma once
 
 #include <filesystem>
-#include <string_view>
 #include <sstream>
+#include <string_view>
+
+#include "ttlibspace.h"
 
 namespace ttlib
 {
@@ -49,6 +51,21 @@ namespace ttlib
 
         /// Can be used to pass the view to a function that expects a C-style string.
         operator const char*() const noexcept { return data(); }
+
+        /// Returns true if the sub-string is identical to the first part of the main string
+        bool issameas(std::string_view str, ttlib::CASE checkcase = ttlib::CASE::exact) const;
+
+        /// Returns true if the sub-string is identical to the first part of the main string
+        bool issameprefix(std::string_view str, ttlib::CASE checkcase = ttlib::CASE::exact) const;
+
+        /// Locates the position of a substring.
+        size_t locate(std::string_view str, size_t posStart = 0, ttlib::CASE check = ttlib::CASE::exact) const;
+
+        /// Returns true if the sub string exists
+        bool contains(std::string_view sub, ttlib::CASE checkcase = ttlib::CASE::exact) const
+        {
+            return (locate(sub, 0, checkcase) != npos);
+        }
 
         // You can't remove a suffix and still have the view zero-terminated
         constexpr void remove_suffix(size_type n) = delete;

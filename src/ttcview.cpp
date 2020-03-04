@@ -8,13 +8,117 @@
 
 #include "pch.h"
 
+#include <cassert>
 #include <cctype>
 #include <locale>
 
-#include "../include/ttlibspace.h"
 #include "../include/ttcview.h"
 
 using namespace ttlib;
+
+bool cview::issameas(std::string_view str, CASE checkcase) const
+{
+    if (size() != str.size() || empty())
+        return false;
+
+    // if both strings have the same length, then we can compare as a prefix.
+    return issameprefix(str, checkcase);
+}
+
+bool cview::issameprefix(std::string_view str, CASE checkcase) const
+{
+    if (str.empty())
+        return empty();
+
+    if (empty() || length() < str.length())
+        return false;
+
+    if (checkcase == CASE::exact)
+    {
+        auto iterMain = begin();
+        for (auto iterSub: str)
+        {
+            if (*iterMain++ != iterSub)
+                return false;
+        }
+        return true;
+    }
+    else if (checkcase == CASE::either)
+    {
+        auto iterMain = begin();
+        for (auto iterSub: str)
+        {
+            if (std::tolower(*iterMain++) != std::tolower(iterSub))
+                return false;
+        }
+        return true;
+    }
+    else if (checkcase == CASE::utf8)
+    {
+        auto utf8locale = std::locale("en_US.utf8");
+        auto iterMain = begin();
+        for (auto iterSub: str)
+        {
+            if (std::tolower(*iterMain++, utf8locale) != std::tolower(iterSub, utf8locale))
+                return false;
+        }
+        return true;
+    }
+    assert(!"Unknown CASE value");
+    return false;
+}
+
+size_t cview::locate(std::string_view str, size_t posStart, CASE checkcase) const
+{
+    if (str.empty() || posStart >= size())
+        return npos;
+
+    if (checkcase == CASE::exact)
+        return find(str, posStart);
+
+    if (checkcase == CASE::either)
+    {
+        auto chLower = std::tolower(str[0]);
+        for (auto pos = posStart; pos < length(); ++pos)
+        {
+            if (std::tolower(at(pos)) == chLower)
+            {
+                size_t posSub;
+                for (posSub = 1; posSub < str.length(); ++posSub)
+                {
+                    if (pos + posSub >= length())
+                        return npos;
+                    if (std::tolower(at(pos + posSub)) != std::tolower(str.at(posSub)))
+                        break;
+                }
+                if (posSub >= str.length())
+                    return pos;
+            }
+        }
+    }
+    else
+    {
+        auto utf8locale = std::locale("en_US.utf8");
+        auto chLower = std::tolower(str[0], utf8locale);
+        for (auto pos = posStart; pos < length(); ++pos)
+        {
+            if (std::tolower(at(pos), utf8locale) == chLower)
+            {
+                size_t posSub;
+                for (posSub = 1; posSub < str.length(); ++posSub)
+                {
+                    if (pos + posSub >= length())
+                        return npos;
+                    if (std::tolower(at(pos + posSub), utf8locale) != std::tolower(str.at(posSub), utf8locale))
+                        break;
+                }
+                if (posSub >= str.length())
+                    return pos;
+            }
+        }
+    }
+    return npos;
+}
 
 bool cview::viewspace() noexcept
 {
