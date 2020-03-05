@@ -12,9 +12,9 @@
 #include <cctype>
 #include <locale>
 
-#include "../include/ttcview.h"
-#include "../include/ttlibspace.h"
-#include "../include/utf8unchecked.h"
+#include "ttcview.h"
+#include "ttlibspace.h"
+#include "utf8unchecked.h"
 
 using namespace ttlib;
 

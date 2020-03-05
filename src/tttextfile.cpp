@@ -10,8 +10,8 @@
 
 #include <fstream>
 
-#include "../include/ttlibspace.h"
-#include "../include/tttextfile.h"
+#include "ttlibspace.h"
+#include "tttextfile.h"
 
 using namespace ttlib;
 

@@ -10,7 +10,7 @@
 
 #include <cstdio>  // for printf
 
-#include "../include/ttconsole.h"  // ttConsoleColor
+#include "ttconsole.h"  // ttConsoleColor
 
 #ifdef __clang__
     #pragma GCC diagnostic ignored \

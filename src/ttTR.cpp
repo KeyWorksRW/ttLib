@@ -16,7 +16,7 @@
     #include <wx/intl.h>
 #endif
 
-#include "../include/ttTR.h"
+#include "ttTR.h"
 
 std::map<const std::string, std::string> tt_translations;
 

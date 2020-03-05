@@ -8,7 +8,7 @@
 
 #include "pch.h"
 
-#include "../include/ttenumstr.h"  // ttEnumStr, ttEnumView -- Enumerate through substrings in a string
+#include "ttenumstr.h"  // ttEnumStr, ttEnumView -- Enumerate through substrings in a string
 
 using namespace ttlib;
 

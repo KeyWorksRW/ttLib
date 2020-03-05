@@ -12,8 +12,8 @@
 #include <cassert>
 #include <cctype>
 
-#include "../include/ttstring.h"
-#include "../include/utf8unchecked.h"
+#include "ttstring.h"
+#include "utf8unchecked.h"
 
 // Global empty string.
 const std::string ttEmptyString("");

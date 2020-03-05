@@ -14,8 +14,8 @@
 #include <iomanip>
 #include <ios>
 
-#include "../include/ttstring.h"
-#include "../include/utf8unchecked.h"
+#include "ttstring.h"
+#include "utf8unchecked.h"
 
 enum WIDTH : size_t
 {

@@ -12,7 +12,7 @@
 #include <cctype>
 #include <locale>
 
-#include "../include/ttcview.h"
+#include "ttcview.h"
 
 using namespace ttlib;
 

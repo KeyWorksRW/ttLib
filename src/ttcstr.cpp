@@ -17,9 +17,9 @@
 #include <cstdlib>
 #include <sstream>
 
-#include "../include/ttlibspace.h"
-#include "../include/ttcstr.h"
-#include "../include/utf8unchecked.h"
+#include "ttlibspace.h"
+#include "ttcstr.h"
+#include "utf8unchecked.h"
 
 using namespace ttlib;
 
