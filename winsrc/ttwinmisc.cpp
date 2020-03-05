@@ -20,7 +20,6 @@
 #include "../include/ttdebug.h"        // ttASSERT macros
 #include "../include/ttlibwin.h"       // Master header file for ttLibwin.lib
 #include "../include/ttstr.h"          // ttCStr
-#include "../include/ttstring.h"       // ttString, ttCwd, ttStrVector
 #include "../include/ttwstr.h"         // ttCWStr
 #include "../include/utf8unchecked.h"
 
@@ -55,6 +54,7 @@ void tt::SetMsgBoxTitle(std::string_view utf8Title)
     utf8::unchecked::utf8to16(utf8Title.begin(), utf8Title.end(), back_inserter(tt::MsgBoxTitle));
 }
 
+#if 0
 ttString tt::GetWndText(HWND hwnd)
 {
     ttString str;
@@ -146,6 +146,7 @@ bool tt::GetComboLBText(HWND hwnd, WPARAM index, ttString& str)
     }
     return (cb != CB_ERR);
 }
+#endif
 
 void tt::SetWndText(HWND hwnd, std::string_view utf8str)
 {
