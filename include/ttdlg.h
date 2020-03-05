@@ -22,11 +22,13 @@
 #include <CommCtrl.h>
 
 #include "ttdebug.h"     // ttASSERT macros
-#include "ttstring.h"    // ttString, ttCwd, ttStrVector
+#include "ttmultibtn.h"  // ttCMultiBtn
 #include "ttstr.h"       // ttCStr
 #include "ttwstr.h"      // ttCWStr
-#include "ttmultibtn.h"  // ttCMultiBtn
 #include "utf8unchecked.h"
+
+#include "ttcstr.h"      // Classes for handling zero-terminated char strings.
+#include "ttlibspace.h"  // Contains the ttlib namespace functions/declarations common to all ttLib libraries
 
 #ifndef BEGIN_TTMSG_MAP
     #include "ttcasemap.h"  // Macros for mapping Windows messages to functions
@@ -50,7 +52,7 @@
 
 #ifndef __DLG_ID__
     #if !defined(NDEBUG)  // Starts debug section.
-        #define DLG_ID(id) tt::CheckItemID(*this, id, #id, __FILE__, __func__, __LINE__)
+        #define DLG_ID(id) ttlib::CheckItemID(*this, id, #id, __FILE__, __func__, __LINE__)
     #else
         #define DLG_ID(id) id
     #endif
@@ -99,8 +101,8 @@ public:
     // The following get/set functions automatically convert to/from UTF16/UTF8 allowing calls to the
     // UNICODE versions of the Windows API while still using. 8-bit UTF8 strings
 
-    bool getControlText(int id, ttString& str) { return tt::GetWndText(GetDlgItem(id), str); }
-    ttString getControlText(int id) { return tt::GetWndText(GetDlgItem(id)); }
+    bool getControlText(int id, ttlib::cstr& str) { return ttlib::GetWndText(GetDlgItem(id), str); }
+    ttlib::cstr getControlText(int id) { return ttlib::GetWndText(GetDlgItem(id)); }
 
     void setControlText(int id, std::string_view utf8str) { tt::SetWndText(GetDlgItem(id), utf8str); }
 
@@ -261,8 +263,8 @@ public:
 
     void Enable(BOOL fEnable = TRUE) const { EnableWindow(m_hwnd, fEnable); }
 
-    bool getText(ttString& str) { return tt::GetWndText(*this, str); }
-    bool getLBText(LRESULT index, ttString& str) { return tt::GetComboLBText(*this, index, str); }
+    bool getText(ttlib::cstr& str) { return ttlib::GetWndText(*this, str); }
+    bool getLBText(LRESULT index, ttlib::cstr& str) { return ttlib::GetComboLBText(*this, index, str); }
     void setText(std::string_view str) { tt::SetWndText(*this, str); }
 
     LRESULT append(std::string_view str)
@@ -481,8 +483,8 @@ public:
     void Initialize(HWND hdlg, int id) { m_hwnd = ::GetDlgItem(hdlg, id); }
     void Attach(HWND hwndCtrl) { m_hwnd = hwndCtrl; }
 
-    bool getText(ttString& str) { return tt::GetWndText(*this, str); }
-    bool getLBText(LRESULT index, ttString& str) { return tt::GetListboxText(*this, index, str); }
+    bool getText(ttlib::cstr& str) { return ttlib::GetWndText(*this, str); }
+    bool getLBText(LRESULT index, ttlib::cstr& str) { return ttlib::GetListboxText(*this, index, str); }
     void setText(std::string_view str) { tt::SetWndText(*this, str); }
 
     LRESULT append(std::string_view str)
