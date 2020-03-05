@@ -29,14 +29,35 @@
 /// paths separated by a semicolon. Handing the PATH$ string to either of these classes
 /// would give you a vector of each individual path.
 
+namespace ttlib
+{
+    class enumstr : public std::vector<ttlib::cstr>
+    {
+    public:
+        enumstr(std::string_view str, char separator = ';');
+    };
+
+    class enumview : public std::vector<std::string_view>
+    {
+    public:
+        enumview(std::string_view view, char separator = ';');
+    };
+}  // namespace ttlib
+
 class ttEnumStr : public std::vector<ttlib::cstr>
 {
 public:
+#if !defined(TTLIB_INTERNAL_BUILD)
+    [[deprecated("Use ttlib::enumstr instead of this class")]]
+#endif
     ttEnumStr(std::string_view str, char separator = ';');
 };
 
 class ttEnumView : public std::vector<std::string_view>
 {
 public:
+#if !defined(TTLIB_INTERNAL_BUILD)
+    [[deprecated("Use ttlib::enumview instead of this class")]]
+#endif
     ttEnumView(std::string_view str, char separator = ';');
 };
