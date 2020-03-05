@@ -12,7 +12,7 @@ Options:
     Crt_rel:    dll        # [static | dll] type of CRT to link to in release builds
     Crt_dbg:    dll        # [static | dll] type of CRT to link to in debug builds
 
-    IncDirs:    precompile;../include
+    IncDirs:    ../src/winsrc/precompile;../include
     TargetDir:  ../lib
 
 Files:
@@ -34,34 +34,34 @@ Files:
 
     # These files should be moved to ../src once they can be compiled/used without Windows
 
-    ttbasethread.cpp    # ttCBaseThread class
-    ttmultithread.cpp   # ttCMultiThrd class
+    ../src/winsrc/ttbasethread.cpp    # ttCBaseThread class
+    ../src/winsrc/ttmultithread.cpp   # ttCMultiThrd class
 
 # Windows only files
 
-    ttdebug.cpp         # debug and assertion handling
-    ttdib.cpp           # ttCDib class
-    ttdirdlg.cpp        # dialog for selecting a directory
-    ttdlg.cpp           # ttCDlg class
-    ttfiledlg.cpp       # ttCFileDlg class
-    ttmultibtn.cpp      # ttCMultiBtn class
-    ttshadebtn.cpp      # ttCShadeBtn class
-    ttwin.cpp           # ttCWin class
-    ttwindlg.cpp        # Class for creating a Modal or Modeless dialog box
-    ttwinspace.cpp      # Windows-only ttlib namespace functions
+    ../src/winsrc/ttdebug.cpp         # debug and assertion handling
+    ../src/winsrc/ttdib.cpp           # ttCDib class
+    ../src/winsrc/ttdirdlg.cpp        # dialog for selecting a directory
+    ../src/winsrc/ttdlg.cpp           # ttCDlg class
+    ../src/winsrc/ttfiledlg.cpp       # ttCFileDlg class
+    ../src/winsrc/ttmultibtn.cpp      # ttCMultiBtn class
+    ../src/winsrc/ttshadebtn.cpp      # ttCShadeBtn class
+    ../src/winsrc/ttwin.cpp           # ttCWin class
+    ../src/winsrc/ttwindlg.cpp        # Class for creating a Modal or Modeless dialog box
+    ../src/winsrc/ttwinspace.cpp      # Windows-only ttlib namespace functions
 
 # The following modules are slated for removal as soon as all callers stop using them.
 
-    ttfile.cpp          # ttCFile class
-    ttfiledir.cpp       # file and directory handling
-    tthashpair.cpp      # ttCHashPair
-    ttheap.cpp          # ttCHeap class
-    ttlinefile.cpp      # Line-oriented file class
-    ttlist.cpp          # ttCList class
-    ttmisc.cpp          # miscellaneous functions
-    ttprintf.cpp        # printf
-    ttstr.cpp           # ttCStr class
-    ttstrfuncs.cpp      # C-style string handling
-    ttwinmisc.cpp       # Miscellaneous functions for use on Windows
-    ttwstr.cpp          # Wide-character string class
-    ttxml.cpp
+    ../src/winsrc/ttfile.cpp          # ttCFile class
+    ../src/winsrc/ttfiledir.cpp       # file and directory handling
+    ../src/winsrc/tthashpair.cpp      # ttCHashPair
+    ../src/winsrc/ttheap.cpp          # ttCHeap class
+    ../src/winsrc/ttlinefile.cpp      # Line-oriented file class
+    ../src/winsrc/ttlist.cpp          # ttCList class
+    ../src/winsrc/ttmisc.cpp          # miscellaneous functions
+    ../src/winsrc/ttprintf.cpp        # printf
+    ../src/winsrc/ttstr.cpp           # ttCStr class
+    ../src/winsrc/ttstrfuncs.cpp      # C-style string handling
+    ../src/winsrc/ttwinmisc.cpp       # Miscellaneous functions for use on Windows
+    ../src/winsrc/ttwstr.cpp          # Wide-character string class
+    ../src/winsrc/ttxml.cpp

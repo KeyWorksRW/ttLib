@@ -53,7 +53,7 @@ ttLibwinD:
 ########## localization ##########
 
 locale:
-	xgettext -k_ -k_tt -k_ttp:1,2 -kttTR -i -c --omit-header -fxgen.lst
+	xgettext -k_ -kwxPLURAL -kwxTRANSLATE -i -c --omit-header -fxgen.lst
 
 ########## clean release section ##########
 
