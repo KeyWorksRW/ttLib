@@ -12,9 +12,9 @@
     #error "This module can only be compiled for Windows"
 #endif
 
-#include "../include/ttlibwin.h"
+#include "ttlibwin.h"
 
-#include "../include/ttfiledlg.h"
+#include "ttfiledlg.h"
 
 ttCFileDlg::ttCFileDlg(HWND hwndParent)
 {

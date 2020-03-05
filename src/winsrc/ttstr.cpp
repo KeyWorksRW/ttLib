@@ -15,9 +15,9 @@
 #include <cassert>
 #include <string>
 
-#include "../include/ttlibwin.h"    // Master header file for ttLibwin.lib
-#include "../include/ttdebug.h"  // ttASSERT macros
-#include "../include/ttstr.h"    // ttCStr
+#include "ttlibwin.h"    // Master header file for ttLibwin.lib
+#include "ttdebug.h"  // ttASSERT macros
+#include "ttstr.h"    // ttCStr
 
 #if __cplusplus >= 201703L
     #include <filesystem>

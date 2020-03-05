@@ -18,9 +18,9 @@
 
 #include <shellapi.h>
 
-#include "../include/ttlibspace.h"
-#include "../include/utf8unchecked.h"
-#include "../include/ttdebug.h"
+#include "ttlibspace.h"
+#include "utf8unchecked.h"
+#include "ttdebug.h"
 
 namespace ttlib
 {

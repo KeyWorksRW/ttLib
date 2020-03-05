@@ -16,8 +16,8 @@
 
 #include <stdlib.h>  // for wcstombs_s
 
-#include "../include/ttlibwin.h"    // Master header file for ttLibwin.lib
-#include "../include/ttfile.h"
+#include "ttlibwin.h"    // Master header file for ttLibwin.lib
+#include "ttfile.h"
 
 #if defined(_WIN32)
     #define CHECK_URL_PTR(str)                                               \

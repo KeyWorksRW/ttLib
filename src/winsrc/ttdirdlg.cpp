@@ -14,10 +14,10 @@
     #error "This module can only be compiled for Windows"
 #endif
 
-#include "../include/ttlibwin.h"
+#include "ttlibwin.h"
 
-#include "../include/ttdirdlg.h"  // ttCDirDlg
-#include "../include/ttdebug.h"   // ttASSERT macros
+#include "ttdirdlg.h"  // ttCDirDlg
+#include "ttdebug.h"   // ttASSERT macros
 
 #pragma comment(lib, "ole32.lib")
 

@@ -15,10 +15,10 @@
 #include <stdio.h>
 #include <stdexcept>
 
-#include "../include/ttcritsection.h"  // CCritSection
-#include "../include/ttcstr.h"         // Classes for handling zero-terminated char strings.
-#include "../include/ttdebug.h"        // ttASSERT macros
-#include "../include/utf8unchecked.h"  // provide UTF conversions
+#include "ttcritsection.h"  // CCritSection
+#include "ttcstr.h"         // Classes for handling zero-terminated char strings.
+#include "ttdebug.h"        // ttASSERT macros
+#include "utf8unchecked.h"  // provide UTF conversions
 
 const UINT ttlib::WMP_TRACE_GENERAL = WM_USER + 0x1f3;
 const UINT ttlib::WMP_TRACE_MSG = WM_USER + 0x1f5;

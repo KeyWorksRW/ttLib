@@ -14,7 +14,7 @@
 
 #include <cassert>
 
-#include "../include/ttmultithread.h"  // ttCMultiThrd
+#include "ttmultithread.h"  // ttCMultiThrd
 
 DWORD __stdcall _ttMultiThread(void* pv);
 

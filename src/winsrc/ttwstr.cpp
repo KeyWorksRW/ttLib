@@ -14,9 +14,9 @@
 
 #include <direct.h>  // for _getcwd
 
-#include "../include/ttdebug.h"  // for ttASSERTS
-#include "../include/ttwstr.h"
-#include "../include/ttstr.h"  // ttCStr
+#include "ttdebug.h"  // for ttASSERTS
+#include "ttwstr.h"
+#include "ttstr.h"  // ttCStr
 
 #ifndef _MAX_U64TOSTR_BASE10_COUNT
     #define _MAX_U64TOSTR_BASE10_COUNT (20 + 1)

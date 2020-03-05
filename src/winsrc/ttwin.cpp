@@ -12,11 +12,11 @@
     #error "This module can only be compiled for Windows"
 #endif
 
-#include "../include/ttlibwin.h"
+#include "ttlibwin.h"
 
-#include "../include/ttdebug.h"  // ttASSERT macros
-#include "../include/ttstr.h"    // ttCStr
-#include "../include/ttwin.h"    // ttCWin
+#include "ttdebug.h"  // ttASSERT macros
+#include "ttstr.h"    // ttCStr
+#include "ttwin.h"    // ttCWin
 
 // This is the Window procedure used by all windows that ttCWin created or subclassed.
 LRESULT WINAPI ttpriv::ttCWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)

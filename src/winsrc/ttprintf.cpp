@@ -16,9 +16,9 @@
 
 #include <cassert>
 
-#include "../include/ttlibwin.h"    // Master header file for ttLibwin.lib
-#include "../include/ttheap.h"  // ttCHeap
-#include "../include/ttstr.h"   // ttCStr
+#include "ttlibwin.h"    // Master header file for ttLibwin.lib
+#include "ttheap.h"  // ttCHeap
+#include "ttstr.h"   // ttCStr
 
 class ttPrintfPtr
 {

@@ -21,9 +21,9 @@
     #error "This module can only be compiled for Windows"
 #endif
 
-#include "../include/ttlibwin.h"    // Master header file for ttLibwin.lib
-#include "../include/ttlist.h"         // ttCList, ttCDblList, ttCStrIntList
-#include "../include/ttcritsection.h"  // ttCCritSection, ttCCritLock
+#include "ttlibwin.h"    // Master header file for ttLibwin.lib
+#include "ttlist.h"         // ttCList, ttCDblList, ttCStrIntList
+#include "ttcritsection.h"  // ttCCritSection, ttCCritLock
 
 ttCList::ttCList(bool bSerialize)
     : ttCHeap(bSerialize)

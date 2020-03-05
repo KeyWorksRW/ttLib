@@ -21,11 +21,11 @@
     #error "This module can only be compiled for Windows"
 #endif
 
-#include "../include/ttlibwin.h"
+#include "ttlibwin.h"
 
-#include "../include/ttstr.h"       // ttCStr
-#include "../include/ttdebug.h"     // ttASSERT macros
-#include "../include/ttshadebtn.h"  // ttCShadeBtn
+#include "ttstr.h"       // ttCStr
+#include "ttdebug.h"     // ttASSERT macros
+#include "ttshadebtn.h"  // ttCShadeBtn
 
 /*
     This class only works on non-image buttons. I.e., this class will not work on a button that is drawn with a

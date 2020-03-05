@@ -18,8 +18,8 @@
     #error "This module can only be compiled for Windows"
 #endif
 
-#include "../include/ttheap.h"
-#include "../include/ttdib.h"
+#include "ttheap.h"
+#include "ttdib.h"
 
 #ifndef WIDTHBYTES
     #define WIDTHBYTES(bits) (((bits) + 31) / 32 * 4)

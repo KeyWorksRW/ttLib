@@ -14,8 +14,8 @@
 
 #include <cassert>
 
-#include "../include/ttlibwin.h"
-#include "../include/ttstr.h"  // ttCStr
+#include "ttlibwin.h"
+#include "ttstr.h"  // ttCStr
 
 #if defined(_MSC_VER)
     // We don't warn about deprecated functions that are still her for backwards compatability

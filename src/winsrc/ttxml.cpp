@@ -18,10 +18,10 @@
     #error "This module can only be compiled for Windows"
 #endif
 
-#include "../include/ttlibwin.h"    // Master header file for ttLibwin.lib
-#include "../include/ttxml.h"
-#include "../include/ttfile.h"  // ttCFile
-#include "../include/ttmem.h"   // ttMem, ttCTMem
+#include "ttlibwin.h"    // Master header file for ttLibwin.lib
+#include "ttxml.h"
+#include "ttfile.h"  // ttCFile
+#include "ttmem.h"   // ttMem, ttCTMem
 
 #pragma warning(disable : 4996)  // 'function' : function may be unsafe
 

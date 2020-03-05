@@ -14,12 +14,12 @@
 
 #include <sstream>
 
-#include "../include/ttlibwin.h"
+#include "ttlibwin.h"
 
-#include "../include/ttlibspace.h"
-#include "../include/ttdebug.h"
-#include "../include/ttmultibtn.h"  // ttCMultiBtn
-#include "../include/ttshadebtn.h"  // ttCShadeBtn
+#include "ttlibspace.h"
+#include "ttdebug.h"
+#include "ttmultibtn.h"  // ttCMultiBtn
+#include "ttshadebtn.h"  // ttCShadeBtn
 
 BOOL WINAPI ttpriv::EnumBtnProc(HWND hwnd, LPARAM lval)
 {

@@ -12,8 +12,8 @@
     #error "This module can only be compiled for Windows"
 #endif
 
-#include "../include/ttdebug.h"  // ASSERTs
-#include "../include/ttheap.h"   // ttCHeap
+#include "ttdebug.h"  // ASSERTs
+#include "ttheap.h"   // ttCHeap
 
 #if defined(_WIN32) && !defined(PTEST)
 

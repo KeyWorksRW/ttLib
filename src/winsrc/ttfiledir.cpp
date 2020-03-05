@@ -12,9 +12,9 @@
     #error "This module can only be compiled for Windows"
 #endif
 
-#include "../include/ttlibwin.h"
-#include "../include/ttdebug.h"  // for ttASSERTS
-#include "../include/ttstr.h"    // ttCStr
+#include "ttlibwin.h"
+#include "ttdebug.h"  // for ttASSERTS
+#include "ttstr.h"    // ttCStr
 
 bool ttFileExists(const char* pszFile)
 {
@@ -107,7 +107,7 @@ bool ttCreateDir(const wchar_t* pszDir)
 
     ConvertToRelative("c:/myProject/src/foo.cpp", "c:/myProject/include/foo.h")
 
-        The above will set cszResult to "../include/foo.h"
+        The above will set cszResult to "foo.h"
 
     ConvertToRelative("../res/foo.rc", "lang/en.rc")
 

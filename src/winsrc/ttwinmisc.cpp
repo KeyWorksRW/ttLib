@@ -16,12 +16,12 @@
 
 #include <shellapi.h>
 
-#include "../include/ttcritsection.h"  // CCritSection, CCritLock
-#include "../include/ttdebug.h"        // ttASSERT macros
-#include "../include/ttlibwin.h"       // Master header file for ttLibwin.lib
-#include "../include/ttstr.h"          // ttCStr
-#include "../include/ttwstr.h"         // ttCWStr
-#include "../include/utf8unchecked.h"
+#include "ttcritsection.h"  // CCritSection, CCritLock
+#include "ttdebug.h"        // ttASSERT macros
+#include "ttlibwin.h"       // Master header file for ttLibwin.lib
+#include "ttstr.h"          // ttCStr
+#include "ttwstr.h"         // ttCWStr
+#include "utf8unchecked.h"
 
 namespace tt
 {

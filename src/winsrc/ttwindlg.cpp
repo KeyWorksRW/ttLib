@@ -16,9 +16,9 @@
 
 #include <VersionHelpers.h>
 
-#include "../include/ttlibwin.h"
+#include "ttlibwin.h"
 
-#include "../include/ttwindlg.h"
+#include "ttwindlg.h"
 
 static HMONITOR ttKeyMonitorFromWindow(HWND hwnd, DWORD dwFlags);
 static BOOL ttKeyMonitorFromPoint(HMONITOR hMonitor, LPMONITORINFO lpmi);

@@ -12,9 +12,9 @@
     #error "This module can only be compiled for Windows"
 #endif
 
-#include "../include/ttlibwin.h"    // Master header file for ttLibwin.lib
-#include "../include/ttfile.h"      // ttCFile
-#include "../include/ttlinefile.h"  // ttCLineFile
+#include "ttlibwin.h"    // Master header file for ttLibwin.lib
+#include "ttfile.h"      // ttCFile
+#include "ttlinefile.h"  // ttCLineFile
 
 ttCLineFile::ttCLineFile()
     : ttCHeap(true)

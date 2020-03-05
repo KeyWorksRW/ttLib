@@ -12,8 +12,8 @@
     #error "This module can only be compiled for Windows"
 #endif
 
-#include "../include/tthashpair.h"  // ttCHashPair
-#include "../include/ttheap.h"      // memory allocation routines
+#include "tthashpair.h"  // ttCHashPair
+#include "ttheap.h"      // memory allocation routines
 
 #define GROWTH_MALLOC 16
 

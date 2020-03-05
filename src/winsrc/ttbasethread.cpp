@@ -14,8 +14,8 @@
 
 #include <process.h>
 
-#include "../include/ttbasethread.h"  // ttCBaseThread
-#include "../include/ttdebug.h"       // ttASSERT macros
+#include "ttbasethread.h"  // ttCBaseThread
+#include "ttdebug.h"       // ttASSERT macros
 
 ttCBaseThread::ttCBaseThread()
 {
