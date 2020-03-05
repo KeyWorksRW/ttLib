@@ -53,7 +53,7 @@ ttLibD:
 ########## localization ##########
 
 locale:
-	xgettext -k_ -kwxPLURAL -kwxTRANSLATE -k_XGET -i -c --omit-header -fxgen.lst
+	xgettext -k_tt -k_ttp:1,2 -kttTR -i -c --omit-header -fxgen.lst
 
 ########## clean release section ##########
 
