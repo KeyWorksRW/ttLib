@@ -16,9 +16,6 @@ Options:
     TargetDir:  ../lib
 
 Files:
-
-# The ../src/ files used to build ttLib.lib
-
     ttconsole.cpp    # class that sets/restores console foreground color
     ttcstr.cpp       # Class for handling zero-terminated char strings.
     ttcview.cpp      # string_view functionality on a zero-terminated char string.
@@ -31,26 +28,27 @@ Files:
     ttTR.cpp         # Function for translating strings
     ttcvector.cpp    # Vector class for storing ttlib::cstr strings
 
-    # These files should be moved to ../src once they can be compiled/used without Windows
+    # These files should be moved to src/ once they can be compiled/used without Windows
 
-    ./winsrc/ttbasethread.cpp    # ttCBaseThread class
+    winsrc/ttbasethread.cpp    # ttCBaseThread class
     winsrc/ttmultithread.cpp   # ttCMultiThrd class
 
 # Windows only files
 
-    winsrc/ttdebug.cpp         # debug and assertion handling
     winsrc/ttdib.cpp           # ttCDib class
     winsrc/ttdirdlg.cpp        # dialog for selecting a directory
-    winsrc/ttdlg.cpp           # ttCDlg class
     winsrc/ttfiledlg.cpp       # ttCFileDlg class
     winsrc/ttmultibtn.cpp      # ttCMultiBtn class
     winsrc/ttshadebtn.cpp      # ttCShadeBtn class
     winsrc/ttwin.cpp           # ttCWin class
+
+    winsrc/ttdebug.cpp         # debug and assertion handling
     winsrc/ttwindlg.cpp        # Class for creating a Modal or Modeless dialog box
     winsrc/ttwinspace.cpp      # Windows-only ttlib namespace functions
 
 # The following modules are slated for removal as soon as all callers stop using them.
 
+    winsrc/ttdlg.cpp           # ttCDlg class
     winsrc/ttfile.cpp          # ttCFile class
     winsrc/ttfiledir.cpp       # file and directory handling
     winsrc/tthashpair.cpp      # ttCHashPair
