@@ -120,6 +120,7 @@ using string_view = std::string_view;
 //==================================================================================================
 
 // Controls whether an option must appear on the command line.
+// Default is no.
 enum class Required : uint8_t {
     // The option is not required to appear on the command line.
     // This is the default.
@@ -129,6 +130,7 @@ enum class Required : uint8_t {
 };
 
 // Determines whether an option may appear multiple times on the command line.
+// Default is no.
 enum class Multiple : uint8_t {
     // The option may appear (at most) once on the command line.
     // This is the default.
@@ -138,6 +140,7 @@ enum class Multiple : uint8_t {
 };
 
 // Controls the number of arguments the option accepts.
+// Default is no.
 enum class Arg : uint8_t {
     // An argument is not allowed.
     // This is the default.
@@ -154,6 +157,7 @@ enum class Arg : uint8_t {
 };
 
 // Controls whether the option may/must join its argument.
+// Default is no.
 enum class MayJoin : uint8_t {
     // The option must not join its argument: "-I dir" and "-I=dir" are
     // possible. If the option is specified with an equals sign ("-I=dir") the
@@ -167,6 +171,7 @@ enum class MayJoin : uint8_t {
 };
 
 // May this option group with other options?
+// Default is no.
 enum class MayGroup : uint8_t {
     // The option may not be grouped with other options (even if the option name
     // consists only of a single letter).
@@ -179,6 +184,7 @@ enum class MayGroup : uint8_t {
 };
 
 // Positional option?
+// Default is no.
 enum class Positional : uint8_t {
     // The option is not a positional option, i.e. requires '-' or '--' as a
     // prefix when specified.
@@ -189,6 +195,7 @@ enum class Positional : uint8_t {
 };
 
 // Split the argument between commas?
+// Default is no.
 enum class CommaSeparated : uint8_t {
     // Do not split the argument between commas.
     // This is the default.
@@ -200,6 +207,7 @@ enum class CommaSeparated : uint8_t {
 };
 
 // Stop parsing early?
+// Default is no.
 enum class StopParsing : uint8_t {
     // Nothing special.
     // This is the default.
@@ -425,7 +433,15 @@ public:
     // Returns a pointer to the newly created option.
     // The Cmdline object owns this option.
     template <typename ParserInit>
-    Option<std::decay_t<ParserInit>>* Add(char const* name, char const* descr, OptionFlags flags, ParserInit&& parser);
+    Option<std::decay_t<ParserInit>>* Add(char const* name, char const* descr, ParserInit&& parser,
+                                          OptionFlags flags = Arg::no);
+
+    // This version is just here for legacy code. Newer code should use the one above that doesn't require you
+    // to set OptionFlags if the default flag is sufficient.
+
+    template <typename ParserInit>
+    Option<std::decay_t<ParserInit>>* Add(char const* name, char const* descr, OptionFlags flags,
+                                          ParserInit&& parser);
 
     // Add an option to the commond line.
     // The Cmdline object takes ownership.
@@ -2036,6 +2052,18 @@ template <typename ParserInit>
 Option<std::decay_t<ParserInit>>* Cmdline::Add(char const* name, char const* descr, OptionFlags flags, ParserInit&& parser) {
     auto opt = std::make_unique<Option<std::decay_t<ParserInit>>>(
         name, descr, flags, std::forward<ParserInit>(parser));
+
+    auto const p = opt.get();
+    Add(std::move(opt));
+    return p;
+}
+
+template<typename ParserInit>
+Option<std::decay_t<ParserInit>>* Cmdline::Add(char const* name, char const* descr, ParserInit&& parser,
+                                               OptionFlags flags)
+{
+    auto opt =
+        std::make_unique<Option<std::decay_t<ParserInit>>>(name, descr, flags, std::forward<ParserInit>(parser));
 
     auto const p = opt.get();
     Add(std::move(opt));
