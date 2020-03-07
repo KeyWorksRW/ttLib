@@ -244,7 +244,7 @@ void ttCDlg::CenterWindow(bool bCenterOnDesktop)
     ::MoveWindow(*this, left, top, cx, cy, FALSE);
 }
 
-LRESULT ttCListView::add(std::string_view str, LPARAM lparam)
+int ttCListView::add(std::string_view str, LPARAM lparam)
 {
     std::wstring str16;
     utf8::unchecked::utf8to16(str.begin(), str.end(), back_inserter(str16));
@@ -259,7 +259,7 @@ LRESULT ttCListView::add(std::string_view str, LPARAM lparam)
         lvi.mask |= LVIF_PARAM;
         lvi.lParam = lparam;
     }
-    return (LRESULT)::SendMessageW(m_hwnd, LVM_INSERTITEMW, 0, (LPARAM) &lvi);
+    return static_cast<int>(::SendMessageW(m_hwnd, LVM_INSERTITEMW, 0, (LPARAM) &lvi));
 }
 
 BOOL ttCListView::addsubstring(std::string_view str, int iItem, int iSubItem)
