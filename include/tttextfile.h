@@ -31,8 +31,8 @@
 #include <string_view>
 #include <vector>
 
-#include "ttlibspace.h"
 #include "ttcstr.h"
+#include "ttlibspace.h"
 
 namespace ttlib
 {
@@ -69,6 +69,13 @@ namespace ttlib
             assertm(pos <= size(), "pos is beyond the end");
             emplace(begin() + pos, ttlib::emptystring);
             return at(pos);
+        }
+
+        void RemoveLine(size_t line)
+        {
+            assert(line < size());
+            if (line < size())
+                erase(begin() + line);
         }
 
     protected:
