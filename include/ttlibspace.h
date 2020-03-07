@@ -176,6 +176,18 @@ namespace ttlib
     /// String may begin with a '-' or '+' to indicate the sign of the integer.
     int atoi(std::string_view str) noexcept;
 
+    /// Converts a signed integer into a string.
+    ///
+    /// If format is true, the number will be formatted with ',' or '.' depending on the
+    /// current locale.
+    std::string itoa(int val, bool format = false);
+
+    /// Converts a size_t into a string.
+    ///
+    /// If format is true, the number will be formatted with ',' or '.' depending on the
+    /// current locale.
+    std::string itoa(size_t val, bool format = false);
+
     /// Return a view to a filename's extension. View is empty if there is no extension.
     std::string_view findext(std::string_view str);
 

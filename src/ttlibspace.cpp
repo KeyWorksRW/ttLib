@@ -12,6 +12,7 @@
 #include <cctype>
 #include <locale>
 
+#include "ttcstr.h"
 #include "ttcview.h"
 #include "ttlibspace.h"
 #include "utf8unchecked.h"
@@ -583,4 +584,24 @@ bool ttlib::fileExists(std::string_view filename)
     {
     }
     return false;
+}
+
+std::string ttlib::itoa(int val, bool format)
+{
+    ttlib::cstr str;
+    if (format)
+        str.Format("%kd", val);
+    else
+        str.Format("%d", val);
+    return str;
+}
+
+std::string ttlib::itoa(size_t val, bool format)
+{
+    ttlib::cstr str;
+    if (format)
+        str.Format("%kzu", val);
+    else
+        str.Format("%zu", val);
+    return str;
 }
