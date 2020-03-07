@@ -93,18 +93,21 @@ namespace ttlib
         ///
         /// A whitespace character is a space, tab, eol or form feed character.
         size_t findspace(size_t start = 0) const;
+        ttlib::cview viewspace(size_t start = 0) const { return subview(findspace(start)); }
 
         /// Returns offset to the next non-whitespace character starting with pos. Returns npos
         /// if there are no more non-whitespace characters.
         ///
         /// A whitespace character is a space, tab, eol or form feed character.
         size_t findnonspace(size_t start = 0) const;
+        ttlib::cview viewnonspace(size_t start = 0) const { return subview(findnonspace(start)); }
 
         /// Returns an offset to the next word -- i.e., find the first non-whitedspace character
         /// after the next whitespace character.
         ///
         /// Equivalent to findnonspace(findspace(start)).
         size_t stepover(size_t start = 0) const;
+        ttlib::cview viewstepover(size_t start = 0) const { return subview(stepover(start)); }
 
         /// Returns true if the sub-string is identical to the first part of the main string
         bool issameas(std::string_view str, ttlib::CASE checkcase = ttlib::CASE::exact) const;
