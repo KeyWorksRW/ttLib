@@ -18,17 +18,10 @@
 #include <filesystem>  // directory_entry
 // clang-format on
 
+#include "ttlibspace.h"
+
 namespace tt
 {
-    static constexpr auto npos = std::string::npos;
-
-    enum class CASE
-    {
-        exact,
-        either,
-        utf8  // comparisons are done by converting characters to lowercase UTF8
-    };
-
     /// Only valid for ANSI or UTF8 characters
     inline bool isdigit(char ch) { return ((ch >= '0' && ch <= '9') || ch == '-'); }
 

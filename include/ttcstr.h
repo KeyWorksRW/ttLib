@@ -62,7 +62,7 @@ namespace ttlib
         /// Caution: ttlib::cview is only valid until ttlib::cstr is modified or destroyed.
         ttlib::cview subview(size_t start = 0) const noexcept
         {
-            assert(start < length());
+            assert(start <= length());
             return ttlib::cview(c_str() + start, length() - start);
         }
 
@@ -123,17 +123,10 @@ namespace ttlib
 
         void eraseFrom(std::string_view sub);
 
-        enum class TRIM : size_t
-        {
-            right,
-            left,
-            both
-        };
-
         /// Removes whitespace: ' ', \t, \r, \\n, \f
         ///
         /// where: TRIM::right, TRIM::left, or TRIM::both
-        cstr& trim(TRIM where = TRIM::right);
+        cstr& trim(tt::TRIM where = tt::TRIM::right);
 
         /// Assigns the string between chBegin and chEnd. This is typically used to copy the
         /// contents of a quoted string. Returns the position of the ending character in src.
