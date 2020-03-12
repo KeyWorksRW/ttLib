@@ -66,8 +66,17 @@ namespace ttlib
         cstr& addEmptyLine() { return emplace_back(ttlib::emptystring); }
         cstr& insertEmptyLine(size_t pos)
         {
-            assertm(pos <= size(), "pos is beyond the end");
+            if (pos >= size())
+                return emplace_back(ttlib::emptystring);
             emplace(begin() + pos, ttlib::emptystring);
+            return at(pos);
+        }
+
+        cstr& insertLine(size_t pos, cstr&& str)
+        {
+            if (pos >= size())
+                return emplace_back(str);
+            emplace(begin() + pos, str);
             return at(pos);
         }
 
