@@ -34,6 +34,19 @@
     #define DBG_PARAM(param) param
 #endif
 
+#if !defined(TT_ASSERT)
+    #if defined(_WIN32)
+        #define TT_ASSERT(exp)          ttASSERT(exp)
+        #define TT_ASSERT_MSG(exp, msg) ttASSERT_MSG(exp, msg)
+    #elif !defined(_WIN32) && defined(wxASSERT)
+        #define TT_ASSERT(exp)          wxASSERT(exp)
+        #define TT_ASSERT_MSG(exp, msg) wxASSERT_MSG(exp, msg)
+    #else
+        #define TT_ASSERT(exp)          assert(exp)
+        #define TT_ASSERT_MSG(exp, msg) assert(((void) msg, exp))
+    #endif
+#endif
+
 // clang-format on
 
 namespace ttlib
