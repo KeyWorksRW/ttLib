@@ -49,6 +49,43 @@
 
 // clang-format on
 
+// The tt namespace is for enums and constexpr values that only require a header. The ttlib namespace is for
+// functions and classes that require linking to ttLib.lib in order to use.
+
+namespace tt
+{
+    /// Use to compare a size_t against -1
+    constexpr size_t npos = static_cast<size_t>(-1);
+
+    enum class CASE : size_t
+    {
+        exact,
+        either,
+        utf8  // comparisons are done by converting characters to lowercase UTF8
+    };
+
+    enum class TRIM : size_t
+    {
+        right,
+        left,
+        both
+    };
+
+    /// Equivalent to Windows RECT structure -- this makes it available on non-Windows
+    /// platforms.
+    struct WINRECT
+    {
+        int32_t left;
+        int32_t top;
+        int32_t right;
+        int32_t bottom;
+
+        inline int32_t GetWidth() const { return std::abs(right - left); }
+        inline int32_t GetHeight() const { return std::abs(bottom - top); }
+    };
+
+}  // namespace tt
+
 namespace ttlib
 {
     class cview;  // forward definition
