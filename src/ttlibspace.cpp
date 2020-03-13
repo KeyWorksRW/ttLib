@@ -593,7 +593,7 @@ std::string ttlib::itoa(int val, bool format)
         str.Format("%kd", val);
     else
         str.Format("%d", val);
-    return str;
+    return std::move(str);
 }
 
 std::string ttlib::itoa(size_t val, bool format)
@@ -603,5 +603,5 @@ std::string ttlib::itoa(size_t val, bool format)
         str.Format("%kzu", val);
     else
         str.Format("%zu", val);
-    return str;
+    return std::move(str);
 }

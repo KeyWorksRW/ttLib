@@ -31,12 +31,12 @@
 
         void OnPaint();
 
-    All macros return true to indicate that you handled the message and that the default window/dialog procedure should
-   not be called. If the message requires a non-zero return, the called function will have a return type of LRESULT.
-   Otherwise, a return type is not used.
+    All macros return true to indicate that you handled the message and that the default window/dialog procedure
+   should not be called. If the message requires a non-zero return, the called function will have a return type of
+   LRESULT. Otherwise, a return type is not used.
 
-    For messages that you would prefer to handle inline instead of calling a function, simply add a case statement. For
-    example:
+    For messages that you would prefer to handle inline instead of calling a function, simply add a case statement.
+   For example:
 
         BEGIN_TTMSG_MAP()
             TTMSG_WM_PAINT(OnPaint)
@@ -64,7 +64,7 @@
 
 // Use this block to handle notification messages.
 #define BEGIN_TTCMD_MAP()                                       \
-    bool OnCmdCaseMap(int id, int NotifyCode, LRESULT& lResult) \
+    bool OnCmdCaseMap(int id, int NotifyCode, LRESULT& lResult) override \
     {                                                           \
         NotifyCode;                                             \
         lResult;                                                \
@@ -73,7 +73,7 @@
 
 // Use this block to handle windows messages.
 #define BEGIN_TTMSG_MAP()                                                   \
-    bool OnMsgMap(UINT msg, WPARAM wParam, LPARAM lParam, LRESULT& lResult) \
+    bool OnMsgMap(UINT msg, WPARAM wParam, LPARAM lParam, LRESULT& lResult) override \
     {                                                                       \
         wParam;                                                             \
         lParam;                                                             \
