@@ -259,22 +259,16 @@ size_t cstr::Replace(std::string_view oldtext, std::string_view newtext, bool re
         return false;
 
     size_t replacements = 0;
-    size_t pos = locate(oldtext, 0, checkcase);
-    do
+    size_t pos;
+    while (pos = locate(oldtext, 0, checkcase), pos != npos)
     {
-        if (pos == npos)
-            return replacements;
-
         erase(pos, oldtext.length());
         insert(pos, newtext);
         ++replacements;
         pos += newtext.length();
-        if (replaceAll)
-        {
-            pos = pos = locate(oldtext, 0, checkcase);
-            ;
-        }
-    } while (replaceAll);
+        if (!replaceAll)
+            break;
+    }
 
     return replacements;
 }
