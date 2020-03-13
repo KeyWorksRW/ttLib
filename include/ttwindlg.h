@@ -93,12 +93,13 @@ namespace ttlib
         // The following get/set functions automatically convert to/from UTF16/UTF8 allowing calls to the
         // UNICODE versions of the Windows API while still using. 8-bit UTF8 strings
 
-        bool getControlText(int id, std::string& str) { return ttlib::GetWndText(gethwnd(id), str); }
-        std::string getControlText(int id) { return ttlib::GetWndText(gethwnd(id)); }
+        bool GetControlText(int id, std::string& str) { return ttlib::GetWndText(gethwnd(id), str); }
+        std::string GetControlText(int id) { return ttlib::GetWndText(gethwnd(id)); }
+        int GetControlTextLength(int id) const { return ::GetWindowTextLengthW(gethwnd(id)); }
 
-        void setControlText(int id, std::string_view utf8str) { ttlib::SetWndText(gethwnd(id), utf8str); }
+        void SetControlText(int id, std::string_view utf8str) { ttlib::SetWndText(gethwnd(id), utf8str); }
 
-        void setDlgTitle(std::string_view utf8str) { ttlib::SetWndText(*this, utf8str); }
+        void SetDlgTitle(std::string_view utf8str) { ttlib::SetWndText(*this, utf8str); }
 
         BOOL GetControlRect(int id, RECT* prc) const { return ::GetWindowRect(gethwnd(id), prc); }
 
