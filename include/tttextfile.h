@@ -63,7 +63,11 @@ namespace ttlib
         bool issameas(ttlib::textfile other, ttlib::CASE checkcase = ttlib::CASE::exact) const;
         bool issameas(ttlib::viewfile other, ttlib::CASE checkcase = ttlib::CASE::exact) const;
 
+        /// Use addEmptyLine() if you need to modify the line after adding it to the end.
+        ///
+        /// Use emplace_back(str) if you need to add an existing string.
         cstr& addEmptyLine() { return emplace_back(ttlib::emptystring); }
+
         cstr& insertEmptyLine(size_t pos)
         {
             if (pos >= size())
@@ -85,6 +89,12 @@ namespace ttlib
             assert(line < size());
             if (line < size())
                 erase(begin() + line);
+        }
+
+        void RemoveLastLine()
+        {
+            if (size())
+                erase(begin() + (size() - 1));
         }
 
     protected:
