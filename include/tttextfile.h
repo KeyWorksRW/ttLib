@@ -51,6 +51,13 @@ namespace ttlib
         /// Reads a string as if it was a file (see ReadFile).
         void ReadString(std::string_view str);
 
+        /// Reads an array of char* strings. The last member of the array MUST be a null
+        /// pointer.
+        void ReadArray(const char** begin);
+
+        /// Reads an count items from an array of char* strings.
+        void ReadArray(const char** begin, size_t count);
+
         /// Writes each line to the file adding a '\n' to the end of the line.
         bool WriteFile(std::string_view filename) const;
 

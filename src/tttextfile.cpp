@@ -45,6 +45,32 @@ void textfile::ReadString(std::string_view str)
         ParseLines(str);
 }
 
+void textfile::ReadArray(const char** begin)
+{
+    assert(begin);
+    if (!begin)
+        return;
+
+    while (*begin)
+    {
+        push_back(*begin);
+        ++begin;
+    }
+}
+
+void textfile::ReadArray(const char** begin, size_t count)
+{
+    assert(begin && count != tt::npos);
+    if (!begin || count == tt::npos)
+        return;
+
+    while (count > 0)
+    {
+        push_back(*begin++);
+        --count;
+    }
+}
+
 void textfile::ParseLines(std::string_view str)
 {
     size_t posBeginLine = 0;
