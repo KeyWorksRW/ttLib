@@ -18,9 +18,9 @@
 
 #include <shellapi.h>
 
+#include "ttdebug.h"
 #include "ttlibspace.h"
 #include "utf8unchecked.h"
-#include "ttdebug.h"
 
 namespace ttlib
 {
@@ -160,7 +160,7 @@ std::string ttlib::LoadTextResource(DWORD idResource, HMODULE hmodResource)
     if (!hglb)
         return str;
     auto pbuf = LockResource(hglb);
-    ttASSERT(hglb);
+    ttASSERT(pbuf);
     if (!pbuf)
         return str;
     str.assign(static_cast<char*>(pbuf), static_cast<size_t>(SizeofResource(hmodResource, hrsrc)));
@@ -178,4 +178,123 @@ HINSTANCE ttlib::ShellRun(std::string_view filename, std::string_view args, std:
     utf8::unchecked::utf8to16(dir.begin(), dir.end(), back_inserter(dir16));
 
     return ShellExecuteW(hwndParent, NULL, name16.c_str(), args16.c_str(), dir16.c_str(), nShow);
+}
+
+//////////////////////////////// Windows-only ttlib::cstr functions ////////////////////////
+
+#include "ttcstr.h"
+
+using namespace ttlib;
+
+cstr& cstr::GetWndText(HWND hwnd)
+{
+    int cb = GetWindowTextLengthW(hwnd);
+    if (cb > 0)
+    {
+        wchar_t* buffer = static_cast<wchar_t*>(std::malloc((cb + 1) * sizeof(wchar_t)));
+        cb = GetWindowTextW(hwnd, buffer, cb);
+        std::wstring_view str16(buffer, cb);
+        utf8::unchecked::utf16to8(str16.begin(), str16.end(), back_inserter(*this));
+        std::free(static_cast<void*>(buffer));
+        return *this;
+    }
+    else
+    {
+        assign(ttlib::emptystring);
+        return *this;
+    }
+}
+
+cstr& cstr::GetResString(size_t idString, HMODULE hmodResource)
+{
+    clear();
+
+    auto hrsrc = FindResourceA(hmodResource, MAKEINTRESOURCEA(idString), (char*) RT_STRING);
+    ttASSERT(hrsrc);
+    if (!hrsrc)
+        return *this;
+    HGLOBAL hglb = LoadResource(hmodResource, hrsrc);
+    ttASSERT(hglb);
+    if (!hglb)
+        return *this;
+    auto pbuf = LockResource(hglb);
+    ttASSERT(pbuf);
+    if (!pbuf)
+        return *this;
+    assign(static_cast<char*>(pbuf), static_cast<size_t>(SizeofResource(hmodResource, hrsrc)));
+    return *this;
+}
+
+cstr& cstr::GetListBoxText(HWND hwndCtrl, size_t sel)
+{
+    if (sel == tt::npos)
+    {
+        sel = SendMessageW(hwndCtrl, LB_GETCURSEL, 0, 0);
+        if (sel == LB_ERR)
+        {
+            assign(ttlib::emptystring);
+            return *this;
+        }
+    }
+
+    auto cb = SendMessageW(hwndCtrl, LB_GETTEXTLEN, sel, 0);
+    if (cb != LB_ERR)
+    {
+        wchar_t* buffer = static_cast<wchar_t*>(std::malloc((cb + 1) * sizeof(wchar_t)));
+        cb = SendMessageW(hwndCtrl, LB_GETTEXT, sel, (WPARAM) buffer);
+        if (cb != LB_ERR)
+        {
+            std::wstring_view str16(buffer, cb);
+            utf8::unchecked::utf16to8(str16.begin(), str16.end(), back_inserter(*this));
+        }
+        else
+        {
+            assign(ttlib::emptystring);
+        }
+
+        std::free(static_cast<void*>(buffer));
+    }
+    else
+    {
+        assign(ttlib::emptystring);
+    }
+
+    return *this;
+}
+
+cstr& cstr::GetComboLBText(HWND hwndCtrl, size_t sel)
+{
+    if (sel == tt::npos)
+    {
+        sel = SendMessageW(hwndCtrl, CB_GETCURSEL, 0, 0);
+        if (sel == CB_ERR)
+        {
+            assign(ttlib::emptystring);
+            return *this;
+        }
+    }
+
+    auto cb = SendMessageW(hwndCtrl, CB_GETLBTEXTLEN, sel, 0);
+    if (cb != LB_ERR)
+    {
+        wchar_t* buffer = static_cast<wchar_t*>(std::malloc((cb + 1) * sizeof(wchar_t)));
+        cb = SendMessageW(hwndCtrl, CB_GETLBTEXT, sel, (WPARAM) buffer);
+        if (cb != LB_ERR)
+        {
+            std::wstring_view str16(buffer, cb);
+            utf8::unchecked::utf16to8(str16.begin(), str16.end(), back_inserter(*this));
+        }
+        else
+        {
+            assign(ttlib::emptystring);
+        }
+
+        std::free(static_cast<void*>(buffer));
+    }
+    else
+    {
+        assign(ttlib::emptystring);
+    }
+
+    return *this;
 }

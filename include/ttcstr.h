@@ -250,5 +250,31 @@ namespace ttlib
 
         /// Returns true if the current string refers to an existing directory.
         bool dirExists() const;
+
+        //////////////////////////////// Windows-only section ////////////////////////
+        //                                                                          //
+        // The following functions can only be used when compiling for Windows.     //
+        //                                                                          //
+        //////////////////////////////////////////////////////////////////////////////
+
+#if defined(_WIN32)
+
+        /// All text functions will call the Wide version of the Windows API and convert the UTF16 string to UTF8.
+        /// If the call fails, cstr will be empty.
+
+        cstr(HWND hwnd) : bs() { GetWndText(hwnd); };
+
+        cstr& GetWndText(HWND hwnd);
+
+        /// If sel == tt::npos (default) then the current selection will be used.
+        cstr& GetListBoxText(HWND hwndCtrl, size_t sel = tt::npos);
+
+        /// If sel == tt::npos (default) then the current selection will be used.
+        cstr& GetComboLBText(HWND hwndCtrl, size_t sel = tt::npos);
+
+        /// This will call FindResourceA()
+        cstr& GetResString(size_t idString, HMODULE hmodResource = NULL);
+
+#endif
     };
 }  // namespace ttlib
