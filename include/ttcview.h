@@ -53,16 +53,16 @@ namespace ttlib
         operator const char*() const noexcept { return data(); }
 
         /// Returns true if the sub-string is identical to the first part of the main string
-        bool issameas(std::string_view str, ttlib::CASE checkcase = ttlib::CASE::exact) const;
+        bool issameas(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
 
         /// Returns true if the sub-string is identical to the first part of the main string
-        bool issameprefix(std::string_view str, ttlib::CASE checkcase = ttlib::CASE::exact) const;
+        bool issameprefix(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
 
         /// Locates the position of a substring.
-        size_t locate(std::string_view str, size_t posStart = 0, ttlib::CASE check = ttlib::CASE::exact) const;
+        size_t locate(std::string_view str, size_t posStart = 0, tt::CASE check = tt::CASE::exact) const;
 
         /// Returns true if the sub string exists
-        bool contains(std::string_view sub, ttlib::CASE checkcase = ttlib::CASE::exact) const
+        bool contains(std::string_view sub, tt::CASE checkcase = tt::CASE::exact) const
         {
             return (locate(sub, 0, checkcase) != npos);
         }

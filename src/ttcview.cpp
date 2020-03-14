@@ -16,7 +16,7 @@
 
 using namespace ttlib;
 
-bool cview::issameas(std::string_view str, CASE checkcase) const
+bool cview::issameas(std::string_view str, tt::CASE checkcase) const
 {
     if (size() != str.size() || empty())
         return false;
@@ -25,7 +25,7 @@ bool cview::issameas(std::string_view str, CASE checkcase) const
     return issameprefix(str, checkcase);
 }
 
-bool cview::issameprefix(std::string_view str, CASE checkcase) const
+bool cview::issameprefix(std::string_view str, tt::CASE checkcase) const
 {
     if (str.empty())
         return empty();
@@ -33,7 +33,7 @@ bool cview::issameprefix(std::string_view str, CASE checkcase) const
     if (empty() || length() < str.length())
         return false;
 
-    if (checkcase == CASE::exact)
+    if (checkcase == tt::CASE::exact)
     {
         auto iterMain = begin();
         for (auto iterSub: str)
@@ -43,7 +43,7 @@ bool cview::issameprefix(std::string_view str, CASE checkcase) const
         }
         return true;
     }
-    else if (checkcase == CASE::either)
+    else if (checkcase == tt::CASE::either)
     {
         auto iterMain = begin();
         for (auto iterSub: str)
@@ -53,7 +53,7 @@ bool cview::issameprefix(std::string_view str, CASE checkcase) const
         }
         return true;
     }
-    else if (checkcase == CASE::utf8)
+    else if (checkcase == tt::CASE::utf8)
     {
         auto utf8locale = std::locale("en_US.utf8");
         auto iterMain = begin();
@@ -64,19 +64,19 @@ bool cview::issameprefix(std::string_view str, CASE checkcase) const
         }
         return true;
     }
-    assert(!"Unknown CASE value");
+    assert(!"Unknown tt::CASE value");
     return false;
 }
 
-size_t cview::locate(std::string_view str, size_t posStart, CASE checkcase) const
+size_t cview::locate(std::string_view str, size_t posStart, tt::CASE checkcase) const
 {
     if (str.empty() || posStart >= size())
         return npos;
 
-    if (checkcase == CASE::exact)
+    if (checkcase == tt::CASE::exact)
         return find(str, posStart);
 
-    if (checkcase == CASE::either)
+    if (checkcase == tt::CASE::either)
     {
         auto chLower = std::tolower(str[0]);
         for (auto pos = posStart; pos < length(); ++pos)
