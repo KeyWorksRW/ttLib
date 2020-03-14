@@ -34,20 +34,22 @@
     #include "ttcasemap.h"  // Macros for mapping Windows messages to functions
 #endif
 
-#if !defined(NDEBUG)
-    /// Place this within a dialog function to verify a control id is valid.
-    #define CHECK_DLG_ID(id)                                                          \
-        if (!::GetDlgItem(*this, id))                                                 \
-        {                                                                             \
-            std::stringstream msg;                                                    \
-            msg << "Invalid dialog control id: " << #id << " (" << id << ')';         \
-            if (ttAssertionMsg(__FILE__, __func__, __LINE__, #id, msg.str().c_str())) \
-            {                                                                         \
-                DebugBreak();                                                         \
-            }                                                                         \
-        }
-#else
-    #define CHECK_DLG_ID(id)
+#if !defined(CHECK_DLG_ID)
+    #if !defined(NDEBUG)
+        /// Place this within a dialog function to verify a control id is valid.
+        #define CHECK_DLG_ID(id)                                                          \
+            if (!::GetDlgItem(*this, id))                                                 \
+            {                                                                             \
+                std::stringstream msg;                                                    \
+                msg << "Invalid dialog control id: " << #id << " (" << id << ')';         \
+                if (ttAssertionMsg(__FILE__, __func__, __LINE__, #id, msg.str().c_str())) \
+                {                                                                         \
+                    DebugBreak();                                                         \
+                }                                                                         \
+            }
+    #else
+        #define CHECK_DLG_ID(id)
+    #endif
 #endif
 
 #ifndef __DLG_ID__
