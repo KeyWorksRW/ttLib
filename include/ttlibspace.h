@@ -268,25 +268,23 @@ namespace ttlib
 
 }  // namespace ttlib
 
-/////////////// Following section can only be used when compiling for Windows ///////////////
-///
-/// CAUTION: If you use any of the following functions, you MUST link to ttLibwin not ttLib as
-/// all the underlying code that supports them is only available in the Windows version of the
-/// library.
-///
-/////////////////////////////////////////////////////////////////////////////////////////////
-
 // clang-format off
 
 #if defined(_WIN32)
 
 #include <windows.h>
 
+// clang-format on
+
+//////////////////////////////// Windows-only section ////////////////////////
+//                                                                          //
+// The following functions can only be used when compiling for Windows.     //
+//                                                                          //
+//////////////////////////////////////////////////////////////////////////////
+
 namespace ttlib
 {
-    // Caution! If you use any of the following functions, you MUST link with ttLibwin.lib NOT ttlib.lib
-
-    /// Sets title to use in all calls to ttlib::MsgBox
+     /// Sets title to use in all calls to ttlib::MsgBox
     void SetMsgBoxTitle(std::string_view utf8Title);
 
     /// Converts the message to UTF16 and displays it in a Windows message box (MessageBox(...))
