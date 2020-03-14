@@ -19,7 +19,6 @@
 
 #include "ttlibspace.h"
 #include "ttcstr.h"
-#include "utf8unchecked.h"
 
 using namespace ttlib;
 
@@ -604,20 +603,20 @@ size_t cstr::stepover(size_t start) const
 std::wstring cstr::to_utf16() const
 {
     std::wstring str16;
-    utf8::unchecked::utf8to16(begin(), end(), back_inserter(str16));
+    ttlib::utf8to16(*this, str16);
     return str16;
 }
 
 void cstr::from_utf16(std::wstring_view str)
 {
     clear();
-    utf8::unchecked::utf16to8(str.begin(), str.end(), back_inserter(*this));
+    ttlib::utf16to8(str, *this);
 }
 
 void cstr::assignUTF16(std::wstring_view str)
 {
     clear();
-    utf8::unchecked::utf16to8(str.begin(), str.end(), back_inserter(*this));
+    ttlib::utf16to8(str, *this);
 }
 
 std::string_view cstr::subview(size_t start, size_t len) const noexcept
@@ -792,7 +791,7 @@ cstr& cdecl cstr::Format(std::string_view format, ...)
                     std::wstring str16;
                     str16 += va_arg(args, wchar_t);
                     std::string str8;
-                    utf8::unchecked::utf16to8(str16.begin(), str16.end(), back_inserter(str8));
+                    ttlib::utf16to8(str16, str8);
                     buffer << str8;
                 }
             }
@@ -810,7 +809,7 @@ cstr& cdecl cstr::Format(std::string_view format, ...)
                     std::wstring str16;
                     str16 += va_arg(args, const wchar_t*);
                     std::string str8;
-                    utf8::unchecked::utf16to8(str16.begin(), str16.end(), back_inserter(str8));
+                    ttlib::utf16to8(str16, str8);
                     if (kflag)
                         buffer << std::quoted(str8);
                     else
@@ -831,7 +830,7 @@ cstr& cdecl cstr::Format(std::string_view format, ...)
                     std::wstring str16;
                     str16 += va_arg(args, std::wstring_view);
                     std::string str8;
-                    utf8::unchecked::utf16to8(str16.begin(), str16.end(), back_inserter(str8));
+                    ttlib::utf16to8(str16, str8);
                     if (kflag)
                         buffer << std::quoted(str8);
                     else

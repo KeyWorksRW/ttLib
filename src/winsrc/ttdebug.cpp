@@ -18,7 +18,6 @@
 #include "ttcritsection.h"  // CCritSection
 #include "ttcstr.h"         // Classes for handling zero-terminated char strings.
 #include "ttdebug.h"        // ttASSERT macros
-#include "utf8unchecked.h"  // provide UTF conversions
 
 const UINT ttlib::WMP_TRACE_GENERAL = WM_USER + 0x1f3;
 const UINT ttlib::WMP_TRACE_MSG = WM_USER + 0x1f5;
@@ -69,7 +68,7 @@ bool ttAssertionMsg(const char* filename, const char* function, int line, const 
     std::string copy(str.str());
 
     std::wstring str16;
-    utf8::unchecked::utf8to16(copy.begin(), copy.end(), back_inserter(str16));
+    ttlib::utf8to16(copy, str16);
     auto answer =
         MessageBoxW(GetActiveWindow(), str16.c_str(), L"Assertion failed!", MB_ABORTRETRYIGNORE | MB_ICONSTOP);
 

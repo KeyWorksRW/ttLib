@@ -20,7 +20,6 @@
 
 #include "ttdebug.h"
 #include "ttlibspace.h"
-#include "utf8unchecked.h"
 
 namespace ttlib
 {
@@ -29,13 +28,13 @@ namespace ttlib
 
 void ttlib::SetMsgBoxTitle(std::string_view utf8Title)
 {
-    utf8::unchecked::utf8to16(utf8Title.begin(), utf8Title.end(), back_inserter(ttlib::MsgBoxTitle));
+    ttlib::utf8to16(utf8Title, ttlib::MsgBoxTitle);
 }
 
 int ttlib::MsgBox(std::string_view utf8str, UINT uType)
 {
     std::wstring str16;
-    utf8::unchecked::utf8to16(utf8str.begin(), utf8str.end(), back_inserter(str16));
+    ttlib::utf8to16(utf8str, str16);
     return MessageBoxW(GetActiveWindow(), str16.c_str(),
                        (!ttlib::MsgBoxTitle.empty() ? ttlib::MsgBoxTitle.c_str() : L""), uType);
 }
@@ -43,9 +42,9 @@ int ttlib::MsgBox(std::string_view utf8str, UINT uType)
 int ttlib::MsgBox(std::string_view utf8str, std::string_view utf8Caption, UINT uType)
 {
     std::wstring str16;
-    utf8::unchecked::utf8to16(utf8str.begin(), utf8str.end(), back_inserter(str16));
+    ttlib::utf8to16(utf8str, str16);
     std::wstring caption16;
-    utf8::unchecked::utf8to16(utf8Caption.begin(), utf8Caption.end(), back_inserter(caption16));
+    ttlib::utf8to16(utf8Caption, caption16);
 
     return MessageBoxW(GetActiveWindow(), str16.c_str(), caption16.c_str(), uType);
 }
@@ -57,7 +56,7 @@ bool ttlib::GetWndText(HWND hwnd, std::string& str)
         wchar_t* buffer = static_cast<wchar_t*>(std::malloc((cb + 1) * sizeof(wchar_t)));
         cb = GetWindowTextW(hwnd, buffer, cb);
         std::wstring_view str16(buffer, cb);
-        utf8::unchecked::utf16to8(str16.begin(), str16.end(), back_inserter(str));
+        ttlib::utf16to8(str16, str);
         std::free(static_cast<void*>(buffer));
         return true;
     }
@@ -92,7 +91,7 @@ bool ttlib::GetListboxText(HWND hwnd, WPARAM index, std::string& str)
         if (cb != LB_ERR)
         {
             std::wstring_view str16(buffer, cb);
-            utf8::unchecked::utf16to8(str16.begin(), str16.end(), back_inserter(str));
+            ttlib::utf16to8(str16, str);
         }
         else
         {
@@ -125,7 +124,7 @@ bool ttlib::GetComboLBText(HWND hwnd, WPARAM index, std::string& str)
         if (cb != CB_ERR)
         {
             std::wstring_view str16(buffer, cb);
-            utf8::unchecked::utf16to8(str16.begin(), str16.end(), back_inserter(str));
+            ttlib::utf16to8(str16, str);
         }
         else
         {
@@ -144,7 +143,7 @@ bool ttlib::GetComboLBText(HWND hwnd, WPARAM index, std::string& str)
 void ttlib::SetWndText(HWND hwnd, std::string_view utf8str)
 {
     std::wstring str16;
-    utf8::unchecked::utf8to16(utf8str.begin(), utf8str.end(), back_inserter(str16));
+    ttlib::utf8to16(utf8str, str16);
     SetWindowTextW(hwnd, str16.c_str());
 }
 
@@ -171,11 +170,11 @@ HINSTANCE ttlib::ShellRun(std::string_view filename, std::string_view args, std:
                           HWND hwndParent)
 {
     std::wstring name16;
-    utf8::unchecked::utf8to16(filename.begin(), filename.end(), back_inserter(name16));
+    ttlib::utf8to16(filename, name16);
     std::wstring args16;
-    utf8::unchecked::utf8to16(args.begin(), args.end(), back_inserter(args16));
+    ttlib::utf8to16(args, args16);
     std::wstring dir16;
-    utf8::unchecked::utf8to16(dir.begin(), dir.end(), back_inserter(dir16));
+    ttlib::utf8to16(dir, dir16);
 
     return ShellExecuteW(hwndParent, NULL, name16.c_str(), args16.c_str(), dir16.c_str(), nShow);
 }
@@ -194,7 +193,7 @@ cstr& cstr::GetWndText(HWND hwnd)
         wchar_t* buffer = static_cast<wchar_t*>(std::malloc((cb + 1) * sizeof(wchar_t)));
         cb = GetWindowTextW(hwnd, buffer, cb);
         std::wstring_view str16(buffer, cb);
-        utf8::unchecked::utf16to8(str16.begin(), str16.end(), back_inserter(*this));
+        ttlib::utf16to8(str16, *this);
         std::free(static_cast<void*>(buffer));
         return *this;
     }
@@ -245,7 +244,7 @@ cstr& cstr::GetListBoxText(HWND hwndCtrl, size_t sel)
         if (cb != LB_ERR)
         {
             std::wstring_view str16(buffer, cb);
-            utf8::unchecked::utf16to8(str16.begin(), str16.end(), back_inserter(*this));
+            ttlib::utf16to8(str16, *this);
         }
         else
         {
@@ -282,7 +281,7 @@ cstr& cstr::GetComboLBText(HWND hwndCtrl, size_t sel)
         if (cb != LB_ERR)
         {
             std::wstring_view str16(buffer, cb);
-            utf8::unchecked::utf16to8(str16.begin(), str16.end(), back_inserter(*this));
+            ttlib::utf16to8(str16, *this);
         }
         else
         {

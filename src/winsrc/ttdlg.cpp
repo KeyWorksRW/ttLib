@@ -247,7 +247,7 @@ void ttCDlg::CenterWindow(bool bCenterOnDesktop)
 int ttCListView::add(std::string_view str, LPARAM lparam)
 {
     std::wstring str16;
-    utf8::unchecked::utf8to16(str.begin(), str.end(), back_inserter(str16));
+    ttlib::utf8to16(str, str16);
 
     LVITEMW lvi;
     ZeroMemory(&lvi, sizeof(lvi));
@@ -265,7 +265,7 @@ int ttCListView::add(std::string_view str, LPARAM lparam)
 BOOL ttCListView::addsubstring(std::string_view str, int iItem, int iSubItem)
 {
     std::wstring str16;
-    utf8::unchecked::utf8to16(str.begin(), str.end(), back_inserter(str16));
+    ttlib::utf8to16(str, str16);
 
     LVITEMW lvi;
     ZeroMemory(&lvi, sizeof(lvi));

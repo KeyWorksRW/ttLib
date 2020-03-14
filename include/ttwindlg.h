@@ -24,7 +24,6 @@
 #include "ttdebug.h"        // ttASSERT macros
 #include "ttlibspace.h"     // Contains the ttlib namespace functions/declarations common to all ttLib libraries
 #include "ttmultibtn.h"     // ttCMultiBtn
-#include "utf8unchecked.h"  // provide unchecked UTF conversions
 
 #ifndef BEGIN_TTMSG_MAP
     #include "ttcasemap.h"  // Macros for mapping Windows messages to functions
@@ -218,34 +217,34 @@ namespace ttlib
         LRESULT append(std::string_view str)
         {
             std::wstring str16;
-            utf8::unchecked::utf8to16(str.begin(), str.end(), back_inserter(str16));
+            ttlib::utf8to16(str, str16);
             return SendMessageW(CB_ADDSTRING, 0, (LPARAM) str16.c_str());
         }
         LRESULT insert(int index, std::string_view str)
         {
             std::wstring str16;
-            utf8::unchecked::utf8to16(str.begin(), str.end(), back_inserter(str16));
+            ttlib::utf8to16(str, str16);
             return SendMessageW(CB_INSERTSTRING, (WPARAM) index, (LPARAM) str16.c_str());
         }
 
         LRESULT find(std::string_view str, int iStart = -1) const
         {
             std::wstring str16;
-            utf8::unchecked::utf8to16(str.begin(), str.end(), back_inserter(str16));
+            ttlib::utf8to16(str, str16);
             return SendMessageW(CB_FINDSTRINGEXACT, (WPARAM) iStart, (LPARAM) str16.c_str());
         }
 
         LRESULT findprefix(std::string_view str, int iStart = -1) const
         {
             std::wstring str16;
-            utf8::unchecked::utf8to16(str.begin(), str.end(), back_inserter(str16));
+            ttlib::utf8to16(str, str16);
             return SendMessageW(CB_FINDSTRING, (WPARAM) iStart, (LPARAM) str16.c_str());
         }
 
         LRESULT select(std::string_view str, int iStart = -1) const
         {
             std::wstring str16;
-            utf8::unchecked::utf8to16(str.begin(), str.end(), back_inserter(str16));
+            ttlib::utf8to16(str, str16);
             return SendMessageW(CB_SELECTSTRING, (WPARAM) iStart, (LPARAM) str16.c_str());
         }
 
@@ -288,7 +287,7 @@ namespace ttlib
             {
                 std::string_view vstr(psz);
                 std::wstring str16;
-                utf8::unchecked::utf8to16(vstr.begin(), vstr.end(), back_inserter(str16));
+                ttlib::utf8to16(vstr, str16);
                 (void) ::SendMessageW(m_hwnd, CB_ADDSTRING, 0, (LPARAM) str16.c_str());
             }
         }
@@ -330,34 +329,34 @@ namespace ttlib
         LRESULT append(std::string_view str)
         {
             std::wstring str16;
-            utf8::unchecked::utf8to16(str.begin(), str.end(), back_inserter(str16));
+            ttlib::utf8to16(str, str16);
             return SendMessageW(LB_ADDSTRING, 0, (LPARAM) str16.c_str());
         }
         LRESULT insert(int index, std::string_view str)
         {
             std::wstring str16;
-            utf8::unchecked::utf8to16(str.begin(), str.end(), back_inserter(str16));
+            ttlib::utf8to16(str, str16);
             return SendMessageW(LB_INSERTSTRING, (WPARAM) index, (LPARAM) str16.c_str());
         }
 
         LRESULT find(std::string_view str, int iStart = -1) const
         {
             std::wstring str16;
-            utf8::unchecked::utf8to16(str.begin(), str.end(), back_inserter(str16));
+            ttlib::utf8to16(str, str16);
             return SendMessageW(LB_FINDSTRINGEXACT, (WPARAM) iStart, (LPARAM) str16.c_str());
         }
 
         LRESULT findprefix(std::string_view str, int iStart = -1) const
         {
             std::wstring str16;
-            utf8::unchecked::utf8to16(str.begin(), str.end(), back_inserter(str16));
+            ttlib::utf8to16(str, str16);
             return SendMessageW(LB_FINDSTRING, (WPARAM) iStart, (LPARAM) str16.c_str());
         }
 
         LRESULT select(std::string_view str, int iStart = -1) const
         {
             std::wstring str16;
-            utf8::unchecked::utf8to16(str.begin(), str.end(), back_inserter(str16));
+            ttlib::utf8to16(str, str16);
             return SendMessageW(LB_SELECTSTRING, (WPARAM) iStart, (LPARAM) str16.c_str());
         }
 
@@ -454,7 +453,7 @@ namespace ttlib
                 return;
             std::string_view vstr(psz);
             std::wstring str16;
-            utf8::unchecked::utf8to16(vstr.begin(), vstr.end(), back_inserter(str16));
+            ttlib::utf8to16(vstr, str16);
             (void) ::SendMessageW(m_hwnd, LB_ADDSTRING, 0, (LPARAM) str16.c_str());
         }
 

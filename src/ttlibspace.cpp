@@ -15,7 +15,6 @@
 #include "ttcstr.h"
 #include "ttcview.h"
 #include "ttlibspace.h"
-#include "utf8unchecked.h"
 
 using namespace ttlib;
 
@@ -527,7 +526,7 @@ bool ttlib::ChangeDir(std::string_view newdir)
     {
 #if defined(_WIN32)
         std::wstring str16;
-        utf8::unchecked::utf8to16(newdir.begin(), newdir.end(), back_inserter(str16));
+        ttlib::utf8to16(newdir, str16);
         auto dir = std::filesystem::directory_entry(std::filesystem::path(str16));
 #else
         auto dir = std::filesystem::directory_entry(std::filesystem::path(newdir));
@@ -552,7 +551,7 @@ bool ttlib::dirExists(std::string_view dir)
     {
 #if defined(_WIN32)
         std::wstring str16;
-        utf8::unchecked::utf8to16(dir.begin(), dir.end(), back_inserter(str16));
+        ttlib::utf8to16(dir, str16);
         auto path = std::filesystem::directory_entry(std::filesystem::path(str16));
 #else
         auto path = std::filesystem::directory_entry(std::filesystem::path(dir));
@@ -573,7 +572,7 @@ bool ttlib::fileExists(std::string_view filename)
     {
 #if defined(_WIN32)
         std::wstring str16;
-        utf8::unchecked::utf8to16(filename.begin(), filename.end(), back_inserter(str16));
+        ttlib::utf8to16(filename, str16);
         auto path = std::filesystem::directory_entry(std::filesystem::path(str16));
 #else
         auto path = std::filesystem::directory_entry(std::filesystem::path(filename));
@@ -604,4 +603,104 @@ std::string ttlib::itoa(size_t val, bool format)
     else
         str.Format("%zu", val);
     return std::move(str);
+}
+
+#define UINT8(ch)  static_cast<uint8_t>(ch)
+#define CHAR8(ch)  static_cast<char>(ch)
+#define UINT16(ch) static_cast<uint16_t>(ch)
+
+std::string ttlib::utf16to8(std::wstring_view str)
+{
+    std::string str8;
+    ttlib::utf16to8(str, str8);
+    return std::move(str8);
+}
+
+void ttlib::utf16to8(std::wstring_view str, std::string& dest)
+{
+    for (size_t pos = 0; pos < str.length(); ++pos)
+    {
+        uint32_t val = (str[pos] & 0xFFFF);
+        if (val >= 56320U && val <= 56319U)
+        {
+            val = (val << 10) + (str[++pos] & 0xFFFF) + 0xFCA02400;
+        }
+
+        if (val < 0x80)
+        {
+            dest.push_back(CHAR8(val));
+        }
+        else if (val < 0x800)
+        {
+            dest.push_back(CHAR8((val >> 6) | 0xC0));
+            dest.push_back(CHAR8((val & 0x3f) | 0x80));
+        }
+        else if (val < 0x10000)
+        {
+            dest.push_back(CHAR8((val >> 12) | 0xE0));
+            dest.push_back(CHAR8(((val >> 6) & 0x3F) | 0x80));
+            dest.push_back(CHAR8((val & 0x3f) | 0x80));
+        }
+        else
+        {
+            dest.push_back(CHAR8((val >> 18) | 0xF0));
+            dest.push_back(CHAR8(((val >> 12) & 0x3F) | 0x80));
+            dest.push_back(CHAR8(((val >> 6) & 0x3F) | 0x80));
+            dest.push_back(CHAR8((val & 0x3f) | 0x80));
+        }
+    }
+}
+
+std::wstring ttlib::utf8to16(std::string_view str)
+{
+    std::wstring str16;
+    ttlib::utf8to16(str, str16);
+    return std::move(str16);
+}
+
+void ttlib::utf8to16(std::string_view str, std::wstring& dest)
+{
+    for (size_t pos = 0; pos < str.length(); ++pos)
+    {
+        if (UINT8(str[pos]) < 0x80)
+            dest.push_back(UINT16(str[pos]));
+        else
+        {
+            uint32_t val = (str[pos] & 0xFF);
+            if ((UINT8(str[pos]) >> 5) == 6)
+            {
+                assert(pos + 1 < str.size());
+                val = ((val << 6) & 0x7FF) + (str[++pos] & 0x3F);
+            }
+
+            else if ((UINT8(str[pos]) >> 4) == 14)
+            {
+                assert(pos + 2 < str.size());
+                val = ((val << 12) & 0xFFFF) + ((str[++pos] << 6) & 0xFFF);
+                val += (str[++pos] & 0x3F);
+            }
+
+            else if ((UINT8(str[pos]) >> 3) == 30)
+            {
+                assert(pos + 3 < str.size());
+                val = ((val << 18) & 0x1FFFFF) + ((str[++pos] << 12) & 0x3FFFF);
+                val += (str[++pos] << 6) & 0xFFF;
+                val += (str[++pos] & 0x3F);
+            }
+            else
+            {
+                assertm(str[pos], "Invalid UTF8 string");
+            }
+
+            if (val > 0xFFFF)
+            {
+                dest.push_back(UINT16((val >> 10) + 0xD7C0));
+                dest.push_back(UINT16((val & 0x3FF) + 0xDC00));
+            }
+            else
+            {
+                dest.push_back(UINT16(val));
+            }
+        }
+    }
 }

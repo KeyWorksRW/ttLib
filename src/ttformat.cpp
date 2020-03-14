@@ -15,7 +15,6 @@
 #include <ios>
 
 #include "ttstring.h"
-#include "utf8unchecked.h"
 
 enum WIDTH : size_t
 {
@@ -146,7 +145,7 @@ ttString& cdecl ttString::Format(std::string_view format, ...)
                     std::wstring str16;
                     str16 += va_arg(args, wchar_t);
                     std::string str8;
-                    utf8::unchecked::utf16to8(str16.begin(), str16.end(), back_inserter(str8));
+                    ttlib::utf16to8(str16, str8);
                     buffer << str8;
                 }
             }
@@ -164,7 +163,7 @@ ttString& cdecl ttString::Format(std::string_view format, ...)
                     std::wstring str16;
                     str16 += va_arg(args, const wchar_t*);
                     std::string str8;
-                    utf8::unchecked::utf16to8(str16.begin(), str16.end(), back_inserter(str8));
+                    ttlib::utf16to8(str16, str8);
                     if (kflag)
                         buffer << std::quoted(str8);
                     else
@@ -185,7 +184,7 @@ ttString& cdecl ttString::Format(std::string_view format, ...)
                     std::wstring str16;
                     str16 += va_arg(args, std::wstring_view);
                     std::string str8;
-                    utf8::unchecked::utf16to8(str16.begin(), str16.end(), back_inserter(str8));
+                    ttlib::utf16to8(str16, str8);
                     if (kflag)
                         buffer << std::quoted(str8);
                     else

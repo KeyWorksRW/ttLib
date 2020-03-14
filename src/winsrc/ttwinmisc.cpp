@@ -21,7 +21,6 @@
 #include "ttlibwin.h"       // Master header file for ttLibwin.lib
 #include "ttstr.h"          // ttCStr
 #include "ttwstr.h"         // ttCWStr
-#include "utf8unchecked.h"
 
 namespace tt
 {
@@ -43,7 +42,7 @@ void ttInitCaller(HINSTANCE hinstRes, HWND /* hwnd */, const char* pszTitle)
 int tt::MsgBox(std::string_view utf8str, UINT uType)
 {
     std::wstring str16;
-    utf8::unchecked::utf8to16(utf8str.begin(), utf8str.end(), back_inserter(str16));
+    ttlib::utf8to16(utf8str, str16);
     return MessageBoxW(GetActiveWindow(), str16.c_str(),
                        (!tt::MsgBoxTitle.empty() ? tt::MsgBoxTitle.c_str() : L""), uType);
 }
@@ -51,7 +50,7 @@ int tt::MsgBox(std::string_view utf8str, UINT uType)
 
 void tt::SetMsgBoxTitle(std::string_view utf8Title)
 {
-    utf8::unchecked::utf8to16(utf8Title.begin(), utf8Title.end(), back_inserter(tt::MsgBoxTitle));
+    ttlib::utf8to16(utf8Title, tt::MsgBoxTitle);
 }
 
 #if 0
@@ -151,7 +150,7 @@ bool tt::GetComboLBText(HWND hwnd, WPARAM index, ttString& str)
 void tt::SetWndText(HWND hwnd, std::string_view utf8str)
 {
     std::wstring str16;
-    utf8::unchecked::utf8to16(utf8str.begin(), utf8str.end(), back_inserter(str16));
+    ttlib::utf8to16(utf8str, str16);
     SetWindowTextW(hwnd, str16.c_str());
 }
 
@@ -159,11 +158,11 @@ HINSTANCE tt::ShellRun(std::string_view filename, std::string_view args, std::st
                        INT nShow)
 {
     std::wstring name16;
-    utf8::unchecked::utf8to16(filename.begin(), filename.end(), back_inserter(name16));
+    ttlib::utf8to16(filename, name16);
     std::wstring args16;
-    utf8::unchecked::utf8to16(args.begin(), args.end(), back_inserter(args16));
+    ttlib::utf8to16(args, args16);
     std::wstring dir16;
-    utf8::unchecked::utf8to16(dir.begin(), dir.end(), back_inserter(dir16));
+    ttlib::utf8to16(dir, dir16);
 
     return ShellExecuteW(hwndParent, NULL, name16.c_str(), args16.c_str(), dir16.c_str(), nShow);
 }

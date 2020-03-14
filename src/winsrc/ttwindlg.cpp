@@ -247,7 +247,7 @@ void dlg::CenterWindow(bool isCenterOnDesktop)
 int dlgListView::add(std::string_view str, LPARAM lparam)
 {
     std::wstring str16;
-    utf8::unchecked::utf8to16(str.begin(), str.end(), back_inserter(str16));
+    ttlib::utf8to16(str, str16);
 
     LVITEMW lvi;
     ZeroMemory(&lvi, sizeof(lvi));
@@ -265,7 +265,7 @@ int dlgListView::add(std::string_view str, LPARAM lparam)
 BOOL dlgListView::addsubstring(std::string_view str, int iItem, int iSubItem)
 {
     std::wstring str16;
-    utf8::unchecked::utf8to16(str.begin(), str.end(), back_inserter(str16));
+    ttlib::utf8to16(str, str16);
 
     LVITEMW lvi;
     ZeroMemory(&lvi, sizeof(lvi));
@@ -279,7 +279,7 @@ BOOL dlgListView::addsubstring(std::string_view str, int iItem, int iSubItem)
 void dlgListView::InsertColumn(int iColumn, std::string_view utf8str, int width)
 {
     std::wstring str16;
-    utf8::unchecked::utf8to16(utf8str.begin(), utf8str.end(), back_inserter(str16));
+    ttlib::utf8to16(utf8str, str16);
     InsertColumn(iColumn, str16, width);
 }
 

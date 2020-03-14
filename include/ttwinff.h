@@ -34,7 +34,6 @@
 #include <string_view>
 
 #include "ttcstr.h"
-#include "utf8unchecked.h"
 
 #if !defined(INVALID_HANDLE_VALUE)
     // normally defined in <handleapi.h>
@@ -51,7 +50,7 @@ namespace ttlib
         winff(std::string_view filepattern)
         {
             std::wstring str16;
-            utf8::unchecked::utf8to16(filepattern.begin(), filepattern.end(), back_inserter(str16));
+            ttlib::utf8to16(filepattern, str16);
             m_hfind = FindFirstFileExW(str16.c_str(), FindExInfoBasic, this, FindExSearchNameMatch, nullptr,
                                        FIND_FIRST_EX_LARGE_FETCH);
 
@@ -98,7 +97,7 @@ namespace ttlib
             if (m_hfind != INVALID_HANDLE_VALUE)
                 FindClose(m_hfind);
             std::wstring str16;
-            utf8::unchecked::utf8to16(filepattern.begin(), filepattern.end(), back_inserter(str16));
+            ttlib::utf8to16(filepattern, str16);
             m_hfind = FindFirstFileExW(str16.c_str(), FindExInfoBasic, this, FindExSearchNameMatch, nullptr,
                                        FIND_FIRST_EX_LARGE_FETCH);
             m_filename.assignUTF16(cFileName);

@@ -13,7 +13,6 @@
 #include <cctype>
 
 #include "ttstring.h"
-#include "utf8unchecked.h"
 
 // Global empty string.
 const std::string ttEmptyString("");

@@ -13,7 +13,6 @@
 #include <cctype>
 
 #include "ttstring.h"
-#include "utf8unchecked.h"
 
 using namespace tt;
 
@@ -588,13 +587,13 @@ size_t ttString::stepover(size_t start) const
 std::wstring ttString::to_utf16() const
 {
     std::wstring str16;
-    utf8::unchecked::utf8to16(begin(), end(), back_inserter(str16));
+    ttlib::utf8to16(*this, str16);
     return str16;
 }
 
 void ttString::from_utf16(std::wstring_view str)
 {
-    utf8::unchecked::utf16to8(str.begin(), str.end(), back_inserter(*this));
+    ttlib::utf16to8(str, *this);
 }
 
 std::string_view ttString::subview(size_t start, size_t len)

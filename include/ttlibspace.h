@@ -266,6 +266,12 @@ namespace ttlib
     bool dirExists(std::string_view dir);
     bool fileExists(std::string_view filename);
 
+    void utf8to16(std::string_view str, std::wstring& dest);
+    void utf16to8(std::wstring_view str, std::string& dest);
+
+    std::wstring utf8to16(std::string_view str);
+    std::string utf16to8(std::wstring_view str);
+
 }  // namespace ttlib
 
 // clang-format off
@@ -333,7 +339,6 @@ namespace ttlib
     /// Converts all text to UTF16 before calling ShellExecuteW(...)
     HINSTANCE ShellRun(std::string_view filename, std::string_view args, std::string_view directory,
                        INT nShow = SW_SHOWNORMAL, HWND hwndParent = NULL);
-
 }  // namespace ttlib
 
 #endif  // end _WIN32 section
