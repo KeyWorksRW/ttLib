@@ -244,7 +244,7 @@ void dlg::CenterWindow(bool isCenterOnDesktop)
     ::MoveWindow(*this, left, top, cx, cy, FALSE);
 }
 
-LRESULT dlgListView::add(std::string_view str, LPARAM lparam)
+int dlgListView::add(std::string_view str, LPARAM lparam)
 {
     std::wstring str16;
     utf8::unchecked::utf8to16(str.begin(), str.end(), back_inserter(str16));
@@ -259,7 +259,7 @@ LRESULT dlgListView::add(std::string_view str, LPARAM lparam)
         lvi.mask |= LVIF_PARAM;
         lvi.lParam = lparam;
     }
-    return ::SendMessageW(m_hwnd, LVM_INSERTITEMW, 0, (LPARAM) &lvi);
+    return static_cast<int>(::SendMessageW(m_hwnd, LVM_INSERTITEMW, 0, (LPARAM) &lvi));
 }
 
 BOOL dlgListView::addsubstring(std::string_view str, int iItem, int iSubItem)

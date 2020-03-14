@@ -510,7 +510,7 @@ namespace ttlib
         BOOL DeleteItem(int index) { return (BOOL) ListView_DeleteItem(m_hwnd, index); }
         void Reset() const { ListView_DeleteAllItems(m_hwnd); }
 
-        LRESULT add(std::string_view str, LPARAM lparam = -1);
+        int add(std::string_view str, LPARAM lparam = -1);
         BOOL addsubstring(std::string_view str, int iItem, int iSubItem);
 
         void InsertColumn(int iColumn, std::string_view utf8str, int width = -1);
