@@ -614,7 +614,7 @@ std::string ttlib::utf16to8(std::wstring_view str)
 {
     std::string str8;
     ttlib::utf16to8(str, str8);
-    return std::move(str8);
+    return str8;
 }
 
 void ttlib::utf16to8(std::wstring_view str, std::string& dest)
@@ -656,7 +656,7 @@ std::wstring ttlib::utf8to16(std::string_view str)
 {
     std::wstring str16;
     ttlib::utf8to16(str, str16);
-    return std::move(str16);
+    return str16;
 }
 
 void ttlib::utf8to16(std::string_view str, std::wstring& dest)

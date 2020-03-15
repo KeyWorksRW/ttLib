@@ -229,7 +229,7 @@ cstr& cstr::GetListBoxText(HWND hwndCtrl, size_t sel)
     if (sel == tt::npos)
     {
         sel = SendMessageW(hwndCtrl, LB_GETCURSEL, 0, 0);
-        if (sel == LB_ERR)
+        if (sel == static_cast<size_t>(LB_ERR))
         {
             assign(ttlib::emptystring);
             return *this;
@@ -266,7 +266,7 @@ cstr& cstr::GetComboLBText(HWND hwndCtrl, size_t sel)
     if (sel == tt::npos)
     {
         sel = SendMessageW(hwndCtrl, CB_GETCURSEL, 0, 0);
-        if (sel == CB_ERR)
+        if (sel == static_cast<size_t>(CB_ERR))
         {
             assign(ttlib::emptystring);
             return *this;
