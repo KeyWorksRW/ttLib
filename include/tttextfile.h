@@ -65,10 +65,10 @@ namespace ttlib
         ///
         /// startline is the zero-based offset to the line to start searching.
         size_t FindLineContaining(std::string_view str, size_t startline = 0,
-                                  ttlib::CASE checkcase = ttlib::CASE::exact) const;
+                                  tt::CASE checkcase = tt::CASE::exact) const;
 
-        bool issameas(ttlib::textfile other, ttlib::CASE checkcase = ttlib::CASE::exact) const;
-        bool issameas(ttlib::viewfile other, ttlib::CASE checkcase = ttlib::CASE::exact) const;
+        bool issameas(ttlib::textfile other, tt::CASE checkcase = tt::CASE::exact) const;
+        bool issameas(ttlib::viewfile other, tt::CASE checkcase = tt::CASE::exact) const;
 
         /// Use addEmptyLine() if you need to modify the line after adding it to the end.
         ///
@@ -137,10 +137,10 @@ namespace ttlib
         ///
         /// startline is the zero-based offset to the line to start searching.
         size_t FindLineContaining(std::string_view str, size_t startline = 0,
-                                  ttlib::CASE checkcase = ttlib::CASE::exact) const;
+                                  tt::CASE checkcase = tt::CASE::exact) const;
 
-        bool issameas(ttlib::textfile other, ttlib::CASE checkcase = ttlib::CASE::exact) const;
-        bool issameas(ttlib::viewfile other, ttlib::CASE checkcase = ttlib::CASE::exact) const;
+        bool issameas(ttlib::textfile other, tt::CASE checkcase = tt::CASE::exact) const;
+        bool issameas(ttlib::viewfile other, tt::CASE checkcase = tt::CASE::exact) const;
 
         const std::string& GetContainer() { return m_buffer; }
 

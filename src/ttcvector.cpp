@@ -12,6 +12,7 @@
 #include "ttcvector.h"
 
 using namespace ttlib;
+using namespace tt;
 
 size_t cstrVector::find(size_t start, std::string_view str, CASE checkcase) const
 {
@@ -20,7 +21,7 @@ size_t cstrVector::find(size_t start, std::string_view str, CASE checkcase) cons
         if (ttlib::issameas(at(start), str, checkcase))
             return start;
     }
-    return ttlib::npos;
+    return tt::npos;
 }
 
 size_t cstrVector::findprefix(size_t start, std::string_view str, CASE checkcase) const
@@ -41,7 +42,7 @@ size_t cstrVector::findprefix(size_t start, std::string_view str, CASE checkcase
                 return start;
         }
     }
-    return ttlib::npos;
+    return tt::npos;
 }
 
 size_t cstrVector::contains(size_t start, std::string_view str, CASE checkcase) const
@@ -51,5 +52,5 @@ size_t cstrVector::contains(size_t start, std::string_view str, CASE checkcase) 
         if (ttlib::contains(at(start), str, checkcase))
             return start;
     }
-    return ttlib::npos;
+    return tt::npos;
 }

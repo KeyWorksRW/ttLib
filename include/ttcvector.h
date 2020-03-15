@@ -26,17 +26,17 @@ namespace ttlib
     {
     public:
         /// Same as find(pos, ch) but with a boolean result
-        bool bfind(size_type pos, char ch) const { return (at(pos).find(ch) != npos); }
+        bool bfind(size_type pos, char ch) const { return (at(pos).find(ch) != tt::npos); }
 
         /// Same as find(pos, str) but with a boolean result
-        bool bfind(size_type pos, std::string_view str) const { return (at(pos).find(str) != npos); }
+        bool bfind(size_type pos, std::string_view str) const { return (at(pos).find(str) != tt::npos); }
 
         /// Only appends the string if it doesn't already exist.
         ///
         /// Returns true if the string was added, false if it already existed.
-        bool append(std::string_view str, ttlib::CASE checkcase = ttlib::CASE::exact)
+        bool append(std::string_view str, tt::CASE checkcase = tt::CASE::exact)
         {
-            if (find(0, str, checkcase) != npos)
+            if (find(0, str, checkcase) != tt::npos)
             {
                 return false;
             }
@@ -67,21 +67,21 @@ namespace ttlib
         bool hasFilename(std::string_view filename)
         {
 #if defined(_WIN32)
-            return (find(0, filename, ttlib::CASE::either) != ttlib::npos);
+            return (find(0, filename, tt::CASE::either) != tt::npos);
 #else
-            return (find(0, filename, ttlib::CASE::exact) != ttlib::npos);
+            return (find(0, filename, tt::CASE::exact) != tt::npos);
 #endif  // _WIN32
         }
 
         /// Finds the position of the first string identical to the specified string.
-        size_t find(size_t start, std::string_view str, ttlib::CASE checkcase = ttlib::CASE::exact) const;
+        size_t find(size_t start, std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
 
         /// Finds the position of the first string with specified prefix.
-        size_t findprefix(size_t start, std::string_view prefix, ttlib::CASE checkcase = ttlib::CASE::exact) const;
+        size_t findprefix(size_t start, std::string_view prefix, tt::CASE checkcase = tt::CASE::exact) const;
 
         /// Finds the position of the first string containing the specified sub-string.
         size_t contains(size_t start, std::string_view substring,
-                        ttlib::CASE checkcase = ttlib::CASE::exact) const;
+                        tt::CASE checkcase = tt::CASE::exact) const;
 
         /// Unlike append(), this will add the string even if it already exists.
         void operator+=(std::string_view str) { push_back(str); }

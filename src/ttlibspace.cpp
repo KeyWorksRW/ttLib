@@ -17,6 +17,7 @@
 #include "ttlibspace.h"
 
 using namespace ttlib;
+using namespace tt;
 
 // Global empty string.
 const std::string ttlib::emptystring { std::string() };
@@ -68,7 +69,7 @@ size_t ttlib::findspace_pos(std::string_view str)
 {
     auto view = ttlib::findspace(str);
     if (view.empty())
-        return ttlib::npos;
+        return tt::npos;
     else
         return (str.size() - view.size());
 }
@@ -93,7 +94,7 @@ size_t ttlib::findnonspace_pos(std::string_view str) noexcept
 {
     auto view = ttlib::findnonspace(str);
     if (view.empty())
-        return ttlib::npos;
+        return tt::npos;
     else
         return (str.size() - view.size());
 }
@@ -127,7 +128,7 @@ size_t ttlib::stepover_pos(std::string_view str) noexcept
 {
     auto view = ttlib::stepover(str);
     if (view.empty())
-        return ttlib::npos;
+        return tt::npos;
     else
         return (str.size() - view.size());
 }
@@ -328,7 +329,7 @@ size_t ttlib::findstr_pos(std::string_view main, std::string_view sub, CASE chec
 {
     auto view = ttlib::findstr(main, sub, checkcase);
     if (view.empty())
-        return ttlib::npos;
+        return tt::npos;
     else
         return (main.size() - view.size());
 }

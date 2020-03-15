@@ -14,6 +14,7 @@
 #include "tttextfile.h"
 
 using namespace ttlib;
+using namespace tt;
 
 bool textfile::ReadFile(std::string_view filename)
 {
@@ -109,14 +110,14 @@ void textfile::ParseLines(std::string_view str)
     }
 }
 
-size_t textfile::FindLineContaining(std::string_view str, size_t start, ttlib::CASE checkcase) const
+size_t textfile::FindLineContaining(std::string_view str, size_t start, tt::CASE checkcase) const
 {
     for (; start < size(); ++start)
     {
         if (ttlib::contains(at(start), str, checkcase))
             return start;
     }
-    return ttlib::npos;
+    return tt::npos;
 }
 
 bool textfile::issameas(viewfile other, CASE checkcase) const
@@ -218,14 +219,14 @@ void viewfile::ParseLines(std::string_view str)
     }
 }
 
-size_t viewfile::FindLineContaining(std::string_view str, size_t start, ttlib::CASE checkcase) const
+size_t viewfile::FindLineContaining(std::string_view str, size_t start, tt::CASE checkcase) const
 {
     for (; start < size(); ++start)
     {
         if (ttlib::contains(at(start), str, checkcase))
             return start;
     }
-    return ttlib::npos;
+    return tt::npos;
 }
 
 bool viewfile::issameas(viewfile other, CASE checkcase) const

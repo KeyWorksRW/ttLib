@@ -21,6 +21,7 @@
 #include "ttcstr.h"
 
 using namespace ttlib;
+using namespace tt;
 
 bool cstr::issameas(std::string_view str, CASE checkcase) const
 {
@@ -252,7 +253,7 @@ size_t cstr::ExtractSubString(std::string_view src, size_t start)
  * @param CaseSensitive -- indicates whether or not to use a case-insensitive search
  * @return Number of replacements made
  */
-size_t cstr::Replace(std::string_view oldtext, std::string_view newtext, bool replaceAll, ttlib::CASE checkcase)
+size_t cstr::Replace(std::string_view oldtext, std::string_view newtext, bool replaceAll, tt::CASE checkcase)
 {
     if (oldtext.empty())
         return false;
@@ -645,7 +646,7 @@ bool cstr::assignEnvVar(ttlib::cview env_var)
 void cstr::eraseFrom(char ch)
 {
     auto pos = find(ch);
-    if (pos != ttlib::npos)
+    if (pos != tt::npos)
     {
         erase(pos);
         trim();
@@ -655,7 +656,7 @@ void cstr::eraseFrom(char ch)
 void cstr::eraseFrom(std::string_view sub)
 {
     auto pos = find(sub);
-    if (pos != ttlib::npos)
+    if (pos != tt::npos)
     {
         erase(pos);
         trim();

@@ -90,30 +90,7 @@ namespace ttlib
 {
     class cview;  // forward definition
 
-    /// Use to compare a size_t against -1
-    constexpr size_t npos = static_cast<size_t>(-1);
-
     extern const std::string emptystring;
-
-    enum class CASE : size_t
-    {
-        exact,
-        either,
-        utf8  // comparisons are done by converting characters to lowercase UTF8
-    };
-
-    /// Equivalent to Windows RECT structure -- this makes it available on non-Windows
-    /// platforms.
-    struct WINRECT
-    {
-        int32_t left;
-        int32_t top;
-        int32_t right;
-        int32_t bottom;
-
-        inline int32_t GetWidth() const { return std::abs(right - left); }
-        inline int32_t GetHeight() const { return std::abs(bottom - top); }
-    };
 
     /// Only valid for ANSI characters
     constexpr inline bool isalpha(char ch) noexcept
@@ -139,7 +116,7 @@ namespace ttlib
     }
 
     /// Returns true if strings are identical
-    bool issameas(std::string_view str1, std::string_view str2, CASE checkcase = CASE::exact);
+    bool issameas(std::string_view str1, std::string_view str2, tt::CASE checkcase = tt::CASE::exact);
 
     /// Same as compare only it returns a boolean instead of the difference.
     [[deprecated("Use issameas()")]] inline bool issamestr(std::string_view str1, std::string_view str2)
@@ -151,7 +128,7 @@ namespace ttlib
     [[deprecated("Use issameas()")]] bool issamestri(std::string_view str1, std::string_view str2);
 
     /// Returns true if the sub-string is identical to the first part of the main string
-    bool issameprefix(std::string_view strMain, std::string_view strSub, CASE checkcase = CASE::exact);
+    bool issameprefix(std::string_view strMain, std::string_view strSub, tt::CASE checkcase = tt::CASE::exact);
 
     /// Returns true if the sub-string is identical to the first part of the main string
     [[deprecated("Use issameprefix()")]] bool issamesubstr(std::string_view strMain, std::string_view strSub);
@@ -162,15 +139,15 @@ namespace ttlib
     /// Return a view to the portion of the string beginning with the sub string.
     ///
     /// Return view is empty if substring is not found.
-    std::string_view findstr(std::string_view main, std::string_view sub, CASE checkcase = CASE::exact);
+    std::string_view findstr(std::string_view main, std::string_view sub, tt::CASE checkcase = tt::CASE::exact);
 
     /// Returns the position of sub within main, or npos if not found.
-    size_t findstr_pos(std::string_view main, std::string_view sub, CASE checkcase = CASE::exact);
+    size_t findstr_pos(std::string_view main, std::string_view sub, tt::CASE checkcase = tt::CASE::exact);
 
     /// Returns true if the sub string exists withing the main string.
     ///
     /// Same as findstr but with a boolean return instead of a string_view.
-    bool contains(std::string_view main, std::string_view sub, CASE checkcase = CASE::exact);
+    bool contains(std::string_view main, std::string_view sub, tt::CASE checkcase = tt::CASE::exact);
 
     /// Return a view to the portion of the string beginning with the sub string.
     ///
@@ -255,7 +232,7 @@ namespace ttlib
     /// Performs a check to see if a directory entry is a filename and contains the
     /// specified extension.
     bool hasextension(std::filesystem::directory_entry name, std::string_view extension,
-                      CASE checkcase = CASE::exact);
+                      tt::CASE checkcase = tt::CASE::exact);
 
     /// Confirms newdir exists and is a directory and then changes to that directory.
     ///
@@ -290,7 +267,7 @@ namespace ttlib
 
 namespace ttlib
 {
-     /// Sets title to use in all calls to ttlib::MsgBox
+    /// Sets title to use in all calls to ttlib::MsgBox
     void SetMsgBoxTitle(std::string_view utf8Title);
 
     /// Converts the message to UTF16 and displays it in a Windows message box (MessageBox(...))
@@ -341,6 +318,6 @@ namespace ttlib
                        INT nShow = SW_SHOWNORMAL, HWND hwndParent = NULL);
 }  // namespace ttlib
 
-#endif  // end _WIN32 section
+    #endif  // end _WIN32 section
 
 #endif  // _TTLIB_NAMESPACE_H_GUARD_

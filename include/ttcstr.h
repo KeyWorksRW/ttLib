@@ -75,10 +75,10 @@ namespace ttlib
         int comparei(std::string_view str) const;
 
         /// Locates the position of a substring.
-        size_t locate(std::string_view str, size_t posStart = 0, ttlib::CASE check = ttlib::CASE::exact) const;
+        size_t locate(std::string_view str, size_t posStart = 0, tt::CASE check = tt::CASE::exact) const;
 
         /// Returns true if the sub string exists
-        bool contains(std::string_view sub, ttlib::CASE checkcase = ttlib::CASE::exact) const
+        bool contains(std::string_view sub, tt::CASE checkcase = tt::CASE::exact) const
         {
             return (locate(sub, 0, checkcase) != npos);
         }
@@ -110,10 +110,10 @@ namespace ttlib
         ttlib::cview viewstepover(size_t start = 0) const { return subview(stepover(start)); }
 
         /// Returns true if the sub-string is identical to the first part of the main string
-        bool issameas(std::string_view str, ttlib::CASE checkcase = ttlib::CASE::exact) const;
+        bool issameas(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
 
         /// Returns true if the sub-string is identical to the first part of the main string
-        bool issameprefix(std::string_view str, ttlib::CASE checkcase = ttlib::CASE::exact) const;
+        bool issameprefix(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
 
         int atoi() const { return ttlib::atoi(*this); }
 
@@ -142,7 +142,7 @@ namespace ttlib
 
         /// Replace first (or all) occurrences of substring with another one
         size_t Replace(std::string_view oldtext, std::string_view newtext, bool replaceAll = false,
-                       ttlib::CASE checkcase = ttlib::CASE::exact);
+                       tt::CASE checkcase = tt::CASE::exact);
 
         /// Replace everything from pos to the end of the current string with str
         cstr& replaceAll(size_t pos, std::string_view str)
@@ -197,13 +197,13 @@ namespace ttlib
         /// Returns true if current filename contains the specified case-insensitive extension.
         bool hasExtension(std::string_view ext) const
         {
-            return ttlib::issameas(extension(), ext, ttlib::CASE::either);
+            return ttlib::issameas(extension(), ext, tt::CASE::either);
         }
 
         /// Returns true if current filename contains the specified case-insensitive file name.
         bool hasFilename(std::string_view name) const
         {
-            return ttlib::issameas(filename(), name, ttlib::CASE::either);
+            return ttlib::issameas(filename(), name, tt::CASE::either);
         }
 
         /// Returns a view to the current extension. View is empty if there is no extension.
