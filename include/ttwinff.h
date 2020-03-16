@@ -72,6 +72,9 @@ namespace ttlib
 
         bool next()
         {
+            if (m_hfind == INVALID_HANDLE_VALUE)
+                return false;
+
             if (FindNextFileW(m_hfind, this))
             {
                 // Use same rule as std::filesystem directory_iterator and skip . and ..
@@ -145,7 +148,7 @@ namespace ttlib
         int64_t GetFullFileSize() { return (((int64_t) nFileSizeHigh) << 32) + (int64_t) nFileSizeLow; }
 
     private:
-        HANDLE m_hfind;
+        HANDLE m_hfind { INVALID_HANDLE_VALUE };
 
         ttlib::cstr m_filename;
     };
