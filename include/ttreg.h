@@ -50,7 +50,7 @@ public:
 
     bool WriteString(const char* pszKey, const char* pszValue)
     {
-        return (RegSetValueExA(m_hkey, pszKey, 0, REG_SZ, (PBYTE) pszValue, (DWORD) ttStrLen(pszValue) + 1) ==
+        return (RegSetValueExA(m_hkey, pszKey, 0, REG_SZ, (PBYTE) pszValue, (DWORD) std::strlen(pszValue) + 1) ==
                 ERROR_SUCCESS);
     }
     bool ReadString(const char* pszName, PSTR pszDst, DWORD cbDst = MAX_PATH)
