@@ -210,9 +210,9 @@ namespace ttlib
 
         void Enable(BOOL isEnable = TRUE) const { EnableWindow(m_hwnd, isEnable); }
 
-        bool getText(std::string& str) { return ttlib::GetWndText(*this, str); }
-        bool getLBText(LRESULT index, std::string& str) { return ttlib::GetComboLBText(*this, index, str); }
-        void setText(std::string_view str) { ttlib::SetWndText(*this, str); }
+        bool GetText(std::string& str) { return ttlib::GetWndText(*this, str); }
+        bool GetLBText(LRESULT index, std::string& str) { return ttlib::GetComboLBText(*this, index, str); }
+        void SetText(std::string_view str) { ttlib::SetWndText(*this, str); }
 
         LRESULT append(std::string_view str)
         {
@@ -322,9 +322,9 @@ namespace ttlib
         void Initialize(HWND hdlg, int id) { m_hwnd = ::GetDlgItem(hdlg, id); }
         void Attach(HWND hwndCtrl) { m_hwnd = hwndCtrl; }
 
-        bool getText(std::string& str) { return ttlib::GetWndText(*this, str); }
-        bool getLBText(LRESULT index, std::string& str) { return ttlib::GetListboxText(*this, index, str); }
-        void setText(std::string_view str) { ttlib::SetWndText(*this, str); }
+        bool GetText(std::string& str) { return ttlib::GetWndText(*this, str); }
+        bool GetLBText(LRESULT index, std::string& str) { return ttlib::GetListboxText(*this, index, str); }
+        void SetText(std::string_view str) { ttlib::SetWndText(*this, str); }
 
         LRESULT append(std::string_view str)
         {
