@@ -119,25 +119,36 @@ namespace ttlib
         HICON SetIcon(HICON hIcon, BOOL bBigIcon = TRUE)
         {
             ttASSERT(::IsWindow(m_hwnd));
-            return (HICON)::SendMessageA(m_hwnd, WM_SETICON, bBigIcon, (LPARAM) hIcon);
+            return (HICON) ::SendMessage(m_hwnd, WM_SETICON, bBigIcon, (LPARAM) hIcon);
         }
 
         LRESULT SendItemMsg(int id, UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
         {
-            return ::SendMessageA(gethwnd(id), msg, wParam, lParam);
+            return ::SendMessage(gethwnd(id), msg, wParam, lParam);
         }
         LRESULT PostItemMsg(int id, UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
         {
-            return ::PostMessageA(gethwnd(id), msg, wParam, lParam);
+            return ::PostMessage(gethwnd(id), msg, wParam, lParam);
         }
 
         LRESULT SendMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
         {
-            return ::SendMessageA(*this, msg, wParam, lParam);
+            return ::SendMessage(*this, msg, wParam, lParam);
         }
         LRESULT PostMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
         {
-            return ::PostMessageA(*this, msg, wParam, lParam);
+            return ::PostMessage(*this, msg, wParam, lParam);
+        }
+
+        // Use these if you are compiling without UNICODE set and you want to call the Wide versions.
+
+        LRESULT SendMessageW(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
+        {
+            return ::SendMessageW(*this, msg, wParam, lParam);
+        }
+        LRESULT PostMessageW(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
+        {
+            return ::PostMessageW(*this, msg, wParam, lParam);
         }
 
         void SetFocus(int idControl) const { ::SetFocus(gethwnd(idControl)); }
@@ -272,7 +283,7 @@ namespace ttlib
         }
         void SelectEditContol(void) const { SendMessage(CB_SETEDITSEL, 0, MAKELPARAM(0, -1)); }
 
-        void SetFont(HFONT hfont) { SendMessageA(WM_SETFONT, (WPARAM) hfont); }
+        void SetFont(HFONT hfont) { SendMessageW(WM_SETFONT, (WPARAM) hfont); }
 
         void InValidateAlloc(BOOL isErase = TRUE)
         {
@@ -394,7 +405,7 @@ namespace ttlib
 
         void SetFont(HFONT hfont, bool fRedraw = false)
         {
-            SendMessageA(WM_SETFONT, (WPARAM) hfont, (LPARAM)(fRedraw ? TRUE : FALSE));
+            SendMessageW(WM_SETFONT, (WPARAM) hfont, (LPARAM)(fRedraw ? TRUE : FALSE));
         }
 
         LRESULT DeleteString(int index) const { return SendMessage(LB_DELETESTRING, index); }
