@@ -142,11 +142,11 @@ namespace ttlib
 
         // Use these if you are compiling without UNICODE set and you want to call the Wide versions.
 
-        LRESULT SendMessageW(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
+        LRESULT SendMsgW(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
         {
             return ::SendMessageW(*this, msg, wParam, lParam);
         }
-        LRESULT PostMessageW(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
+        LRESULT PostMsgW(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
         {
             return ::PostMessageW(*this, msg, wParam, lParam);
         }
