@@ -29,6 +29,7 @@ public:
 
     bool GetFolderName(HWND hwndParent = NULL);
 
+    const char* c_str() { return m_cszDirName.c_str(); }
     operator char*() const { return (char*) m_cszDirName; }
 
 protected:
