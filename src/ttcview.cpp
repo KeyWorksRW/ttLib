@@ -269,3 +269,13 @@ bool cview::viewfilename() noexcept
     remove_prefix(pos + 1);
     return true;
 }
+
+size_t cview::findoneof(const std::string& set) const
+{
+    if (set.empty())
+        return tt::npos;
+    const char* pszFound = std::strpbrk(c_str(), set.c_str());
+    if (!pszFound)
+        return tt::npos;
+    return (static_cast<size_t>(pszFound - c_str()));
+}

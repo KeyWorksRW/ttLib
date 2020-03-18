@@ -67,6 +67,11 @@ namespace ttlib
             return (locate(sub, 0, checkcase) != npos);
         }
 
+        /// Find any one of the characters in a set. Returns offset if found, npos if not.
+        ///
+        /// This is equivalent to calling std::strpbrk but returns an offset instead of a pointer.
+        size_t findoneof(const std::string& set) const;
+
         // You can't remove a suffix and still have the view zero-terminated
         constexpr void remove_suffix(size_type n) = delete;
 
