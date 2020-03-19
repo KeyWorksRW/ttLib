@@ -12,7 +12,7 @@
 #include <cassert>
 #include <cctype>
 
-#include "ttstring.h"
+#include "ttnamespace.h"
 
 // Global empty string.
 const std::string ttEmptyString("");

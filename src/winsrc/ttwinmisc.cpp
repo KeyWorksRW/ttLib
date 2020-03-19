@@ -20,7 +20,6 @@
 #include "ttdebug.h"        // ttASSERT macros
 #include "ttlibwin.h"       // Master header file for ttLibwin.lib
 #include "ttstr.h"          // ttCStr
-#include "ttwstr.h"         // ttCWStr
 
 namespace tt
 {
@@ -334,8 +333,10 @@ void ttSetMsgBoxTitle(const char* pszTitle)
         tt::pwszMsgTitle = ttStrDup(L"");
     else
     {
-        ttCWStr cwsz(pszTitle);
-        tt::pwszMsgTitle = ttStrDup((wchar_t*) cwsz);
+        std::wstring str16;
+        ttlib::utf8to16(pszTitle, str16);
+
+        tt::pwszMsgTitle = ttStrDup(str16.c_str());
     }
 }
 

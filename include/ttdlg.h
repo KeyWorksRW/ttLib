@@ -24,7 +24,6 @@
 #include "ttdebug.h"     // ttASSERT macros
 #include "ttmultibtn.h"  // ttCMultiBtn
 #include "ttstr.h"       // ttCStr
-#include "ttwstr.h"      // ttCWStr
 
 #include "ttcstr.h"      // Classes for handling zero-terminated char strings.
 #include "ttlibspace.h"  // Contains the ttlib namespace functions/declarations common to all ttLib libraries
@@ -128,11 +127,6 @@ public:
     {
         (void) ::GetWindowTextW(GetDlgItem(id), pwszText, cchMax);
     }
-    void GetControlText(int id, ttCWStr* pcsz) const { pcsz->GetWndText(GetDlgItem(id)); }
-    void SetControlText(int id, const wchar_t* pwszText) const
-    {
-        (void) ::SetWindowTextW(GetDlgItem(id), pwszText ? pwszText : L"");
-    }
 
     void SetTitle(const char* pszTitle) { ::SetWindowTextA(*this, pszTitle ? pszTitle : ""); }
     void SetTitle(const wchar_t* pszTitle) { ::SetWindowTextW(*this, pszTitle ? pszTitle : L""); }
@@ -185,10 +179,6 @@ public:
     void FadeWindow();
 
     void ttDDX_Text(int id, ttCStr& csz)
-    {
-        (m_isInitializing ? SetControlText(id, csz) : GetControlText(id, &csz));
-    }
-    void ttDDX_Text(int id, ttCWStr& csz)
     {
         (m_isInitializing ? SetControlText(id, csz) : GetControlText(id, &csz));
     }
@@ -624,10 +614,6 @@ public:
         return SendMessageW(LB_GETTEXT, (index == -1) ? GetCurSel() : index, (LPARAM) pwsz);
     }
     void GetText(ttCStr* pcsz, int index = -1) const
-    {
-        pcsz->GetListBoxText(*this, (index == -1) ? GetCurSel() : index);
-    }
-    void GetText(ttCWStr* pcsz, int index = -1) const
     {
         pcsz->GetListBoxText(*this, (index == -1) ? GetCurSel() : index);
     }

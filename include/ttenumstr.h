@@ -1,20 +1,10 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttEnumStr
+// Name:      ttenumstr.h
 // Purpose:   Enumerate through substrings in a string
 // Author:    Ralph Walden
-// Copyright: Copyright (c) 2018-2019 KeyWorks Software (Ralph Walden)
+// Copyright: Copyright (c) 2018-2020 KeyWorks Software (Ralph Walden)
 // License:   Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
-
-/**
-    This class is used to enumerate through substrings that are separated by a single character (typically a
-    semicolon). The following example uses this to parse through each of the directories in an INCLUDE environment
-    variable:
-
-        ttEnumView enumPaths("c:/sdk/include;c:/github/wxwidgets/include/wx");
-        for (auto path : enumPaths)
-            std::cout << path << '\n'
-*/
 
 #pragma once
 
@@ -43,21 +33,3 @@ namespace ttlib
         enumview(std::string_view view, char separator = ';');
     };
 }  // namespace ttlib
-
-class ttEnumStr : public std::vector<ttlib::cstr>
-{
-public:
-#if !defined(TTLIB_INTERNAL_BUILD)
-    [[deprecated("Use ttlib::enumstr instead of this class")]]
-#endif
-    ttEnumStr(std::string_view str, char separator = ';');
-};
-
-class ttEnumView : public std::vector<std::string_view>
-{
-public:
-#if !defined(TTLIB_INTERNAL_BUILD)
-    [[deprecated("Use ttlib::enumview instead of this class")]]
-#endif
-    ttEnumView(std::string_view str, char separator = ';');
-};

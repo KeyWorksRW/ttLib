@@ -2,15 +2,15 @@
 
 Options:
     Project:    ttLib   # project target name
-    Exe_type:   lib        # [window | console | lib | dll]
-    Pch:        pch.h      # precompiled header
-    Optimize:   space      # [space | speed] optimization
-    Warn:       4          # [1-4]
+    Exe_type:   lib     # [window | console | lib | dll]
+    Pch:        pch.h   # precompiled header
+    Optimize:   space   # [space | speed] optimization
+    Warn:       4       # [1-4]
 
     CFlags_cmn: -std:c++17 /Zc:__cplusplus # flags to pass to the compiler in all builds
 
-    Crt_rel:    dll        # [static | dll] type of CRT to link to in release builds
-    Crt_dbg:    dll        # [static | dll] type of CRT to link to in debug builds
+    Crt_rel:    dll     # [static | dll] type of CRT to link to in release builds
+    Crt_dbg:    dll     # [static | dll] type of CRT to link to in debug builds
 
     IncDirs:    precompile;../include
     TargetDir:  ../lib
@@ -20,11 +20,9 @@ Files:
     ttcstr.cpp       # Class for handling zero-terminated char strings.
     ttcview.cpp      # string_view functionality on a zero-terminated char string.
     ttenumstr.cpp    # ttEnumStr, ttEnumStr
-    ttformat.cpp     # ttString::Printf(...)
     ttlibspace.cpp   # ttlib namespace functions
     ttpath.cpp       # Contains functions for working with filesystem::path and filesystem::directory
     ttnamespace.cpp  # tt namespace functions
-    ttstring.cpp     # std::string class with some additional functionality
     tttextfile.cpp   # Classes for reading and writing text files.
     ttTR.cpp         # Function for translating strings
     ttcvector.cpp    # Vector class for storing ttlib::cstr strings
