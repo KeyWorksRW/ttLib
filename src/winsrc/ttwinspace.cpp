@@ -187,6 +187,7 @@ using namespace ttlib;
 
 cstr& cstr::GetWndText(HWND hwnd)
 {
+    assign(ttlib::emptystring);
     int cb = GetWindowTextLengthW(hwnd);
     if (cb > 0)
     {
@@ -195,18 +196,13 @@ cstr& cstr::GetWndText(HWND hwnd)
         std::wstring_view str16(buffer, cb);
         ttlib::utf16to8(str16, *this);
         std::free(static_cast<void*>(buffer));
-        return *this;
     }
-    else
-    {
-        assign(ttlib::emptystring);
-        return *this;
-    }
+    return *this;
 }
 
 cstr& cstr::GetResString(size_t idString, HMODULE hmodResource)
 {
-    clear();
+    assign(ttlib::emptystring);
 
     auto hrsrc = FindResourceA(hmodResource, MAKEINTRESOURCEA(idString), (char*) RT_STRING);
     ttASSERT(hrsrc);
@@ -226,12 +222,13 @@ cstr& cstr::GetResString(size_t idString, HMODULE hmodResource)
 
 cstr& cstr::GetListBoxText(HWND hwndCtrl, size_t sel)
 {
+    assign(ttlib::emptystring);
+
     if (sel == tt::npos)
     {
         sel = SendMessageW(hwndCtrl, LB_GETCURSEL, 0, 0);
         if (sel == static_cast<size_t>(LB_ERR))
         {
-            assign(ttlib::emptystring);
             return *this;
         }
     }
@@ -246,16 +243,8 @@ cstr& cstr::GetListBoxText(HWND hwndCtrl, size_t sel)
             std::wstring_view str16(buffer, cb);
             ttlib::utf16to8(str16, *this);
         }
-        else
-        {
-            assign(ttlib::emptystring);
-        }
 
         std::free(static_cast<void*>(buffer));
-    }
-    else
-    {
-        assign(ttlib::emptystring);
     }
 
     return *this;
@@ -263,12 +252,13 @@ cstr& cstr::GetListBoxText(HWND hwndCtrl, size_t sel)
 
 cstr& cstr::GetComboLBText(HWND hwndCtrl, size_t sel)
 {
+    assign(ttlib::emptystring);
+
     if (sel == tt::npos)
     {
         sel = SendMessageW(hwndCtrl, CB_GETCURSEL, 0, 0);
         if (sel == static_cast<size_t>(CB_ERR))
         {
-            assign(ttlib::emptystring);
             return *this;
         }
     }
@@ -283,16 +273,8 @@ cstr& cstr::GetComboLBText(HWND hwndCtrl, size_t sel)
             std::wstring_view str16(buffer, cb);
             ttlib::utf16to8(str16, *this);
         }
-        else
-        {
-            assign(ttlib::emptystring);
-        }
 
         std::free(static_cast<void*>(buffer));
-    }
-    else
-    {
-        assign(ttlib::emptystring);
     }
 
     return *this;
