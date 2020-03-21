@@ -46,7 +46,13 @@ namespace ttlib
 #define ttTR(txt) txt
 
 /// If count == 1, returns a translation of single, otherwise it returns a translation of plural.
-inline const char* _ttp(const std::string& single, const std::string& plural, unsigned int count)
+inline const char* _ttp(const std::string& single, const std::string& plural, size_t count)
+{
+    return (count == 1 ? _tt(single) : _tt(plural));
+}
+
+/// If count == 1, returns a translation of single, otherwise it returns a translation of plural.
+inline const char* _ttp(const std::string& single, const std::string& plural, int count)
 {
     return (count == 1 ? _tt(single) : _tt(plural));
 }
