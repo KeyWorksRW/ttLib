@@ -179,6 +179,39 @@ HINSTANCE ttlib::ShellRun(std::string_view filename, std::string_view args, std:
     return ShellExecuteW(hwndParent, NULL, name16.c_str(), args16.c_str(), dir16.c_str(), nShow);
 }
 
+HFONT ttlib::CreateLogFont(std::string_view TypeFace, size_t point, bool Bold, bool Italics)
+{
+    HDC hdc = CreateCompatibleDC(NULL);
+    SetMapMode(hdc, MM_TEXT);
+
+    LOGFONTW lf;
+    ZeroMemory(&lf, sizeof(LOGFONTW));
+
+    int ratio = MulDiv(GetDeviceCaps(hdc, LOGPIXELSY), 100, 72);
+    lf.lfHeight = MulDiv((int) point, ratio, 100);
+    if ((point * ratio) % 100 >= 50)
+        lf.lfHeight++;
+
+    lf.lfHeight = -lf.lfHeight;
+    lf.lfItalic = Italics ? 1 : 0;
+    if (Bold)
+        lf.lfWeight = FW_BOLD;
+
+    std::wstring name16;
+    ttlib::utf8to16(TypeFace, name16);
+    ttASSERT(name16.length() < LF_FACESIZE);
+    HFONT hfont = nullptr;
+    if (name16.length() < LF_FACESIZE)
+    {
+        std::wcscpy(lf.lfFaceName, name16.c_str());
+        hfont = CreateFontIndirectW(&lf);
+    }
+
+    DeleteDC(hdc);
+
+    return hfont;
+}
+
 //////////////////////////////// Windows-only ttlib::cstr functions ////////////////////////
 
 #include "ttcstr.h"

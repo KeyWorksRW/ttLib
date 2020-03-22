@@ -317,6 +317,8 @@ namespace ttlib
     /// Converts all text to UTF16 before calling ShellExecuteW(...)
     HINSTANCE ShellRun(std::string_view filename, std::string_view args, std::string_view directory,
                        INT nShow = SW_SHOWNORMAL, HWND hwndParent = NULL);
+
+    HFONT CreateLogFont(std::string_view TypeFace, size_t point, bool Bold = false, bool Italics = false);
 }  // namespace ttlib
 
 #endif  // end _WIN32 section
