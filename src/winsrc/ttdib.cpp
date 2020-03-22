@@ -6,10 +6,11 @@
 // Licence:   The Code Project Open License (see ../CPOL.md)
 /////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////
+//////////////// Derivative work ////////////////////////////////////////////
 // Changes:
 // Author:    Ralph Walden
-// Copyright: Copyright (c) 2019 KeyWorks Software (Ralph Walden)
+// Copyright: Copyright (c) 2019-2020 KeyWorks Software (Ralph Walden)
+// Notes:     The above Code Project License also applies to the derivative work
 /////////////////////////////////////////////////////////////////////////////
 
 #include "pch.h"
@@ -18,26 +19,17 @@
     #error "This module can only be compiled for Windows"
 #endif
 
-#include "ttheap.h"
+#include <cstring>
+
 #include "ttdib.h"
 
 #ifndef WIDTHBYTES
     #define WIDTHBYTES(bits) (((bits) + 31) / 32 * 4)
 #endif
 
-#if 0  // [randalphwa - 1/10/2019] These are presumably used to indentify type, but nothing uses them
-    #define BFT_ICON   0x4349  // 'IC'
-    #define BFT_BITMAP 0x4d42  // 'BM'
-    #define BFT_CURSOR 0x5450  // 'PT'
-#endif
-
-#define IS_WIN30_DIB(lpbi) ((*(LPDWORD)(lpbi)) == sizeof(BITMAPINFOHEADER))
-
 ttCDib::ttCDib()
 {
-    hDib = NULL;
-
-    memset(&m_bi, 0, sizeof(BITMAPINFOHEADER));
+    std::memset(&m_bi, 0, sizeof(BITMAPINFOHEADER));
     m_bi.biSize = sizeof(BITMAPINFOHEADER);
 
     m_LineWidth = 0;
@@ -46,37 +38,28 @@ ttCDib::ttCDib()
 
 ttCDib::~ttCDib()
 {
-    if (hDib)
-        ttFree(hDib);
-}
-
-bool ttCDib::IsWin30Dib()
-{
-    return ((*(LPDWORD)(hDib)) == sizeof(BITMAPINFOHEADER));
+    delete m_dib;
 }
 
 WORD ttCDib::GetPaletteSize()
 {
-    //    if (IsWin30Dib())
     return (m_nColors * sizeof(RGBQUAD));
-    //    else return (m_nColors * sizeof(RGBTRIPLE));
 }
 
 BYTE* ttCDib::GetBits()
 {
-    if (hDib)
-        return ((BYTE*) hDib + *(LPDWORD) hDib + GetPaletteSize());
+    if (m_dib)
+        return ((BYTE*) m_dib + *(LPDWORD) m_dib + GetPaletteSize());
     return nullptr;
 }
 
-HDIB ttCDib::Create(DWORD dwWidth, DWORD dwHeight, WORD wBitCount)
+void* ttCDib::Create(DWORD dwWidth, DWORD dwHeight, WORD wBitCount)
 {
     LPBITMAPINFOHEADER lpbi;  // pointer to BITMAPINFOHEADER
     DWORD dwLen;              // size of memory block
 
-    if (hDib)
-        ttFree(hDib);
-    hDib = nullptr;
+    delete m_dib;
+    m_dib = nullptr;
 
     // Make sure bits per pixel is valid
     if (wBitCount <= 1)
@@ -123,24 +106,23 @@ HDIB ttCDib::Create(DWORD dwWidth, DWORD dwHeight, WORD wBitCount)
     // table, and the bits
     dwLen = GetSize();
 
-    hDib = ttMalloc(dwLen);  // alloc memory block to store our bitmap
-    if (!hDib)
-        return nullptr;
+    // m_dib = new char[dwLen];
+    m_dib = new std::byte[dwLen];
 
     // use our bitmap info structure to fill in first part of
     // our DIB with the BITMAPINFOHEADER
-    lpbi = (LPBITMAPINFOHEADER)(hDib);
+    lpbi = (LPBITMAPINFOHEADER)(m_dib);
     *lpbi = m_bi;
 
-    return hDib;  // return handle to the DIB
+    return m_dib;  // return handle to the DIB
 }
 
 long ttCDib::Draw(HDC pDC, long xoffset, long yoffset)
 {
-    if (hDib && pDC)
+    if (m_dib && pDC)
     {
         // palette must be correctly filled
-        char* lpDIB = (char*) hDib;  // set image to hdc...
+        auto lpDIB = m_dib;  // set image to hdc...
         SetStretchBltMode(pDC, COLORONCOLOR);
         SetDIBitsToDevice(pDC, xoffset, yoffset, m_bi.biWidth, m_bi.biHeight, 0, 0, 0, m_bi.biHeight, GetBits(),
                           (BITMAPINFO*) lpDIB, DIB_RGB_COLORS);
@@ -151,10 +133,10 @@ long ttCDib::Draw(HDC pDC, long xoffset, long yoffset)
 
 long ttCDib::Stretch(HDC pDC, long xoffset, long yoffset, long xsize, long ysize)
 {
-    if (hDib && pDC)
+    if (m_dib && pDC)
     {
         // palette must be correctly filled
-        char* lpDIB = (char*) hDib;  // set image to hdc...
+        auto lpDIB = m_dib;  // set image to hdc...
         SetStretchBltMode(pDC, COLORONCOLOR);
         StretchDIBits(pDC, xoffset, yoffset, xsize, ysize, 0, 0, m_bi.biWidth, m_bi.biHeight, GetBits(),
                       (BITMAPINFO*) lpDIB, DIB_RGB_COLORS, SRCCOPY);
@@ -165,9 +147,9 @@ long ttCDib::Stretch(HDC pDC, long xoffset, long yoffset, long xsize, long ysize
 
 void ttCDib::SetPaletteIndex(BYTE idx, BYTE r, BYTE g, BYTE b)
 {
-    if (hDib && m_nColors)
+    if (m_dib && m_nColors)
     {
-        BYTE* iDst = (BYTE*) hDib + sizeof(BITMAPINFOHEADER);
+        BYTE* iDst = (BYTE*) m_dib + sizeof(BITMAPINFOHEADER);
         if (idx < m_nColors)
         {
             long ldx = idx * sizeof(RGBQUAD);
@@ -181,9 +163,9 @@ void ttCDib::SetPaletteIndex(BYTE idx, BYTE r, BYTE g, BYTE b)
 
 void ttCDib::SetPaletteIndex(BYTE idx, RGBQUAD c)
 {
-    if (hDib && m_nColors)
+    if (m_dib && m_nColors)
     {
-        BYTE* iDst = (BYTE*) hDib + sizeof(BITMAPINFOHEADER);
+        BYTE* iDst = (BYTE*) m_dib + sizeof(BITMAPINFOHEADER);
         if (idx < m_nColors)
         {
             long ldx = idx * sizeof(RGBQUAD);
@@ -197,9 +179,9 @@ void ttCDib::SetPaletteIndex(BYTE idx, RGBQUAD c)
 
 void ttCDib::SetPaletteIndex(BYTE idx, COLORREF cr)
 {
-    if (hDib && m_nColors)
+    if (m_dib && m_nColors)
     {
-        BYTE* iDst = (BYTE*) hDib + sizeof(BITMAPINFOHEADER);
+        BYTE* iDst = (BYTE*) m_dib + sizeof(BITMAPINFOHEADER);
         if (idx < m_nColors)
         {
             long ldx = idx * sizeof(RGBQUAD);
@@ -214,9 +196,9 @@ void ttCDib::SetPaletteIndex(BYTE idx, COLORREF cr)
 RGBQUAD ttCDib::GetPaletteIndex(BYTE idx)
 {
     RGBQUAD rgb = { 0, 0, 0, 0 };
-    if (hDib && m_nColors)
+    if (m_dib && m_nColors)
     {
-        BYTE* iDst = (BYTE*) hDib + sizeof(BITMAPINFOHEADER);
+        BYTE* iDst = (BYTE*) m_dib + sizeof(BITMAPINFOHEADER);
         if (idx < m_nColors)
         {
             long ldx = idx * sizeof(RGBQUAD);
@@ -231,7 +213,7 @@ RGBQUAD ttCDib::GetPaletteIndex(BYTE idx)
 
 BYTE ttCDib::GetPixelIndex(long x, long y)
 {
-    if ((hDib == NULL) || (m_nColors == 0) || (x < 0) || (y < 0) || (x >= m_bi.biWidth) || (y >= m_bi.biHeight))
+    if (!m_dib || (m_nColors == 0) || (x < 0) || (y < 0) || (x >= m_bi.biWidth) || (y >= m_bi.biHeight))
         return 0;
     BYTE* iDst = GetBits();
     return iDst[(m_bi.biHeight - y - 1) * m_LineWidth + x];
@@ -240,7 +222,7 @@ BYTE ttCDib::GetPixelIndex(long x, long y)
 RGBQUAD ttCDib::GetPixelColor(long x, long y)
 {
     RGBQUAD rgb = { 0, 0, 0, 0 };
-    if ((hDib == NULL) || (x < 0) || (y < 0) || (x >= m_bi.biWidth) || (y >= m_bi.biHeight))
+    if (!m_dib || (x < 0) || (y < 0) || (x >= m_bi.biWidth) || (y >= m_bi.biHeight))
         return rgb;
     if (m_nColors)
         return GetPaletteIndex(GetPixelIndex(x, y));
@@ -256,7 +238,7 @@ RGBQUAD ttCDib::GetPixelColor(long x, long y)
 
 void ttCDib::SetPixelIndex(long x, long y, BYTE i)
 {
-    if ((hDib == NULL) || (m_nColors == 0) || (x < 0) || (y < 0) || (x >= m_bi.biWidth) || (y >= m_bi.biHeight))
+    if (m_dib || (m_nColors == 0) || (x < 0) || (y < 0) || (x >= m_bi.biWidth) || (y >= m_bi.biHeight))
         return;
     BYTE* iDst = GetBits();
     iDst[(m_bi.biHeight - y - 1) * m_LineWidth + x] = i;
@@ -269,7 +251,7 @@ void ttCDib::SetPixelColor(long x, long y, COLORREF cr)
 
 void ttCDib::SetPixelColor(long x, long y, RGBQUAD c)
 {
-    if ((hDib == NULL) || (x < 0) || (y < 0) || (x >= m_bi.biWidth) || (y >= m_bi.biHeight))
+    if (!m_dib || (x < 0) || (y < 0) || (x >= m_bi.biWidth) || (y >= m_bi.biHeight))
         return;
     if (m_nColors)
         SetPixelIndex(x, y, GetNearestIndex(c));
@@ -282,9 +264,9 @@ void ttCDib::SetPixelColor(long x, long y, RGBQUAD c)
 
 BYTE ttCDib::GetNearestIndex(RGBQUAD c)
 {
-    if ((hDib == NULL) || (m_nColors == 0))
+    if (m_dib || (m_nColors == 0))
         return 0;
-    BYTE* iDst = (BYTE*) hDib + sizeof(BITMAPINFOHEADER);
+    BYTE* iDst = (BYTE*) m_dib + sizeof(BITMAPINFOHEADER);
     long distance = 200000;
     BYTE i, j = 0;
     long k, l;
@@ -437,14 +419,14 @@ COLORREF ttCDib::RGBQUAD2RGB(RGBQUAD c)
 
 void ttCDib::SetGrayPalette()
 {
-    if ((hDib == NULL) || (m_nColors == 0))
+    if (!m_dib || (m_nColors == 0))
         return;
     RGBQUAD pal[256];
     RGBQUAD* ppal;
     BYTE* iDst;
     int ni;
     ppal = (RGBQUAD*) &pal[0];
-    iDst = (BYTE*) hDib + sizeof(BITMAPINFOHEADER);
+    iDst = (BYTE*) m_dib + sizeof(BITMAPINFOHEADER);
     for (ni = 0; ni < m_nColors; ni++)
     {
         pal[ni] = RGB2RGBQUAD(RGB(ni, ni, ni));
@@ -456,9 +438,9 @@ void ttCDib::SetGrayPalette()
 
 void ttCDib::BlendPalette(COLORREF cr, long perc)
 {
-    if ((hDib == NULL) || (m_nColors == 0))
+    if (!m_dib || (m_nColors == 0))
         return;
-    BYTE* iDst = (BYTE*) hDib + sizeof(BITMAPINFOHEADER);
+    BYTE* iDst = (BYTE*) m_dib + sizeof(BITMAPINFOHEADER);
     long i, r, g, b;
     RGBQUAD* pPal = (RGBQUAD*) iDst;
     r = GetRValue(cr & 0xFF);
@@ -482,12 +464,12 @@ long ttCDib::GetSize()
 void ttCDib::Clone(ttCDib* src)
 {
     Create(src->GetWidth(), src->GetHeight(), src->GetBitCount());
-    if (hDib)
-        memcpy(hDib, src->hDib, GetSize());
+    if (m_dib)
+        memcpy(m_dib, src->m_dib, GetSize());
 }
 
 void ttCDib::Clear(BYTE bval)
 {
-    if (hDib)
+    if (m_dib)
         memset(GetBits(), bval, m_bi.biSizeImage);
 }

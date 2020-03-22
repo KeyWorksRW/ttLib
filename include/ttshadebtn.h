@@ -9,7 +9,7 @@
 //////////////// Derivative work ////////////////////////////////////////////
 // Changes:   Derived from CxShadeButton, changed to remove MFC requirement
 // Author:    Ralph Walden
-// Copyright: Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
+// Copyright: Copyright (c) 2002-2020 KeyWorks Software (Ralph Walden)
 // Notes:     The above Code Project License also applies to the derivative work
 /////////////////////////////////////////////////////////////////////////////
 
@@ -17,13 +17,15 @@
 
 #pragma once
 
-#if defined(_WIN32)
+#if !defined(_WIN32)
+    #error "This header file can only be used when compiling for Windows"
+#endif
 
-    #include <wingdi.h>
-    #include <wtypes.h>
+#include <wingdi.h>
+#include <wtypes.h>
 
-    #include "ttdib.h"  // ttCDib
-    #include "ttwin.h"  // ttCWin
+#include "ttdib.h"  // ttCDib
+#include "ttwin.h"  // ttCWin
 
 // Class for implementing an owner-draw button
 class ttCShadeBtn : public ttCWin
@@ -32,7 +34,7 @@ public:
     ttCShadeBtn();
     ~ttCShadeBtn();
 
-    typedef enum
+    enum BTN_SHADE
     {
         SHS_NOISE = 0,
         SHS_DIAGSHADE = 1,
@@ -43,30 +45,32 @@ public:
         SHS_SOFTBUMP = 6,
         SHS_HARDBUMP = 7,
         SHS_METAL = 8,
-    } BTN_SHADE;
+    };
 
     // Class functions
 
-    void      Draw3dRect(HDC hdc, RECT* pRect, COLORREF clrTopLeft, COLORREF clrBottomRight);
-    void      Draw3dRect(HDC hdc, int x, int y, int cx, int cy, COLORREF clrTopLeft, COLORREF clrBottomRight);
-    void      FillSolidRect(HDC hdc, int x, int y, int cx, int cy, COLORREF clr);
+    void Draw3dRect(HDC hdc, RECT* pRect, COLORREF clrTopLeft, COLORREF clrBottomRight);
+    void Draw3dRect(HDC hdc, int x, int y, int cx, int cy, COLORREF clrTopLeft, COLORREF clrBottomRight);
+    void FillSolidRect(HDC hdc, int x, int y, int cx, int cy, COLORREF clr);
     LOGFONTA* GetFont() { return m_pLF; }
-    void      SetButtonStyle(UINT nStyle, BOOL bRedraw = TRUE);
-    void      SetFlat(bool bFlag) { m_flat = bFlag; }
-    bool      SetFont(LOGFONTA* pNewStyle);
-    bool SetFont(const char* pszFontName, long lSize = 0, long lWeight = 400, BYTE bItalic = 0, BYTE bUnderline = 0);
+    void SetButtonStyle(UINT nStyle, BOOL bRedraw = TRUE);
+    void SetFlat(bool bFlag) { m_flat = bFlag; }
+    bool SetFont(LOGFONTA* pNewStyle);
+    bool SetFont(const std::string& FontName, long lSize = 0, long lWeight = 400, BYTE bItalic = 0,
+                 BYTE bUnderline = 0);
 
     void SetIcon(UINT nIcon, UINT nIconAlign = BS_CENTER, UINT nIconDown = 0, UINT nIconHighLight = 0);
-    void SetIcon(const char* pszIconName, UINT nIconAlign = BS_CENTER, UINT nIconDown = 0, UINT nIconHighLight = 0);
+    void SetIcon(const char* pszIconName, UINT nIconAlign = BS_CENTER, UINT nIconDown = 0,
+                 UINT nIconHighLight = 0);
     void SetIcon(HICON hIcon, UINT nIconAlign, UINT nIconDown, UINT nIconHighLight);
 
-    void     SetShade(BTN_SHADE shadeID = SHS_NOISE, BYTE granularity = 8, BYTE highlight = 10, BYTE coloring = 0,
-                      COLORREF color = 0);
-    void     SetTextAlign(UINT nTextAlign);
+    void SetShade(BTN_SHADE shadeID = SHS_NOISE, BYTE granularity = 8, BYTE highlight = 10, BYTE coloring = 0,
+                  COLORREF color = 0);
+    void SetTextAlign(UINT nTextAlign);
     COLORREF SetTextColor(COLORREF new_color);
 
     bool operator==(ttCShadeBtn* pShade) { return m_hwnd == pShade->m_hwnd; }
-         operator HWND() const { return m_hwnd; }
+    operator HWND() const { return m_hwnd; }
 
 protected:
     // Message handlers
@@ -75,13 +79,13 @@ protected:
         TTMSG_WM_PAINT(OnPaint)
 
         case WM_ENABLE:
-            InvalidateRect(*this, NULL,
-                           TRUE);  // REVIEW: [randalphwa - 1/26/2019] Can we get away with setting FALSE for bErase?
-            return true;
-
+            [[fallthrough]];
+        case WM_SETFOCUS:
+            [[fallthrough]];
         case BM_SETSTATE:
             InvalidateRect(*this, NULL, TRUE);
-            return false;  // let default process this
+            return false;
+
     END_TTMSG_MAP()
 
     void OnPaint();
@@ -89,20 +93,18 @@ protected:
 private:
     // Class members
 
-    BOOL      m_Border;     // 0=flat; 1=3D;
-    COLORREF  m_TextColor;  // button text color
-    DWORD     m_Style;
-    HFONT     m_hFont;  // font object
-    HICON     m_hIcon, m_hIconDown, m_hIconHighLight;
+    BOOL m_Border;         // 0=flat; 1=3D;
+    COLORREF m_TextColor;  // button text color
+    DWORD m_Style;
+    HFONT m_hFont;  // font object
+    HICON m_hIcon, m_hIconDown, m_hIconHighLight;
     LOGFONTA* m_pLF;  // font structure
-    RECT      m_rcIconBox;
-    UINT      m_hIconAlign;
-    UINT      m_TextAlign;
-    ttCDib    m_dNormal, m_dDown, m_dDisabled, m_dOver, m_dh, m_dv;
-    bool      m_Checked;     // radio & check buttons
-    bool      m_IsPushLike;  // radio & check buttons
-    bool      m_flat;
-    short     m_FocusRectMargin;  // dotted margin offset
+    RECT m_rcIconBox;
+    UINT m_hIconAlign;
+    UINT m_TextAlign;
+    ttCDib m_dNormal, m_dDown, m_dDisabled, m_dOver, m_dh, m_dv;
+    bool m_Checked;     // radio & check buttons
+    bool m_IsPushLike;  // radio & check buttons
+    bool m_flat;
+    short m_FocusRectMargin;  // dotted margin offset
 };
-
-#endif  // defined(_WIN32)

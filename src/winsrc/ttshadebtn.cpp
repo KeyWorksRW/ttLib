@@ -21,11 +21,10 @@
     #error "This module can only be compiled for Windows"
 #endif
 
-#include "ttlibwin.h"
-
-#include "ttstr.h"       // ttCStr
 #include "ttdebug.h"     // ttASSERT macros
+#include "ttlibspace.h"  // Contains the ttlib namespace functions/declarations common to all ttLib libraries
 #include "ttshadebtn.h"  // ttCShadeBtn
+#include "ttcstr.h"      // cstr -- Classes for handling zero-terminated char strings.
 
 /*
     This class only works on non-image buttons. I.e., this class will not work on a button that is drawn with a
@@ -55,7 +54,7 @@ ttCShadeBtn::ttCShadeBtn()
     // 0 may cause it to be much larger then originally intended for the button. Ultimately, if this
     // default font is unsatisfactory, the caller should call ttCShadeBtn::SetFont().
 
-    m_hFont = ttCreateLogFont("MS Shell Dlg", 8);
+    m_hFont = ttlib::CreateLogFont("MS Shell Dlg", 8);
 
     // Another option is to get the font for Message Boxes and use that. However, it's quite possible that
     // the user changed that font specifically for message boxes without expecting it to also change the font
@@ -75,7 +74,7 @@ ttCShadeBtn::~ttCShadeBtn()
     if (m_hFont)
         DeleteObject(m_hFont);
     if (m_pLF)
-        ttFree(m_pLF);
+        delete m_pLF;
     if (m_hIconDown != m_hIcon && m_hIconDown)
         DestroyIcon(m_hIconDown);
     if (m_hIconHighLight != m_hIcon && m_hIconHighLight)
@@ -92,7 +91,7 @@ bool ttCShadeBtn::SetFont(LOGFONTA* pNewStyle)
     if (pNewStyle)
     {
         if (m_pLF == NULL)
-            m_pLF = (LOGFONTA*) ttCalloc(sizeof(LOGFONTA));
+            m_pLF = new LOGFONTA;
         if (m_pLF)
         {
             memcpy(m_pLF, pNewStyle, sizeof(LOGFONTA));
@@ -105,23 +104,24 @@ bool ttCShadeBtn::SetFont(LOGFONTA* pNewStyle)
     return false;
 }
 
-bool ttCShadeBtn::SetFont(const char* pszFontName, long lSize, long lWeight, BYTE bItalic, BYTE bUnderline)
+bool ttCShadeBtn::SetFont(const std::string& FontName, long lSize, long lWeight, BYTE bItalic, BYTE bUnderline)
 {
+    ttASSERT(FontName.length() < LF_FACESIZE);
+    if (FontName.length() >= LF_FACESIZE)
+        return false;
+
     if (m_pLF == NULL)
-        m_pLF = (LOGFONTA*) ttCalloc(sizeof(LOGFONTA));
-    if (m_pLF)
-    {
-        ttStrCpy(m_pLF->lfFaceName, sizeof(m_pLF->lfFaceName), pszFontName);
-        m_pLF->lfHeight = lSize;
-        m_pLF->lfWeight = lWeight;
-        m_pLF->lfItalic = bItalic;
-        m_pLF->lfUnderline = bUnderline;
-        if (m_hFont)
-            DeleteObject(m_hFont);
-        m_hFont = CreateFontIndirectA(m_pLF);
-        return (m_hFont != NULL);
-    }
-    return false;
+        m_pLF = new LOGFONTA;
+
+    std::strcpy(m_pLF->lfFaceName, FontName.c_str());
+    m_pLF->lfHeight = lSize;
+    m_pLF->lfWeight = lWeight;
+    m_pLF->lfItalic = bItalic;
+    m_pLF->lfUnderline = bUnderline;
+    if (m_hFont)
+        DeleteObject(m_hFont);
+    m_hFont = CreateFontIndirectA(m_pLF);
+    return (m_hFont != NULL);
 }
 
 void ttCShadeBtn::SetButtonStyle(UINT nStyle, BOOL bRedraw)
@@ -147,8 +147,8 @@ void ttCShadeBtn::SetButtonStyle(UINT nStyle, BOOL bRedraw)
         m_Border = false;
 
     if (bRedraw)
-        InvalidateRect(*this, NULL,
-                       TRUE);  // REVIEW: [randalphwa - 1/26/2019] Can we get away with setting FALSE for bErase?
+        // REVIEW: [randalphwa - 1/26/2019] Can we get away with setting FALSE for bErase?
+        InvalidateRect(*this, NULL, TRUE);
 }
 
 void ttCShadeBtn::SetTextAlign(UINT nTextAlign)
@@ -529,7 +529,6 @@ void ttCShadeBtn::OnPaint()
     PAINTSTRUCT ps;
     HDC hdcPaint = BeginPaint(*this, &ps);
 
-    ttCStr cszCaption;
     RECT rcClient;
     GetClientRect(*this, &rcClient);
 
@@ -544,7 +543,24 @@ void ttCShadeBtn::OnPaint()
     HANDLE hBitmap = CreateCompatibleBitmap(hdcPaint, cx, cy);
     HBITMAP hOldBitmap = (HBITMAP) SelectObject(hdcMem, hBitmap);  // select the destination for MemDC
 
-    cszCaption.GetWndText(*this);  // get button text
+    ttlib::cstr test;
+    test.GetWndText(*this);
+
+    std::wstring Caption;
+    int cb = GetWindowTextLengthW(m_hwnd);
+    if (cb > 0)
+    {
+        wchar_t* buffer = static_cast<wchar_t*>(std::malloc((cb + 1) * sizeof(wchar_t)));
+        cb = GetWindowTextW(m_hwnd, buffer, cb) / sizeof(wchar_t);
+        buffer[cb + 1] = 0;
+        Caption.assign(buffer);
+        std::free(static_cast<void*>(buffer));
+    }
+    else
+    {
+        Caption.assign(L"");
+    }
+
     SetBkMode(hdcMem, TRANSPARENT);
     // with MemDC we need to select the font...
 
@@ -598,10 +614,10 @@ void ttCShadeBtn::OnPaint()
             DrawEdge(hdcMem, &rcClient, EDGE_RAISED, BF_RECT);
         // paint the etched button text
         ::SetTextColor(hdcMem, GetSysColor(COLOR_3DHILIGHT));
-        ::DrawTextA(hdcMem, (const char*) cszCaption, -1, &tr, m_TextAlign);
+        ::DrawTextW(hdcMem, Caption.c_str(), -1, &tr, m_TextAlign);
         ::SetTextColor(hdcMem, GetSysColor(COLOR_GRAYTEXT));
         OffsetRect(&tr, -1, -1);
-        ::DrawTextA(hdcMem, (const char*) cszCaption, -1, &tr, m_TextAlign);
+        ::DrawTextW(hdcMem, Caption.c_str(), -1, &tr, m_TextAlign);
     }
     else
     {
@@ -674,7 +690,7 @@ void ttCShadeBtn::OnPaint()
         }
         // paint the enabled button text
         ::SetTextColor(hdcMem, m_TextColor);
-        ::DrawTextA(hdcMem, (const char*) cszCaption, -1, &tr, m_TextAlign);
+        ::DrawTextW(hdcMem, Caption.c_str(), -1, &tr, m_TextAlign);
     }
 
     if (hOldFont)
