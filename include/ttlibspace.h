@@ -8,16 +8,19 @@
 
 #pragma once
 
-// clang-format off
+// With #pragma once, a header guard shouldn't be necessary and causes unwanted indentation by clang-format. The
+// following #if/#endif check verifies that the file wasn't read twice.
 
-#ifndef _TTLIB_NAMESPACE_H_GUARD_
-#define _TTLIB_NAMESPACE_H_GUARD_
-
-#include <string>
-#include <string_view>
-#include <stdlib.h>  // for std::abs(long)
+#if defined(_TTLIB_NAMESPACE_H_GUARD_)
+    #error "#pragma once failed -- header is being read a second time!"
+#else
+    #define _TTLIB_NAMESPACE_H_GUARD_  // sanity check to confirm that #pragma once is working as expected
+#endif
 
 #include <filesystem>  // directory_entry
+#include <stdlib.h>    // for std::abs(long)
+#include <string>
+#include <string_view>
 
 // Some useful macros if you don't already have them
 
@@ -46,8 +49,6 @@
         #define TT_ASSERT_MSG(exp, msg) assert(((void) msg, exp))
     #endif
 #endif
-
-// clang-format on
 
 // The tt namespace is for enums and constexpr values that only require a header. The ttlib namespace is for
 // functions and classes that require linking to ttLib.lib in order to use.
@@ -318,6 +319,4 @@ namespace ttlib
                        INT nShow = SW_SHOWNORMAL, HWND hwndParent = NULL);
 }  // namespace ttlib
 
-    #endif  // end _WIN32 section
-
-#endif  // _TTLIB_NAMESPACE_H_GUARD_
+#endif  // end _WIN32 section
