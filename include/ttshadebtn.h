@@ -69,6 +69,10 @@ public:
     void SetTextAlign(UINT nTextAlign);
     COLORREF SetTextColor(COLORREF new_color);
 
+    HWND gethwnd() { return m_hwnd; }
+    int getID() { return GetDlgCtrlID(m_hwnd); }
+    bool isSameID(int id) { return getID() == id; }
+
     bool operator==(ttCShadeBtn* pShade) { return m_hwnd == pShade->m_hwnd; }
     operator HWND() const { return m_hwnd; }
 

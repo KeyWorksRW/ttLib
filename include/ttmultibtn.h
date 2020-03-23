@@ -12,19 +12,16 @@
     #error "This header file can only be used when compiling for Windows"
 #endif
 
-#include "ttarray.h"  // ttCArray
+#include <vector>
 
-#ifdef _MSC_VER
-    #pragma warning(disable : 26495)  // m_btnShade is uninitialized (r.w.: which is fine, it's not used until
-                                      // Initialize is called which sets it)
-#endif
+#include "ttshadebtn.h"
 
 namespace ttpriv
 {
     BOOL WINAPI EnumBtnProc(HWND hwnd, LPARAM lval);
 }
 
-class ttCShadeBtn;
+// class ttCShadeBtn;
 
 // Class for applying CShadeBtn to every button in a dialog
 class ttCMultiBtn
@@ -37,7 +34,7 @@ public:
     void SetIcon(int idBtn, const char* pszIconName, UINT nIconAlign = BS_LEFT);
     ttCShadeBtn* FindShadeBtn(int id);
 
-    typedef enum
+    enum BTN_SHADE
     {  // must be identical to ttCShadeBtn (ttshadebtn.h)
         SHS_NOISE = 0,
         SHS_DIAGSHADE = 1,
@@ -48,7 +45,7 @@ public:
         SHS_SOFTBUMP = 6,
         SHS_HARDBUMP = 7,
         SHS_METAL = 8,
-    } BTN_SHADE;
+    };
 
     // Class functions
 
@@ -59,6 +56,7 @@ private:
 
     // Class members
 
-    ttCArray<ttCShadeBtn*> m_aBtns;
-    BTN_SHADE m_btnShade;
+    std::vector<ttCShadeBtn> m_lstButtons;
+
+    BTN_SHADE m_btnShade { SHS_HARDBUMP };
 };
