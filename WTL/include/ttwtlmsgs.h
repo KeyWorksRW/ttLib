@@ -21,7 +21,7 @@
     #if !defined(NDEBUG)  // Starts debug section.
         // use this to confirm you have a valid dialog id -- it will generate an assertion
         // message if the id doesn't exist at runtime
-        #define DLG_ID(id) tt::CheckItemID(*this, id, #id, __FILE__, __func__, __LINE__)
+        #define DLG_ID(id) ttlib::CheckItemID(*this, id, #id, __FILE__, __func__, __LINE__)
     #else
         #define DLG_ID(id) id
     #endif
