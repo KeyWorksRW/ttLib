@@ -319,6 +319,28 @@ namespace ttlib
                        INT nShow = SW_SHOWNORMAL, HWND hwndParent = NULL);
 
     HFONT CreateLogFont(std::string_view TypeFace, size_t point, bool Bold = false, bool Italics = false);
+
+    struct LANGINFO
+    {
+        HMODULE hinstResource { NULL };
+        USHORT PrimaryLanguage { LANG_NEUTRAL };
+        USHORT SubLanguage { SUBLANG_NEUTRAL };
+    };
+    extern LANGINFO lang_info;
+
+    /// Loads the string from the resource file using language and resource module specified
+    /// in ttlib::lang_info. String is converted to UTF8 before storing in Result.
+    bool LoadStringEx(std::string& Result, WORD id);
+
+    /// Loads the string from the resource file using language and resource module specified
+    /// in ttlib::lang_info. String is converted to UTF8 before storing in Result.
+    std::string LoadStringEx(WORD id);
+
+    /// Set the resource handle and language to use for loading resources. If hinstResource
+    /// is NULL, the current executable is used. Otherwise it must be the handle returned
+    /// by LoadLibrary().
+    void SetLangInfo(HMODULE hinstResource, USHORT PrimaryLanguage, USHORT SubLanguage);
+
 }  // namespace ttlib
 
 #endif  // end _WIN32 section

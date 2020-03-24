@@ -272,8 +272,7 @@ namespace ttlib
         /// If sel == tt::npos (default) then the current selection will be used.
         cstr& GetComboLBText(HWND hwndCtrl, size_t sel = tt::npos);
 
-        /// This will call FindResourceA()
-        cstr& GetResString(size_t idString, HMODULE hmodResource = NULL);
+        cstr& LoadString(WORD idString) { LoadStringEx(*this, idString); return *this; };
 
 #endif
     };

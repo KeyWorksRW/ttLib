@@ -233,26 +233,6 @@ cstr& cstr::GetWndText(HWND hwnd)
     return *this;
 }
 
-cstr& cstr::GetResString(size_t idString, HMODULE hmodResource)
-{
-    assign(ttlib::emptystring);
-
-    auto hrsrc = FindResourceA(hmodResource, MAKEINTRESOURCEA(idString), (char*) RT_STRING);
-    ttASSERT(hrsrc);
-    if (!hrsrc)
-        return *this;
-    HGLOBAL hglb = LoadResource(hmodResource, hrsrc);
-    ttASSERT(hglb);
-    if (!hglb)
-        return *this;
-    auto pbuf = LockResource(hglb);
-    ttASSERT(pbuf);
-    if (!pbuf)
-        return *this;
-    assign(static_cast<char*>(pbuf), static_cast<size_t>(SizeofResource(hmodResource, hrsrc)));
-    return *this;
-}
-
 cstr& cstr::GetListBoxText(HWND hwndCtrl, size_t sel)
 {
     assign(ttlib::emptystring);
