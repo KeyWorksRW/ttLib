@@ -2,18 +2,16 @@
 
 #pragma once
 
-// clang-format off
 #ifndef _WIN32_WINNT_VISTA
-	#define _WIN32_WINNT_NT4    0x0400
-	#define _WIN32_WINNT_WINXP  0x0501
-	#define _WIN32_WINNT_VISTA  0x0600
-	#define _WIN32_WINNT_WIN7   0x0601
-	#define _WIN32_WINNT_WIN8   0x0602
-	#define _WIN32_WINNT_WIN10  0x0A00
+    #define _WIN32_WINNT_NT4   0x0400
+    #define _WIN32_WINNT_WINXP 0x0501
+    #define _WIN32_WINNT_VISTA 0x0600
+    #define _WIN32_WINNT_WIN7  0x0601
+    #define _WIN32_WINNT_WIN8  0x0602
+    #define _WIN32_WINNT_WIN10 0x0A00
 #endif
-// clang-format on
 
-#define WINVER _WIN32_WINNT_VISTA  // minimum OS required
+#define WINVER       _WIN32_WINNT_VISTA  // minimum OS required
 #define _WIN32_WINNT _WIN32_WINNT_VISTA
 
 #define STRICT
@@ -36,25 +34,21 @@
 #pragma comment(lib, "gdi32.lib")
 
 #include <stdint.h>
-#include <ttdebug.h>  // ttASSERT macros
 
-#define ATLASSERT(expr) ttASSERT(expr)
+#include <ttlibspace.h>  // Master header file for ttLib
+#include <ttdebug.h>     // ttASSERT macros
 
-#include <atldef.h>
+// atlbase.h must be included first so shut off formatting
+// clang-format off
 #include <atlbase.h>
 #include <atlapp.h>
-
-#include <atlbase.h>
-#include <atlapp.h>
-
-extern CAppModule _Module;
+// clang-format on
 
 #include <atlwin.h>
-
-#include <atlframe.h>
 #include <atlctrls.h>
+#include <atlframe.h>
 
-#include <ttlib.h>  // Master header file for ttLib
+extern CAppModule _Module;
 
 #include "strtable.h"
 
@@ -139,7 +133,8 @@ typedef struct
     DWORD reserved3;
 } PROFILE;
 
-extern PROFILE     uprof;
-extern const char* txtVersion;    // "ttTrace 2.2.6290.0";
-extern const char* txtCopyRight;  // "Copyright (c) 2000-2019 [Ralph Walden]";
-extern const char* txtAppName;    // "ttTrace";
+extern PROFILE uprof;
+
+constexpr const char* txtVersion = "ttTrace 2.2.6290.0";
+constexpr const char* txtCopyRight = "Copyright (c) 2000-2019 [Ralph Walden]";
+constexpr const char* txtAppName = "ttTrace";

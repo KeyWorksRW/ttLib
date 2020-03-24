@@ -18,6 +18,7 @@ BOOL CTraceView::PreTranslateMessage(MSG* /* pMsg */)
 
 LRESULT CTraceView::OnCreate(CREATESTRUCT* /* pcs */)
 {
+#if 0
     HDC hdc = CreateCompatibleDC(NULL);
     SetMapMode(hdc, MM_TEXT);
 
@@ -34,8 +35,9 @@ LRESULT CTraceView::OnCreate(CREATESTRUCT* /* pcs */)
 
     HFONT hfont = CreateFontIndirect(&lf);
     DeleteDC(hdc);
+#endif
 
-    PostMessage(WM_SETFONT, (WPARAM) hfont);
+    PostMessage(WM_SETFONT, (WPARAM) ttlib::CreateLogFont("MS Shell Dlg", 10));
 
     return 0;
 }

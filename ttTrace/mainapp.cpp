@@ -1,25 +1,22 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:		init.cpp
+// Name:		mainapp.cpp
 // Purpose:		Application starting point
 // Author:		Ralph Walden
-// Copyright:	Copyright (c) 1998-2019 KeyWorks Software (Ralph Walden)
+// Copyright:	Copyright (c) 1998-2020 KeyWorks Software (Ralph Walden)
 // License:     Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 #include "pch.h"
 
-#include "resource.h"
-#include "traceview.h"
 #include "aboutdlg.h"
 #include "mainfrm.h"
-
-const char* txtVersion = "ttTrace 2.2.6290.0";
-const char* txtCopyRight = "Copyright (c) 2000-2019 [Ralph Walden]";
-const char* txtAppName = "ttTrace";
+#include "resource.h"
+#include "traceview.h"
 
 CAppModule _Module;
 
-const char* txtKeyViewRegKey = "Software\\KeyWorks\\KeyView";  // REVIEW: [randalphwa - 3/4/2019] This will share settings with the older KeyView. Is that a good thing?
+// REVIEW: [randalphwa - 3/4/2019] This will share settings with the older KeyView. Is that a good thing?
+const char* txtKeyViewRegKey = "Software\\KeyWorks\\KeyView";
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /* lpstrCmdLine */, int nCmdShow)
 {
@@ -30,8 +27,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /* l
         ::SetForegroundWindow(hwnd);
         return 0;
     }
-
-    ttInitCaller(txtAppName);
 
 #ifdef _DEBUG
     HRESULT hRes =
@@ -60,15 +55,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /* l
     _Module.AddMessageLoop(&theLoop);
 
     CMainFrame wndMain;
-    RECT*      prc = 0;
-    RECT       rc = { 0, 0, 0, 0 };
+    RECT* prc = 0;
+    RECT rc = { 0, 0, 0, 0 };
 
     CRegKey key;
     if (key.Open(HKEY_CURRENT_USER, txtKeyViewRegKey) == ERROR_SUCCESS)
     {
         DWORD dwType = REG_BINARY;
         DWORD dwSize = sizeof(RECT);
-        if ((RegQueryValueEx(key, "WindowRect", 0, &dwType, (BYTE*) &rc, &dwSize) == ERROR_SUCCESS) && (REG_BINARY == dwType) && (sizeof(RECT) == dwSize) && !IsRectEmpty(&rc))
+        if ((RegQueryValueEx(key, "WindowRect", 0, &dwType, (BYTE*) &rc, &dwSize) == ERROR_SUCCESS) &&
+            (REG_BINARY == dwType) && (sizeof(RECT) == dwSize) && !IsRectEmpty(&rc))
             prc = &rc;
     }
 

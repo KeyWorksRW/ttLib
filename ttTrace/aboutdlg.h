@@ -9,7 +9,7 @@
 #pragma once
 
 #ifndef IDD_ABOUTBOX
-#include "resource.h"
+    #include "resource.h"
 #endif
 
 #include <ttdlg.h>  // ttCDlg, ttCComboBox, ttCListBox, ttCListView
@@ -17,8 +17,5 @@
 class CAboutDlg : public ttCDlg
 {
 public:
-    CAboutDlg()
-        : ttCDlg(IDD_ABOUTBOX)
-    {
-    }
+    CAboutDlg() : ttCDlg(IDD_ABOUTBOX) {}
 };

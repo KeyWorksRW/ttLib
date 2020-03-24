@@ -15,11 +15,11 @@
 #include "resource.h"
 
 #include "aboutdlg.h"  // CAboutDlg
-#include "traceview.h"
 #include "mainfrm.h"
 #include "prefs.h"
+#include "traceview.h"
 
-PROFILE            uprof;
+PROFILE uprof;
 extern const char* txtKeyViewRegKey;
 
 BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
@@ -38,24 +38,28 @@ BOOL CMainFrame::OnIdle()
 
 LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    m_hMapping = CreateFileMapping((HANDLE) -1, NULL, PAGE_READWRITE, 0, 4096, tt::txtTraceShareName);
+    m_hMapping = CreateFileMapping((HANDLE) -1, NULL, PAGE_READWRITE, 0, 4096, ttlib::txtTraceShareName);
     ttASSERT(m_hMapping);
     if (!m_hMapping)
     {
-        ttMsgBox(IDS_FILE_MAPPING_ERROR);
+        ttlib::MsgBox(IDS_FILE_MAPPING_ERROR);
         ExitProcess((UINT) -1);
     }
     m_pszMap = (char*) MapViewOfFile(m_hMapping, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
     ttASSERT(m_pszMap);
     if (!m_pszMap)
     {
-        ttMsgBox(IDS_FILE_MAPPING_ERROR);
+        ttlib::MsgBox(IDS_FILE_MAPPING_ERROR);
         ExitProcess((UINT) -1);
     }
 
     CreateSimpleToolBar();
 
-    m_hWndClient = m_view.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_HSCROLL | WS_VSCROLL | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_SAVESEL, WS_EX_CLIENTEDGE);
+    m_hWndClient =
+        m_view.Create(m_hWnd, rcDefault, NULL,
+                      WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_HSCROLL | WS_VSCROLL |
+                          ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_SAVESEL,
+                      WS_EX_CLIENTEDGE);
 
     UIAddToolBar(m_hWndToolBar);
     UISetCheck(ID_VIEW_TOOLBAR, 1);
@@ -156,36 +160,39 @@ void CMainFrame::OnSaveAs()
 
     if (GetSaveFileName(&ofn))
     {
-        HANDLE hf = CreateFile(ofn.lpstrFile, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+        HANDLE hf =
+            CreateFile(ofn.lpstrFile, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
         if (hf == INVALID_HANDLE_VALUE)
         {
-            ttMsgBoxFmt(IDS_CANNOT_OPEN, MB_OK | MB_ICONWARNING, ofn.lpstrFile);
+            ttlib::cstr msg;
+            ttlib::MsgBox(msg.Format(ttlib::LoadStringEx(IDS_CANNOT_OPEN), ofn.lpstrFile));
             return;
         }
         LRESULT cLines = m_view.SendMessage(EM_GETLINECOUNT, 0, 0);
 
-        char  szLine[4096];
+        char szLine[4096];
         WORD* pcb = (WORD*) szLine;
 
         for (LRESULT i = 0; i < cLines; i++)
         {
             LRESULT cb = m_view.SendMessage(EM_LINELENGTH, i, 0);
-            DWORD   cbWritten;
+            DWORD cbWritten;
             if (cb < (LRESULT) sizeof(szLine))
             {
                 *pcb = sizeof(szLine);
                 cb = m_view.SendMessage(EM_GETLINE, i, (LPARAM) szLine);
                 if (!WriteFile(hf, szLine, (DWORD) cb, &cbWritten, NULL))
                 {
-                    ttReportLastError();
-                    ttMsgBoxFmt(IDS_WRITE_ERROR, MB_OK | MB_ICONWARNING, ofn.lpstrFile);
+                    ttLAST_ERROR();
+                    ttlib::cstr msg;
+                    ttlib::MsgBox(msg.Format(ttlib::LoadStringEx(IDS_WRITE_ERROR), ofn.lpstrFile));
                     return;
                 }
                 // Append a LF
                 szLine[0] = 0x0a;
                 if (!WriteFile(hf, szLine, 1, &cbWritten, NULL))
                 {
-                    ttReportLastError();
+                    ttLAST_ERROR();
                     return;
                 }
             }
@@ -196,15 +203,16 @@ void CMainFrame::OnSaveAs()
                 cb = m_view.SendMessage(EM_GETLINE, i, (LPARAM) mem.m_p);
                 if (!WriteFile(hf, mem.m_p, (DWORD) cb, &cbWritten, NULL))
                 {
-                    ttReportLastError();
-                    ttMsgBoxFmt(IDS_WRITE_ERROR, MB_OK | MB_ICONWARNING, ofn.lpstrFile);
+                    ttLAST_ERROR();
+                    ttlib::cstr msg;
+                    ttlib::MsgBox(msg.Format(ttlib::LoadStringEx(IDS_WRITE_ERROR), ofn.lpstrFile));
                     return;
                 }
             }
         }
 
         CloseHandle(hf);
-        ttMsgBox(IDS_FILE_SAVED, MB_OK);
+        ttlib::MsgBox(IDS_FILE_SAVED, MB_OK);
     }
 }
 

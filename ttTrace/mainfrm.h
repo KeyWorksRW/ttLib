@@ -11,12 +11,18 @@
 #include <ttstr.h>      // ttCStr
 #include <ttwtlmsgs.h>  // Macros for mapping Windows messages to functions
 
+#include "traceview.h"
+
 extern const char* txtMainClass;  // "KeyViewMsgs";
 
-class CMainFrame : public CFrameWindowImpl<CMainFrame>, public CUpdateUI<CMainFrame>, public CMessageFilter, public CIdleHandler
+class CMainFrame :
+    public CFrameWindowImpl<CMainFrame>,
+    public CUpdateUI<CMainFrame>,
+    public CMessageFilter,
+    public CIdleHandler
 {
 public:
-    DECLARE_FRAME_WND_CLASS(tt::txtTraceClass, IDR_MAINFRAME)
+    DECLARE_FRAME_WND_CLASS(ttlib::txtTraceClass, IDR_MAINFRAME)
 
     CTraceView m_view;
 
@@ -34,9 +40,9 @@ public:
         MESSAGE_HANDLER(WM_CREATE, OnCreate)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 
-        MSG_WMP_HANDLER(tt::WMP_CLEAR_TRACE, OnClear)
-        MSG_WMP_HANDLER(tt::WMP_TRACE_GENERAL, OnGeneralMsg);
-        MSG_WMP_HANDLER(tt::WMP_TRACE_MSG, OnTraceMsg);
+        MSG_WMP_HANDLER(ttlib::WMP_CLEAR_TRACE, OnClear)
+        MSG_WMP_HANDLER(ttlib::WMP_TRACE_GENERAL, OnGeneralMsg);
+        MSG_WMP_HANDLER(ttlib::WMP_TRACE_MSG, OnTraceMsg);
 
         COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
         COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR, OnViewToolBar)
@@ -65,6 +71,6 @@ protected:
     // Class members
 
     HANDLE m_hMapping;
-    char*  m_pszMap;  // points to data in shared memory
+    char* m_pszMap;  // points to data in shared memory
     ttCStr m_cszLastMsg;
 };
