@@ -2,7 +2,7 @@
 // Name:      ttCMultiBtn
 // Purpose:   Class for applying ttCShadeBtn to every button in a dialog
 // Author:    Ralph Walden
-// Copyright: Copyright (c) 2002-2020 KeyWorks Software (Ralph Walden)
+// Copyright: Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
 // License:   Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
@@ -14,8 +14,10 @@
 
 #include <sstream>
 
-#include "ttdebug.h"
+#include "ttlibwin.h"
+
 #include "ttlibspace.h"
+#include "ttdebug.h"
 #include "ttmultibtn.h"  // ttCMultiBtn
 #include "ttshadebtn.h"  // ttCShadeBtn
 
@@ -25,23 +27,32 @@ BOOL WINAPI ttpriv::EnumBtnProc(HWND hwnd, LPARAM lval)
     if ((GetWindowLong(hwnd, GWL_STYLE) & 0x0f) < BS_CHECKBOX)
     {
         GetClassNameA(hwnd, szClass, sizeof(szClass));
-        if (ttlib::issameas(szClass, "Button", tt::CASE::either))
+        if (ttIsSameStrI(szClass, "Button"))
         {
             ttCMultiBtn* pMultiBtn = (ttCMultiBtn*) lval;
-            auto& btn = pMultiBtn->m_lstButtons.emplace_back();
-            btn.SubClass(hwnd);
-            btn.SetShade((ttCShadeBtn::BTN_SHADE) pMultiBtn->m_btnShade);
+            ttCShadeBtn* pBtn = new ttCShadeBtn;
+            pBtn->SubClass(hwnd);
+            pBtn->SetShade((ttCShadeBtn::BTN_SHADE) pMultiBtn->m_btnShade);
+            pMultiBtn->m_aBtns.Add(pBtn);
         }
     }
     return TRUE;
 }
 
-ttCMultiBtn::~ttCMultiBtn() {}
+ttCMultiBtn::~ttCMultiBtn()
+{
+    for (size_t i = 0; i < m_aBtns.GetCount(); i++)
+        delete m_aBtns[i];
+}
 
 void ttCMultiBtn::Initialize(HWND hwndParent, BTN_SHADE shade)
 {
     m_btnShade = shade;
-    m_lstButtons.clear();
+
+    // The dialog can be created more than once, which means we get Initialized more than once.
+    for (size_t i = 0; i < m_aBtns.GetCount(); i++)
+        delete m_aBtns[i];
+    m_aBtns.Reset();
 
     EnumChildWindows(hwndParent, (WNDENUMPROC) ttpriv::EnumBtnProc, (LPARAM) this);
 }
@@ -49,18 +60,17 @@ void ttCMultiBtn::Initialize(HWND hwndParent, BTN_SHADE shade)
 void ttCMultiBtn::SetIcon(int idBtn, int idIcon, UINT nIconAlign)
 {
     ttASSERT_MSG(
-        m_lstButtons.size(),
+        m_aBtns.GetCount(),
         "Calling SetIcon without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
 
-    for (auto& iter: m_lstButtons)
+    for (size_t i = 0; i < m_aBtns.GetCount(); i++)
     {
-        if (IsWindow(iter.gethwnd()) && iter.isSameID(idBtn))
+        if (IsWindow(*m_aBtns[i]) && GetDlgCtrlID(*m_aBtns[i]) == idBtn)
         {
-            iter.SetIcon(idIcon, nIconAlign);
+            m_aBtns[i]->SetIcon(idIcon, nIconAlign);
             return;
         }
     }
-
 #if !defined(NDEBUG)  // Starts debug section.
     std::stringstream msg;
     msg << "ttCMultiBtn::SetIcon was unable to find the button id: " << idBtn;
@@ -71,14 +81,14 @@ void ttCMultiBtn::SetIcon(int idBtn, int idIcon, UINT nIconAlign)
 void ttCMultiBtn::SetIcon(int idBtn, const char* pszIconName, UINT nIconAlign)
 {
     ttASSERT_MSG(
-        m_lstButtons.size(),
+        m_aBtns.GetCount(),
         "Calling SetIcon without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
 
-    for (auto& iter: m_lstButtons)
+    for (size_t i = 0; i < m_aBtns.GetCount(); i++)
     {
-        if (IsWindow(iter.gethwnd()) && iter.isSameID(idBtn))
+        if (IsWindow(*m_aBtns[i]) && GetDlgCtrlID(*m_aBtns[i]) == idBtn)
         {
-            iter.SetIcon(pszIconName, nIconAlign);
+            m_aBtns[i]->SetIcon(pszIconName, nIconAlign);
             return;
         }
     }
@@ -92,14 +102,13 @@ void ttCMultiBtn::SetIcon(int idBtn, const char* pszIconName, UINT nIconAlign)
 ttCShadeBtn* ttCMultiBtn::FindShadeBtn(int id)
 {
     ttASSERT_MSG(
-        m_lstButtons.size(),
+        m_aBtns.GetCount(),
         "Calling FindShadeBtn without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
 
-    for (size_t pos = 0; pos < m_lstButtons.size(); ++pos)
+    for (size_t i = 0; i < m_aBtns.GetCount(); i++)
     {
-        if (m_lstButtons[pos].isSameID(id))
-            return &m_lstButtons[pos];
+        if (GetDlgCtrlID(*m_aBtns[i]) == id)
+            return m_aBtns[i];
     }
-
-    return nullptr;
+    return NULL;
 }
