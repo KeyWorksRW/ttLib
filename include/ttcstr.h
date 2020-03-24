@@ -272,7 +272,10 @@ namespace ttlib
         /// If sel == tt::npos (default) then the current selection will be used.
         cstr& GetComboLBText(HWND hwndCtrl, size_t sel = tt::npos);
 
-        cstr& LoadString(WORD idString) { LoadStringEx(*this, idString); return *this; };
+        /// The default is to load from the current executable using the current locale. Call
+        /// ttlib::SetLangInfo() first if you need to load from a different module, or to use
+        /// a different language.
+        cstr& LoadStringEx(WORD idString) { ttlib::LoadStringEx(*this, idString); return *this; };
 
 #endif
     };
