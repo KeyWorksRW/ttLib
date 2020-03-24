@@ -280,6 +280,12 @@ namespace ttlib
     /// (MessageBox(...))
     int MsgBox(std::string_view utf8str, std::string_view utf8Caption, UINT uType = MB_OK | MB_ICONWARNING);
 
+    /// Loads the string resource and displays it in a MessageBox. Uses language and module
+    /// current set in ttlib::lang_info.
+    ///
+    /// Caption is whatever was set by last call to ttlib::SetMsgBoxTitle().
+    int MsgBox(WORD idStrResource, UINT uType = MB_OK | MB_ICONWARNING);
+
     /// Converts window text to UTF8 and returns it in a std::string container
     std::string GetWndText(HWND hwnd);
 
