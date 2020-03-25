@@ -2,11 +2,9 @@
 // Name:      ttwinspace.cpp
 // Purpose:   Windows-only ttlib namespace functions
 // Author:    Ralph Walden
-// Copyright: Copyright (c) 1992-2019 KeyWorks Software (Ralph Walden)
+// Copyright: Copyright (c) 1992-2020 KeyWorks Software (Ralph Walden)
 // License:   Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
-
-// All the functions in this module will ONLY work on a Windows OS
 
 #include "pch.h"  // precompiled header
 
@@ -15,6 +13,8 @@
 #endif
 
 #include <string>
+#include <string_view>
+#include <vector>
 
 #include <shellapi.h>
 
@@ -60,14 +60,12 @@ int ttlib::MsgBox(WORD idStrResource, UINT uType)
 
 bool ttlib::GetWndText(HWND hwnd, std::string& str)
 {
-    int cb = GetWindowTextLengthW(hwnd);
+    auto cb = GetWindowTextLengthW(hwnd);
     if (cb > 0)
     {
-        wchar_t* buffer = static_cast<wchar_t*>(std::malloc((cb + 1) * sizeof(wchar_t)));
-        cb = GetWindowTextW(hwnd, buffer, cb);
-        std::wstring_view str16(buffer, cb);
-        ttlib::utf16to8(str16, str);
-        std::free(static_cast<void*>(buffer));
+        std::vector<wchar_t> buffer(cb + 1);
+        cb = GetWindowTextW(hwnd, buffer.data(), cb);
+        ttlib::utf16to8(buffer, str);
         return true;
     }
     else
@@ -93,27 +91,19 @@ std::string ttlib::GetListboxText(HWND hwnd, WPARAM index)
 
 bool ttlib::GetListboxText(HWND hwnd, WPARAM index, std::string& str)
 {
+    str.assign(ttlib::emptystring);
+
     auto cb = SendMessageW(hwnd, LB_GETTEXTLEN, index, 0);
     if (cb != LB_ERR)
     {
-        wchar_t* buffer = static_cast<wchar_t*>(std::malloc((cb + 1) * sizeof(wchar_t)));
-        cb = SendMessageW(hwnd, LB_GETTEXT, index, (WPARAM) buffer);
+        std::vector<wchar_t> buffer(cb + 1);
+        cb = SendMessageW(hwnd, LB_GETTEXT, index, (WPARAM) buffer.data());
         if (cb != LB_ERR)
         {
-            std::wstring_view str16(buffer, cb);
-            ttlib::utf16to8(str16, str);
+            ttlib::utf16to8(buffer, str);
         }
-        else
-        {
-            str.assign(ttlib::emptystring);
-        }
+    }
 
-        std::free(static_cast<void*>(buffer));
-    }
-    else
-    {
-        str.assign(ttlib::emptystring);
-    }
     return (cb != LB_ERR);
 }
 
@@ -126,27 +116,19 @@ std::string ttlib::GetComboLBText(HWND hwnd, WPARAM index)
 
 bool ttlib::GetComboLBText(HWND hwnd, WPARAM index, std::string& str)
 {
+    str.assign(ttlib::emptystring);
+
     auto cb = SendMessageW(hwnd, CB_GETLBTEXTLEN, index, 0);
     if (cb != CB_ERR)
     {
-        wchar_t* buffer = static_cast<wchar_t*>(std::malloc((cb + 1) * sizeof(wchar_t)));
-        cb = SendMessageW(hwnd, CB_GETLBTEXT, index, (WPARAM) buffer);
+        std::vector<wchar_t> buffer(cb + 1);
+        cb = SendMessageW(hwnd, CB_GETLBTEXT, index, (WPARAM) buffer.data());
         if (cb != CB_ERR)
         {
-            std::wstring_view str16(buffer, cb);
-            ttlib::utf16to8(str16, str);
+            ttlib::utf16to8(buffer, str);
         }
-        else
-        {
-            str.assign(ttlib::emptystring);
-        }
+    }
 
-        std::free(static_cast<void*>(buffer));
-    }
-    else
-    {
-        str.assign(ttlib::emptystring);
-    }
     return (cb != CB_ERR);
 }
 
@@ -231,14 +213,12 @@ using namespace ttlib;
 cstr& cstr::GetWndText(HWND hwnd)
 {
     assign(ttlib::emptystring);
-    int cb = GetWindowTextLengthW(hwnd);
+    auto cb = GetWindowTextLengthW(hwnd);
     if (cb > 0)
     {
-        wchar_t* buffer = static_cast<wchar_t*>(std::malloc((cb + 1) * sizeof(wchar_t)));
-        cb = GetWindowTextW(hwnd, buffer, cb);
-        std::wstring_view str16(buffer, cb);
-        ttlib::utf16to8(str16, *this);
-        std::free(static_cast<void*>(buffer));
+        std::vector<wchar_t> buffer(cb + 1);
+        cb = GetWindowTextW(hwnd, buffer.data(), cb);
+        ttlib::utf16to8(buffer, *this);
     }
     return *this;
 }
@@ -250,7 +230,7 @@ cstr& cstr::GetListBoxText(HWND hwndCtrl, size_t sel)
     if (sel == tt::npos)
     {
         sel = SendMessageW(hwndCtrl, LB_GETCURSEL, 0, 0);
-        if (sel == static_cast<size_t>(LB_ERR))
+        if (sel == tt::err)
         {
             return *this;
         }
@@ -259,15 +239,12 @@ cstr& cstr::GetListBoxText(HWND hwndCtrl, size_t sel)
     auto cb = SendMessageW(hwndCtrl, LB_GETTEXTLEN, sel, 0);
     if (cb != LB_ERR)
     {
-        wchar_t* buffer = static_cast<wchar_t*>(std::malloc((cb + 1) * sizeof(wchar_t)));
-        cb = SendMessageW(hwndCtrl, LB_GETTEXT, sel, (WPARAM) buffer);
+        std::vector<wchar_t> buffer(cb + 1);
+        cb = SendMessageW(hwndCtrl, LB_GETTEXT, sel, (WPARAM) buffer.data());
         if (cb != LB_ERR)
         {
-            std::wstring_view str16(buffer, cb);
-            ttlib::utf16to8(str16, *this);
+            ttlib::utf16to8(buffer, *this);
         }
-
-        std::free(static_cast<void*>(buffer));
     }
 
     return *this;
@@ -280,7 +257,7 @@ cstr& cstr::GetComboLBText(HWND hwndCtrl, size_t sel)
     if (sel == tt::npos)
     {
         sel = SendMessageW(hwndCtrl, CB_GETCURSEL, 0, 0);
-        if (sel == static_cast<size_t>(CB_ERR))
+        if (sel == tt::err)
         {
             return *this;
         }
@@ -289,15 +266,12 @@ cstr& cstr::GetComboLBText(HWND hwndCtrl, size_t sel)
     auto cb = SendMessageW(hwndCtrl, CB_GETLBTEXTLEN, sel, 0);
     if (cb != LB_ERR)
     {
-        wchar_t* buffer = static_cast<wchar_t*>(std::malloc((cb + 1) * sizeof(wchar_t)));
-        cb = SendMessageW(hwndCtrl, CB_GETLBTEXT, sel, (WPARAM) buffer);
+        std::vector<wchar_t> buffer(cb + 1);
+        cb = SendMessageW(hwndCtrl, CB_GETLBTEXT, sel, (WPARAM) buffer.data());
         if (cb != LB_ERR)
         {
-            std::wstring_view str16(buffer, cb);
-            ttlib::utf16to8(str16, *this);
+            ttlib::utf16to8(buffer, *this);
         }
-
-        std::free(static_cast<void*>(buffer));
     }
 
     return *this;

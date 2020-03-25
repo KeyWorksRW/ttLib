@@ -58,6 +58,9 @@ namespace tt
     /// Use to compare a size_t against -1
     constexpr size_t npos = static_cast<size_t>(-1);
 
+    /// Use to compare a size_t against -1
+    constexpr size_t err = static_cast<size_t>(-1);
+
     enum class CASE : size_t
     {
         exact,
@@ -247,8 +250,16 @@ namespace ttlib
     void utf8to16(std::string_view str, std::wstring& dest);
     void utf16to8(std::wstring_view str, std::string& dest);
 
+    /// This allows you to pass a vector buffer to a Windows API and then use this fucntion
+    /// to convert the result to UTF8.
+    void utf16to8(std::vector<wchar_t> str, std::string& dest);
+
     std::wstring utf8to16(std::string_view str);
     std::string utf16to8(std::wstring_view str);
+
+    /// This allows you to pass a vector buffer to a Windows API and then use this fucntion
+    /// to convert the result to UTF8.
+    std::string utf16to8(std::vector<wchar_t> str);
 
 }  // namespace ttlib
 
@@ -268,12 +279,14 @@ namespace ttlib
 
 namespace ttlib
 {
-    /// Sets title to use in all calls to ttlib::MsgBox
+    /// Sets title to use in all calls to ttlib::MsgBox.
+    ///
+    /// Title will be automatically converted to UTF16.
     void SetMsgBoxTitle(std::string_view utf8Title);
 
     /// Converts the message to UTF16 and displays it in a Windows message box (MessageBox(...))
     ///
-    /// Caption is whatever was set by last call to ttlib::SetMsgBoxTitle().
+    /// Title (caption) is whatever was set by last call to ttlib::SetMsgBoxTitle().
     int MsgBox(std::string_view utf8str, UINT uType = MB_OK | MB_ICONWARNING);
 
     /// Converts the message and caption to UTF16 and displays them in a Windows message box
@@ -283,7 +296,7 @@ namespace ttlib
     /// Loads the string resource and displays it in a MessageBox. Uses language and module
     /// current set in ttlib::lang_info.
     ///
-    /// Caption is whatever was set by last call to ttlib::SetMsgBoxTitle().
+    /// Title (caption) is whatever was set by last call to ttlib::SetMsgBoxTitle().
     int MsgBox(WORD idStrResource, UINT uType = MB_OK | MB_ICONWARNING);
 
     /// Converts window text to UTF8 and returns it in a std::string container
@@ -315,9 +328,9 @@ namespace ttlib
     /// Converts the text to UTF16 before calling SetWindowTextW(...)
     void SetWndText(HWND hwnd, std::string_view utf8str);
 
-    /// Loads the specified UTF8 text string from a resource (calls Windows LoadResource API).
+    /// Loads the specified UTF8 text file from a resource (calls Windows LoadResource API).
     ///
-    /// Return string will be empty if an error occurred.
+    /// Use LoadStringEx() to load a string resource from a STRINGTABLE.
     std::string LoadTextResource(DWORD idResource, HMODULE hmodResource = NULL);
 
     /// Converts all text to UTF16 before calling ShellExecuteW(...)

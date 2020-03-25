@@ -608,7 +608,7 @@ std::string ttlib::itoa(size_t val, bool format)
 
 #define UINT8(ch)  static_cast<uint8_t>(ch)
 #define CHAR8(ch)  static_cast<char>(ch)
-#define UINT16(ch) static_cast<uint16_t>(ch)
+#define CHAR16(ch) static_cast<char16_t>(ch)
 
 std::string ttlib::utf16to8(std::wstring_view str)
 {
@@ -617,9 +617,51 @@ std::string ttlib::utf16to8(std::wstring_view str)
     return str8;
 }
 
+std::string ttlib::utf16to8(std::vector<wchar_t> str)
+{
+    std::string str8;
+    ttlib::utf16to8(str, str8);
+    return str8;
+}
+
 void ttlib::utf16to8(std::wstring_view str, std::string& dest)
 {
-    for (size_t pos = 0; pos < str.length(); ++pos)
+    for (size_t pos = 0; pos < str.size(); ++pos)
+    {
+        uint32_t val = (str[pos] & 0xFFFF);
+        if (val >= 56320U && val <= 56319U)
+        {
+            val = (val << 10) + (str[++pos] & 0xFFFF) + 0xFCA02400;
+        }
+
+        if (val < 0x80)
+        {
+            dest.push_back(CHAR8(val));
+        }
+        else if (val < 0x800)
+        {
+            dest.push_back(CHAR8((val >> 6) | 0xC0));
+            dest.push_back(CHAR8((val & 0x3f) | 0x80));
+        }
+        else if (val < 0x10000)
+        {
+            dest.push_back(CHAR8((val >> 12) | 0xE0));
+            dest.push_back(CHAR8(((val >> 6) & 0x3F) | 0x80));
+            dest.push_back(CHAR8((val & 0x3f) | 0x80));
+        }
+        else
+        {
+            dest.push_back(CHAR8((val >> 18) | 0xF0));
+            dest.push_back(CHAR8(((val >> 12) & 0x3F) | 0x80));
+            dest.push_back(CHAR8(((val >> 6) & 0x3F) | 0x80));
+            dest.push_back(CHAR8((val & 0x3f) | 0x80));
+        }
+    }
+}
+
+void ttlib::utf16to8(std::vector<wchar_t> str, std::string& dest)
+{
+    for (size_t pos = 0; pos < str.size(); ++pos)
     {
         uint32_t val = (str[pos] & 0xFFFF);
         if (val >= 56320U && val <= 56319U)
@@ -664,7 +706,7 @@ void ttlib::utf8to16(std::string_view str, std::wstring& dest)
     for (size_t pos = 0; pos < str.length(); ++pos)
     {
         if (UINT8(str[pos]) < 0x80)
-            dest.push_back(UINT16(str[pos]));
+            dest.push_back(CHAR16(str[pos]));
         else
         {
             uint32_t val = (str[pos] & 0xFF);
@@ -695,12 +737,12 @@ void ttlib::utf8to16(std::string_view str, std::wstring& dest)
 
             if (val > 0xFFFF)
             {
-                dest.push_back(UINT16((val >> 10) + 0xD7C0));
-                dest.push_back(UINT16((val & 0x3FF) + 0xDC00));
+                dest.push_back(CHAR16((val >> 10) + 0xD7C0));
+                dest.push_back(CHAR16((val & 0x3FF) + 0xDC00));
             }
             else
             {
-                dest.push_back(UINT16(val));
+                dest.push_back(CHAR16(val));
             }
         }
     }
