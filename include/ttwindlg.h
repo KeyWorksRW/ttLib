@@ -50,10 +50,7 @@
 namespace ttlib
 {
     INT_PTR WINAPI DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam);
-}
 
-namespace ttlib
-{
     // Class for displaying a dialog
     class dlg
     {

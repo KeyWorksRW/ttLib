@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttCWin
+// Name:      ttlib::win
 // Purpose:   Class for working with windows
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2018-2019 KeyWorks Software (Ralph Walden)
@@ -14,147 +14,127 @@
     #error "This header file can only be used when compiling for Windows"
 #endif
 
+#include <memory>
+#include <string>
+#include <string_view>
+
 #include <wtypes.h>
+
+#include "ttlibspace.h"
 
 #if !defined(BEGIN_TTMSG_MAP)
     #include "ttcasemap.h"  // Macros for mapping Windows messages to functions
 #endif
 
-namespace ttpriv
+namespace ttlib
 {
-    LRESULT WINAPI ttCWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-}
+    LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-// Non-MDI window handling class.
-class ttCWin
-{
-public:
-    ttCWin();
-    virtual ~ttCWin();
-
-public:
-    // Call these methods before calling CreateWnd
-
-    // Constructor will have set this to COLOR_WINDOW + 1.
-    void SetClassBkgrnd(HBRUSH hbkgrnd)
+    // Non-MDI window handling class.
+    class win
     {
-        if (m_pwc)
-            m_pwc->hbrBackground = hbkgrnd;
-    }
-    void SetClassCursor(HCURSOR hcur)
-    {
-        if (m_pwc)
-            m_pwc->hCursor = hcur;
-    }
-    void SetClassMenu(size_t idMenuResource)
-    {
-        if (m_pwc)
-            m_pwc->lpszMenuName = (const char*) idMenuResource;
-    }
+    public:
+        win() { InitWndClass(); };
+        ~win() = default;
 
-    // Returns false if strLen(pszClassName) > 255.
-    bool SetClassName(const char* pszClassName);
+    public:
+        // Call these methods before calling CreateWnd
 
-    // Constructor will have set this to CS_HREDRAW | CS_VREDRAW.
-    void SetClassStyle(DWORD style)
-    {
-        if (m_pwc)
-            m_pwc->style = style;
-    }
-    void SetWndExtra(int cbExtra)
-    {
-        if (m_pwc)
-            m_pwc->cbWndExtra = cbExtra;
-    }
-    void SetClsExtra(int cbExtra)
-    {
-        if (m_pwc)
-            m_pwc->cbClsExtra = cbExtra;
-    }
+        /// Constructor will have set this to COLOR_WINDOW + 1.
+        void SetClassBkgrnd(HBRUSH hbkgrnd) { m_WndClass.hbrBackground = hbkgrnd; }
 
-    void SetClassIcon(size_t idIcon)
-    {
-        if (m_pwc)
-            m_pwc->hIcon = LoadIcon(m_pwc->hInstance, (LPCTSTR) idIcon);
-    }
-    void SetClassIcon(HICON hIcon)
-    {
-        if (m_pwc)
-            m_pwc->hIcon = hIcon;
-    }
-    void SetClassSmallIcon(size_t idIcon)
-    {
-        if (m_pwc)
-            m_pwc->hIconSm = LoadIcon(m_pwc->hInstance, (LPCTSTR) idIcon);
-    }
-    void SetClassSmallIcon(HICON hIcon)
-    {
-        if (m_pwc)
-            m_pwc->hIconSm = hIcon;
-    }
+        void SetClassCursor(HCURSOR hcur) { m_WndClass.hCursor = hcur; }
+        void SetClassMenu(size_t idMenuResource)
+        {
+            m_WndClass.lpszMenuName = reinterpret_cast<LPCWSTR>(idMenuResource);
+        }
 
-    bool CreateWnd(const char* pszTitle, DWORD dwExStyle, DWORD dwStyle, HWND hwndParent = NULL, RECT* prc = NULL,
-                   HMENU hmenu = NULL);
+        /// Name will be converted to UTF16 before storing it in WndClass()
+        void SetClassName(std::string_view ClassName);
 
-    // Attaches to a window not created by ttCWin, updates m_pszClassName, m_hwnd and m_hwndParent.
-    bool AttachWnd(HWND hwnd);
+        /// Constructor will have set this to CS_HREDRAW | CS_VREDRAW.
+        void SetClassStyle(DWORD style) { m_WndClass.style = style; }
 
-    // if hwnd is NULL, subclass our own window.
-    bool SubClass(HWND hwnd = NULL);
+        void SetWndExtra(int cbExtra) { m_WndClass.cbWndExtra = cbExtra; }
+        void SetClsExtra(int cbExtra) { m_WndClass.cbWndExtra = cbExtra; }
 
-    // Class functions
+        void SetClassIcon(size_t idIcon)
+        {
+            m_WndClass.hIcon = LoadIconW(ttlib::lang_info.hinstResource, (LPCWSTR) idIcon);
+        }
+        void SetClassIcon(HICON hIcon) { m_WndClass.hIcon = hIcon; }
+        void SetClassSmallIcon(size_t idIcon)
+        {
+            m_WndClass.hIconSm = LoadIconW(ttlib::lang_info.hinstResource, (LPCWSTR) idIcon);
+        }
+        void SetClassSmallIcon(HICON hIcon) { m_WndClass.hIconSm = hIcon; }
 
-    LRESULT SendMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
-    {
-        return ::SendMessageA(*this, msg, wParam, lParam);
-    }
-    LRESULT PostMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
-    {
-        return ::PostMessageA(*this, msg, wParam, lParam);
-    }
+        /// Title will automatically be converted to UTF16
+        bool CreateWnd(const std::string& Title, DWORD dwExStyle, DWORD dwStyle, HWND hwndParent = NULL,
+                       RECT* prc = NULL, HMENU hmenu = NULL);
 
-    void ShowWindow(int nCmdShow = SW_SHOW) { ::ShowWindow(*this, nCmdShow); }
+        /// Attaches to a window not created by win, updates m_ClassName, m_hwnd and m_hwndParent.
+        // bool AttachWnd(HWND hwnd);
 
-    void SetTitle(const char* pszTitle) { ::SetWindowTextA(*this, pszTitle); }
+        // if hwnd is NULL, subclass our own window.
+        bool SubClass(HWND hwnd = NULL);
 
-    // For other Windows functions requiring an HWND parameter, simply pass in *this as the HWND.
+        // Class functions
 
-    ////////// Operators //////////
+        LRESULT SendMsg(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
+        {
+            return ::SendMessage(m_hwnd, msg, wParam, lParam);
+        }
+        LRESULT PostMsg(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
+        {
+            return ::PostMessage(m_hwnd, msg, wParam, lParam);
+        }
 
-    operator HWND() const { return m_hwnd; }
-    operator WNDCLASSEXA*() { return m_pwc; }
+        void ShowWindow(int nCmdShow = SW_SHOW) { ::ShowWindow(m_hwnd, nCmdShow); }
 
-protected:
-    // BEGIN_TTCMD_MAP in ttcasemap.h will override this.
-    virtual bool OnCmdCaseMap(int /* id */, int /* NotifyCode */, LRESULT& /* lResult */) { return false; }
+        void SetTitle(std::string_view Title);
 
-    // BEGIN_TTMSG_MAP in ttcasemap.h will override this.
-    virtual bool OnMsgMap(UINT /* msg */, WPARAM /* wParam */, LPARAM /* lParam */, LRESULT& lResult)
-    {
-        lResult = 0;
-        return false;
-    }
+        // For other Windows functions requiring an HWND parameter, simply pass in *this as the HWND.
 
-    friend LRESULT WINAPI ttpriv::ttCWinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+        operator HWND() const { return m_hwnd; }
 
-    // Use protected, not private because other classes inherit from this class, and currently expect access to the
-    // class members.
-protected:
-    // Class members
+    protected:
+        LRESULT WndProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-    const char* m_pszClassName;  // Class name of the window we created or attached to.
+        // BEGIN_TTCMD_MAP in ttcasemap.h will override this.
+        virtual bool OnCmdCaseMap(int /* id */, int /* NotifyCode */, LRESULT& /* lResult */) { return false; }
 
-    HWND m_hwnd;  // m_hwnd vs m_hWnd -- SDK/include, ATL and WTL use both variants. We're sticking with all
-                  // lowercase.
-    HWND m_hwndParent;
+        // BEGIN_TTMSG_MAP in ttcasemap.h will override this.
+        virtual bool OnMsgMap(UINT /* msg */, WPARAM /* wParam */, LPARAM /* lParam */, LRESULT& lResult)
+        {
+            lResult = 0;
+            return false;
+        }
 
-    // Instance used to create the class, can be used to load resources from the app.
-    HINSTANCE m_hinst;
+        void InitWndClass();
 
-    // Created in constructor, deleted by CreateWnd and AttachWnd.
-    WNDCLASSEXA* m_pwc;
+        friend LRESULT WINAPI ttlib::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-    // Previous window procedure before it was subclassed.
-    WNDPROC m_SubClassProc;
-    LRESULT m_result;
-};
+        // Use protected, not private because other classes inherit from this class, and currently expect access to
+        // the class members.
+    protected:
+        // Class members
+
+        std::wstring m_ClassName;
+
+        WNDCLASSEXW m_WndClass;
+
+        // m_hwnd vs m_hWnd -- SDK/include, ATL and WTL use both variants. We're sticking with all lowercase.
+
+        HWND m_hwnd { NULL };
+        HWND m_hwndParent { NULL };
+
+        /// Previous window procedure before it was subclassed.
+        WNDPROC m_SubClassProc { nullptr };
+
+        LRESULT m_result;
+
+        bool isRegistered { false };
+    };
+
+}  // namespace ttlib

@@ -25,10 +25,10 @@
 #include <wtypes.h>
 
 #include "ttdib.h"  // ttCDib
-#include "ttwin.h"  // ttCWin
+#include "ttwin.h"  // ttlib::win -- Class for working with windows
 
 // Class for implementing an owner-draw button
-class ttCShadeBtn : public ttCWin
+class ttCShadeBtn : public ttlib::win
 {
 public:
     ttCShadeBtn();

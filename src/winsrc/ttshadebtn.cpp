@@ -621,7 +621,7 @@ void ttCShadeBtn::OnPaint()
     }
     else
     {
-        if (SendMessage(BM_GETSTATE) & BST_PUSHED)  // SELECTED (DOWN) BUTTON
+        if (SendMsg(BM_GETSTATE) & BST_PUSHED)  // SELECTED (DOWN) BUTTON
         {
             if (m_dDown.IsValid())  // paint the skin
                 m_dDown.Draw(hdcMem, m_Border, m_Border);
@@ -680,7 +680,7 @@ void ttCShadeBtn::OnPaint()
             }
         }
         // paint the focus rect
-        if ((SendMessage(BM_GETSTATE) & BST_FOCUS) && m_FocusRectMargin > 0)
+        if ((SendMsg(BM_GETSTATE) & BST_FOCUS) && m_FocusRectMargin > 0)
         {
             InflateRect(&rcClient, -m_FocusRectMargin, -m_FocusRectMargin);
             m_dh.Draw(hdcMem, 1 + rcClient.left, rcClient.top);
