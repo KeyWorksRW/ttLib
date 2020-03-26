@@ -166,7 +166,7 @@ void dlg::EnableShadeBtns()
 {
     if (!m_pShadedBtns)
     {
-        m_pShadedBtns = new ttCMultiBtn;
+        m_pShadedBtns = new ttlib::MultiBtn;
         if (m_pShadedBtns)
             m_pShadedBtns->Initialize(*this);
     }

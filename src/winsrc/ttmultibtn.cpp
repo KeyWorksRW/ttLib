@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttCMultiBtn
-// Purpose:   Class for applying ttCShadeBtn to every button in a dialog
+// Name:      MultiBtn
+// Purpose:   Class for applying ttlib::ShadeBtn to every button in a dialog
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
 // License:   Apache License (see ../LICENSE)
@@ -14,101 +14,89 @@
 
 #include <sstream>
 
-#include "ttlibwin.h"
-
-#include "ttlibspace.h"
 #include "ttdebug.h"
-#include "ttmultibtn.h"  // ttCMultiBtn
-#include "ttshadebtn.h"  // ttCShadeBtn
+#include "ttlibspace.h"
+#include "ttmultibtn.h"  // MultiBtn
+#include "ttshadebtn.h"  // ttlib::ShadeBtn
 
-BOOL WINAPI ttpriv::EnumBtnProc(HWND hwnd, LPARAM lval)
+using namespace ttlib;
+
+BOOL WINAPI ttlib::EnumBtnProc(HWND hwnd, LPARAM lval)
 {
     char szClass[MAX_PATH];
     if ((GetWindowLong(hwnd, GWL_STYLE) & 0x0f) < BS_CHECKBOX)
     {
         GetClassNameA(hwnd, szClass, sizeof(szClass));
-        if (ttIsSameStrI(szClass, "Button"))
+        if (ttlib::issameas(szClass, "Button", tt::CASE::either))
         {
-            ttCMultiBtn* pMultiBtn = (ttCMultiBtn*) lval;
-            ttCShadeBtn* pBtn = new ttCShadeBtn;
+            ttlib::MultiBtn* pMultiBtn = reinterpret_cast<MultiBtn*>(lval);
+            ttlib::ShadeBtn* pBtn = new ttlib::ShadeBtn;
             pBtn->SubClass(hwnd);
-            pBtn->SetShade((ttCShadeBtn::BTN_SHADE) pMultiBtn->m_btnShade);
-            pMultiBtn->m_aBtns.Add(pBtn);
+            pBtn->SetShade(pMultiBtn->m_btnShade);
+            pMultiBtn->m_Buttons.emplace_back(pBtn);
         }
     }
     return TRUE;
 }
 
-ttCMultiBtn::~ttCMultiBtn()
+MultiBtn::~MultiBtn()
 {
-    for (size_t i = 0; i < m_aBtns.GetCount(); i++)
-        delete m_aBtns[i];
+    for (auto pbtn: m_Buttons)
+        delete pbtn;
 }
 
-void ttCMultiBtn::Initialize(HWND hwndParent, BTN_SHADE shade)
+void MultiBtn::Initialize(HWND hwndParent, tt::SHADE shade)
 {
     m_btnShade = shade;
 
     // The dialog can be created more than once, which means we get Initialized more than once.
-    for (size_t i = 0; i < m_aBtns.GetCount(); i++)
-        delete m_aBtns[i];
-    m_aBtns.Reset();
+    for (auto pbtn: m_Buttons)
+        delete pbtn;
+    m_Buttons.clear();
 
-    EnumChildWindows(hwndParent, (WNDENUMPROC) ttpriv::EnumBtnProc, (LPARAM) this);
+    EnumChildWindows(hwndParent, (WNDENUMPROC) ttlib::EnumBtnProc, (LPARAM) this);
 }
 
-void ttCMultiBtn::SetIcon(int idBtn, int idIcon, UINT nIconAlign)
+void MultiBtn::SetIcon(int idBtn, int idIcon, UINT nIconAlign)
 {
     ttASSERT_MSG(
-        m_aBtns.GetCount(),
+        m_Buttons.size(),
         "Calling SetIcon without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
 
-    for (size_t i = 0; i < m_aBtns.GetCount(); i++)
+    for (auto pbtn: m_Buttons)
     {
-        if (IsWindow(*m_aBtns[i]) && GetDlgCtrlID(*m_aBtns[i]) == idBtn)
+        if (IsWindow(*pbtn) && GetDlgCtrlID(*pbtn) == idBtn)
         {
-            m_aBtns[i]->SetIcon(idIcon, nIconAlign);
+            pbtn->SetIcon(idIcon, nIconAlign);
             return;
         }
     }
+
 #if !defined(NDEBUG)  // Starts debug section.
     std::stringstream msg;
-    msg << "ttCMultiBtn::SetIcon was unable to find the button id: " << idBtn;
+    msg << "MultiBtn::SetIcon was unable to find the button id: " << idBtn;
     ttlib::wintrace(msg.str());
 #endif
 }
 
-void ttCMultiBtn::SetIcon(int idBtn, const char* pszIconName, UINT nIconAlign)
+void MultiBtn::SetIcon(int idBtn, const std::string& IconName, UINT nIconAlign)
 {
     ttASSERT_MSG(
-        m_aBtns.GetCount(),
+        m_Buttons.size(),
         "Calling SetIcon without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
 
-    for (size_t i = 0; i < m_aBtns.GetCount(); i++)
+    for (auto pbtn: m_Buttons)
     {
-        if (IsWindow(*m_aBtns[i]) && GetDlgCtrlID(*m_aBtns[i]) == idBtn)
+        if (IsWindow(*pbtn) && GetDlgCtrlID(*pbtn) == idBtn)
         {
-            m_aBtns[i]->SetIcon(pszIconName, nIconAlign);
+            pbtn->SetIcon(IconName, nIconAlign);
             return;
         }
     }
+
 #if !defined(NDEBUG)  // Starts debug section.
     std::stringstream msg;
-    msg << "ttCMultiBtn::SetIcon was unable to find the button id: " << idBtn;
+    msg << "MultiBtn::SetIcon was unable to find the button id: " << idBtn;
     ttlib::wintrace(msg.str());
 #endif
-}
-
-ttCShadeBtn* ttCMultiBtn::FindShadeBtn(int id)
-{
-    ttASSERT_MSG(
-        m_aBtns.GetCount(),
-        "Calling FindShadeBtn without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
-
-    for (size_t i = 0; i < m_aBtns.GetCount(); i++)
-    {
-        if (GetDlgCtrlID(*m_aBtns[i]) == id)
-            return m_aBtns[i];
-    }
-    return NULL;
 }

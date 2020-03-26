@@ -15,8 +15,8 @@
 #include <commdlg.h>
 
 #include "ttdebug.h"     // for ttASSERTS
+#include "ttmultibtn.h"  // ttlib::MultiBtn
 #include "ttstr.h"       // ttCStr
-#include "ttmultibtn.h"  // ttCMultiBtn
 
 #ifndef OFN_DONTADDTORECENT
     #define OFN_DONTADDTORECENT 0x02000000
@@ -113,7 +113,7 @@ protected:
     // This is Malloc'd because the size changes depending on the version of Windows
     OPENFILENAMEA* m_pofn;
 
-    ttCMultiBtn m_ShadedBtns;
+    ttlib::MultiBtn m_ShadedBtns;
     UINT m_idOpenIcon;
     UINT m_idCancelIcon;
 

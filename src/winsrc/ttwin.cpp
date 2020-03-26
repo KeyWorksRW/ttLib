@@ -51,7 +51,9 @@ LRESULT WINAPI ttlib::WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             return lResult;
 
         if (pThis->m_SubClassProc)
+        {
             return CallWindowProcW(pThis->m_SubClassProc, hwnd, msg, wParam, lParam);
+        }
     }
     return DefWindowProcW(hwnd, msg, wParam, lParam);
 }
@@ -78,8 +80,8 @@ void win::SetClassName(std::string_view ClassName)
 }
 
 // If not already registered, this will register the class and delete m_pwc before calling CreateWindowExA.
-bool win::CreateWnd(const std::string& Title, DWORD dwExStyle, DWORD dwStyle, HWND hwndParent,
-                       RECT* prcPosition, HMENU hmenu)
+bool win::CreateWnd(const std::string& Title, DWORD dwExStyle, DWORD dwStyle, HWND hwndParent, RECT* prcPosition,
+                    HMENU hmenu)
 {
     if (!isRegistered)
     {

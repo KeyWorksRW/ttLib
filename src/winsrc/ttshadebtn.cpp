@@ -13,7 +13,14 @@
 // Notes:     The above Code Project License also applies to the derivative work
 /////////////////////////////////////////////////////////////////////////////
 
-// For the original, see article at https://www.codeproject.com/articles/1121/ttCShadeBtn
+// For the original, see article at https://www.codeproject.com/articles/1121/ShadeBtn
+
+/*
+    This class only works on non-image buttons. I.e., this class will not work on a button that is drawn with a
+    bitmap. Changing from MFC/WTL to ttWin also removed the check for a bitmap button. We should probably do some
+    kind of check for that condition and fail for bitmap buttons. While the review comment is here, the more
+    important check will need to be in ttMultiBtn -- since that's where all the button subclassing is done.
+*/
 
 #include "pch.h"
 
@@ -23,17 +30,11 @@
 
 #include "ttdebug.h"     // ttASSERT macros
 #include "ttlibspace.h"  // Contains the ttlib namespace functions/declarations common to all ttLib libraries
-#include "ttshadebtn.h"  // ttCShadeBtn
-#include "ttcstr.h"      // cstr -- Classes for handling zero-terminated char strings.
+#include "ttshadebtn.h"  // ShadeBtn
 
-/*
-    This class only works on non-image buttons. I.e., this class will not work on a button that is drawn with a
-    bitmap. Changing from MFC/WTL to ttWin also removed the check for a bitmap button. We should probably do some
-    kind of check for that condition and fail for bitmap buttons. While the review comment is here, the more
-    important check will need to be in ttMultiBtn -- since that's where all the button subclassing is done.
-*/
+using namespace ttlib;
 
-ttCShadeBtn::ttCShadeBtn()
+ShadeBtn::ShadeBtn()
 {
     m_Border = TRUE;                           // draw 3D border
     m_FocusRectMargin = 4;                     // focus dotted rect margin
@@ -52,7 +53,7 @@ ttCShadeBtn::ttCShadeBtn()
 
     // Forcing the font size to 8 may cause display problems with asian languages. However, setting it to
     // 0 may cause it to be much larger then originally intended for the button. Ultimately, if this
-    // default font is unsatisfactory, the caller should call ttCShadeBtn::SetFont().
+    // default font is unsatisfactory, the caller should call ShadeBtn::SetFont().
 
     m_hFont = ttlib::CreateLogFont("MS Shell Dlg", 8);
 
@@ -69,7 +70,7 @@ ttCShadeBtn::ttCShadeBtn()
 #endif
 }
 
-ttCShadeBtn::~ttCShadeBtn()
+ShadeBtn::~ShadeBtn()
 {
     if (m_hFont)
         DeleteObject(m_hFont);
@@ -86,7 +87,7 @@ ttCShadeBtn::~ttCShadeBtn()
     m_hwnd = NULL;
 }
 
-bool ttCShadeBtn::SetFont(LOGFONTA* pNewStyle)
+bool ShadeBtn::SetFont(LOGFONTA* pNewStyle)
 {
     if (pNewStyle)
     {
@@ -104,7 +105,7 @@ bool ttCShadeBtn::SetFont(LOGFONTA* pNewStyle)
     return false;
 }
 
-bool ttCShadeBtn::SetFont(const std::string& FontName, long lSize, long lWeight, BYTE bItalic, BYTE bUnderline)
+bool ShadeBtn::SetFont(const std::string& FontName, long lSize, long lWeight, BYTE bItalic, BYTE bUnderline)
 {
     ttASSERT(FontName.length() < LF_FACESIZE);
     if (FontName.length() >= LF_FACESIZE)
@@ -124,7 +125,7 @@ bool ttCShadeBtn::SetFont(const std::string& FontName, long lSize, long lWeight,
     return (m_hFont != NULL);
 }
 
-void ttCShadeBtn::SetButtonStyle(UINT nStyle, BOOL bRedraw)
+void ShadeBtn::SetButtonStyle(UINT nStyle, BOOL bRedraw)
 {
     m_IsPushLike = ((nStyle & BS_PUSHLIKE) != 0);
     m_flat = ((nStyle & BS_FLAT) != 0);
@@ -151,7 +152,7 @@ void ttCShadeBtn::SetButtonStyle(UINT nStyle, BOOL bRedraw)
         InvalidateRect(*this, NULL, TRUE);
 }
 
-void ttCShadeBtn::SetTextAlign(UINT nTextAlign)
+void ShadeBtn::SetTextAlign(UINT nTextAlign)
 {
     //  see DrawText() styles...
     switch (nTextAlign)
@@ -170,7 +171,7 @@ void ttCShadeBtn::SetTextAlign(UINT nTextAlign)
     m_TextAlign |= (DT_SINGLELINE | DT_VCENTER);
 }
 
-void ttCShadeBtn::SetIcon(HICON hIcon, UINT nIconAlign, UINT nIconDown, UINT nIconHighLight)
+void ShadeBtn::SetIcon(HICON hIcon, UINT nIconAlign, UINT nIconDown, UINT nIconHighLight)
 {
     if (hIcon)
     {
@@ -242,7 +243,7 @@ void ttCShadeBtn::SetIcon(HICON hIcon, UINT nIconAlign, UINT nIconDown, UINT nIc
     }
 }
 
-void ttCShadeBtn::SetIcon(UINT nIcon, UINT nIconAlign, UINT nIconDown, UINT nIconHighLight)
+void ShadeBtn::SetIcon(UINT nIcon, UINT nIconAlign, UINT nIconDown, UINT nIconHighLight)
 {
     if (m_hIconDown != m_hIcon && m_hIconDown)
         DestroyIcon(m_hIconDown);
@@ -257,7 +258,7 @@ void ttCShadeBtn::SetIcon(UINT nIcon, UINT nIconAlign, UINT nIconDown, UINT nIco
         SetIcon(hIcon, nIconAlign, nIconDown, nIconHighLight);
 }
 
-void ttCShadeBtn::SetIcon(const char* pszIconName, UINT nIconAlign, UINT nIconDown, UINT nIconHighLight)
+void ShadeBtn::SetIcon(const std::string& IconName, UINT nIconAlign, UINT nIconDown, UINT nIconHighLight)
 {
     if (m_hIconDown != m_hIcon && m_hIconDown)
         DestroyIcon(m_hIconDown);
@@ -266,13 +267,13 @@ void ttCShadeBtn::SetIcon(const char* pszIconName, UINT nIconAlign, UINT nIconDo
     if (m_hIcon)
         DestroyIcon(m_hIcon);
 
-    HICON hIcon = (HICON)::LoadImageA(GetModuleHandle(NULL), pszIconName, IMAGE_ICON, 0, 0, 0);
-    ttASSERT_MSG(hIcon, "Unable to load icon");
+    HICON hIcon = (HICON)::LoadImageA(GetModuleHandle(NULL), IconName.c_str(), IMAGE_ICON, 0, 0, 0);
+    ttASSERT_MSG(hIcon, "Unable to load " + IconName);
     if (hIcon)
         SetIcon(hIcon, nIconAlign, nIconDown, nIconHighLight);
 }
 
-void ttCShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, BYTE coloring, COLORREF color)
+void ShadeBtn::SetShade(tt::SHADE shadeID, BYTE granularity, BYTE highlight, BYTE coloring, COLORREF color)
 {
     long sXSize, sYSize, bytes, j, i, k, h;
     BYTE *iDst, *posDst;
@@ -338,12 +339,10 @@ void ttCShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, 
     idxmax = 255 - granularity;
     idxmin = granularity;
 
-    // REVIEW: [ralphw - 06-29-2003] use enumerated type for the shades, not numbers
-
     switch (shadeID)
     {
             //----------------------------------------------------
-        case SHS_METAL:  // SHS_METAL
+        case tt::SHADE::metal:
             m_dNormal.Clear();
             // create the strokes
             k = 40;  // stroke granularity
@@ -376,8 +375,8 @@ void ttCShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, 
             }
 
             break;
-            //----------------------------------------------------
-        case SHS_HARDBUMP:  // SHS_HARDBUMP
+
+        case tt::SHADE::bump_hard:
             // set horizontal bump
             for (i = 0; i < sYSize; i++)
             {
@@ -411,8 +410,8 @@ void ttCShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, 
                 posDst += bytes;
             }
             break;
-            //----------------------------------------------------
-        case SHS_SOFTBUMP:  // SHS_SOFTBUMP
+
+        case tt::SHADE::bump_soft:
             for (i = 0; i < sYSize; i++)
             {
                 h = (255 * i / sYSize) - 127;
@@ -431,8 +430,8 @@ void ttCShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, 
                 posDst += bytes;
             }
             break;
-            //----------------------------------------------------
-        case SHS_VBUMP:  // SHS_VBUMP
+
+        case tt::SHADE::bump_vrt:
             for (j = 0; j < sXSize; j++)
             {
                 k = (255 * (sXSize - j) / sXSize) - 127;
@@ -445,8 +444,8 @@ void ttCShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, 
                 }
             }
             break;
-            //----------------------------------------------------
-        case SHS_HBUMP:  // SHS_HBUMP
+
+        case tt::SHADE::bump_hrz:
             for (i = 0; i < sYSize; i++)
             {
                 k = (255 * i / sYSize) - 127;
@@ -460,8 +459,8 @@ void ttCShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, 
                 posDst += bytes;
             }
             break;
-            //----------------------------------------------------
-        case SHS_DIAGSHADE:  // SHS_DIAGSHADE
+
+        case tt::SHADE::diagonal:
             a = (idxmax - idxmin) / 2;
             for (i = 0; i < sYSize; i++)
             {
@@ -473,8 +472,8 @@ void ttCShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, 
                 posDst += bytes;
             }
             break;
-            //----------------------------------------------------
-        case SHS_HSHADE:  // SHS_HSHADE
+
+        case tt::SHADE::horizontal:
             a = idxmax - idxmin;
             for (i = 0; i < sYSize; i++)
             {
@@ -487,8 +486,8 @@ void ttCShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, 
                 posDst += bytes;
             }
             break;
-            //----------------------------------------------------
-        case SHS_VSHADE:  // SHS_VSHADE:
+
+        case tt::SHADE::vertical:
             a = idxmax - idxmin;
             for (j = 0; j < sXSize; j++)
             {
@@ -500,8 +499,8 @@ void ttCShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, 
                 }
             }
             break;
-            //----------------------------------------------------
-        case SHS_NOISE:  // SHS_NOISE
+
+        case tt::SHADE::noise:
             for (i = 0; i < sYSize; i++)
             {
                 for (j = 0; j < sXSize; j++)
@@ -517,14 +516,14 @@ void ttCShadeBtn::SetShade(BTN_SHADE shadeID, BYTE granularity, BYTE highlight, 
     m_dDown.Clone(&m_dOver);
 }
 
-COLORREF ttCShadeBtn::SetTextColor(COLORREF new_color)
+COLORREF ShadeBtn::SetTextColor(COLORREF new_color)
 {
     COLORREF tmp_color = m_TextColor;
     m_TextColor = new_color;
     return tmp_color;  // returns the previous color
 }
 
-void ttCShadeBtn::OnPaint()
+void ShadeBtn::OnPaint()
 {
     PAINTSTRUCT ps;
     HDC hdcPaint = BeginPaint(*this, &ps);
@@ -534,6 +533,7 @@ void ttCShadeBtn::OnPaint()
 
     int cx = abs(rcClient.right - rcClient.left);
     int cy = abs(rcClient.bottom - rcClient.top);
+
     // get text box position
     RECT tr = { rcClient.left + m_FocusRectMargin + 2, rcClient.top, rcClient.right - m_FocusRectMargin - 2,
                 rcClient.bottom };
@@ -543,18 +543,13 @@ void ttCShadeBtn::OnPaint()
     HANDLE hBitmap = CreateCompatibleBitmap(hdcPaint, cx, cy);
     HBITMAP hOldBitmap = (HBITMAP) SelectObject(hdcMem, hBitmap);  // select the destination for MemDC
 
-    ttlib::cstr test;
-    test.GetWndText(*this);
-
     std::wstring Caption;
     int cb = GetWindowTextLengthW(m_hwnd);
     if (cb > 0)
     {
-        wchar_t* buffer = static_cast<wchar_t*>(std::malloc((cb + 1) * sizeof(wchar_t)));
-        cb = GetWindowTextW(m_hwnd, buffer, cb) / sizeof(wchar_t);
-        buffer[cb + 1] = 0;
-        Caption.assign(buffer);
-        std::free(static_cast<void*>(buffer));
+        std::vector<wchar_t> buffer(cb + 1);
+        cb = GetWindowTextW(m_hwnd, buffer.data(), cb + 1);
+        Caption.assign(buffer.data(), cb);
     }
     else
     {
@@ -594,6 +589,7 @@ void ttCShadeBtn::OnPaint()
                 tr.bottom -= m_FocusRectMargin + 1;
         }
     }
+
     // Select the correct skin
     if (!IsWindowEnabled(*this))  // DISABLED BUTTON
     {
@@ -706,7 +702,7 @@ void ttCShadeBtn::OnPaint()
     EndPaint(*this, &ps);
 }
 
-void ttCShadeBtn::Draw3dRect(HDC hdc, RECT* prc, COLORREF clrTopLeft, COLORREF clrBottomRight)
+void ShadeBtn::Draw3dRect(HDC hdc, RECT* prc, COLORREF clrTopLeft, COLORREF clrBottomRight)
 {
     int x = prc->left;
     int y = prc->top;
@@ -715,7 +711,7 @@ void ttCShadeBtn::Draw3dRect(HDC hdc, RECT* prc, COLORREF clrTopLeft, COLORREF c
     Draw3dRect(hdc, x, y, cx, cy, clrTopLeft, clrBottomRight);
 }
 
-void ttCShadeBtn::Draw3dRect(HDC hdc, int x, int y, int cx, int cy, COLORREF clrTopLeft, COLORREF clrBottomRight)
+void ShadeBtn::Draw3dRect(HDC hdc, int x, int y, int cx, int cy, COLORREF clrTopLeft, COLORREF clrBottomRight)
 {
     FillSolidRect(hdc, x, y, cx - 1, 1, clrTopLeft);
     FillSolidRect(hdc, x, y, 1, cy - 1, clrTopLeft);
@@ -723,7 +719,7 @@ void ttCShadeBtn::Draw3dRect(HDC hdc, int x, int y, int cx, int cy, COLORREF clr
     FillSolidRect(hdc, x, y + cy, cx, -1, clrBottomRight);
 }
 
-void ttCShadeBtn::FillSolidRect(HDC hdc, int x, int y, int cx, int cy, COLORREF clr)
+void ShadeBtn::FillSolidRect(HDC hdc, int x, int y, int cx, int cy, COLORREF clr)
 {
     RECT rect = { x, y, x + cx, y + cy };
     ::FillRect(hdc, &rect, (HBRUSH)(ULONG_PTR) clr);

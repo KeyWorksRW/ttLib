@@ -22,7 +22,7 @@
 #include <CommCtrl.h>
 
 #include "ttdebug.h"     // ttASSERT macros
-#include "ttmultibtn.h"  // ttCMultiBtn
+#include "ttmultibtn.h"  // ttlib::MultiBtn
 #include "ttstr.h"       // ttCStr
 
 #include "ttcstr.h"      // Classes for handling zero-terminated char strings.
@@ -213,7 +213,7 @@ protected:
                   // lowercase.
     HWND m_hwndParent;
 
-    ttCMultiBtn* m_pShadedBtns;
+    ttlib::MultiBtn* m_pShadedBtns;
 
     int m_idTemplate;
 

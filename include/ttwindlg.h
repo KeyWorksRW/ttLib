@@ -23,7 +23,7 @@
 
 #include "ttdebug.h"        // ttASSERT macros
 #include "ttlibspace.h"     // Contains the ttlib namespace functions/declarations common to all ttLib libraries
-#include "ttmultibtn.h"     // ttCMultiBtn
+#include "ttmultibtn.h"     // ttlib::MultiBtn
 
 #ifndef BEGIN_TTMSG_MAP
     #include "ttcasemap.h"  // Macros for mapping Windows messages to functions
@@ -177,7 +177,7 @@ namespace ttlib
 
         HWND m_hwndParent { NULL };
 
-        ttCMultiBtn* m_pShadedBtns { nullptr };
+        ttlib::MultiBtn* m_pShadedBtns { nullptr };
 
         int m_idTemplate { 0 };
 
