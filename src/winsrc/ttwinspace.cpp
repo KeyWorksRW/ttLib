@@ -217,7 +217,7 @@ cstr& cstr::GetWndText(HWND hwnd)
     if (cb > 0)
     {
         std::vector<wchar_t> buffer(cb + 1);
-        cb = GetWindowTextW(hwnd, buffer.data(), cb);
+        cb = GetWindowTextW(hwnd, buffer.data(), cb + 1);
         ttlib::utf16to8(buffer, *this);
     }
     return *this;
