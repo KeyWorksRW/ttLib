@@ -50,6 +50,11 @@
     #endif
 #endif
 
+#if defined(_WIN32)
+    /// This is just a shortcut to make code easier to read
+    #define _ls(id) ttlib::LoadStringEx(static_cast<WORD>(id))
+#endif  // _WIN32
+
 // The tt namespace is for enums and constexpr values that only require a header. The ttlib namespace is for
 // functions and classes that require linking to ttLib.lib in order to use.
 
