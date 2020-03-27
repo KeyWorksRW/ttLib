@@ -81,7 +81,7 @@ namespace ttlib
         void CancelEnd() { m_isCancelEnd = true; }
         BOOL CloseDialog(INT_PTR result = IDOK)
         {
-            return (m_isModeless ? DestroyWindow(*this) : ::EndDialog(*this, result));
+            return (m_isModeless ? DestroyWindow(m_hwnd) : ::EndDialog(m_hwnd, result));
         }
 
         HWND gethwnd(int id) const { return ::GetDlgItem(m_hwnd, id); }
@@ -95,7 +95,7 @@ namespace ttlib
 
         void SetControlText(int id, std::string_view utf8str) { ttlib::SetWndText(gethwnd(id), utf8str); }
 
-        void SetDlgTitle(std::string_view utf8str) { ttlib::SetWndText(*this, utf8str); }
+        void SetDlgTitle(std::string_view utf8str) { ttlib::SetWndText(m_hwnd, utf8str); }
 
         BOOL GetControlRect(int id, RECT* prc) const { return ::GetWindowRect(gethwnd(id), prc); }
 
@@ -130,22 +130,22 @@ namespace ttlib
 
         LRESULT SendMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
         {
-            return ::SendMessage(*this, msg, wParam, lParam);
+            return ::SendMessage(m_hwnd, msg, wParam, lParam);
         }
         LRESULT PostMessage(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
         {
-            return ::PostMessage(*this, msg, wParam, lParam);
+            return ::PostMessage(m_hwnd, msg, wParam, lParam);
         }
 
         // Use these if you are compiling without UNICODE set and you want to call the Wide versions.
 
         LRESULT SendMsgW(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
         {
-            return ::SendMessageW(*this, msg, wParam, lParam);
+            return ::SendMessageW(m_hwnd, msg, wParam, lParam);
         }
         LRESULT PostMsgW(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
         {
-            return ::PostMessageW(*this, msg, wParam, lParam);
+            return ::PostMessageW(m_hwnd, msg, wParam, lParam);
         }
 
         void SetFocus(int idControl) const { ::SetFocus(gethwnd(idControl)); }
@@ -218,9 +218,13 @@ namespace ttlib
 
         void Enable(BOOL isEnable = TRUE) const { EnableWindow(m_hwnd, isEnable); }
 
-        bool GetText(std::string& str) { return ttlib::GetWndText(*this, str); }
-        bool GetLBText(LRESULT index, std::string& str) { return ttlib::GetComboLBText(*this, index, str); }
-        void SetText(std::string_view str) { ttlib::SetWndText(*this, str); }
+        bool GetText(std::string& str) { return ttlib::GetWndText(m_hwnd, str); }
+        bool GetLBText(LRESULT index, std::string& str) { return ttlib::GetComboLBText(m_hwnd, index, str); }
+
+        std::string GetText() { return ttlib::GetWndText(m_hwnd); }
+        std::string GetLBText(LRESULT index) { return ttlib::GetComboLBText(m_hwnd, index); }
+
+        void SetText(std::string_view str) { ttlib::SetWndText(m_hwnd, str); }
 
         LRESULT append(std::string_view str)
         {
@@ -330,9 +334,13 @@ namespace ttlib
         void Initialize(HWND hdlg, int id) { m_hwnd = ::GetDlgItem(hdlg, id); }
         void Attach(HWND hwndCtrl) { m_hwnd = hwndCtrl; }
 
-        bool GetText(std::string& str) { return ttlib::GetWndText(*this, str); }
-        bool GetLBText(LRESULT index, std::string& str) { return ttlib::GetListboxText(*this, index, str); }
-        void SetText(std::string_view str) { ttlib::SetWndText(*this, str); }
+        bool GetText(std::string& str) { return ttlib::GetWndText(m_hwnd, str); }
+        bool GetLBText(LRESULT index, std::string& str) { return ttlib::GetListboxText(m_hwnd, index, str); }
+
+        std::string GetText() { return ttlib::GetWndText(m_hwnd); }
+        std::string GetLBText(LRESULT index) { return ttlib::GetListboxText(m_hwnd, index); }
+
+        void SetText(std::string_view str) { ttlib::SetWndText(m_hwnd, str); }
 
         LRESULT append(std::string_view str)
         {
