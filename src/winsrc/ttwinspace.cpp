@@ -63,7 +63,7 @@ bool ttlib::GetWndText(HWND hwnd, std::string& str)
     auto cb = GetWindowTextLengthW(hwnd);
     if (cb > 0)
     {
-        std::vector<wchar_t> buffer(cb + 1);
+        std::vector<wchar_t> buffer(cb);
         cb = GetWindowTextW(hwnd, buffer.data(), cb);
         ttlib::utf16to8(buffer, str);
         return true;
@@ -96,7 +96,7 @@ bool ttlib::GetListboxText(HWND hwnd, WPARAM index, std::string& str)
     auto cb = SendMessageW(hwnd, LB_GETTEXTLEN, index, 0);
     if (cb != LB_ERR)
     {
-        std::vector<wchar_t> buffer(cb + 1);
+        std::vector<wchar_t> buffer(cb);
         cb = SendMessageW(hwnd, LB_GETTEXT, index, (WPARAM) buffer.data());
         if (cb != LB_ERR)
         {
@@ -121,7 +121,7 @@ bool ttlib::GetComboLBText(HWND hwnd, WPARAM index, std::string& str)
     auto cb = SendMessageW(hwnd, CB_GETLBTEXTLEN, index, 0);
     if (cb != CB_ERR)
     {
-        std::vector<wchar_t> buffer(cb + 1);
+        std::vector<wchar_t> buffer(cb);
         cb = SendMessageW(hwnd, CB_GETLBTEXT, index, (WPARAM) buffer.data());
         if (cb != CB_ERR)
         {
@@ -216,8 +216,8 @@ cstr& cstr::GetWndText(HWND hwnd)
     auto cb = GetWindowTextLengthW(hwnd);
     if (cb > 0)
     {
-        std::vector<wchar_t> buffer(cb + 1);
-        cb = GetWindowTextW(hwnd, buffer.data(), cb + 1);
+        std::vector<wchar_t> buffer(cb);
+        cb = GetWindowTextW(hwnd, buffer.data(), cb);
         ttlib::utf16to8(buffer, *this);
     }
     return *this;
@@ -239,7 +239,7 @@ cstr& cstr::GetListBoxText(HWND hwndCtrl, size_t sel)
     auto cb = SendMessageW(hwndCtrl, LB_GETTEXTLEN, sel, 0);
     if (cb != LB_ERR)
     {
-        std::vector<wchar_t> buffer(cb + 1);
+        std::vector<wchar_t> buffer(cb);
         cb = SendMessageW(hwndCtrl, LB_GETTEXT, sel, (WPARAM) buffer.data());
         if (cb != LB_ERR)
         {
@@ -266,7 +266,7 @@ cstr& cstr::GetComboLBText(HWND hwndCtrl, size_t sel)
     auto cb = SendMessageW(hwndCtrl, CB_GETLBTEXTLEN, sel, 0);
     if (cb != LB_ERR)
     {
-        std::vector<wchar_t> buffer(cb + 1);
+        std::vector<wchar_t> buffer(cb);
         cb = SendMessageW(hwndCtrl, CB_GETLBTEXT, sel, (WPARAM) buffer.data());
         if (cb != LB_ERR)
         {
