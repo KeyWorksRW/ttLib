@@ -44,11 +44,11 @@ namespace tt
 namespace ttlib
 {
     // Class for implementing an owner-draw button
-    class ShadeBtn : public ttlib::win
+    class ShadeBtn final : public ttlib::win
     {
     public:
         ShadeBtn();
-        virtual ~ShadeBtn() final;
+        ~ShadeBtn();
 
         // Class functions
 
