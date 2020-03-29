@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      tt::cview
+// Name:      ttlib::cview
 // Purpose:   string_view functionality on a zero-terminated char string.
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2020 KeyWorks Software (Ralph Walden)
@@ -19,6 +19,8 @@
 /// been modified or destroyed. This is also true of substr() and subview().
 
 #pragma once
+
+#define _TTLIB_CVIEW_AVAILABLE_
 
 #include <filesystem>
 #include <sstream>
@@ -42,12 +44,12 @@ namespace ttlib
 
         // clang-format on
 
-        // A string view is not guarenteed to be zero-terminated.
+        // A string view is not guarenteed to be zero-terminated, so you can't construct from it
         cview(std::string_view str) = delete;
 
         /// View is zero-terminated, so c_str() can be used wherever std::string.c_str()
         /// would be used.
-        constexpr const_pointer c_str() const noexcept { return data(); };
+        constexpr const char* c_str() const noexcept { return data(); };
 
         /// Can be used to pass the view to a function that expects a C-style string.
         operator const char*() const noexcept { return data(); }
@@ -78,26 +80,26 @@ namespace ttlib
         // Note: all view...() functions start from the beginning of the view. On success
         // they change the view and return true. On failure, the view remains unchanged.
 
-        /// View the next whitespace character
+        /// Set view to the next whitespace character
         bool viewspace() noexcept;
 
-        /// VIew the next non-whitespace character
+        /// Set view to the next non-whitespace character
         bool viewnonspace() noexcept;
 
-        /// View the next word (views the next whitespace, then the next non-whitespace
+        /// Set view to the next word (views the next whitespace, then the next non-whitespace
         /// after that)
         bool viewnextword() noexcept;
 
-        /// View the next numerical character
+        /// Set view to the next numerical character
         bool viewdigit() noexcept;
 
-        /// View the next non-numerical character
+        /// Set view to the next non-numerical character
         bool viewnondigit() noexcept;
 
-        /// View the extension in the current path
+        /// Set view to the extension in the current path
         bool viewextension() noexcept;
 
-        /// View the filename in the current path.
+        /// Set view to the filename in the current path.
         ///
         /// A filename is any string after the last '/' (or '\' on Windows) in the current
         /// view.
