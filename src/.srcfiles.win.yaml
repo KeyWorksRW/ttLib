@@ -60,4 +60,3 @@ Files:
     winsrc/ttstr.cpp           # ttCStr class
     winsrc/ttstrfuncs.cpp      # C-style string handling
     winsrc/ttwinmisc.cpp       # Miscellaneous functions for use on Windows
-    winsrc/ttxml.cpp
