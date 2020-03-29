@@ -629,7 +629,7 @@ void ttlib::utf16to8(std::wstring_view str, std::string& dest)
     for (size_t pos = 0; pos < str.size(); ++pos)
     {
         uint32_t val = (str[pos] & 0xFFFF);
-        if (val >= 56320U && val <= 56319U)
+        if (val >= 0xD800 && val <= 0xDBFF)
         {
             val = (val << 10) + (str[++pos] & 0xFFFF) + 0xFCA02400;
         }
@@ -664,7 +664,7 @@ void ttlib::utf16to8(std::vector<wchar_t> str, std::string& dest)
     for (size_t pos = 0; pos < str.size(); ++pos)
     {
         uint32_t val = (str[pos] & 0xFFFF);
-        if (val >= 56320U && val <= 56319U)
+        if (val >= 0xD800 && val <= 0xDBFF)
         {
             val = (val << 10) + (str[++pos] & 0xFFFF) + 0xFCA02400;
         }
