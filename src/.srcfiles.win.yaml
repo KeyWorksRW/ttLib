@@ -8,6 +8,7 @@ Options:
     Warn:       4          # [1-4]
 
     CFlags_cmn: -std:c++17 /Zc:__cplusplus # flags to pass to the compiler in all builds
+    CFlags_dbg: /JMC
 
     Crt_rel:    dll        # [static | dll] type of CRT to link to in release builds
     Crt_dbg:    dll        # [static | dll] type of CRT to link to in debug builds
