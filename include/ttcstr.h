@@ -121,6 +121,8 @@ namespace ttlib
         /// any trailing space is removed;
         void eraseFrom(char ch);
 
+        /// If string is found, line is truncated from the string on, and then
+        /// any trailing space is removed;
         void eraseFrom(std::string_view sub);
 
         /// Removes whitespace: ' ', \t, \r, \\n, \f
@@ -128,9 +130,20 @@ namespace ttlib
         /// where: TRIM::right, TRIM::left, or TRIM::both
         cstr& trim(tt::TRIM where = tt::TRIM::right);
 
+        /// Returns a view of the characters between chBegin and chEnd. This is typically used
+        /// to view the contents of a quoted string. Returns the position of the ending
+        ///  character in src.
+        ///
+        /// Unless chBegin is a whitespace character, all whitespace characters starting with
+        /// offset will be ignored.
+        std::string_view ViewSubString(size_t offset, char chBegin = '"', char chEnd = '"');
+
         /// Assigns the string between chBegin and chEnd. This is typically used to copy the
         /// contents of a quoted string. Returns the position of the ending character in src.
-        size_t AssignSubString(std::string_view src, char chBegin, char chEnd);
+        ///
+        /// Unless chBegin is a whitespace character, all whitespace characters starting with
+        /// offset will be ignored.
+        size_t AssignSubString(std::string_view src, char chBegin = '"', char chEnd = '"');
 
         /// Extracts a string from another string using start and end characters deduced from
         /// the first non-whitespace character after offset. Supports double and single quotes,

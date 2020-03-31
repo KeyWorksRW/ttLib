@@ -130,7 +130,56 @@ cstr& cstr::trim(tt::TRIM where)
 }
 
 /**
- * @param pszString -- pointer to the string to parse
+ * @param chBegin -- character that prefixes the string
+ * @param chEnd -- character that terminates the string.
+ */
+std::string_view cstr::ViewSubString(size_t offset, char chBegin, char chEnd)
+{
+    if (empty() || offset >= size())
+    {
+        return {};
+    }
+
+    // step over any leading whitespace unless chBegin is a whitespace character
+    if (!ttlib::iswhitespace(chBegin))
+    {
+        while (ttlib::iswhitespace(at(offset)))
+            ++offset;
+    }
+
+    if (at(offset) == chBegin)
+    {
+        ++offset;
+        auto start = offset;
+        while (offset < size() && at(offset) != chEnd)
+        {
+            // REVIEW: [KeyWorks - 01-26-2020] '\"' is also valid for the C compiler, though the slash
+            // is unnecessary. Should we support it?
+
+            // only check quotes -- a slash is valid before other character pairs.
+            if (at(offset) == '\\' && (chBegin == '"' || chBegin == '\'') && offset + 1 < size() &&
+                (at(offset + 1) == chEnd))
+            {
+                // step over an escaped quote if the string to fetch is within a quote
+                offset += 2;
+                continue;
+            }
+            ++offset;
+        }
+
+        return subview(start, offset - start);
+    }
+    else
+    {
+        // if the string didn't start with chBegin, just copy the string. Note that offset may have changed if
+        // chBegin was not whitespace and at(offset) was whitespace.
+
+        return subview(offset);
+    }
+}
+
+/**
+ * @param src -- string to parse
  * @param chBegin -- character that prefixes the string
  * @param chEnd -- character that terminates the string.
  */
