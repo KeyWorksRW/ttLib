@@ -50,7 +50,7 @@ namespace ttlib
         /// Returns true if the file was added, false if it already existed.
         bool addfilename(std::string_view filename)
         {
-            for (auto iter : *this)
+            for (auto iter: *this)
             {
 #if defined(_WIN32)
                 if (iter.comparei(filename) == 0)
@@ -74,14 +74,25 @@ namespace ttlib
         }
 
         /// Finds the position of the first string identical to the specified string.
+        size_t find(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const
+        {
+            return find(0, str, checkcase);
+        }
         size_t find(size_t start, std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
 
         /// Finds the position of the first string with specified prefix.
+        size_t findprefix(std::string_view prefix, tt::CASE checkcase = tt::CASE::exact) const
+        {
+            return findprefix(0, prefix, checkcase);
+        }
         size_t findprefix(size_t start, std::string_view prefix, tt::CASE checkcase = tt::CASE::exact) const;
 
         /// Finds the position of the first string containing the specified sub-string.
-        size_t contains(size_t start, std::string_view substring,
-                        tt::CASE checkcase = tt::CASE::exact) const;
+        size_t contains(std::string_view substring, tt::CASE checkcase = tt::CASE::exact) const
+        {
+            return contains(0, substring, checkcase);
+        }
+        size_t contains(size_t start, std::string_view substring, tt::CASE checkcase = tt::CASE::exact) const;
 
         /// Unlike append(), this will add the string even if it already exists.
         void operator+=(std::string_view str) { push_back(str); }
