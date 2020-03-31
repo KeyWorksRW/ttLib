@@ -83,7 +83,7 @@ namespace ttlib
             return at(pos);
         }
 
-        cstr& insertLine(size_t pos, cstr&& str)
+        cstr& insertLine(size_t pos, const cstr& str)
         {
             if (pos >= size())
                 return emplace_back(str);
