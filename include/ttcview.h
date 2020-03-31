@@ -74,11 +74,70 @@ namespace ttlib
         /// This is equivalent to calling std::strpbrk but returns an offset instead of a pointer.
         size_t findoneof(const std::string& set) const;
 
+        /// Returns offset to the next whitespace character starting with pos. Returns npos if
+        /// there are no more whitespaces.
+        ///
+        /// A whitespace character is a space, tab, eol or form feed character.
+        size_t findspace(size_t start = 0) const;
+
+        /// Returns offset to the next non-whitespace character starting with pos. Returns npos
+        /// if there are no more non-whitespace characters.
+        ///
+        /// A whitespace character is a space, tab, eol or form feed character.
+        size_t findnonspace(size_t start = 0) const;
+
+        /// Returns an offset to the next word -- i.e., find the first non-whitedspace character
+        /// after the next whitespace character.
+        ///
+        /// Equivalent to findnonspace(findspace(start)).
+        size_t stepover(size_t start = 0) const;
+
         // You can't remove a suffix and still have the view zero-terminated
         constexpr void remove_suffix(size_type n) = delete;
 
+        /// Returns true if current filename contains the specified case-insensitive extension.
+        bool hasExtension(std::string_view ext) const
+        {
+            return ttlib::issameas(extension(), ext, tt::CASE::either);
+        }
+
+        /// Returns true if current filename contains the specified case-insensitive file name.
+        bool hasFilename(std::string_view name) const
+        {
+            return ttlib::issameas(filename(), name, tt::CASE::either);
+        }
+
+        /// Returns a view to the current extension. View is empty if there is no extension.
+        ///
+        /// Caution: view is only valid until cstr is modified or destroyed.
+        ttlib::cview extension() const noexcept;
+
+        /// Returns a view to the current filename. View is empty if there is no filename.
+        ///
+        /// Caution: view is only valid until cstr is modified or destroyed.
+        ttlib::cview filename() const noexcept;
+
+        /// Returns true if the current string refers to an existing file.
+        bool fileExists() const;
+
+        /// Returns true if the current string refers to an existing directory.
+        bool dirExists() const;
+
+        /// Returns a zero-terminated view. Unlike substr(), you can only specify the starting position.
+        cview subview(size_t start = 0) const noexcept
+        {
+            if (start >= size())
+                return "";
+            return cview(c_str() + start, length() - start);
+        }
+
+        /// Generates hash of current string using djb2 hash algorithm
+        size_t gethash() const noexcept;
+
+        /////////////////////////////////////////////////////////////////////////////////
         // Note: all view...() functions start from the beginning of the view. On success
         // they change the view and return true. On failure, the view remains unchanged.
+        /////////////////////////////////////////////////////////////////////////////////
 
         /// Set view to the next whitespace character
         bool viewspace() noexcept;
@@ -104,13 +163,5 @@ namespace ttlib
         /// A filename is any string after the last '/' (or '\' on Windows) in the current
         /// view.
         bool viewfilename() noexcept;
-
-        /// Returns a zero-terminated view. Unlike substr(), you can only specify the starting position.
-        cview subview(size_t start = 0) const noexcept
-        {
-            if (start >= size())
-                return "";
-            return cview(c_str() + start, length() - start);
-        }
     };
 }  // namespace ttlib

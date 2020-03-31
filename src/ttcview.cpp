@@ -270,6 +270,85 @@ bool cview::viewfilename() noexcept
     return true;
 }
 
+ttlib::cview cview::extension() const noexcept
+{
+    if (empty())
+        return "";
+
+    auto pos = find_last_of('.');
+    if (pos == npos)
+        return "";
+
+    // . by itself is a folder
+    else if (pos + 1 >= length())
+        return "";
+    // .. is not a valid extension (it's usually part of a folder as in "../dir/")
+    else if (c_str()[pos + 1] == '.')
+        return "";
+
+    return { c_str() + pos, length() - pos };
+}
+
+ttlib::cview cview::filename() const noexcept
+{
+    if (empty())
+        return "";
+
+    auto pos = find_last_of('/');
+
+#if defined(_WIN32)
+    // Windows filenames can contain both forward and back slashes, so check for a backslash as well.
+    auto back = find_last_of('\\');
+    if (back != npos)
+    {
+        // If there is no forward slash, or the backslash appears after the forward slash, then use it's position.
+        if (pos == npos || back > pos)
+            pos = back;
+    }
+#endif
+    if (pos == npos)
+    {
+        pos = find_last_of(':');
+        if (pos == npos)
+            return { c_str(), length() };
+    }
+
+    return { c_str() + pos + 1, length() - (pos + 1) };
+}
+
+bool cview::fileExists() const
+{
+    if (empty())
+        return false;
+    auto file = std::filesystem::directory_entry(std::filesystem::u8path(c_str()));
+    return (file.exists() && !file.is_directory());
+}
+
+bool cview::dirExists() const
+{
+    if (empty())
+        return false;
+    auto file = std::filesystem::directory_entry(std::filesystem::u8path(c_str()));
+    return (file.exists() && file.is_directory());
+}
+
+size_t cview::gethash() const noexcept
+{
+    if (empty())
+        return 0;
+
+    // djb2 hash algorithm
+
+    size_t hash = 5381;
+
+    for (auto iter : *this)
+    {
+        hash = ((hash << 5) + hash) ^ iter;
+    }
+
+    return hash;
+}
+
 size_t cview::findoneof(const std::string& set) const
 {
     if (set.empty())
@@ -278,4 +357,34 @@ size_t cview::findoneof(const std::string& set) const
     if (!pszFound)
         return tt::npos;
     return (static_cast<size_t>(pszFound - c_str()));
+}
+
+size_t cview::findspace(size_t start) const
+{
+    if (start >= length())
+        return npos;
+    const char* pszFound = std::strpbrk(c_str() + start, " \t\r\n\f");
+    if (!pszFound)
+        return npos;
+    return (static_cast<size_t>(pszFound - c_str()));
+}
+
+size_t cview::findnonspace(size_t start) const
+{
+    for (; start < length(); ++start)
+    {
+        if (!std::strchr(" \t\r\n\f", at(start)))
+            break;
+    }
+    return start;
+}
+
+size_t cview::stepover(size_t start) const
+{
+    auto pos = findspace(start);
+    if (pos != npos)
+    {
+        pos = findnonspace(pos);
+    }
+    return pos;
 }
