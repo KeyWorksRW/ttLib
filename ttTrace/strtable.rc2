@@ -15,5 +15,5 @@ BEGIN
 	IDS_INTERNAL_ERROR		"An internal error has occurred."
 	IDS_FILE_MAPPING_ERROR	"Unable to create file mapping memory for messages"
 	IDS_WRITE_ERROR		  	"An error occurred while writing to \042%s\042."
-	IDS_FILE_SAVED		  	"File saved"
+	IDS_FILE_SAVED		  	"Contents saved to "
 END

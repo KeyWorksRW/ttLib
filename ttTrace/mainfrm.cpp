@@ -10,6 +10,8 @@
 
 #include <commdlg.h>
 
+#include <tttextfile.h>  // textfile -- Classes for reading and writing line-oriented files
+
 #include <ttmem.h>  // ttCMem, ttCTMem
 
 #include "resource.h"
@@ -133,7 +135,7 @@ void CMainFrame::OnTraceMsg(WPARAM /* wParam */, LPARAM /* lParam */)
 void CMainFrame::OnClear(WPARAM /* wParam */, LPARAM /* lParam */)
 {
     m_view.SetSel(0, -1);
-    m_view.ReplaceSel(m_pszMap);
+    m_view.ReplaceSel("");
     m_view.SendMessage(EM_SCROLLCARET, (WPARAM) 0, (LPARAM) 0);
 }
 
@@ -160,59 +162,15 @@ void CMainFrame::OnSaveAs()
 
     if (GetSaveFileName(&ofn))
     {
-        HANDLE hf =
-            CreateFile(ofn.lpstrFile, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-        if (hf == INVALID_HANDLE_VALUE)
-        {
-            ttlib::cstr msg;
-            ttlib::MsgBox(msg.Format(ttlib::LoadStringEx(IDS_CANNOT_OPEN), ofn.lpstrFile));
-            return;
-        }
-        LRESULT cLines = m_view.SendMessage(EM_GETLINECOUNT, 0, 0);
+        ttlib::cstr buffer;
+        buffer.GetWndText(m_view);
+        ttlib::viewfile file;
+        file.ReadString(buffer);
 
-        char szLine[4096];
-        WORD* pcb = (WORD*) szLine;
-
-        for (LRESULT i = 0; i < cLines; i++)
-        {
-            LRESULT cb = m_view.SendMessage(EM_LINELENGTH, i, 0);
-            DWORD cbWritten;
-            if (cb < (LRESULT) sizeof(szLine))
-            {
-                *pcb = sizeof(szLine);
-                cb = m_view.SendMessage(EM_GETLINE, i, (LPARAM) szLine);
-                if (!WriteFile(hf, szLine, (DWORD) cb, &cbWritten, NULL))
-                {
-                    ttLAST_ERROR();
-                    ttlib::cstr msg;
-                    ttlib::MsgBox(msg.Format(ttlib::LoadStringEx(IDS_WRITE_ERROR), ofn.lpstrFile));
-                    return;
-                }
-                // Append a LF
-                szLine[0] = 0x0a;
-                if (!WriteFile(hf, szLine, 1, &cbWritten, NULL))
-                {
-                    ttLAST_ERROR();
-                    return;
-                }
-            }
-            else
-            {
-                ttCTMem<WORD*> mem(cb + sizeof(WORD));
-                *mem = (WORD)(cb & 0xFFFF);
-                cb = m_view.SendMessage(EM_GETLINE, i, (LPARAM) mem.m_p);
-                if (!WriteFile(hf, mem.m_p, (DWORD) cb, &cbWritten, NULL))
-                {
-                    ttLAST_ERROR();
-                    ttlib::cstr msg;
-                    ttlib::MsgBox(msg.Format(ttlib::LoadStringEx(IDS_WRITE_ERROR), ofn.lpstrFile));
-                    return;
-                }
-            }
-        }
-
-        CloseHandle(hf);
-        ttlib::MsgBox(IDS_FILE_SAVED, MB_OK);
+        if (file.WriteFile(ofn.lpstrFile))
+            ttlib::MsgBox(ttlib::LoadStringEx(IDS_FILE_SAVED) + ofn.lpstrFile, "ttTrace", MB_OK);
+        else
+            ttlib::MsgBox(ttlib::LoadStringEx(IDS_FILE_SAVED) + ofn.lpstrFile, "ttTrace");
     }
 }
 
