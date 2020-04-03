@@ -48,6 +48,9 @@ namespace ttlib
         /// (std::string).
         bool ReadFile(std::string_view filename);
 
+        /// This will be the filename passed to ReadFile()
+        ttlib::cstr& filename() { return m_filename; }
+
         /// Reads a string as if it was a file (see ReadFile).
         void ReadString(std::string_view str);
 
@@ -104,9 +107,14 @@ namespace ttlib
                 erase(begin() + (size() - 1));
         }
 
+
+
     protected:
         // Converts lines into a vector of std::string members. Lines can end with \n, \r, or \r\n.
         void ParseLines(std::string_view str);
+
+    private:
+        ttlib::cstr m_filename;
     };
 }  // namespace ttlib
 
@@ -122,6 +130,9 @@ namespace ttlib
     public:
         /// Reads a line-oriented file and converts each line into a std::string.
         bool ReadFile(std::string_view filename);
+
+        /// This will be the filename passed to ReadFile()
+        ttlib::cstr& filename() { return m_filename; }
 
         /// Reads a string as if it was a file (see ReadFile).
         void ReadString(std::string_view str);
@@ -150,5 +161,6 @@ namespace ttlib
 
     private:
         std::string m_buffer;
+        ttlib::cstr m_filename;
     };
 }  // namespace ttlib

@@ -18,6 +18,7 @@ using namespace tt;
 
 bool textfile::ReadFile(std::string_view filename)
 {
+    m_filename.assign(filename);
     clear();
     std::ifstream file(filename, std::ios::binary);
     if (!file.is_open())
@@ -32,7 +33,7 @@ bool textfile::WriteFile(std::string_view filename) const
     std::ofstream file(filename, std::ios::binary);
     if (!file.is_open())
         return false;
-    for (auto iter : *this)
+    for (auto iter: *this)
     {
         file << iter << '\n';
     }
@@ -152,6 +153,8 @@ bool textfile::issameas(textfile other, CASE checkcase) const
 
 bool viewfile::ReadFile(std::string_view filename)
 {
+    m_filename.assign(filename);
+
     clear();
     std::ifstream file(filename, std::ios::binary);
     if (!file.is_open())
@@ -175,7 +178,7 @@ bool viewfile::WriteFile(std::string_view filename) const
     std::ofstream file(filename, std::ios::binary);
     if (!file.is_open())
         return false;
-    for (auto iter : *this)
+    for (auto iter: *this)
     {
         file << iter << '\n';
     }
