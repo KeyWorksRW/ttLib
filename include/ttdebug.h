@@ -34,7 +34,7 @@
 namespace ttlib
 {
     /// Displays message in ttTrace.exe window if it is running.
-    void wintrace(ttlib::cview msg);
+    void wintrace(const std::string& msg);
     /// Clears all text in ttTrace.exe window (if it is running).
     void wintraceclear();
 
