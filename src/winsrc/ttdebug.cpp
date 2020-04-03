@@ -12,8 +12,8 @@
     #error "This module can only be compiled for Windows"
 #endif
 
-#include <stdio.h>
 #include <stdexcept>
+#include <stdio.h>
 
 #include "ttcritsection.h"  // CCritSection
 #include "ttcstr.h"         // Classes for handling zero-terminated char strings.
@@ -33,12 +33,12 @@ HWND ttlib::hwndTrace = NULL;
 namespace ttdbg
 {
     ttCCritSection crtAssert;
-    bool allowAsserts{ true };  // Setting this to true will cause AssertionMsg to return without doing anything
+    bool allowAsserts { true };  // Setting this to true will cause AssertionMsg to return without doing anything
 
-    HANDLE hTraceMapping{ NULL };
+    HANDLE hTraceMapping { NULL };
     ttCCritSection g_csTrace;
-    char* g_pszTraceMap{ nullptr };
-    DWORD g_cLastTickCheck{ 0 };  // used to determine whether to check for hwndTrace again
+    char* g_pszTraceMap { nullptr };
+    DWORD g_cLastTickCheck { 0 };  // used to determine whether to check for hwndTrace again
 }  // namespace ttdbg
 
 // Don't use std::string_view for msg -- we special-case a null pointer
@@ -119,10 +119,10 @@ int ttlib::CheckItemID(HWND hwnd, int id, const char* pszID, const char* filenam
 
 // WARNING! Do not call ttASSERT in this function or you will end up with a recursive call.
 
-void ttlib::wintrace(ttlib::cview msg)
+void ttlib::wintrace(const std::string& msg)
 {
-    // We don't want two threads trying to send text at the same time, so we wrap the function in a critical
-    // section
+    // We don't want two threads trying to send text at the same time. The ttCCritLock class prevents a second call
+    // to the function until the first call has completed.
 
     ttCCritLock lock(&ttdbg::g_csTrace);
 
@@ -183,7 +183,11 @@ void ttlib::wintrace(ttlib::cview msg)
 void ttlib::wintraceclear()
 {
     ttCCritLock lock(&ttdbg::g_csTrace);
-    if (!(ttlib::hwndTrace && IsWindow(ttlib::hwndTrace)))
+    if (!ttlib::hwndTrace)
+        ttlib::hwndTrace = FindWindowA(ttlib::txtTraceClass, NULL);
+
+    if (!ttlib::hwndTrace || !IsWindow(ttlib::hwndTrace))
         return;
+
     SendMessageA(ttlib::hwndTrace, ttlib::WMP_CLEAR_TRACE, 0, 0);
 }
