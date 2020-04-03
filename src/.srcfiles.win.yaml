@@ -41,6 +41,7 @@ Files:
     winsrc/ttloadstr.cpp       # Load a language-specific version of a string resource
     winsrc/ttmultibtn.cpp      # ttlib::MultiBtn class
     winsrc/ttshadebtn.cpp      # ttCShadeBtn class
+    winsrc/ttthrdpool.cpp      # ttlib::ThrdPool
     winsrc/ttwin.cpp           # ttCWin class
 
     winsrc/ttdebug.cpp         # debug and assertion handling
