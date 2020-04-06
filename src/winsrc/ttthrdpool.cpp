@@ -111,7 +111,7 @@ DWORD WINAPI ttlib::PoolThread(void* pv)
                 {
                     // This catch is a last-ditch effort to keep the program from crashing. The caller should
                     // have handled exceptions in m_function().
-                    assert(false);
+                    TT_ASSERT(false);
                 }
 
                 ReleaseSemaphore(thrdInfo.hsemDone, 1, NULL);
