@@ -222,6 +222,44 @@ void viewfile::ParseLines(std::string_view str)
     }
 }
 
+void viewfile::ParseBuffer()
+{
+    clear();
+
+    size_t posBeginLine = 0;
+    for (size_t pos = 0; pos < m_buffer.size(); ++pos)
+    {
+        if (m_buffer[pos] == '\r')
+        {
+            if (pos > posBeginLine)
+            {
+                emplace_back(m_buffer.data() + posBeginLine, pos - posBeginLine);
+            }
+            else
+            {
+                emplace_back(nullptr, 0);
+            }
+
+            // Some Apple format files only use \r. Windows files tend to use \r\n.
+            if (pos + 1 < m_buffer.size() && m_buffer[pos + 1] == '\n')
+                ++pos;
+            posBeginLine = pos + 1;
+        }
+        else if (m_buffer[pos] == '\n')
+        {
+            if (pos > posBeginLine)
+            {
+                emplace_back(m_buffer.data() + posBeginLine, pos - posBeginLine);
+            }
+            else
+            {
+                emplace_back(nullptr, 0);
+            }
+            posBeginLine = pos + 1;
+        }
+    }
+}
+
 size_t viewfile::FindLineContaining(std::string_view str, size_t start, tt::CASE checkcase) const
 {
     for (; start < size(); ++start)

@@ -142,7 +142,11 @@ namespace ttlib
 
         /// Returns the string storing the entire file. If you change this string, all
         /// the string_view vector entries will be invalid!
-        const std::string& GetBuffer() const { return m_buffer; }
+        ttlib::cstr& GetBuffer() { return m_buffer; }
+
+        /// Call this if you change the buffer returned by GetBuffer() to turn the buffer
+        /// into an array of string_views.
+        void ParseBuffer();
 
         /// Searches every line to see if it contains the sub-string.
         ///
@@ -153,14 +157,12 @@ namespace ttlib
         bool issameas(ttlib::textfile other, tt::CASE checkcase = tt::CASE::exact) const;
         bool issameas(ttlib::viewfile other, tt::CASE checkcase = tt::CASE::exact) const;
 
-        const std::string& GetContainer() { return m_buffer; }
-
     protected:
         // Converts lines into a vector of std::string members. Lines can end with \n, \r, or \r\n.
         void ParseLines(std::string_view str);
 
     private:
-        std::string m_buffer;
+        ttlib::cstr m_buffer;
         ttlib::cstr m_filename;
     };
 }  // namespace ttlib
