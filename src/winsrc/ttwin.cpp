@@ -12,8 +12,6 @@
     #error "This module can only be compiled for Windows"
 #endif
 
-#include "ttlibwin.h"
-
 #include "ttcstr.h"   // cstr -- Classes for handling zero-terminated char strings.
 #include "ttdebug.h"  // ttASSERT macros
 #include "ttwin.h"    // ttlib::win
@@ -108,8 +106,8 @@ bool win::CreateWnd(const std::string& Title, DWORD dwExStyle, DWORD dwStyle, HW
 
     if (prcPosition != NULL)
         ::CreateWindowExW(dwExStyle, m_ClassName.c_str(), title16.c_str(), dwStyle, prcPosition->left,
-                          prcPosition->top, ttRC_WIDTH(prcPosition), ttRC_HEIGHT(prcPosition), hwndParent, hmenu,
-                          m_WndClass.hInstance, (void*) this);
+                          prcPosition->top, ttlib::rcWidth(prcPosition), ttlib::rcHeight(prcPosition), hwndParent,
+                          hmenu, m_WndClass.hInstance, (void*) this);
     else
         ::CreateWindowExW(dwExStyle, m_ClassName.c_str(), title16.c_str(), dwStyle, CW_USEDEFAULT, CW_USEDEFAULT,
                           CW_USEDEFAULT, CW_USEDEFAULT, hwndParent, hmenu, m_WndClass.hInstance, (void*) this);

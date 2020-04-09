@@ -2,7 +2,7 @@
 // Name:      ttCFileDlg
 // Purpose:   Class for displaying Windows File Open dialog
 // Author:    Ralph Walden
-// Copyright: Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
+// Copyright: Copyright (c) 2002-2020 KeyWorks Software (Ralph Walden)
 // License:   Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
@@ -12,8 +12,6 @@
     #error "This module can only be compiled for Windows"
 #endif
 
-#include "ttlibwin.h"
-
 #include "ttfiledlg.h"
 
 ttCFileDlg::ttCFileDlg(HWND hwndParent)
@@ -22,41 +20,26 @@ ttCFileDlg::ttCFileDlg(HWND hwndParent)
     m_idCancelIcon = (UINT) -1;
     m_bShadeBtns = false;
 
-    int cbStruct = sizeof(OPENFILENAMEA);
+    m_cszFileName.reserve(MAX_PATH);
 
-    // If we are running on Windows XP or higher, then make room for pvReserved, dwReserved, and FlagsEx.
-    // That's why we allocate OPENFILENAME rather then just declaring it in our class
-
-#if (_WIN32_WINNT < 0x0500)
-    if (_osv.dwMajorVersion >= 5)
-        cbStruct += sizeof(void*) + sizeof(DWORD) + sizeof(DWORD);
-#endif
-    m_pofn = (OPENFILENAMEA*) ttCalloc(cbStruct);
-
-    m_cszFileName.ReSize(MAX_PATH);
-
-    m_pofn->lStructSize = cbStruct;
-    m_pofn->hwndOwner = hwndParent ? hwndParent : GetActiveWindow();
-    *(char*) m_cszFileName = 0;
-    m_pofn->lpstrFile = m_cszFileName;
-    m_pofn->nMaxFile = MAX_PATH;
-    m_pofn->lpfnHook = ttpriv::OFNHookProc;
-    m_pofn->Flags = OFN_ENABLESIZING | OFN_EXPLORER | OFN_ENABLEHOOK | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY |
-                    OFN_DONTADDTORECENT;
-    m_pofn->lCustData = (LPARAM) this;
+    m_ofn.lStructSize = sizeof(OPENFILENAME);
+    m_ofn.hwndOwner = hwndParent ? hwndParent : GetActiveWindow();
+    m_ofn.lpstrFile = m_cszFileName.data();
+    m_ofn.nMaxFile = MAX_PATH;
+    m_ofn.lpfnHook = ttpriv::OFNHookProc;
+    m_ofn.Flags = OFN_ENABLESIZING | OFN_EXPLORER | OFN_ENABLEHOOK | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY |
+                  OFN_DONTADDTORECENT;
+    m_ofn.lCustData = (LPARAM) this;
 
     m_bRepositionWindow = false;
     memset(&m_rcPosition, 0, sizeof(m_rcPosition));
 }
 
-ttCFileDlg::~ttCFileDlg()
-{
-    ttFree(m_pofn);
-}
+ttCFileDlg::~ttCFileDlg() {}
 
 bool ttCFileDlg::GetOpenName()
 {
-    if (!::GetOpenFileNameA(m_pofn))
+    if (!::GetOpenFileNameA(&m_ofn))
     {
 #if !defined(NDEBUG)                           // Starts debug section.
         DWORD error = CommDlgExtendedError();  // Will be 0 if the user cancelled, else it's an actual error
@@ -65,17 +48,17 @@ bool ttCFileDlg::GetOpenName()
         return false;
     }
 
-    if (m_pofn->Flags & OFN_FILEMUSTEXIST)
+    if (m_ofn.Flags & OFN_FILEMUSTEXIST)
         FixExtension();
     return true;
 }
 
 bool ttCFileDlg::GetSaveName()
 {
-    m_pofn->Flags &= ~OFN_FILEMUSTEXIST;
-    m_pofn->Flags |= OFN_NOREADONLYRETURN | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
+    m_ofn.Flags &= ~OFN_FILEMUSTEXIST;
+    m_ofn.Flags |= OFN_NOREADONLYRETURN | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
 
-    if (!::GetSaveFileNameA(m_pofn))
+    if (!::GetSaveFileNameA(&m_ofn))
     {
 #if !defined(NDEBUG)                           // Starts debug section.
         DWORD error = CommDlgExtendedError();  // Will be 0 if the user cancelled, else it's an actual error
@@ -89,21 +72,21 @@ bool ttCFileDlg::GetSaveName()
 
 void ttCFileDlg::FixExtension()
 {
-    if (ttStrChr(m_cszFileName, '.'))
+    if (!m_cszFileName.extension().empty())
         return;  // we have an extension, return
 
-    const char* psz = m_pofn->lpstrFilter;
-    for (DWORD i = 1; i < m_pofn->nFilterIndex; i++)
+    const char* psz = m_ofn.lpstrFilter;
+    for (DWORD i = 1; i < m_ofn.nFilterIndex; i++)
     {
-        psz = psz + ttStrByteLen(psz);
-        psz = psz + ttStrByteLen(psz);
+        psz = psz + (std::strlen(psz) + 1);
+        psz = psz + (std::strlen(psz) + 1);
     }
-    psz = psz + ttStrLen(psz) + 1;
+    psz = psz + std::strlen(psz) + 1;
     ttASSERT(psz);
-    char* pszTmp = ttStrChr(psz, ';');
+    char* pszTmp = const_cast<char*>(std::strchr(psz, ';'));
     if (pszTmp)
         *pszTmp = '\0';
-    m_cszFileName.ChangeExtension(psz + 1);
+    m_cszFileName.replace_extension(psz + 1);
 }
 
 void ttCFileDlg::SetFilter(const char* pszFilters)
@@ -113,25 +96,25 @@ void ttCFileDlg::SetFilter(const char* pszFilters)
         return;
 
     m_cszFilter = pszFilters;
-    char* psz = ttStrChr(m_cszFilter, '|');
+    char* psz = std::strchr(m_cszFilter.data(), '|');
     while (psz)
     {
         *psz = '\0';
-        psz = ttStrChr(psz + 1, '|');
+        psz = std::strchr(psz + 1, '|');
     }
-    m_pofn->lpstrFilter = m_cszFilter.GetPtr();
+    m_ofn.lpstrFilter = m_cszFilter.data();
 }
 
 void ttCFileDlg::SetFilter(int idResource)
 {
-    m_cszFilter.GetResString(idResource);
-    char* psz = ttStrChr(m_cszFilter, '|');
+    m_cszFilter.LoadStringEx(static_cast<WORD>(idResource));
+    char* psz = std::strchr(m_cszFilter.data(), '|');
     while (psz)
     {
         *psz = '\0';
-        psz = ttStrChr(psz + 1, '|');
+        psz = std::strchr(psz + 1, '|');
     }
-    m_pofn->lpstrFilter = m_cszFilter.GetPtr();
+    m_ofn.lpstrFilter = m_cszFilter.data();
 }
 
 UINT_PTR CALLBACK ttpriv::OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */, LPARAM lParam)
@@ -178,7 +161,7 @@ UINT_PTR CALLBACK ttpriv::OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */,
                 {
                     pThis->m_bRepositionWindow = false;
                     MoveWindow(GetParent(hdlg), pThis->m_rcPosition.left, pThis->m_rcPosition.top,
-                               ttRC_WIDTH(pThis->m_rcPosition), ttRC_HEIGHT(pThis->m_rcPosition), FALSE);
+                               ttlib::rcWidth(pThis->m_rcPosition), ttlib::rcHeight(pThis->m_rcPosition), FALSE);
                 }
             }
             break;
@@ -197,7 +180,7 @@ void ttCFileDlg::SetInitialDir(const char* pszFolder)
     ttASSERT_MSG(pszFolder, "NULL pointer!");
 
     m_cszSetDir = pszFolder;
-    m_cszSetDir.FullPathName();  // probably not necessary, but doesn't hurt
-    ttForwardslashToBackslash(m_cszSetDir);
-    m_pofn->lpstrInitialDir = m_cszSetDir;
+    m_cszSetDir.make_absolute();  // probably not necessary, but doesn't hurt
+    ttlib::backslashestoforward(m_cszSetDir);
+    m_ofn.lpstrInitialDir = m_cszSetDir.data();
 }

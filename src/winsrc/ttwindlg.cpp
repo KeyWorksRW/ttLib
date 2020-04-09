@@ -16,8 +16,6 @@
 
 #include <VersionHelpers.h>
 
-#include "ttlibwin.h"
-
 #include "ttwindlg.h"
 
 static HMONITOR ttKeyMonitorFromWindow(HWND hwnd, DWORD dwFlags);
@@ -199,16 +197,16 @@ void dlg::CenterWindow(bool isCenterOnDesktop)
     RECT rc;
     GetWindowRect(*this, &rc);
 
-    int cx = ttRC_WIDTH(rc);
-    int cy = ttRC_HEIGHT(rc);
+    int cx = ttlib::rcWidth(rc);
+    int cy = ttlib::rcHeight(rc);
 
     if (!isCenterOnDesktop && m_hwndParent)
         GetWindowRect(m_hwndParent, &rc);
     else
         SystemParametersInfo(SPI_GETWORKAREA, 0, &rc, 0);
 
-    int left = rc.left + (ttRC_WIDTH(rc) - cx) / 2;
-    int top = rc.top + (ttRC_HEIGHT(rc) - cy) / 2;
+    int left = rc.left + (ttlib::rcWidth(rc) - cx) / 2;
+    int top = rc.top + (ttlib::rcHeight(rc) - cy) / 2;
 
     // Make certain the dialog doesn't spawn between two monitors
 

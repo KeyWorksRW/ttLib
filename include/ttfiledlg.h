@@ -2,7 +2,7 @@
 // Name:      ttCFileDlg
 // Purpose:   Wrapper around Windows GetOpenFileName() API
 // Author:    Ralph Walden
-// Copyright: Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
+// Copyright: Copyright (c) 2002-2020 KeyWorks Software (Ralph Walden)
 // License:   Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
@@ -12,11 +12,13 @@
     #error "This header file can only be used when compiling for Windows"
 #endif
 
+#include <vector>
+
 #include <commdlg.h>
 
+#include "ttcstr.h"      // cstr -- Classes for handling zero-terminated char strings.
 #include "ttdebug.h"     // for ttASSERTS
 #include "ttmultibtn.h"  // ttlib::MultiBtn
-#include "ttstr.h"       // ttCStr
 
 #ifndef OFN_DONTADDTORECENT
     #define OFN_DONTADDTORECENT 0x02000000
@@ -39,12 +41,12 @@ public:
     bool GetOpenName();  // call this or the following to launch the actual dialog box
     bool GetSaveName();
 
-    char* GetFileName()
+    const char* GetFileName()
     {
-        return m_cszFileName;
+        return m_cszFileName.c_str();
     }  // call this after one of the above two functions has been called
 
-    void AddToRecent() { m_pofn->Flags &= ~OFN_DONTADDTORECENT; }
+    void AddToRecent() { m_ofn.Flags &= ~OFN_DONTADDTORECENT; }
     void SetFilter(int idResource);
     // separate filters with '|' character
     void SetFilter(const char* pszFilters);
@@ -56,16 +58,16 @@ public:
     }
     void ShowCreatePrompt()
     {
-        m_pofn->Flags &= ~OFN_FILEMUSTEXIST;
-        m_pofn->Flags |= OFN_CREATEPROMPT;
+        m_ofn.Flags &= ~OFN_FILEMUSTEXIST;
+        m_ofn.Flags |= OFN_CREATEPROMPT;
     }
-    void ShowReadOnlyBox() { m_pofn->Flags &= ~OFN_HIDEREADONLY; }
+    void ShowReadOnlyBox() { m_ofn.Flags &= ~OFN_HIDEREADONLY; }
     void UseCurrentDirectory()
     {
-        m_cszCurDir.GetCWD();
-        m_pofn->lpstrInitialDir = m_cszCurDir;
+        m_cszCurDir.assignCwd();
+        m_ofn.lpstrInitialDir = m_cszCurDir.c_str();
     }
-    void RestoreDirectory() { m_pofn->Flags |= OFN_NOCHANGEDIR; }
+    void RestoreDirectory() { m_ofn.Flags |= OFN_NOCHANGEDIR; }
 
     void SetWindowRect(const RECT* prc)
     {
@@ -83,17 +85,16 @@ public:
     void SetFileMustExist(bool bMustExist = true)
     {
         if (bMustExist)
-            m_pofn->Flags |= OFN_FILEMUSTEXIST;
+            m_ofn.Flags |= OFN_FILEMUSTEXIST;
         else
-            m_pofn->Flags &= ~OFN_FILEMUSTEXIST;
+            m_ofn.Flags &= ~OFN_FILEMUSTEXIST;
     }
 
     // Adds one or more of the OFN_ flags
-    void AddFlags(DWORD flags) { m_pofn->Flags |= flags; }
+    void AddFlags(DWORD flags) { m_ofn.Flags |= flags; }
 
-    OPENFILENAMEA* GetOF() { return m_pofn; }
-    operator OPENFILENAMEA*() const { return m_pofn; }
-    operator char*() const { return (char*) m_cszFileName; }
+    OPENFILENAMEA* GetOF() { return &m_ofn; }
+    operator OPENFILENAMEA*() { return &m_ofn; }
 
 private:
     void FixExtension();
@@ -103,15 +104,14 @@ private:
     // Class members
 
 protected:
-    ttCStr m_cszFileName;
-    ttCStr m_cszCurDir;
-    ttCStr m_cszFilter;
-    ttCStr m_cszSetDir;
+    ttlib::cstr m_cszFileName;
+    ttlib::cstr m_cszCurDir;
+    ttlib::cstr m_cszFilter;
+    ttlib::cstr m_cszSetDir;
 
     RECT m_rcPosition;
 
-    // This is Malloc'd because the size changes depending on the version of Windows
-    OPENFILENAMEA* m_pofn;
+    OPENFILENAME m_ofn;
 
     ttlib::MultiBtn m_ShadedBtns;
     UINT m_idOpenIcon;

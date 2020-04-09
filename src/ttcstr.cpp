@@ -513,6 +513,33 @@ ttlib::cview cstr::filename() const noexcept
     return { c_str() + pos + 1, length() - (pos + 1) };
 }
 
+size_t cstr::find_filename() const noexcept
+{
+    if (empty())
+        tt::npos;
+
+    auto pos = find_last_of('/');
+
+#if defined(_WIN32)
+    // Windows filenames can contain both forward and back slashes, so check for a backslash as well.
+    auto back = find_last_of('\\');
+    if (back != npos)
+    {
+        // If there is no forward slash, or the backslash appears after the forward slash, then use it's position.
+        if (pos == npos || back > pos)
+            pos = back;
+    }
+#endif
+    if (pos == npos)
+    {
+        pos = find_last_of(':');
+        if (pos == npos)
+            return tt::npos;
+    }
+
+    return pos + 1;
+}
+
 cstr& cstr::replace_filename(std::string_view newFilename)
 {
     if (empty())

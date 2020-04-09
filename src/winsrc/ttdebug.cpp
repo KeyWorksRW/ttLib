@@ -12,12 +12,13 @@
     #error "This module can only be compiled for Windows"
 #endif
 
+#include <mutex>
+
 #include <stdexcept>
 #include <stdio.h>
 
-#include "ttcritsection.h"  // CCritSection
-#include "ttcstr.h"         // Classes for handling zero-terminated char strings.
-#include "ttdebug.h"        // ttASSERT macros
+#include "ttcstr.h"   // Classes for handling zero-terminated char strings.
+#include "ttdebug.h"  // ttASSERT macros
 
 const UINT ttlib::WMP_TRACE_GENERAL = WM_USER + 0x1f3;
 const UINT ttlib::WMP_TRACE_MSG = WM_USER + 0x1f5;
@@ -32,11 +33,12 @@ HWND ttlib::hwndTrace = NULL;
 
 namespace ttdbg
 {
-    ttCCritSection crtAssert;
+    std::mutex mutexAssert;
+    std::mutex mutexTrace;
+
     bool allowAsserts { true };  // Setting this to true will cause AssertionMsg to return without doing anything
 
     HANDLE hTraceMapping { NULL };
-    ttCCritSection g_csTrace;
     char* g_pszTraceMap { nullptr };
     DWORD g_cLastTickCheck { 0 };  // used to determine whether to check for hwndTrace again
 }  // namespace ttdbg
@@ -48,7 +50,7 @@ bool ttAssertionMsg(const char* filename, const char* function, int line, const 
     if (!ttdbg::allowAsserts)
         return false;
 
-    ttdbg::crtAssert.Lock();
+    std::unique_lock<std::mutex> classLock(ttdbg::mutexAssert);
 
     ttlib::cstr fname(filename);
     fname.make_relative(std::filesystem::absolute(".").u8string());
@@ -72,7 +74,6 @@ bool ttAssertionMsg(const char* filename, const char* function, int line, const 
     auto answer =
         MessageBoxW(GetActiveWindow(), str16.c_str(), L"Assertion failed!", MB_ABORTRETRYIGNORE | MB_ICONSTOP);
 
-    ttdbg::crtAssert.Unlock();
     if (answer == IDRETRY)
     {
         return true;
@@ -124,7 +125,7 @@ void ttlib::wintrace(const std::string& msg)
     // We don't want two threads trying to send text at the same time. The ttCCritLock class prevents a second call
     // to the function until the first call has completed.
 
-    ttCCritLock lock(&ttdbg::g_csTrace);
+    std::unique_lock<std::mutex> classLock(ttdbg::mutexTrace);
 
     if (msg.empty())
         return;
@@ -182,7 +183,8 @@ void ttlib::wintrace(const std::string& msg)
 
 void ttlib::wintraceclear()
 {
-    ttCCritLock lock(&ttdbg::g_csTrace);
+    std::unique_lock<std::mutex> classLock(ttdbg::mutexTrace);
+
     if (!ttlib::hwndTrace)
         ttlib::hwndTrace = FindWindowA(ttlib::txtTraceClass, NULL);
 

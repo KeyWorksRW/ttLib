@@ -12,10 +12,10 @@
     #error "This header file can only be used when compiling for Windows"
 #endif
 
-#include <winnls.h>
 #include <winbase.h>
+#include <winnls.h>
 
-#include "ttstr.h"    // ttCStr
+#include "ttcstr.h"   // cstr -- Classes for handling zero-terminated char strings.
 #include "ttdebug.h"  // ttASSERT macros
 
 // Class for handling a Windows SYSTEMTIME or FILETIME structure
@@ -44,14 +44,14 @@ public:
         char szBuf[256];
         ::GetDateFormatA(locale, dwFlags, &m_tm, NULL, szBuf, sizeof(szBuf));
         m_cszDate = szBuf;
-        return m_cszDate;
+        return m_cszDate.c_str();
     }
     const char* GetTimeFormat(DWORD dwFlags = 0, LCID locale = LOCALE_USER_DEFAULT)
     {
         char szBuf[256];
         ::GetTimeFormatA(locale, dwFlags, &m_tm, NULL, szBuf, sizeof(szBuf));
         m_cszTime = szBuf;
-        return m_cszTime;
+        return m_cszTime.c_str();
     }
     const char* GetFullFormat()
     {  // full date/time
@@ -59,14 +59,14 @@ public:
             DATE_LONGDATE);  // GetDateFormat() modifies m_cszFormatted, so we have to use a temporary
         m_cszFull += ", ";
         m_cszFull += GetTimeFormat();
-        return m_cszFull;
+        return m_cszFull.c_str();
     }
     const char* GetShortFormat()
     {
         m_cszShort = GetDateFormat();  // GetDateFormat() modifies m_cszFormatted, so we have to use a temporary
         m_cszShort += ", ";
         m_cszShort += GetTimeFormat();
-        return m_cszShort;
+        return m_cszShort.c_str();
     }
 
     void GetLocalTime() { ::GetLocalTime(&m_tm); }
@@ -97,8 +97,8 @@ private:
 
     // We keep a copy of each format in case we're called multiple times in a printf() call
 
-    ttCStr m_cszDate;
-    ttCStr m_cszTime;
-    ttCStr m_cszFull;
-    ttCStr m_cszShort;
+    ttlib::cstr m_cszDate;
+    ttlib::cstr m_cszTime;
+    ttlib::cstr m_cszFull;
+    ttlib::cstr m_cszShort;
 };

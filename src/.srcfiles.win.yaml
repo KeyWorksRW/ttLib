@@ -28,11 +28,6 @@ Files:
     ttTR.cpp         # Function for translating strings
     ttcvector.cpp    # Vector class for storing ttlib::cstr strings
 
-    # These files should be moved to src/ once they can be compiled/used without Windows
-
-    winsrc/ttbasethread.cpp    # ttCBaseThread class
-    winsrc/ttmultithread.cpp   # ttCMultiThrd class
-
 # Windows only files
 
     winsrc/ttdib.cpp           # ttCDib class
@@ -47,18 +42,3 @@ Files:
     winsrc/ttdebug.cpp         # debug and assertion handling
     winsrc/ttwindlg.cpp        # Class for creating a Modal or Modeless dialog box
     winsrc/ttwinspace.cpp      # Windows-only ttlib namespace functions
-
-# The following modules are slated for removal as soon as all callers stop using them.
-
-    winsrc/ttdlg.cpp           # ttCDlg class
-    winsrc/ttfile.cpp          # ttCFile class
-    winsrc/ttfiledir.cpp       # file and directory handling
-    winsrc/tthashpair.cpp      # ttCHashPair
-    winsrc/ttheap.cpp          # ttCHeap class
-    winsrc/ttlinefile.cpp      # Line-oriented file class
-    winsrc/ttlist.cpp          # ttCList class
-    winsrc/ttmisc.cpp          # miscellaneous functions
-    winsrc/ttprintf.cpp        # printf
-    winsrc/ttstr.cpp           # ttCStr class
-    winsrc/ttstrfuncs.cpp      # C-style string handling
-    winsrc/ttwinmisc.cpp       # Miscellaneous functions for use on Windows

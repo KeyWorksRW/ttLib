@@ -229,6 +229,9 @@ namespace ttlib
         /// Caution: view is only valid until cstr is modified or destroyed.
         ttlib::cview filename() const noexcept;
 
+        /// Returns offset to the current filename or tt::npos if there is no filename.
+        size_t find_filename() const noexcept;
+
         /// Replaces any existing extension with a new extension, or appends the extension if the
         /// name doesn't currently have an extension.
         ///

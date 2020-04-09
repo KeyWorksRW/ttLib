@@ -365,6 +365,19 @@ namespace ttlib
     /// by LoadLibrary().
     void SetLangInfo(HMODULE hinstResource, USHORT PrimaryLanguage, USHORT SubLanguage);
 
+    inline int rcHeight(const RECT* prc) { return prc->bottom - prc->top; };
+
+    inline int rcHeight(const RECT rc) { return rc.bottom - rc.top; };
+
+    inline int rcWidth(const RECT* prc) { return prc->right - prc->left; };
+
+    inline int rcWidth(const RECT rc) { return rc.right - rc.left; };
+
+    inline bool isPosInRect(const RECT* prc, int xPos, int yPos)
+    {
+        return (xPos >= prc->left && xPos <= prc->right && yPos >= prc->top && yPos <= prc->bottom);
+    }
+
 }  // namespace ttlib
 
 #endif  // end _WIN32 section
