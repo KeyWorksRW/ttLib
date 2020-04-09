@@ -69,6 +69,18 @@ namespace ttlib
             return (locate(sub, 0, checkcase) != npos);
         }
 
+        /// Returns true if any string in the iteration list appears somewhere in the the main string.
+        template<class iterT>
+        bool strContains(iterT iter, tt::CASE checkcase = tt::CASE::exact)
+        {
+            for (auto& strIter: iter)
+            {
+                if (contains(strIter, checkcase))
+                    return true;
+            }
+            return false;
+        }
+
         /// Find any one of the characters in a set. Returns offset if found, npos if not.
         ///
         /// This is equivalent to calling std::strpbrk but returns an offset instead of a pointer.

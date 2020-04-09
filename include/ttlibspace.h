@@ -158,6 +158,17 @@ namespace ttlib
     /// Same as findstr but with a boolean return instead of a string_view.
     bool contains(std::string_view main, std::string_view sub, tt::CASE checkcase = tt::CASE::exact);
 
+    /// Returns true if any string in the iteration list appears somewhere in the the main string.
+    template<class iterT> bool strContains(std::string_view str, iterT iter, tt::CASE checkcase = tt::CASE::exact)
+    {
+        for (auto& strIter: iter)
+        {
+            if (ttlib::contains(str, strIter, checkcase))
+                return true;
+        }
+        return false;
+    }
+
     /// Return a view to the portion of the string beginning with the sub string.
     ///
     /// Return view is empty if substring is not found.
