@@ -54,6 +54,15 @@ namespace ttlib
         /// Reads a string as if it was a file (see ReadFile).
         void ReadString(std::string_view str);
 
+        /// Iterate through a list adding each iteration as a line.
+        template<class iterT> void Read(const iterT iter)
+        {
+            for (const auto& line: iter)
+            {
+                emplace_back(line);
+            }
+        };
+
         /// Reads an array of char* strings. The last member of the array MUST be a null
         /// pointer.
         void ReadArray(const char** begin);
@@ -106,8 +115,6 @@ namespace ttlib
             if (size())
                 erase(begin() + (size() - 1));
         }
-
-
 
     protected:
         // Converts lines into a vector of std::string members. Lines can end with \n, \r, or \r\n.
