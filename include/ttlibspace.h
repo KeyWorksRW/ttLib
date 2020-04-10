@@ -127,23 +127,8 @@ namespace ttlib
     /// Returns true if strings are identical
     bool issameas(std::string_view str1, std::string_view str2, tt::CASE checkcase = tt::CASE::exact);
 
-    /// Same as compare only it returns a boolean instead of the difference.
-    [[deprecated("Use issameas()")]] inline bool issamestr(std::string_view str1, std::string_view str2)
-    {
-        return (str1.compare(str2) == 0);
-    }
-
-    /// Same as issamestr only case insensitive comparison of ASCII characters
-    [[deprecated("Use issameas()")]] bool issamestri(std::string_view str1, std::string_view str2);
-
     /// Returns true if the sub-string is identical to the first part of the main string
     bool issameprefix(std::string_view strMain, std::string_view strSub, tt::CASE checkcase = tt::CASE::exact);
-
-    /// Returns true if the sub-string is identical to the first part of the main string
-    [[deprecated("Use issameprefix()")]] bool issamesubstr(std::string_view strMain, std::string_view strSub);
-
-    /// Case-insensitive sub string comparison
-    [[deprecated("Use issameprefix()")]] bool issamesubstri(std::string_view strMain, std::string_view strSub);
 
     /// Return a view to the portion of the string beginning with the sub string.
     ///
@@ -168,16 +153,6 @@ namespace ttlib
         }
         return false;
     }
-
-    /// Return a view to the portion of the string beginning with the sub string.
-    ///
-    /// Return view is empty if substring is not found.
-    [[deprecated("Use findstr()")]] std::string_view strstr(std::string_view strMain, std::string_view strSub);
-
-    /// Case-insensitive search for a sub string.
-    ///
-    /// Return view is empty if substring is not found.
-    [[deprecated("Use findstr()")]] std::string_view strstri(std::string_view strMain, std::string_view strSub);
 
     /// Returns a pointer to the next character in a UTF8 string.
     const char* nextut8fchar(const char* psz) noexcept;

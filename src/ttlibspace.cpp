@@ -233,63 +233,6 @@ bool ttlib::issameprefix(std::string_view strMain, std::string_view strSub, CASE
     return false;
 }
 
-bool ttlib::issamesubstr(std::string_view strMain, std::string_view strSub)
-{
-    if (strSub.empty())
-        return strMain.empty();
-
-    if (strMain.empty() || strMain.length() < strSub.length())
-        return false;
-
-    for (auto pos = 0U; pos < strSub.length(); ++pos)
-    {
-        if (strMain.at(pos) != strSub.at(pos))
-            return false;
-    }
-    return true;
-}
-
-bool ttlib::issamesubstri(std::string_view strMain, std::string_view strSub)
-{
-    if (strSub.empty())
-        return strMain.empty();
-
-    if (strMain.empty() || strMain.length() < strSub.length())
-        return false;
-
-    for (auto pos = 0U; pos < strSub.length(); ++pos)
-    {
-        if (std::tolower(strMain.at(pos)) != std::tolower(strSub.at(pos)))
-            return false;
-    }
-    return true;
-}
-
-std::string_view ttlib::strstri(std::string_view strMain, std::string_view strSub)
-{
-    if (strSub.empty())
-        return {};
-    auto chLower = std::tolower(strSub[0]);
-
-    for (auto pos = 0U; pos < strMain.length(); ++pos)
-    {
-        if (std::tolower(strMain.at(pos)) == chLower)
-        {
-            size_t posSub;
-            for (posSub = 1; posSub < strSub.length(); ++posSub)
-            {
-                if (pos + posSub >= strMain.length())
-                    return {};
-                if (std::tolower(strMain.at(pos + posSub)) != std::tolower(strSub.at(posSub)))
-                    break;
-            }
-            if (posSub >= strSub.length())
-                return strMain.substr(pos);
-        }
-    }
-    return {};
-}
-
 std::string_view ttlib::findstr(std::string_view main, std::string_view sub, CASE checkcase)
 {
     if (sub.empty())
@@ -337,45 +280,6 @@ size_t ttlib::findstr_pos(std::string_view main, std::string_view sub, CASE chec
 bool ttlib::contains(std::string_view main, std::string_view sub, CASE checkcase)
 {
     return !ttlib::findstr(main, sub, checkcase).empty();
-}
-
-std::string_view ttlib::strstr(std::string_view strMain, std::string_view strSub)
-{
-    if (strSub.empty())
-        return {};
-
-    auto pos = strMain.find(strSub);
-    if (pos < strMain.length())
-        return strMain.substr(pos);
-
-    return {};
-}
-
-bool ttlib::issamestri(std::string_view str1, std::string_view str2)
-{
-    if (str1.empty())
-    {
-        return str2.empty();
-    }
-    else if (str2.empty())
-    {
-        return false;
-    }
-
-    auto main = str1.begin();
-    auto sub = str2.begin();
-    while (sub != str2.end())
-    {
-        auto diff = std::tolower(main[0]) - std::tolower(sub[0]);
-        if (diff != 0)
-            return false;
-        ++main;
-        ++sub;
-        if (main == str1.end())
-            return (sub != str2.end() ? false : true);
-    }
-
-    return (main != str1.end() ? false : true);
 }
 
 bool ttlib::issameas(std::string_view str1, std::string_view str2, CASE checkcase)

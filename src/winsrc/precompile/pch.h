@@ -27,7 +27,3 @@
 
 #include <windows.h>
 #include <stdlib.h>
-
-// This prevents deprecated warnings -- we already know they are deprecated, the warning
-// is for code that calls the library.
-#define TTLIB_INTERNAL_BUILD

@@ -54,10 +54,9 @@ namespace ttlib
         cstr(wxString& str) { assign(str.utf8_str().data()); }
 #endif
 
-#if defined(_TT_TCSTR)
-        // ttCStr is obsolete, but we'll support it until all callers have replaced it.
-        cstr(ttCStr& csz) { assign(csz.c_str() ? csz.c_str() : ttlib::emptystring); }
-#endif
+        void assignUTF16(std::wstring_view str);
+
+        std::wstring to_utf16() const;
 
         /// Caution: ttlib::cview is only valid until ttlib::cstr is modified or destroyed.
         ttlib::cview subview(size_t start = 0) const noexcept
@@ -65,11 +64,6 @@ namespace ttlib
             assert(start <= length());
             return ttlib::cview(c_str() + start, length() - start);
         }
-
-        std::wstring to_utf16() const;
-
-        [[deprecated("use assignUTF16")]] void from_utf16(std::wstring_view str);
-        void assignUTF16(std::wstring_view str);
 
         /// Case-insensitive comparison.
         int comparei(std::string_view str) const;
