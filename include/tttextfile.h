@@ -79,6 +79,11 @@ namespace ttlib
         size_t FindLineContaining(std::string_view str, size_t startline = 0,
                                   tt::CASE checkcase = tt::CASE::exact) const;
 
+        /// If a line is found that contains orgStr, it will be replaced by newStr and the
+        /// line position is returned. If no line is found, tt::npos is returned.
+        size_t ReplaceInLine(std::string_view orgStr, std::string_view newStr, size_t startline = 0,
+                             tt::CASE checkcase = tt::CASE::exact);
+
         bool issameas(ttlib::textfile other, tt::CASE checkcase = tt::CASE::exact) const;
         bool issameas(ttlib::viewfile other, tt::CASE checkcase = tt::CASE::exact) const;
 

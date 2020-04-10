@@ -115,8 +115,22 @@ size_t textfile::FindLineContaining(std::string_view str, size_t start, tt::CASE
 {
     for (; start < size(); ++start)
     {
-        if (ttlib::contains(at(start), str, checkcase))
+        if (at(start).contains(str, checkcase))
             return start;
+    }
+    return tt::npos;
+}
+
+size_t textfile::ReplaceInLine(std::string_view orgStr, std::string_view newStr, size_t posLine,
+                               tt::CASE checkcase)
+{
+    for (; posLine < size(); ++posLine)
+    {
+        if (at(posLine).contains(orgStr, checkcase))
+        {
+            at(posLine).Replace(orgStr, newStr, false, checkcase);
+            return posLine;
+        }
     }
     return tt::npos;
 }
@@ -129,7 +143,7 @@ bool textfile::issameas(viewfile other, CASE checkcase) const
     size_t pos = 0;
     for (; pos < other.size(); ++pos)
     {
-        if (!ttlib::issameas(at(pos), other[pos], checkcase))
+        if (!at(pos).issameas(other[pos], checkcase))
             break;
     }
     return (pos == size());
@@ -143,7 +157,7 @@ bool textfile::issameas(textfile other, CASE checkcase) const
     size_t pos = 0;
     for (; pos < other.size(); ++pos)
     {
-        if (!ttlib::issameas(at(pos), other[pos], checkcase))
+        if (!at(pos).issameas(other[pos], checkcase))
             break;
     }
     return (pos == size());
