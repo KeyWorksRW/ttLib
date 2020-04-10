@@ -495,30 +495,28 @@ namespace ttlib
         void Initialize(HWND hdlg, int id) { m_hwnd = ::GetDlgItem(hdlg, id); };
         void Attach(HWND hwndCtrl) { m_hwnd = hwndCtrl; }
 
-        LRESULT GetCurSel()
+        int GetCurSel()
         {
-            return SendMessage(m_hwnd, LVM_GETNEXTITEM, (WPARAM) -1, MAKELPARAM(LVNI_SELECTED, 0));
+            return static_cast<int>(
+                ::SendMessage(m_hwnd, LVM_GETNEXTITEM, (WPARAM) -1, MAKELPARAM(LVNI_SELECTED, 0)));
         }
         LRESULT SetCurSel(int pos);
         LRESULT SetCurSel(const char* pszItem);
 
-        bool GetItem(LVITEMA* pItem)
+        ttlib::cstr GetItemText(int item, int subitem = 0);
+
+        bool GetItem(LVITEM* pItem)
         {
-            return SendMessageA(m_hwnd, LVM_GETITEM, 0, (LPARAM) pItem) ? true : false;
+            return ::SendMessage(m_hwnd, LVM_GETITEM, 0, (LPARAM) pItem) ? true : false;
         }
-        bool SetItem(LVITEMA* pItem)
+        bool SetItem(LVITEM* pItem)
         {
-            return SendMessageA(m_hwnd, LVM_SETITEMA, 0, (LPARAM) pItem) ? true : false;
-        }
-        bool SetItem(LVITEMW* pItem)
-        {
-            return SendMessageW(m_hwnd, LVM_SETITEMW, 0, (LPARAM) pItem) ? true : false;
+            return ::SendMessage(m_hwnd, LVM_SETITEM, 0, (LPARAM) pItem) ? true : false;
         }
 
-        LRESULT InsertItem(LVITEMA* pitem) { return ::SendMessageA(m_hwnd, LVM_INSERTITEMA, 0, (LPARAM) pitem); }
-        LRESULT InsertItemW(LVITEMW* pitem) { return ::SendMessageW(m_hwnd, LVM_INSERTITEMW, 0, (LPARAM) pitem); }
-        BOOL DeleteItem(int index) { return (BOOL) ListView_DeleteItem(m_hwnd, index); }
-        void Reset() const { ListView_DeleteAllItems(m_hwnd); }
+        LRESULT InsertItem(LVITEM* pitem) { return ::SendMessage(m_hwnd, LVM_INSERTITEM, 0, (LPARAM) pitem); }
+        BOOL DeleteItem(int index) { return (BOOL)::SendMessage(m_hwnd, LVM_DELETEITEM, (WPARAM) index, 0); }
+        void clear() const { ::SendMessage(m_hwnd, LVM_DELETEALLITEMS, 0, 0); }
 
         int add(std::string_view str, LPARAM lparam = -1);
         BOOL addsubstring(std::string_view str, int iItem, int iSubItem);
@@ -528,7 +526,7 @@ namespace ttlib
 
         void SetColumnWidth(int col, int width = LVSCW_AUTOSIZE_USEHEADER)
         {
-            ListView_SetColumnWidth(m_hwnd, col, width);
+            ::SendMessage(m_hwnd, LVM_SETCOLUMNWIDTH, (WPARAM) col, MAKELPARAM(width, 0));
         }
 
         HWND GetHWND() const { return m_hwnd; }
