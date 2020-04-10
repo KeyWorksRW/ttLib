@@ -34,9 +34,9 @@ void ttlib::SetLangInfo(HMODULE hinstResource, USHORT PrimaryLanguage, USHORT Su
     lang_info.SubLanguage = SubLanguage;
 }
 
-std::string ttlib::LoadStringEx(WORD id)
+ttlib::cstr ttlib::LoadStringEx(WORD id)
 {
-    std::string str8;
+    ttlib::cstr str8;
     LoadStringEx(str8, id);
     return str8;
 }

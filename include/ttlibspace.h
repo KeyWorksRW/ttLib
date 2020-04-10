@@ -97,7 +97,8 @@ namespace tt
 
 namespace ttlib
 {
-    class cview;  // forward definition
+    class cstr;  // forward definition
+    class cview;
 
     extern const std::string emptystring;
 
@@ -202,13 +203,13 @@ namespace ttlib
     ///
     /// If format is true, the number will be formatted with ',' or '.' depending on the
     /// current locale.
-    std::string itoa(int val, bool format = false);
+    ttlib::cstr itoa(int val, bool format = false);
 
     /// Converts a size_t into a string.
     ///
     /// If format is true, the number will be formatted with ',' or '.' depending on the
     /// current locale.
-    std::string itoa(size_t val, bool format = false);
+    ttlib::cstr itoa(size_t val, bool format = false);
 
     /// Return a view to a filename's extension. View is empty if there is no extension.
     std::string_view findext(std::string_view str);
@@ -246,11 +247,11 @@ namespace ttlib
     void utf16to8(std::vector<wchar_t> str, std::string& dest);
 
     std::wstring utf8to16(std::string_view str);
-    std::string utf16to8(std::wstring_view str);
+    ttlib::cstr utf16to8(std::wstring_view str);
 
     /// This allows you to pass a vector buffer to a Windows API and then use this fucntion
     /// to convert the result to UTF8.
-    std::string utf16to8(std::vector<wchar_t> str);
+    ttlib::cstr utf16to8(std::vector<wchar_t> str);
 
 }  // namespace ttlib
 
@@ -290,8 +291,8 @@ namespace ttlib
     /// Title (caption) is whatever was set by last call to ttlib::SetMsgBoxTitle().
     int MsgBox(WORD idStrResource, UINT uType = MB_OK | MB_ICONWARNING);
 
-    /// Converts window text to UTF8 and returns it in a std::string container
-    std::string GetWndText(HWND hwnd);
+    /// Converts window text to UTF8 and returns it in a ttlib::cstr container
+    ttlib::cstr GetWndText(HWND hwnd);
 
     /// Converts window text to UTF8 and assigns it to str
     bool GetWndText(HWND hwnd, std::string& str);
@@ -299,7 +300,7 @@ namespace ttlib
     /// Sends LB_GETTEXT, converts the result to UTF8 and returns it in std::string.
     ///
     /// returned string will be empty() if index is invalid.
-    std::string GetListboxText(HWND hwndLB, WPARAM index);
+    ttlib::cstr GetListboxText(HWND hwndLB, WPARAM index);
 
     /// Sends LB_GETTEXT, converts the result to UTF8 and returns it in str.
     ///
@@ -308,8 +309,8 @@ namespace ttlib
 
     /// Sends CB_GETLBTEXT, converts the result to UTF8 and returns it in std::string.
     ///
-    /// std::string will be empty() if index is invalid.
-    std::string GetComboLBText(HWND hwndLB, WPARAM index);
+    /// ttlib::cstr will be empty() if index is invalid.
+    ttlib::cstr GetComboLBText(HWND hwndLB, WPARAM index);
 
     /// Sends CB_GETLBTEXT, converts the result to UTF8 and returns it in str.
     ///
@@ -322,7 +323,7 @@ namespace ttlib
     /// Loads the specified UTF8 text file from a resource (calls Windows LoadResource API).
     ///
     /// Use LoadStringEx() to load a string resource from a STRINGTABLE.
-    std::string LoadTextResource(DWORD idResource, HMODULE hmodResource = NULL);
+    ttlib::cstr LoadTextResource(DWORD idResource, HMODULE hmodResource = NULL);
 
     /// Converts all text to UTF16 before calling ShellExecuteW(...)
     HINSTANCE ShellRun(std::string_view filename, std::string_view args, std::string_view directory,
@@ -344,7 +345,7 @@ namespace ttlib
 
     /// Loads the string from the resource file using language and resource module specified
     /// in ttlib::lang_info. String is converted to UTF8 before storing in Result.
-    std::string LoadStringEx(WORD id);
+    ttlib::cstr LoadStringEx(WORD id);
 
     /// Set the resource handle and language to use for loading resources. If hinstResource
     /// is NULL, the current executable is used. Otherwise it must be the handle returned

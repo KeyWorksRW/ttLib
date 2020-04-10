@@ -21,9 +21,10 @@
 
 #include <CommCtrl.h>
 
-#include "ttdebug.h"        // ttASSERT macros
-#include "ttlibspace.h"     // Contains the ttlib namespace functions/declarations common to all ttLib libraries
-#include "ttmultibtn.h"     // ttlib::MultiBtn
+#include "ttcstr.h"      // cstr -- Classes for handling zero-terminated char strings.
+#include "ttdebug.h"     // ttASSERT macros
+#include "ttlibspace.h"  // Contains the ttlib namespace functions/declarations common to all ttLib libraries
+#include "ttmultibtn.h"  // ttlib::MultiBtn
 
 #ifndef BEGIN_TTMSG_MAP
     #include "ttcasemap.h"  // Macros for mapping Windows messages to functions
@@ -90,7 +91,7 @@ namespace ttlib
         // UNICODE versions of the Windows API while still using. 8-bit UTF8 strings
 
         bool GetControlText(int id, std::string& str) { return ttlib::GetWndText(gethwnd(id), str); }
-        std::string GetControlText(int id) { return ttlib::GetWndText(gethwnd(id)); }
+        ttlib::cstr GetControlText(int id) { return ttlib::GetWndText(gethwnd(id)); }
         int GetControlTextLength(int id) const { return ::GetWindowTextLengthW(gethwnd(id)); }
 
         void SetControlText(int id, std::string_view utf8str) { ttlib::SetWndText(gethwnd(id), utf8str); }
@@ -116,7 +117,7 @@ namespace ttlib
         HICON SetIcon(HICON hIcon, BOOL bBigIcon = TRUE)
         {
             ttASSERT(::IsWindow(m_hwnd));
-            return (HICON) ::SendMessage(m_hwnd, WM_SETICON, bBigIcon, (LPARAM) hIcon);
+            return (HICON)::SendMessage(m_hwnd, WM_SETICON, bBigIcon, (LPARAM) hIcon);
         }
 
         LRESULT SendItemMsg(int id, UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
@@ -221,8 +222,8 @@ namespace ttlib
         bool GetText(std::string& str) { return ttlib::GetWndText(m_hwnd, str); }
         bool GetLBText(LRESULT index, std::string& str) { return ttlib::GetComboLBText(m_hwnd, index, str); }
 
-        std::string GetText() { return ttlib::GetWndText(m_hwnd); }
-        std::string GetLBText(LRESULT index) { return ttlib::GetComboLBText(m_hwnd, index); }
+        ttlib::cstr GetText() { return ttlib::GetWndText(m_hwnd); }
+        ttlib::cstr GetLBText(LRESULT index) { return ttlib::GetComboLBText(m_hwnd, index); }
 
         void SetText(std::string_view str) { ttlib::SetWndText(m_hwnd, str); }
 
@@ -337,8 +338,8 @@ namespace ttlib
         bool GetText(std::string& str) { return ttlib::GetWndText(m_hwnd, str); }
         bool GetLBText(LRESULT index, std::string& str) { return ttlib::GetListboxText(m_hwnd, index, str); }
 
-        std::string GetText() { return ttlib::GetWndText(m_hwnd); }
-        std::string GetLBText(LRESULT index) { return ttlib::GetListboxText(m_hwnd, index); }
+        ttlib::cstr GetText() { return ttlib::GetWndText(m_hwnd); }
+        ttlib::cstr GetLBText(LRESULT index) { return ttlib::GetListboxText(m_hwnd, index); }
 
         void SetText(std::string_view str) { ttlib::SetWndText(m_hwnd, str); }
 
@@ -514,14 +515,8 @@ namespace ttlib
             return SendMessageW(m_hwnd, LVM_SETITEMW, 0, (LPARAM) pItem) ? true : false;
         }
 
-        LRESULT InsertItem(LVITEMA* pitem)
-        {
-            return ::SendMessageA(m_hwnd, LVM_INSERTITEMA, 0, (LPARAM) pitem);
-        }
-        LRESULT InsertItemW(LVITEMW* pitem)
-        {
-            return ::SendMessageW(m_hwnd, LVM_INSERTITEMW, 0, (LPARAM) pitem);
-        }
+        LRESULT InsertItem(LVITEMA* pitem) { return ::SendMessageA(m_hwnd, LVM_INSERTITEMA, 0, (LPARAM) pitem); }
+        LRESULT InsertItemW(LVITEMW* pitem) { return ::SendMessageW(m_hwnd, LVM_INSERTITEMW, 0, (LPARAM) pitem); }
         BOOL DeleteItem(int index) { return (BOOL) ListView_DeleteItem(m_hwnd, index); }
         void Reset() const { ListView_DeleteAllItems(m_hwnd); }
 

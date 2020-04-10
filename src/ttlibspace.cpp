@@ -490,40 +490,40 @@ bool ttlib::fileExists(std::string_view filename)
     return false;
 }
 
-std::string ttlib::itoa(int val, bool format)
+ttlib::cstr ttlib::itoa(int val, bool format)
 {
     ttlib::cstr str;
     if (format)
         str.Format("%kd", val);
     else
         str.Format("%d", val);
-    return std::move(str);
+    return str;
 }
 
-std::string ttlib::itoa(size_t val, bool format)
+ttlib::cstr ttlib::itoa(size_t val, bool format)
 {
     ttlib::cstr str;
     if (format)
         str.Format("%kzu", val);
     else
         str.Format("%zu", val);
-    return std::move(str);
+    return str;
 }
 
 #define UINT8(ch)  static_cast<uint8_t>(ch)
 #define CHAR8(ch)  static_cast<char>(ch)
 #define CHAR16(ch) static_cast<char16_t>(ch)
 
-std::string ttlib::utf16to8(std::wstring_view str)
+ttlib::cstr ttlib::utf16to8(std::wstring_view str)
 {
-    std::string str8;
+    ttlib::cstr str8;
     ttlib::utf16to8(str, str8);
     return str8;
 }
 
-std::string ttlib::utf16to8(std::vector<wchar_t> str)
+ttlib::cstr ttlib::utf16to8(std::vector<wchar_t> str)
 {
-    std::string str8;
+    ttlib::cstr str8;
     ttlib::utf16to8(str, str8);
     return str8;
 }

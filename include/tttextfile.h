@@ -122,7 +122,7 @@ namespace ttlib
         }
 
     protected:
-        // Converts lines into a vector of std::string members. Lines can end with \n, \r, or \r\n.
+        // Converts lines into a vector of ttlib::cstr members. Lines can end with \n, \r, or \r\n.
         void ParseLines(std::string_view str);
 
     private:
@@ -170,7 +170,7 @@ namespace ttlib
         bool issameas(ttlib::viewfile other, tt::CASE checkcase = tt::CASE::exact) const;
 
     protected:
-        // Converts lines into a vector of std::string members. Lines can end with \n, \r, or \r\n.
+        // Converts lines into a vector of std::string_view members. Lines can end with \n, \r, or \r\n.
         void ParseLines(std::string_view str);
 
     private:

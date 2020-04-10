@@ -18,7 +18,8 @@
 
 #include <shellapi.h>
 
-#include "ttdebug.h"
+#include "ttcstr.h"   // cstr -- Classes for handling zero-terminated char strings.
+#include "ttdebug.h"  // ttASSERT macros
 #include "ttlibspace.h"
 
 namespace ttlib
@@ -75,16 +76,16 @@ bool ttlib::GetWndText(HWND hwnd, std::string& str)
     }
 }
 
-std::string ttlib::GetWndText(HWND hwnd)
+ttlib::cstr ttlib::GetWndText(HWND hwnd)
 {
-    std::string str;
+    ttlib::cstr str;
     ttlib::GetWndText(hwnd, str);
     return str;
 }
 
-std::string ttlib::GetListboxText(HWND hwnd, WPARAM index)
+ttlib::cstr ttlib::GetListboxText(HWND hwnd, WPARAM index)
 {
-    std::string str;
+    ttlib::cstr str;
     ttlib::GetListboxText(hwnd, index, str);
     return str;
 }
@@ -107,9 +108,9 @@ bool ttlib::GetListboxText(HWND hwnd, WPARAM index, std::string& str)
     return (cb != LB_ERR);
 }
 
-std::string ttlib::GetComboLBText(HWND hwnd, WPARAM index)
+ttlib::cstr ttlib::GetComboLBText(HWND hwnd, WPARAM index)
 {
-    std::string str;
+    ttlib::cstr str;
     ttlib::GetComboLBText(hwnd, index, str);
     return str;
 }
@@ -139,9 +140,9 @@ void ttlib::SetWndText(HWND hwnd, std::string_view utf8str)
     SetWindowTextW(hwnd, str16.c_str());
 }
 
-std::string ttlib::LoadTextResource(DWORD idResource, HMODULE hmodResource)
+ttlib::cstr ttlib::LoadTextResource(DWORD idResource, HMODULE hmodResource)
 {
-    std::string str;
+    ttlib::cstr str;
     auto hrsrc = FindResourceA(hmodResource, MAKEINTRESOURCEA(idResource), (char*) RT_RCDATA);
     ttASSERT(hrsrc);
     if (!hrsrc)
