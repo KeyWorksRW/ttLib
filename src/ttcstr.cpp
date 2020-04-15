@@ -516,7 +516,7 @@ ttlib::cview cstr::filename() const noexcept
 size_t cstr::find_filename() const noexcept
 {
     if (empty())
-        tt::npos;
+        return tt::npos;
 
     auto pos = find_last_of('/');
 
