@@ -35,10 +35,11 @@ Files:
     winsrc/ttfiledlg.cpp       # ttCFileDlg class
     winsrc/ttloadstr.cpp       # Load a language-specific version of a string resource
     winsrc/ttmultibtn.cpp      # ttlib::MultiBtn class
+    winsrc/ttregistry.cpp      # ttlib::registry -- class for working with Windows registry
     winsrc/ttshadebtn.cpp      # ttCShadeBtn class
     winsrc/ttthrdpool.cpp      # ttlib::ThrdPool
-    winsrc/ttwin.cpp           # ttCWin class
+    winsrc/ttwin.cpp           # ttlib::win class
 
     winsrc/ttdebug.cpp         # debug and assertion handling
-    winsrc/ttwindlg.cpp        # Class for creating a Modal or Modeless dialog box
+    winsrc/ttwindlg.cpp        # ttlib::dlg -- class for creating a Modal or Modeless dialog box
     winsrc/ttwinspace.cpp      # Windows-only ttlib namespace functions
