@@ -50,7 +50,6 @@ ThrdPool::ThrdPool(ThreadFunction function)
             continue;
         }
     }
-
 };
 
 ThrdPool::~ThrdPool()
@@ -90,7 +89,7 @@ void ThrdPool::WaitForThreadsToComplete()
 
 DWORD WINAPI ttlib::PoolThread(void* pv)
 {
-    auto ThrdPool  = reinterpret_cast<ttlib::ThrdPool*>(pv);
+    auto ThrdPool = reinterpret_cast<ttlib::ThrdPool*>(pv);
     DWORD thrdID = GetCurrentThreadId();
     for (auto& thrdInfo: ThrdPool->m_threads)
     {

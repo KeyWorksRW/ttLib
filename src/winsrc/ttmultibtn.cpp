@@ -59,9 +59,7 @@ void MultiBtn::Initialize(HWND hwndParent, tt::SHADE shade)
 
 void MultiBtn::SetIcon(int idBtn, int idIcon, UINT nIconAlign)
 {
-    ttASSERT_MSG(
-        m_Buttons.size(),
-        "Calling SetIcon without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
+    ttASSERT_MSG(m_Buttons.size(), "Calling SetIcon without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
 
     for (auto pbtn: m_Buttons)
     {
@@ -81,9 +79,7 @@ void MultiBtn::SetIcon(int idBtn, int idIcon, UINT nIconAlign)
 
 void MultiBtn::SetIcon(int idBtn, const std::string& IconName, UINT nIconAlign)
 {
-    ttASSERT_MSG(
-        m_Buttons.size(),
-        "Calling SetIcon without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
+    ttASSERT_MSG(m_Buttons.size(), "Calling SetIcon without any buttons to set (Initialize not called? EnableShadeBtns not called?)");
 
     for (auto pbtn: m_Buttons)
     {

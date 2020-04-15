@@ -36,8 +36,8 @@ INT_PTR dlg::DoModal(HWND hwndParent)
         m_hwndParent = hwndParent;
 
     m_isModeless = false;
-    INT_PTR result = ::DialogBoxParamA(GetModuleHandle(NULL), MAKEINTRESOURCEA(m_idTemplate), m_hwndParent,
-                                       (DLGPROC) ttlib::DlgProc, (LPARAM) this);
+    INT_PTR result =
+        ::DialogBoxParamA(GetModuleHandle(NULL), MAKEINTRESOURCEA(m_idTemplate), m_hwndParent, (DLGPROC) ttlib::DlgProc, (LPARAM) this);
 
 #if !defined(NDEBUG)  // Starts debug section.
     // If creation failed because there was no dialog resource, report that specific condition in Debug builds.
@@ -60,8 +60,8 @@ HWND dlg::DoModeless(HWND hwndParent)
     if (hwndParent)
         m_hwndParent = hwndParent;
     m_isModeless = true;
-    return ::CreateDialogParamA(GetModuleHandle(NULL), MAKEINTRESOURCEA(m_idTemplate), m_hwndParent,
-                                (DLGPROC) ttlib::DlgProc, (LPARAM) this);
+    return ::CreateDialogParamA(GetModuleHandle(NULL), MAKEINTRESOURCEA(m_idTemplate), m_hwndParent, (DLGPROC) ttlib::DlgProc,
+                                (LPARAM) this);
 }
 
 INT_PTR WINAPI ttlib::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam)

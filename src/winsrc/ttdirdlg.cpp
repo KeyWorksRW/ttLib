@@ -17,8 +17,8 @@
 #include <shlobj.h>
 
 #include "ttTR.h"
+#include "ttdebug.h"  // ttASSERT macros
 #include "ttlibspace.h"
-#include "ttdebug.h"   // ttASSERT macros
 
 #include "ttdirdlg.h"  // DirDlg
 

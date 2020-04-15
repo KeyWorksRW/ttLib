@@ -78,8 +78,7 @@ void win::SetClassName(std::string_view ClassName)
 }
 
 // If not already registered, this will register the class and delete m_pwc before calling CreateWindowExA.
-bool win::CreateWnd(const std::string& Title, DWORD dwExStyle, DWORD dwStyle, HWND hwndParent, RECT* prcPosition,
-                    HMENU hmenu)
+bool win::CreateWnd(const std::string& Title, DWORD dwExStyle, DWORD dwStyle, HWND hwndParent, RECT* prcPosition, HMENU hmenu)
 {
     if (!isRegistered)
     {
@@ -105,12 +104,11 @@ bool win::CreateWnd(const std::string& Title, DWORD dwExStyle, DWORD dwStyle, HW
     ttlib::utf8to16(Title, title16);
 
     if (prcPosition != NULL)
-        ::CreateWindowExW(dwExStyle, m_ClassName.c_str(), title16.c_str(), dwStyle, prcPosition->left,
-                          prcPosition->top, ttlib::rcWidth(prcPosition), ttlib::rcHeight(prcPosition), hwndParent,
-                          hmenu, m_WndClass.hInstance, (void*) this);
+        ::CreateWindowExW(dwExStyle, m_ClassName.c_str(), title16.c_str(), dwStyle, prcPosition->left, prcPosition->top,
+                          ttlib::rcWidth(prcPosition), ttlib::rcHeight(prcPosition), hwndParent, hmenu, m_WndClass.hInstance, (void*) this);
     else
-        ::CreateWindowExW(dwExStyle, m_ClassName.c_str(), title16.c_str(), dwStyle, CW_USEDEFAULT, CW_USEDEFAULT,
-                          CW_USEDEFAULT, CW_USEDEFAULT, hwndParent, hmenu, m_WndClass.hInstance, (void*) this);
+        ::CreateWindowExW(dwExStyle, m_ClassName.c_str(), title16.c_str(), dwStyle, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+                          CW_USEDEFAULT, hwndParent, hmenu, m_WndClass.hInstance, (void*) this);
 
     return (m_hwnd && IsWindow(m_hwnd));
 }

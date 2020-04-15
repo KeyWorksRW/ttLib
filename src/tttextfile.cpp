@@ -121,8 +121,7 @@ size_t textfile::FindLineContaining(std::string_view str, size_t start, tt::CASE
     return tt::npos;
 }
 
-size_t textfile::ReplaceInLine(std::string_view orgStr, std::string_view newStr, size_t posLine,
-                               tt::CASE checkcase)
+size_t textfile::ReplaceInLine(std::string_view orgStr, std::string_view newStr, size_t posLine, tt::CASE checkcase)
 {
     for (; posLine < size(); ++posLine)
     {

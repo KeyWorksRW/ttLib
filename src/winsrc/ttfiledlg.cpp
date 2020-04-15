@@ -27,8 +27,7 @@ ttCFileDlg::ttCFileDlg(HWND hwndParent)
     m_ofn.lpstrFile = m_cszFileName.data();
     m_ofn.nMaxFile = MAX_PATH;
     m_ofn.lpfnHook = ttpriv::OFNHookProc;
-    m_ofn.Flags = OFN_ENABLESIZING | OFN_EXPLORER | OFN_ENABLEHOOK | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY |
-                  OFN_DONTADDTORECENT;
+    m_ofn.Flags = OFN_ENABLESIZING | OFN_EXPLORER | OFN_ENABLEHOOK | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_DONTADDTORECENT;
     m_ofn.lCustData = (LPARAM) this;
 
     m_bRepositionWindow = false;
@@ -160,8 +159,8 @@ UINT_PTR CALLBACK ttpriv::OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */,
                 if (pThis->m_bRepositionWindow)
                 {
                     pThis->m_bRepositionWindow = false;
-                    MoveWindow(GetParent(hdlg), pThis->m_rcPosition.left, pThis->m_rcPosition.top,
-                               ttlib::rcWidth(pThis->m_rcPosition), ttlib::rcHeight(pThis->m_rcPosition), FALSE);
+                    MoveWindow(GetParent(hdlg), pThis->m_rcPosition.left, pThis->m_rcPosition.top, ttlib::rcWidth(pThis->m_rcPosition),
+                               ttlib::rcHeight(pThis->m_rcPosition), FALSE);
                 }
             }
             break;

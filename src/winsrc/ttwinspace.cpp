@@ -36,8 +36,7 @@ int ttlib::MsgBox(std::string_view utf8str, UINT uType)
 {
     std::wstring str16;
     ttlib::utf8to16(utf8str, str16);
-    return MessageBoxW(GetActiveWindow(), str16.c_str(),
-                       (!ttlib::MsgBoxTitle.empty() ? ttlib::MsgBoxTitle.c_str() : L""), uType);
+    return MessageBoxW(GetActiveWindow(), str16.c_str(), (!ttlib::MsgBoxTitle.empty() ? ttlib::MsgBoxTitle.c_str() : L""), uType);
 }
 
 int ttlib::MsgBox(std::string_view utf8str, std::string_view utf8Caption, UINT uType)
@@ -55,8 +54,7 @@ int ttlib::MsgBox(WORD idStrResource, UINT uType)
     std::wstring str16;
     ttlib::utf8to16(LoadStringEx(idStrResource), str16);
 
-    return MessageBoxW(GetActiveWindow(), str16.c_str(),
-                       (!ttlib::MsgBoxTitle.empty() ? ttlib::MsgBoxTitle.c_str() : L""), uType);
+    return MessageBoxW(GetActiveWindow(), str16.c_str(), (!ttlib::MsgBoxTitle.empty() ? ttlib::MsgBoxTitle.c_str() : L""), uType);
 }
 
 bool ttlib::GetWndText(HWND hwnd, std::string& str)
@@ -159,8 +157,7 @@ ttlib::cstr ttlib::LoadTextResource(DWORD idResource, HMODULE hmodResource)
     return str;
 }
 
-HINSTANCE ttlib::ShellRun(std::string_view filename, std::string_view args, std::string_view dir, INT nShow,
-                          HWND hwndParent)
+HINSTANCE ttlib::ShellRun(std::string_view filename, std::string_view args, std::string_view dir, INT nShow, HWND hwndParent)
 {
     std::wstring name16;
     ttlib::utf8to16(filename, name16);

@@ -8,9 +8,9 @@
 
 #include "pch.h"
 
-#include <locale>
 #include <cassert>
 #include <cctype>
+#include <locale>
 
 #include "ttnamespace.h"
 
@@ -38,7 +38,7 @@ size_t tt::gethash(std::string_view str)
 
     size_t hash = 5381;
 
-    for (auto iter : str)
+    for (auto iter: str)
         hash = ((hash << 5) + hash) ^ iter;
 
     return hash;

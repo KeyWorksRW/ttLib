@@ -341,7 +341,7 @@ size_t cview::gethash() const noexcept
 
     size_t hash = 5381;
 
-    for (auto iter : *this)
+    for (auto iter: *this)
     {
         hash = ((hash << 5) + hash) ^ iter;
     }

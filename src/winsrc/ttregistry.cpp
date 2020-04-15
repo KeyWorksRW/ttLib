@@ -37,8 +37,7 @@ bool registry::Create(std::string_view name, HKEY hkey)
 
     std::wstring name16;
     utf8to16(name, name16);
-    return (RegCreateKeyExW(hkey, name16.c_str(), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &m_hkey,
-                            NULL) == ERROR_SUCCESS);
+    return (RegCreateKeyExW(hkey, name16.c_str(), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &m_hkey, NULL) == ERROR_SUCCESS);
 }
 
 std::string registry::ReadString(std::string_view name)
@@ -103,8 +102,7 @@ size_t registry::ReadValue(std::string_view name)
     DWORD type;
     DWORD size = 0;
 
-    if (RegQueryValueExW(m_hkey, name16.c_str(), NULL, &type, reinterpret_cast<LPBYTE>(&result), &size) !=
-        ERROR_SUCCESS)
+    if (RegQueryValueExW(m_hkey, name16.c_str(), NULL, &type, reinterpret_cast<LPBYTE>(&result), &size) != ERROR_SUCCESS)
     {
         return tt::npos;
     }
@@ -125,6 +123,6 @@ bool registry::WriteValue(std::string_view name, size_t value)
     std::wstring name16;
     ttlib::utf8to16(name, name16);
 
-    return (RegSetValueExW(m_hkey, name16.c_str(), 0, sizeof(value) == 32 ? REG_DWORD : REG_QWORD,
-                           reinterpret_cast<LPBYTE>(&value), sizeof(value)) == ERROR_SUCCESS);
+    return (RegSetValueExW(m_hkey, name16.c_str(), 0, sizeof(value) == 32 ? REG_DWORD : REG_QWORD, reinterpret_cast<LPBYTE>(&value),
+                           sizeof(value)) == ERROR_SUCCESS);
 }

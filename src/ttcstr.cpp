@@ -11,14 +11,14 @@
 #include <cassert>
 #include <cctype>
 #include <cstdarg>
+#include <cstdlib>
 #include <iomanip>
 #include <ios>
 #include <locale>
-#include <cstdlib>
 #include <sstream>
 
-#include "ttlibspace.h"
 #include "ttcstr.h"
+#include "ttlibspace.h"
 
 using namespace ttlib;
 using namespace tt;
@@ -43,7 +43,7 @@ bool cstr::issameprefix(std::string_view str, CASE checkcase) const
     if (checkcase == CASE::exact)
     {
         auto iterMain = begin();
-        for (auto iterSub : str)
+        for (auto iterSub: str)
         {
             if (*iterMain++ != iterSub)
                 return false;
@@ -53,7 +53,7 @@ bool cstr::issameprefix(std::string_view str, CASE checkcase) const
     else if (checkcase == CASE::either)
     {
         auto iterMain = begin();
-        for (auto iterSub : str)
+        for (auto iterSub: str)
         {
             if (std::tolower(*iterMain++) != std::tolower(iterSub))
                 return false;
@@ -64,7 +64,7 @@ bool cstr::issameprefix(std::string_view str, CASE checkcase) const
     {
         auto utf8locale = std::locale("en_US.utf8");
         auto iterMain = begin();
-        for (auto iterSub : str)
+        for (auto iterSub: str)
         {
             if (std::tolower(*iterMain++, utf8locale) != std::tolower(iterSub, utf8locale))
                 return false;
@@ -157,8 +157,7 @@ std::string_view cstr::ViewSubString(size_t offset, char chBegin, char chEnd)
             // is unnecessary. Should we support it?
 
             // only check quotes -- a slash is valid before other character pairs.
-            if (at(offset) == '\\' && (chBegin == '"' || chBegin == '\'') && offset + 1 < size() &&
-                (at(offset + 1) == chEnd))
+            if (at(offset) == '\\' && (chBegin == '"' || chBegin == '\'') && offset + 1 < size() && (at(offset + 1) == chEnd))
             {
                 // step over an escaped quote if the string to fetch is within a quote
                 offset += 2;
@@ -209,8 +208,7 @@ size_t cstr::AssignSubString(std::string_view src, char chBegin, char chEnd)
             // is unnecessary. Should we support it?
 
             // only check quotes -- a slash is valid before other character pairs.
-            if (src[pos] == '\\' && (chBegin == '"' || chBegin == '\'') && pos + 1 < src.length() &&
-                (src[pos + 1] == chEnd))
+            if (src[pos] == '\\' && (chBegin == '"' || chBegin == '\'') && pos + 1 < src.length() && (src[pos + 1] == chEnd))
             {
                 // step over an escaped quote if the string to fetch is within a quote
                 pos += 2;
@@ -275,8 +273,7 @@ size_t cstr::ExtractSubString(std::string_view src, size_t start)
     for (++pos; pos < src.length(); ++pos)
     {
         // only check quotes -- a slash is valid before other character pairs.
-        if (src[pos] == '\\' && (chBegin == '"' || chBegin == '\'') && pos + 1 < src.length() &&
-            (src[pos + 1] == chEnd))
+        if (src[pos] == '\\' && (chBegin == '"' || chBegin == '\'') && pos + 1 < src.length() && (src[pos + 1] == chEnd))
         {
             // step over an escaped quote if the string to fetch is within a quote
             ++pos;
@@ -383,7 +380,7 @@ size_t cstr::gethash() const noexcept
 
     size_t hash = 5381;
 
-    for (auto iter : *this)
+    for (auto iter: *this)
     {
         hash = ((hash << 5) + hash) ^ iter;
     }
@@ -961,8 +958,7 @@ cstr& cdecl cstr::Format(std::string_view format, ...)
                 if (kflag)
                     previous = buffer.imbue(previous);
             }
-            else if (format.at(pos) == 'u' || format.at(pos) == 'o' || format.at(pos) == 'x' ||
-                     format.at(pos) == 'X')
+            else if (format.at(pos) == 'u' || format.at(pos) == 'o' || format.at(pos) == 'x' || format.at(pos) == 'X')
             {
                 std::locale previous;
                 if (kflag)

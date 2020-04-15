@@ -71,8 +71,7 @@ bool ttAssertionMsg(const char* filename, const char* function, int line, const 
 
     std::wstring str16;
     ttlib::utf8to16(copy, str16);
-    auto answer =
-        MessageBoxW(GetActiveWindow(), str16.c_str(), L"Assertion failed!", MB_ABORTRETRYIGNORE | MB_ICONSTOP);
+    auto answer = MessageBoxW(GetActiveWindow(), str16.c_str(), L"Assertion failed!", MB_ABORTRETRYIGNORE | MB_ICONSTOP);
 
     if (answer == IDRETRY)
     {
@@ -150,8 +149,7 @@ void ttlib::wintrace(const std::string& msg)
 
     if (!ttdbg::hTraceMapping)
     {
-        ttdbg::hTraceMapping =
-            CreateFileMappingA(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 4096, ttlib::txtTraceShareName);
+        ttdbg::hTraceMapping = CreateFileMappingA(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 4096, ttlib::txtTraceShareName);
         if (!ttdbg::hTraceMapping)
         {
             ttlib::hwndTrace = NULL;

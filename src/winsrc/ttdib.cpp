@@ -124,8 +124,8 @@ long ttCDib::Draw(HDC pDC, long xoffset, long yoffset)
         // palette must be correctly filled
         auto lpDIB = m_dib;  // set image to hdc...
         SetStretchBltMode(pDC, COLORONCOLOR);
-        SetDIBitsToDevice(pDC, xoffset, yoffset, m_bi.biWidth, m_bi.biHeight, 0, 0, 0, m_bi.biHeight, GetBits(),
-                          (BITMAPINFO*) lpDIB, DIB_RGB_COLORS);
+        SetDIBitsToDevice(pDC, xoffset, yoffset, m_bi.biWidth, m_bi.biHeight, 0, 0, 0, m_bi.biHeight, GetBits(), (BITMAPINFO*) lpDIB,
+                          DIB_RGB_COLORS);
         return 1;
     }
     return 0;
@@ -138,8 +138,8 @@ long ttCDib::Stretch(HDC pDC, long xoffset, long yoffset, long xsize, long ysize
         // palette must be correctly filled
         auto lpDIB = m_dib;  // set image to hdc...
         SetStretchBltMode(pDC, COLORONCOLOR);
-        StretchDIBits(pDC, xoffset, yoffset, xsize, ysize, 0, 0, m_bi.biWidth, m_bi.biHeight, GetBits(),
-                      (BITMAPINFO*) lpDIB, DIB_RGB_COLORS, SRCCOPY);
+        StretchDIBits(pDC, xoffset, yoffset, xsize, ysize, 0, 0, m_bi.biWidth, m_bi.biHeight, GetBits(), (BITMAPINFO*) lpDIB,
+                      DIB_RGB_COLORS, SRCCOPY);
         return 1;
     }
     return 0;
@@ -272,8 +272,7 @@ BYTE ttCDib::GetNearestIndex(RGBQUAD c)
     long k, l;
     for (i = 0, l = 0; i < m_nColors; i++, l += sizeof(RGBQUAD))
     {
-        k = (iDst[l] - c.rgbBlue) * (iDst[l] - c.rgbBlue) +
-            (iDst[l + 1] - c.rgbGreen) * (iDst[l + 1] - c.rgbGreen) +
+        k = (iDst[l] - c.rgbBlue) * (iDst[l] - c.rgbBlue) + (iDst[l + 1] - c.rgbGreen) * (iDst[l + 1] - c.rgbGreen) +
             (iDst[l + 2] - c.rgbRed) * (iDst[l + 2] - c.rgbRed);
         if (k == 0)
         {
@@ -323,8 +322,7 @@ RGBQUAD ttCDib::RGBtoHSL(RGBQUAD lRGBColor)
         if (L <= (HSLMAX / 2))  // saturation
             S = (((cMax - cMin) * HSLMAX) + ((cMax + cMin) / 2)) / (cMax + cMin);
         else
-            S = ((((cMax - cMin) * HSLMAX) + ((2 * RGBMAX - cMax - cMin) / 2)) / (2 * RGBMAX - cMax - cMin)) &
-                0xFF;
+            S = ((((cMax - cMin) * HSLMAX) + ((2 * RGBMAX - cMax - cMin) / 2)) / (2 * RGBMAX - cMax - cMin)) & 0xFF;
         // hue
         Rdelta = (((cMax - R) * (HSLMAX / 6)) + ((cMax - cMin) / 2)) / (cMax - cMin);
         Gdelta = (((cMax - G) * (HSLMAX / 6)) + ((cMax - cMin) / 2)) / (cMax - cMin);
