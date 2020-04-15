@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttCRegistry class
+// Name:      ttlib::registry class
 // Purpose:   Class for working with the Windows registry
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 1998-2020 KeyWorks Software (Ralph Walden)
