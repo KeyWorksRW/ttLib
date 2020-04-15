@@ -2,23 +2,23 @@
 // Name:      color.cpp
 // Purpose:   Sets/restores console foreground color
 // Author:    Ralph Walden
-// Copyright: Copyright (c) 2019 KeyWorks Software (Ralph Walden)
+// Copyright: Copyright (c) 2019-2020 KeyWorks Software (Ralph Walden)
 // License:   Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
 #include "pch.h"
 
-#include <cstdio>  // for printf
-
-#include "ttconsole.h"  // ttConsoleColor
-
-#ifdef __clang__
-    #pragma GCC diagnostic ignored "-Wformat-security"  // format string is not a string literal (potentially insecure)
+#if !defined(_WIN32)
+    #include <cstdlib>
 #endif
 
-ttConsoleColor::ttConsoleColor(int clr)
+#include "ttconsole.h"  // concolor
+
+using namespace ttlib;
+
+concolor::concolor(int clr)
 {
-#if defined(_WIN32) && !defined(PTEST)
+#if defined(_WIN32)
     // save the current color on Windows. Not needed for ansi-enabled consoles which use reset
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
@@ -28,14 +28,14 @@ ttConsoleColor::ttConsoleColor(int clr)
     SetColor(clr);
 }
 
-ttConsoleColor::~ttConsoleColor()
+concolor::~concolor()
 {
     ResetColor();
 };
 
-void ttConsoleColor::SetColor(int clr)
+void concolor::SetColor(int clr)
 {
-#if defined(_WIN32) && !defined(PTEST)
+#if defined(_WIN32)
     auto hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
     CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -44,72 +44,72 @@ void ttConsoleColor::SetColor(int clr)
     SetConsoleTextAttribute(hConsole, (csbi.wAttributes & 0xFFF0) | (WORD) clr);  // Foreground colors take up the least significant byte
 
 #else   // following section uses ANSI escape codes
-    const char* pszClr;
+    const char* color;
 
     switch (clr)
     {
         case BLACK:
-            pszClr = "\033[22;30m";
+            color = "\033[22;30m";
             break;
         case BLUE:
-            pszClr = "\033[22;34m";
+            color = "\033[22;34m";
             break;
         case GREEN:
-            pszClr = "\033[22;32m";
+            color = "\033[22;32m";
             break;
         case CYAN:
-            pszClr = "\033[22;36m";
+            color = "\033[22;36m";
             break;
         case RED:
-            pszClr = "\033[22;31m";
+            color = "\033[22;31m";
             break;
         case MAGENTA:
-            pszClr = "\033[22;35m";
+            color = "\033[22;35m";
             break;
         case BROWN:
-            pszClr = "\033[22;33m";
+            color = "\033[22;33m";
             break;
         case GREY:
-            pszClr = "\033[22;37m";
+            color = "\033[22;37m";
             break;
         case DARKGREY:
-            pszClr = "\033[01;30m";
+            color = "\033[01;30m";
             break;
         case LIGHTBLUE:
-            pszClr = "\033[01;34m";
+            color = "\033[01;34m";
             break;
         case LIGHTGREEN:
-            pszClr = "\033[01;32m";
+            color = "\033[01;32m";
             break;
         case LIGHTCYAN:
-            pszClr = "\033[01;36m";
+            color = "\033[01;36m";
             break;
         case LIGHTRED:
-            pszClr = "\033[01;31m";
+            color = "\033[01;31m";
             break;
         case LIGHTMAGENTA:
-            pszClr = "\033[01;35m";
+            color = "\033[01;35m";
             break;
         case YELLOW:
-            pszClr = "\033[01;33m";
+            color = "\033[01;33m";
             break;
         case WHITE:
-            pszClr = "\033[01;37m";
+            color = "\033[01;37m";
             break;
         default:
-            pszClr = "";
+            color = "";
             break;
     }
 
-    printf(pszClr);
-#endif  // defined(_WIN32) && !defined(PTEST)
+    std::cout << color;
+#endif  // !defined(_WIN32)
 }
 
-void ttConsoleColor::ResetColor()
+void concolor::ResetColor()
 {
 #if defined(_WIN32) && !defined(PTEST)
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD) m_defAttributes);
 #else
-    printf("\033[0m");
+    std::cout << "\033[0m";
 #endif
 }
