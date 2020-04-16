@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- Combined ttLibwin, wxWidgets, and STL visualizers -->
+<!-- Combined ttLib, wxWidgets, and STL visualizers -->
 
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
     <!-- ttLib visualizers -->
 
-    <Type Name="ttCStr">
-      <DisplayString>{m_psz,s}</DisplayString>
-    </Type>
-
     <Type Name="ttlib::winff">
+      <DisplayString>{m_filename,s}</DisplayString>
+    </Type>
+    <Type Name="ttlib::openfile">
       <DisplayString>{m_filename,s}</DisplayString>
     </Type>
 
@@ -27,68 +26,6 @@
         <StringView>m_impl</StringView>
     </Type>
 
-    <Type Name="wxPoint">
-        <DisplayString>{x}, {y}</DisplayString>
-    </Type>
-
-    <Type Name="wxSize">
-        <DisplayString>{x} × {y}</DisplayString>
-    </Type>
-
-    <Type Name="wxRect">
-        <DisplayString>{x}, {y} {width} × {height}</DisplayString>
-    </Type>
-
-    <Type Name="wxLongLong">
-        <DisplayString>{m_ll}</DisplayString>
-    </Type>
-
-    <Type Name="wxULongLong">
-        <DisplayString>{m_ll}</DisplayString>
-    </Type>
-
-    <Type Name="wxArrayString">
-        <DisplayString Condition="m_nCount==0">empty</DisplayString>
-        <DisplayString Condition="m_nCount==1">{m_pItems[0]}</DisplayString>
-        <DisplayString Condition="m_nCount==2">{m_pItems[0]} and {m_pItems[1]}</DisplayString>
-        <DisplayString>size={m_nCount}: {m_pItems[0]}, {m_pItems[1]}, ...</DisplayString>
-        <Expand>
-            <ArrayItems>
-                <Size>m_nCount</Size>
-                <ValuePointer>m_pItems</ValuePointer>
-            </ArrayItems>
-        </Expand>
-    </Type>
-
-    <!--
-        Defining visualizer for wxListBase is not really useful, so do it for
-        the most commonly used "concrete" list type.
-     -->
-    <Type Name="wxWindowList">
-        <DisplayString>size={m_count}</DisplayString>
-        <Expand>
-            <Item Name="[size]">m_count</Item>
-            <LinkedListItems>
-                <Size>m_count</Size>
-                <HeadPointer>m_nodeFirst</HeadPointer>
-                <NextPointer>m_next</NextPointer>
-                <ValueNode>(wxWindow*)m_data</ValueNode>
-            </LinkedListItems>
-        </Expand>
-    </Type>
-
-    <Type Name="wxVector&lt;*&gt;">
-        <DisplayString>size={m_size}</DisplayString>
-        <Expand>
-            <Item Name="[size]">m_size</Item>
-            <Item Name="[capacity]">m_capacity</Item>
-            <ArrayItems>
-                <Size>m_size</Size>
-                <ValuePointer>m_values</ValuePointer>
-            </ArrayItems>
-        </Expand>
-    </Type>
-
     <!-- stl visualizers -->
   <Type Name="std::_Compressed_pair&lt;*,*,1&gt;">
       <DisplayString>{*($T1 *)this}</DisplayString>
@@ -104,13 +41,11 @@
       </Expand>
   </Type>
 
-
   <Type Name="std::exception_ptr">
       <CustomVisualizer Condition="_Data1 != 0" VisualizerId="CEB58A03-E78D-4D19-9AE7-4738E200649E" />
       <DisplayString Condition="_Data1 == 0">null</DisplayString>
       <Expand/>
   </Type>
-
 
   <Type Name="std::initializer_list&lt;*&gt;">
       <DisplayString>{{ size={_Last - _First} }}</DisplayString>
@@ -122,7 +57,6 @@
       </Expand>
   </Type>
 
-
   <Type Name="std::pair&lt;*&gt;">
       <DisplayString IncludeView="noparens">{first}, {second}</DisplayString>
       <DisplayString ExcludeView="noparens">({first}, {second})</DisplayString>
@@ -131,7 +65,6 @@
           <Item Name="second">second</Item>
       </Expand>
   </Type>
-
 
   <Type Name="std::tuple&lt;&gt;">
       <DisplayString IncludeView="noparens"></DisplayString>
