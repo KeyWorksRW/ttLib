@@ -1,0 +1,125 @@
+/////////////////////////////////////////////////////////////////////////////
+// Name:      ttlib::openfile
+// Purpose:   Wrapper around Windows GetOpenFileName() API
+// Author:    Ralph Walden
+// Copyright: Copyright (c) 2020 KeyWorks Software (Ralph Walden)
+// License:   MIT License (see %lic_name%)
+/////////////////////////////////////////////////////////////////////////////
+
+#include "pch.h"
+
+#if !defined(_WIN32)
+    #error "This module can only be compiled for Windows"
+#endif
+
+#include "ttopenfile.h"
+
+using namespace ttlib;
+
+openfile::openfile(HWND hwndParent) : OPENFILENAMEW()
+{
+    m_filename16.resize(MAX_PATH, 0);
+
+    lStructSize = sizeof(OPENFILENAMEW);
+    hwndOwner = hwndParent ? hwndParent : GetActiveWindow();
+    lpstrFile = m_filename16.data();
+    nMaxFile = static_cast<DWORD>(m_filename16.capacity());
+    Flags = OFN_ENABLESIZING | OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_DONTADDTORECENT;
+    lCustData = reinterpret_cast<LPARAM>(this);
+
+    ttlib::cstr cwd;
+    cwd.assignCwd();
+    SetInitialDir(cwd);
+}
+
+bool openfile::GetOpenName()
+{
+    m_filename.clear();
+
+    if (!::GetOpenFileNameW(this))
+    {
+        return false;
+    }
+
+    ttlib::utf16to8(m_filename16, m_filename);
+    return true;
+}
+
+bool openfile::GetSaveName()
+{
+    m_filename.clear();
+
+    Flags &= ~OFN_FILEMUSTEXIST;
+    Flags |= OFN_NOREADONLYRETURN | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
+
+    if (!::GetSaveFileNameW(this))
+    {
+        m_filename.clear();
+        return false;
+    }
+
+    ttlib::utf16to8(m_filename16, m_filename);
+    return true;
+}
+
+void openfile::SetFilter(std::string_view filters)
+{
+    ttlib::utf8to16(filters, m_filters16);
+    if (m_filters16.back() != L'|')
+        m_filters16 += '|';
+
+    // Windows wants each filter part to be zero-terminated, so replace | with a zero
+    size_t pos = 0;
+    while (pos = m_filters16.find(L'|', pos), pos != tt::npos)
+    {
+        m_filters16[pos++] = 0;
+    }
+    lpstrFilter = m_filters16.data();
+}
+
+void openfile::SetInitialDir(std::string_view dir)
+{
+    ttlib::utf8to16(dir, m_initialDir16);
+    lpstrInitialDir = m_initialDir16.data();
+}
+
+void openfile::SetInitialFileName(std::string_view filename)
+{
+    ttlib::utf8to16(filename, m_filename16);
+    lpstrFile = m_filename16.data();
+}
+
+void openfile::EnableShadeBtns(bool Enable)
+{
+    m_ShadeBtns = Enable;
+    if (Enable)
+    {
+        lpfnHook = ttlib::OFNHookProc;
+        Flags |= OFN_ENABLEHOOK;
+    }
+    else
+    {
+        lpfnHook = NULL;
+        Flags &= ~OFN_ENABLEHOOK;
+    }
+}
+
+UINT_PTR CALLBACK ttlib::OFNHookProc(HWND hdlg, UINT uMsg, WPARAM /* wParam */, LPARAM lParam)
+{
+    if (uMsg == WM_INITDIALOG)
+    {
+        SetWindowLongPtrW(hdlg, GWLP_USERDATA, ((OPENFILENAMEW*) lParam)->lCustData);
+        auto pthis = reinterpret_cast<ttlib::openfile*>(GetWindowLongPtr(hdlg, GWLP_USERDATA));
+
+        if (pthis->m_ShadeBtns)
+        {
+            pthis->m_ShadedBtns.Initialize(GetParent(hdlg));
+            if (pthis->m_idOpenIcon != static_cast<UINT>(-1))
+                pthis->m_ShadedBtns.SetIcon(IDOK, pthis->m_idOpenIcon);
+            if (pthis->m_idCancelIcon != static_cast<UINT>(-1))
+                pthis->m_ShadedBtns.SetIcon(IDCANCEL, pthis->m_idCancelIcon);
+        }
+        return TRUE;
+    }
+    return 0;
+}

@@ -32,9 +32,9 @@ Files:
 
     winsrc/ttdib.cpp           # ttCDib class
     winsrc/ttdirdlg.cpp        # dialog for selecting a directory
-    winsrc/ttfiledlg.cpp       # ttCFileDlg class
     winsrc/ttloadstr.cpp       # Load a language-specific version of a string resource
     winsrc/ttmultibtn.cpp      # ttlib::MultiBtn class
+    winsrc/ttopenfile.cpp      # Wrapper around Windows GetOpenFileName() API
     winsrc/ttregistry.cpp      # ttlib::registry -- class for working with Windows registry
     winsrc/ttshadebtn.cpp      # ttCShadeBtn class
     winsrc/ttthrdpool.cpp      # ttlib::ThrdPool
