@@ -40,8 +40,9 @@ namespace ttlib
 
         ttlib::cstr& filename() { return m_filename; }
 
-        const char* c_str() { return filename().c_str(); }
-        operator const char*() { return filename().c_str(); }
+        const char* c_str() const noexcept { return m_filename.c_str(); }
+        operator const char*() const noexcept { return m_filename.c_str(); }
+        operator std::string_view() const noexcept { return m_filename.subview(0, m_filename.length()); }
 
         /// Separate filters names with a '|' character as in "My Files|*.cpp;*.h|Your Files|*.c"
         void SetFilter(std::string_view filters);

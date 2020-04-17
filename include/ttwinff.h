@@ -51,8 +51,7 @@ namespace ttlib
         {
             std::wstring str16;
             ttlib::utf8to16(filepattern, str16);
-            m_hfind = FindFirstFileExW(str16.c_str(), FindExInfoBasic, this, FindExSearchNameMatch, nullptr,
-                                       FIND_FIRST_EX_LARGE_FETCH);
+            m_hfind = FindFirstFileExW(str16.c_str(), FindExInfoBasic, this, FindExSearchNameMatch, nullptr, FIND_FIRST_EX_LARGE_FETCH);
 
             // Use same rule as std::filesystem directory_iterator and skip . and ..
             // If this is an empty directory, then the find handle will be closed and isvalid()
@@ -101,8 +100,7 @@ namespace ttlib
                 FindClose(m_hfind);
             std::wstring str16;
             ttlib::utf8to16(filepattern, str16);
-            m_hfind = FindFirstFileExW(str16.c_str(), FindExInfoBasic, this, FindExSearchNameMatch, nullptr,
-                                       FIND_FIRST_EX_LARGE_FETCH);
+            m_hfind = FindFirstFileExW(str16.c_str(), FindExInfoBasic, this, FindExSearchNameMatch, nullptr, FIND_FIRST_EX_LARGE_FETCH);
             m_filename.assignUTF16(cFileName);
 
             // Use same rule as std::filesystem directory_iterator and skip . and ..
@@ -115,9 +113,10 @@ namespace ttlib
             return isvalid();
         }
 
-        const char* c_str() const { return m_filename.c_str(); }
-        operator const char*() const { return m_filename.c_str(); }
+        const char* c_str() const noexcept { return m_filename.c_str(); }
+        operator const char*() const noexcept { return m_filename.c_str(); }
         operator DWORD() const { return dwFileAttributes; }
+        operator std::string_view() const noexcept { return m_filename.subview(0, m_filename.length()); }
 
         // Override [] to return char instead of w_char
 
