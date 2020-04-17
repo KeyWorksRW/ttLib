@@ -54,10 +54,10 @@ std::string registry::ReadString(std::string_view name)
     if (!size || (type != REG_SZ && type != REG_EXPAND_SZ))
         return result;
 
-    std::vector<wchar_t> buffer(size);
+    auto str16 = std::make_unique<wchar_t[]>(size + 1).get();
 
-    RegQueryValueExW(m_hkey, name16.c_str(), NULL, &type, reinterpret_cast<LPBYTE>(buffer.data()), &size);
-    ttlib::utf16to8(buffer, result);
+    RegQueryValueExW(m_hkey, name16.c_str(), NULL, &type, reinterpret_cast<LPBYTE>(str16), &size);
+    ttlib::utf16to8(str16, result);
     return result;
 }
 

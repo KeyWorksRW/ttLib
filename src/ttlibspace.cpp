@@ -521,13 +521,6 @@ ttlib::cstr ttlib::utf16to8(std::wstring_view str)
     return str8;
 }
 
-ttlib::cstr ttlib::utf16to8(std::vector<wchar_t> str)
-{
-    ttlib::cstr str8;
-    ttlib::utf16to8(str, str8);
-    return str8;
-}
-
 void ttlib::utf16to8(std::wstring_view str, std::string& dest)
 {
     for (size_t pos = 0; pos < str.size(); ++pos)
@@ -541,43 +534,6 @@ void ttlib::utf16to8(std::wstring_view str, std::string& dest)
         if (val < 0x80)
         {
             dest.push_back(CHAR8(val));
-        }
-        else if (val < 0x800)
-        {
-            dest.push_back(CHAR8((val >> 6) | 0xC0));
-            dest.push_back(CHAR8((val & 0x3f) | 0x80));
-        }
-        else if (val < 0x10000)
-        {
-            dest.push_back(CHAR8((val >> 12) | 0xE0));
-            dest.push_back(CHAR8(((val >> 6) & 0x3F) | 0x80));
-            dest.push_back(CHAR8((val & 0x3f) | 0x80));
-        }
-        else
-        {
-            dest.push_back(CHAR8((val >> 18) | 0xF0));
-            dest.push_back(CHAR8(((val >> 12) & 0x3F) | 0x80));
-            dest.push_back(CHAR8(((val >> 6) & 0x3F) | 0x80));
-            dest.push_back(CHAR8((val & 0x3f) | 0x80));
-        }
-    }
-}
-
-void ttlib::utf16to8(std::vector<wchar_t> str, std::string& dest)
-{
-    for (size_t pos = 0; pos < str.size(); ++pos)
-    {
-        uint32_t val = (str[pos] & 0xFFFF);
-        if (val >= 0xD800 && val <= 0xDBFF)
-        {
-            val = (val << 10) + (str[++pos] & 0xFFFF) + 0xFCA02400;
-        }
-
-        if (val < 0x80)
-        {
-            dest.push_back(CHAR8(val));
-            if (val == 0)
-                return;
         }
         else if (val < 0x800)
         {
@@ -652,54 +608,4 @@ void ttlib::utf8to16(std::string_view str, std::wstring& dest)
             }
         }
     }
-}
-
-void ttlib::utf8to16(std::string_view str, std::vector<wchar_t>& dest)
-{
-    for (size_t pos = 0; pos < str.length(); ++pos)
-    {
-        if (UINT8(str[pos]) < 0x80)
-            dest.push_back(CHAR16(str[pos]));
-        else
-        {
-            uint32_t val = (str[pos] & 0xFF);
-            if ((UINT8(str[pos]) >> 5) == 6)
-            {
-                assert(pos + 1 < str.size());
-                val = ((val << 6) & 0x7FF) + (str[++pos] & 0x3F);
-            }
-
-            else if ((UINT8(str[pos]) >> 4) == 14)
-            {
-                assert(pos + 2 < str.size());
-                val = ((val << 12) & 0xFFFF) + ((str[++pos] << 6) & 0xFFF);
-                val += (str[++pos] & 0x3F);
-            }
-
-            else if ((UINT8(str[pos]) >> 3) == 30)
-            {
-                assert(pos + 3 < str.size());
-                val = ((val << 18) & 0x1FFFFF) + ((str[++pos] << 12) & 0x3FFFF);
-                val += (str[++pos] << 6) & 0xFFF;
-                val += (str[++pos] & 0x3F);
-            }
-            else
-            {
-                assertm(str[pos], "Invalid UTF8 string");
-            }
-
-            if (val > 0xFFFF)
-            {
-                dest.push_back(CHAR16((val >> 10) + 0xD7C0));
-                dest.push_back(CHAR16((val & 0x3FF) + 0xDC00));
-            }
-            else
-            {
-                dest.push_back(CHAR16(val));
-            }
-        }
-    }
-
-    // Windows will be expecting a null-terminated string
-    dest.push_back(0);
 }

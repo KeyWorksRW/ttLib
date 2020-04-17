@@ -542,9 +542,11 @@ void ShadeBtn::OnPaint()
     int cb = GetWindowTextLengthW(m_hwnd);
     if (cb > 0)
     {
-        std::vector<wchar_t> buffer(cb + 1);
-        cb = GetWindowTextW(m_hwnd, buffer.data(), cb + 1);
-        Caption.assign(buffer.data(), cb);
+        ++cb;
+        auto str16 = std::make_unique<wchar_t[]>(cb).get();
+
+        cb = GetWindowTextW(m_hwnd, str16, cb);
+        Caption.assign(str16, cb);
     }
     else
     {

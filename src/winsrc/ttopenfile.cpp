@@ -18,12 +18,12 @@ using namespace ttlib;
 
 openfile::openfile(HWND hwndParent) : OPENFILENAMEW()
 {
-    m_filename16.resize(MAX_PATH, 0);
+    m_filename16 = std::make_unique<wchar_t[]>(MAX_PATH);
 
     lStructSize = sizeof(OPENFILENAMEW);
     hwndOwner = hwndParent ? hwndParent : GetActiveWindow();
-    lpstrFile = m_filename16.data();
-    nMaxFile = static_cast<DWORD>(m_filename16.capacity());
+    lpstrFile = m_filename16.get();
+    nMaxFile = MAX_PATH;
     Flags = OFN_ENABLESIZING | OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_DONTADDTORECENT;
     lCustData = reinterpret_cast<LPARAM>(this);
 
@@ -41,7 +41,7 @@ bool openfile::GetOpenName()
         return false;
     }
 
-    ttlib::utf16to8(m_filename16, m_filename);
+    ttlib::utf16to8(m_filename16.get(), m_filename);
     return true;
 }
 
@@ -58,7 +58,7 @@ bool openfile::GetSaveName()
         return false;
     }
 
-    ttlib::utf16to8(m_filename16, m_filename);
+    ttlib::utf16to8(m_filename16.get(), m_filename);
     return true;
 }
 
@@ -85,8 +85,11 @@ void openfile::SetInitialDir(std::string_view dir)
 
 void openfile::SetInitialFileName(std::string_view filename)
 {
-    ttlib::utf8to16(filename, m_filename16);
-    lpstrFile = m_filename16.data();
+    std::wstring str16;
+    ttlib::utf8to16(filename, str16);
+    ttASSERT(str16.length() < MAX_PATH);
+    lstrcpynW(m_filename16.get(), str16.c_str(), MAX_PATH);
+    lpstrFile = m_filename16.get();
 }
 
 void openfile::EnableShadeBtns(bool Enable)

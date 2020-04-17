@@ -59,12 +59,14 @@ int ttlib::MsgBox(WORD idStrResource, UINT uType)
 
 bool ttlib::GetWndText(HWND hwnd, std::string& str)
 {
-    auto cb = GetWindowTextLengthW(hwnd);
-    if (cb > 0)
+    auto len = GetWindowTextLengthW(hwnd);
+    if (len > 0)
     {
-        std::vector<wchar_t> buffer(cb);
-        cb = GetWindowTextW(hwnd, buffer.data(), cb);
-        ttlib::utf16to8(buffer, str);
+        ++len;  // Add room for trailing zero
+
+        auto str16 = std::make_unique<wchar_t[]>(len).get();
+        len = GetWindowTextW(hwnd, str16, len);
+        ttlib::utf16to8({ str16, static_cast<size_t>(len) }, str);
         return true;
     }
     else
@@ -95,11 +97,11 @@ bool ttlib::GetListboxText(HWND hwnd, WPARAM index, std::string& str)
     auto cb = SendMessageW(hwnd, LB_GETTEXTLEN, index, 0);
     if (cb != LB_ERR)
     {
-        std::vector<wchar_t> buffer(cb);
-        cb = SendMessageW(hwnd, LB_GETTEXT, index, (WPARAM) buffer.data());
+        auto str16 = std::make_unique<wchar_t[]>(cb + 1).get();
+        cb = SendMessageW(hwnd, LB_GETTEXT, index, (WPARAM) str16);
         if (cb != LB_ERR)
         {
-            ttlib::utf16to8(buffer, str);
+            ttlib::utf16to8({ str16, static_cast<size_t>(cb) }, str);
         }
     }
 
@@ -120,11 +122,11 @@ bool ttlib::GetComboLBText(HWND hwnd, WPARAM index, std::string& str)
     auto cb = SendMessageW(hwnd, CB_GETLBTEXTLEN, index, 0);
     if (cb != CB_ERR)
     {
-        std::vector<wchar_t> buffer(cb);
-        cb = SendMessageW(hwnd, CB_GETLBTEXT, index, (WPARAM) buffer.data());
+        auto str16 = std::make_unique<wchar_t[]>(cb + 1).get();
+        cb = SendMessageW(hwnd, CB_GETLBTEXT, index, (WPARAM) str16);
         if (cb != CB_ERR)
         {
-            ttlib::utf16to8(buffer, str);
+            ttlib::utf16to8({ str16, static_cast<size_t>(cb) }, str);
         }
     }
 
@@ -211,12 +213,13 @@ using namespace ttlib;
 cstr& cstr::GetWndText(HWND hwnd)
 {
     assign(ttlib::emptystring);
-    auto cb = GetWindowTextLengthW(hwnd);
-    if (cb > 0)
+    auto len = GetWindowTextLengthW(hwnd);
+    if (len > 0)
     {
-        std::vector<wchar_t> buffer(cb);
-        cb = GetWindowTextW(hwnd, buffer.data(), cb);
-        ttlib::utf16to8(buffer, *this);
+        ++len;
+        auto str16 = std::make_unique<wchar_t[]>(len).get();
+        len = GetWindowTextW(hwnd, str16, len);
+        ttlib::utf16to8({ str16, static_cast<size_t>(len) }, *this);
     }
     return *this;
 }
@@ -234,14 +237,14 @@ cstr& cstr::GetListBoxText(HWND hwndCtrl, size_t sel)
         }
     }
 
-    auto cb = SendMessageW(hwndCtrl, LB_GETTEXTLEN, sel, 0);
-    if (cb != LB_ERR)
+    auto len = SendMessageW(hwndCtrl, LB_GETTEXTLEN, sel, 0);
+    if (len != LB_ERR)
     {
-        std::vector<wchar_t> buffer(cb);
-        cb = SendMessageW(hwndCtrl, LB_GETTEXT, sel, (WPARAM) buffer.data());
-        if (cb != LB_ERR)
+        auto str16 = std::make_unique<wchar_t[]>(len + 1).get();
+        len = SendMessageW(hwndCtrl, LB_GETTEXT, sel, (WPARAM) str16);
+        if (len != LB_ERR)
         {
-            ttlib::utf16to8(buffer, *this);
+            ttlib::utf16to8({ str16, static_cast<size_t>(len) }, *this);
         }
     }
 
@@ -261,14 +264,14 @@ cstr& cstr::GetComboLBText(HWND hwndCtrl, size_t sel)
         }
     }
 
-    auto cb = SendMessageW(hwndCtrl, CB_GETLBTEXTLEN, sel, 0);
-    if (cb != LB_ERR)
+    auto len = SendMessageW(hwndCtrl, CB_GETLBTEXTLEN, sel, 0);
+    if (len != LB_ERR)
     {
-        std::vector<wchar_t> buffer(cb);
-        cb = SendMessageW(hwndCtrl, CB_GETLBTEXT, sel, (WPARAM) buffer.data());
-        if (cb != LB_ERR)
+        auto str16 = std::make_unique<wchar_t[]>(len + 1).get();
+        len = SendMessageW(hwndCtrl, CB_GETLBTEXT, sel, (WPARAM) str16);
+        if (len != LB_ERR)
         {
-            ttlib::utf16to8(buffer, *this);
+            ttlib::utf16to8({ str16, static_cast<size_t>(len) }, *this);
         }
     }
 

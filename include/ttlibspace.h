@@ -242,19 +242,8 @@ namespace ttlib
     void utf8to16(std::string_view str, std::wstring& dest);
     void utf16to8(std::wstring_view str, std::string& dest);
 
-    /// This allows you to pass a vector buffer to a Windows API and then use this fucntion
-    /// to convert the result to UTF8.
-    void utf16to8(std::vector<wchar_t> str, std::string& dest);
-
-
-    void utf8to16(std::string_view str, std::vector<wchar_t>& dest);
-
     std::wstring utf8to16(std::string_view str);
     ttlib::cstr utf16to8(std::wstring_view str);
-
-    /// This allows you to pass a vector buffer to a Windows API and then use this fucntion
-    /// to convert the result to UTF8.
-    ttlib::cstr utf16to8(std::vector<wchar_t> str);
 
 }  // namespace ttlib
 
