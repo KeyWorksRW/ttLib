@@ -300,20 +300,20 @@ LRESULT dlgListView::SetCurSel(int pos)
     return ::SendMessageA(m_hwnd, LVM_SETITEMSTATE, pos, (LPARAM) &lvi);
 }
 
-ttlib::cstr dlgListView::GetItemText(int item, int subitem)
+ttlib::cstr dlgListView::GetItemText(int item, int subitem, int maxTextLen)
 {
-    std::vector<wchar_t> buffer(1024 / sizeof(wchar_t));
+    auto str16 = std::make_unique<wchar_t[]>(maxTextLen).get();
     LVITEMW lvi;
     lvi.mask = LVIF_TEXT;
     lvi.iItem = item;
     lvi.iSubItem = subitem;
-    lvi.cchTextMax = static_cast<int>(buffer.size());
-    lvi.pszText = buffer.data();
+    lvi.cchTextMax = maxTextLen;
+    lvi.pszText = nullptr;
     auto len = ::SendMessageW(m_hwnd, LVM_GETITEMTEXTW, (WPARAM) item, (LPARAM) &lvi);
-    buffer.resize(len);
+    ttASSERT(len < maxTextLen);
 
     ttlib::cstr utf8;
-    ttlib::utf16to8(buffer, utf8);
+    ttlib::utf16to8({ str16, static_cast<size_t>(len) }, utf8);
     return utf8;
 }
 

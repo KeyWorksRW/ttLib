@@ -503,7 +503,7 @@ namespace ttlib
         LRESULT SetCurSel(int pos);
         LRESULT SetCurSel(const char* pszItem);
 
-        ttlib::cstr GetItemText(int item, int subitem = 0);
+        ttlib::cstr GetItemText(int item, int subitem = 0, int maxTextLen = 1024);
 
         bool GetItem(LVITEM* pItem)
         {
