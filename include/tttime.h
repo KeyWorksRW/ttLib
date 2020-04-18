@@ -43,23 +43,45 @@ namespace ttlib
 
         const char* GetDateFormat(DWORD dwFlags = 0, LCID locale = LOCALE_USER_DEFAULT)
         {
-            std::vector<wchar_t> buffer(128);
-            ::GetDateFormatW(locale, dwFlags, &m_tm, NULL, buffer.data(), static_cast<int>(buffer.size()));
-            ttlib::utf16to8(buffer, m_date);
-            return m_date.c_str();
+            auto len = ::GetDateFormatW(locale, dwFlags, &m_tm, NULL, nullptr, 0);
+            if (len)
+            {
+                ++len;  // Add room for trailing zero
+
+                auto str16 = std::make_unique<wchar_t[]>(len).get();
+                ::GetDateFormatW(locale, dwFlags, &m_tm, NULL, str16, len);
+                m_date.clear();
+                ttlib::utf16to8(str16, m_date);
+                return m_date.c_str();
+            }
+            else
+            {
+                return ttlib::emptystring.c_str();
+            }
         }
 
         const char* GetTimeFormat(DWORD dwFlags = 0, LCID locale = LOCALE_USER_DEFAULT)
         {
-            std::vector<wchar_t> buffer(128);
-            ::GetTimeFormatW(locale, dwFlags, &m_tm, NULL, buffer.data(), static_cast<int>(buffer.size()));
-            ttlib::utf16to8(buffer, m_time);
-            return m_time.c_str();
+            auto len = ::GetTimeFormatW(locale, dwFlags, &m_tm, NULL, nullptr, 0);
+            if (len)
+            {
+                ++len;  // Add room for trailing zero
+
+                auto str16 = std::make_unique<wchar_t[]>(len).get();
+                ::GetTimeFormatW(locale, dwFlags, &m_tm, NULL, str16, len);
+                m_time.clear();
+                ttlib::utf16to8(str16, m_time);
+                return m_time.c_str();
+            }
+            else
+            {
+                return ttlib::emptystring.c_str();
+            }
         }
 
         const char* GetFullFormat()
-        {                                              // full date/time
-            m_full = GetDateFormat(DATE_LONGDATE);  // GetDateFormat() modifies m_cszFormatted, so we have to use a temporary
+        {
+            m_full = GetDateFormat(DATE_LONGDATE);
             m_full += ", ";
             m_full += GetTimeFormat();
             return m_full.c_str();
@@ -99,8 +121,6 @@ namespace ttlib
 
     private:
         SYSTEMTIME m_tm;
-
-        // We keep a copy of each format in case we're called multiple times in a printf() call
 
         ttlib::cstr m_date;
         ttlib::cstr m_time;
