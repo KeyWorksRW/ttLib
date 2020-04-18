@@ -31,9 +31,9 @@ BOOL WINAPI ttlib::EnumBtnProc(HWND hwnd, LPARAM lval)
         {
             ttlib::MultiBtn* pMultiBtn = reinterpret_cast<MultiBtn*>(lval);
             ttlib::ShadeBtn* pBtn = new ttlib::ShadeBtn;
-            pBtn->SubClass(hwnd);
-            pBtn->SetShade(pMultiBtn->m_btnShade);
+            pBtn->Initialize(hwnd, pMultiBtn->m_btnShade);
             pMultiBtn->m_Buttons.emplace_back(pBtn);
+
         }
     }
     return TRUE;

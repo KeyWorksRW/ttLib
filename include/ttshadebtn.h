@@ -55,12 +55,8 @@ namespace ttlib
         void Draw3dRect(HDC hdc, RECT* pRect, COLORREF clrTopLeft, COLORREF clrBottomRight);
         void Draw3dRect(HDC hdc, int x, int y, int cx, int cy, COLORREF clrTopLeft, COLORREF clrBottomRight);
         void FillSolidRect(HDC hdc, int x, int y, int cx, int cy, COLORREF clr);
-        LOGFONTA* GetFont() { return m_pLF; }
         void SetButtonStyle(UINT nStyle, BOOL bRedraw = TRUE);
         void SetFlat(bool bFlag) { m_flat = bFlag; }
-        bool SetFont(LOGFONTA* pNewStyle);
-        bool SetFont(const std::string& FontName, long lSize = 0, long lWeight = 400, BYTE bItalic = 0,
-                     BYTE bUnderline = 0);
 
         void SetIcon(UINT nIcon, UINT nIconAlign = BS_CENTER, UINT nIconDown = 0, UINT nIconHighLight = 0);
         void SetIcon(const std::string& IconName, UINT nIconAlign = BS_CENTER, UINT nIconDown = 0,
@@ -79,11 +75,18 @@ namespace ttlib
         bool operator==(ShadeBtn* pShade) { return m_hwnd == pShade->m_hwnd; }
         operator HWND() const { return m_hwnd; }
 
+        void Initialize(HWND hwnd, tt::SHADE shadeID);
+
     protected:
         // Message handlers
 
         BEGIN_TTMSG_MAP()
             TTMSG_WM_PAINT(OnPaint)
+
+            case WM_SETTEXT:
+                lResult = DefWindowProc(*this, msg, wParam, lParam);
+                OnSetText();
+                return true;
 
             case WM_ENABLE:
                 [[fallthrough]];
@@ -96,16 +99,17 @@ namespace ttlib
         END_TTMSG_MAP()
 
         void OnPaint();
+        LRESULT OnCreate(CREATESTRUCT* pcs);
+        void OnSetText();
 
     private:
-        // Class members
+        std::wstring m_btntext;
 
         BOOL m_Border;         // 0=flat; 1=3D;
         COLORREF m_TextColor;  // button text color
         DWORD m_Style;
         HFONT m_hFont;  // font object
         HICON m_hIcon, m_hIconDown, m_hIconHighLight;
-        LOGFONTA* m_pLF;  // font structure
         RECT m_rcIconBox;
         UINT m_hIconAlign;
         UINT m_TextAlign;

@@ -28,6 +28,7 @@
     #error "This module can only be compiled for Windows"
 #endif
 
+#include "ttcstr.h"
 #include "ttdebug.h"     // ttASSERT macros
 #include "ttlibspace.h"  // Contains the ttlib namespace functions/declarations common to all ttLib libraries
 #include "ttshadebtn.h"  // ShadeBtn
@@ -45,37 +46,10 @@ ShadeBtn::ShadeBtn()
     SetRectEmpty(&m_rcIconBox);                            // icon location
     m_hIconAlign = BS_CENTER;                              // icon alignment
     m_TextAlign = DT_SINGLELINE | DT_CENTER | DT_VCENTER;  // text alignment
-    m_pLF = nullptr;                                       // font structure pointer
-
-    // [randalphwa - 09-17-2018] The original code would default to using DEFAULT_GUI_FONT -- which is obsolete.
-    // "MS Shell Dlg" is typically a MS Sans Serif font, and "MS Shell Dlg 2" is typically a Tahoma font.
-    // "MS Shell Dlg" provides compatibility with pre-Windows 2000 systems.
-
-    // Forcing the font size to 8 may cause display problems with asian languages. However, setting it to
-    // 0 may cause it to be much larger then originally intended for the button. Ultimately, if this
-    // default font is unsatisfactory, the caller should call ShadeBtn::SetFont().
-
-    m_hFont = ttlib::CreateLogFont("MS Shell Dlg", 8);
-
-    // Another option is to get the font for Message Boxes and use that. However, it's quite possible that
-    // the user changed that font specifically for message boxes without expecting it to also change the font
-    // on dialog buttons, and you might end up with an unreadable button as a result.
-
-#if 0
-    NONCLIENTMETRICS* pmetrics = (NONCLIENTMETRICS*) ttcalloc(sizeof(NONCLIENTMETRICS));
-    pmetrics->cbSize = sizeof(NONCLIENTMETRICS);
-    if (SystemParametersInfo(SPI_GETNONCLIENTMETRICS, 0, pmetrics, 0))
-        SetFont(&pmetrics->lfMessageFont);
-    ttFree(pmetrics);
-#endif
 }
 
 ShadeBtn::~ShadeBtn()
 {
-    if (m_hFont)
-        DeleteObject(m_hFont);
-    if (m_pLF)
-        delete m_pLF;
     if (m_hIconDown != m_hIcon && m_hIconDown)
         DestroyIcon(m_hIconDown);
     if (m_hIconHighLight != m_hIcon && m_hIconHighLight)
@@ -87,42 +61,31 @@ ShadeBtn::~ShadeBtn()
     m_hwnd = NULL;
 }
 
-bool ShadeBtn::SetFont(LOGFONTA* pNewStyle)
+void ShadeBtn::Initialize(HWND hwnd, tt::SHADE shadeID)
 {
-    if (pNewStyle)
-    {
-        if (m_pLF == NULL)
-            m_pLF = new LOGFONTA;
-        if (m_pLF)
-        {
-            memcpy(m_pLF, pNewStyle, sizeof(LOGFONTA));
-            if (m_hFont)
-                DeleteObject(m_hFont);
-            m_hFont = CreateFontIndirectA(m_pLF);
-            return (m_hFont != NULL);
-        }
-    }
-    return false;
+    m_hwnd = hwnd;
+    OnSetText();
+    m_hFont = reinterpret_cast<HFONT>(SendMsg(WM_GETFONT));
+
+    SubClass(hwnd);
+    SetShade(shadeID);
 }
 
-bool ShadeBtn::SetFont(const std::string& FontName, long lSize, long lWeight, BYTE bItalic, BYTE bUnderline)
+void ShadeBtn::OnSetText()
 {
-    ttASSERT(FontName.length() < LF_FACESIZE);
-    if (FontName.length() >= LF_FACESIZE)
-        return false;
+    auto len = GetWindowTextLengthW(m_hwnd);
+    if (len > 0)
+    {
+        ++len;
+        auto str16 = std::make_unique<wchar_t[]>(len);
 
-    if (m_pLF == NULL)
-        m_pLF = new LOGFONTA;
-
-    std::strcpy(m_pLF->lfFaceName, FontName.c_str());
-    m_pLF->lfHeight = lSize;
-    m_pLF->lfWeight = lWeight;
-    m_pLF->lfItalic = bItalic;
-    m_pLF->lfUnderline = bUnderline;
-    if (m_hFont)
-        DeleteObject(m_hFont);
-    m_hFont = CreateFontIndirectA(m_pLF);
-    return (m_hFont != NULL);
+        auto cb = GetWindowTextW(m_hwnd, str16.get(), len);
+        m_btntext.assign(str16.get(), cb);
+    }
+    else
+    {
+        m_btntext.assign(L"");
+    }
 }
 
 void ShadeBtn::SetButtonStyle(UINT nStyle, BOOL bRedraw)
@@ -538,21 +501,6 @@ void ShadeBtn::OnPaint()
     HANDLE hBitmap = CreateCompatibleBitmap(hdcPaint, cx, cy);
     HBITMAP hOldBitmap = (HBITMAP) SelectObject(hdcMem, hBitmap);  // select the destination for MemDC
 
-    std::wstring Caption;
-    int cb = GetWindowTextLengthW(m_hwnd);
-    if (cb > 0)
-    {
-        ++cb;
-        auto str16 = std::make_unique<wchar_t[]>(cb).get();
-
-        cb = GetWindowTextW(m_hwnd, str16, cb);
-        Caption.assign(str16, cb);
-    }
-    else
-    {
-        Caption.assign(L"");
-    }
-
     SetBkMode(hdcMem, TRANSPARENT);
     // with MemDC we need to select the font...
 
@@ -560,15 +508,6 @@ void ShadeBtn::OnPaint()
     HFONT hOldFont = NULL;
     if (m_hFont)
         hOldFont = (HFONT) SelectObject(hdcMem, m_hFont);
-    else
-    {
-        // [randalphwa - 09-17-2018] This should never be called -- m_hFont is created in the destructor.
-        // However if the caller tried to create an invalid font, then m_hFont will be null. This should be
-        // rare enough that it's probably not worth recreating our default font that the caller deleted when
-        // they tried to create their own font.
-
-        SelectObject(hdcMem, GetStockObject(DEFAULT_GUI_FONT));
-    }
 
     // accommodate text location
     if (m_hIcon)
@@ -606,10 +545,10 @@ void ShadeBtn::OnPaint()
             DrawEdge(hdcMem, &rcClient, EDGE_RAISED, BF_RECT);
         // paint the etched button text
         ::SetTextColor(hdcMem, GetSysColor(COLOR_3DHILIGHT));
-        ::DrawTextW(hdcMem, Caption.c_str(), -1, &tr, m_TextAlign);
+        ::DrawTextW(hdcMem, m_btntext.c_str(), -1, &tr, m_TextAlign);
         ::SetTextColor(hdcMem, GetSysColor(COLOR_GRAYTEXT));
         OffsetRect(&tr, -1, -1);
-        ::DrawTextW(hdcMem, Caption.c_str(), -1, &tr, m_TextAlign);
+        ::DrawTextW(hdcMem, m_btntext.c_str(), -1, &tr, m_TextAlign);
     }
     else
     {
@@ -680,7 +619,7 @@ void ShadeBtn::OnPaint()
         }
         // paint the enabled button text
         ::SetTextColor(hdcMem, m_TextColor);
-        ::DrawTextW(hdcMem, Caption.c_str(), -1, &tr, m_TextAlign);
+        ::DrawTextW(hdcMem, m_btntext.c_str(), -1, &tr, m_TextAlign);
     }
 
     if (hOldFont)
