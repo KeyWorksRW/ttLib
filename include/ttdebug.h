@@ -150,6 +150,8 @@ namespace ttlib
     // this still executes the expression in non-DEBUG build, it just doesn't check result
     #define ttVERIFY(exp) (void) ((!!(exp)) || ttAssertionMsg(__FILE__, __func__, __LINE__, #exp, nullptr))
 
+    /// ttTRACE is automatically removed in Release builds. Call ttlib::wintrace directly
+    /// if you need tracing in a release build.
     #define ttTRACE(msg)    ttlib::wintrace(msg)
     #define ttTRACE_CLEAR() ttlib::wintraceclear();
 
