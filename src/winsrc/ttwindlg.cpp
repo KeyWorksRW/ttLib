@@ -308,7 +308,7 @@ ttlib::cstr dlgListView::GetItemText(int item, int subitem, int maxTextLen)
     lvi.iItem = item;
     lvi.iSubItem = subitem;
     lvi.cchTextMax = maxTextLen;
-    lvi.pszText = nullptr;
+    lvi.pszText = str16;
     auto len = ::SendMessageW(m_hwnd, LVM_GETITEMTEXTW, (WPARAM) item, (LPARAM) &lvi);
     ttASSERT(len < maxTextLen);
 
