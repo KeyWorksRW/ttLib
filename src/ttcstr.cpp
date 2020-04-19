@@ -25,10 +25,13 @@ using namespace tt;
 
 bool cstr::issameas(std::string_view str, CASE checkcase) const
 {
-    if (size() != str.size() || empty())
+    if (size() != str.size())
         return false;
 
-    // if both strings have the same length, then we can compare as a prefix.
+    if (empty())
+        return str.empty();
+
+    // if both strings have the same length and are non-empty, then we can compare as a prefix.
     return issameprefix(str, checkcase);
 }
 

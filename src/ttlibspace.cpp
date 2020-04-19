@@ -284,14 +284,11 @@ bool ttlib::contains(std::string_view main, std::string_view sub, CASE checkcase
 
 bool ttlib::issameas(std::string_view str1, std::string_view str2, CASE checkcase)
 {
-    if (str1.empty())
-    {
-        return str2.empty();
-    }
-    else if (str2.empty())
-    {
+    if (str1.size() != str2.size())
         return false;
-    }
+
+    if (str1.empty())
+        return str2.empty();
 
     if (checkcase == CASE::exact)
         return (str1.compare(str2) == 0);

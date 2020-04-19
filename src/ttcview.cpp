@@ -18,8 +18,11 @@ using namespace ttlib;
 
 bool cview::issameas(std::string_view str, tt::CASE checkcase) const
 {
-    if (size() != str.size() || empty())
+    if (size() != str.size())
         return false;
+
+    if (empty())
+        return str.empty();
 
     // if both strings have the same length, then we can compare as a prefix.
     return issameprefix(str, checkcase);
