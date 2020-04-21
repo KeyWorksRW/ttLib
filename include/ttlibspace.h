@@ -265,6 +265,33 @@ namespace ttlib
 
 namespace ttlib
 {
+    template<typename T_MSG, typename T_WPARAM, typename T_LPARAM>
+    /// Calls SendMessageW() without having to cast the parameter types to UINT, WPARAM
+    /// and LPARAM
+    ///
+    /// This calls SendMessageW even if UNICODE was not defined
+    LRESULT SendMsg(HWND hwnd, T_MSG msg, T_WPARAM wParam, T_LPARAM lParam)
+    {
+        // C-style case used to let compiler determine which cast is needed for specific parameter type
+        return ::SendMessageW(hwnd, (UINT) msg, (WPARAM) wParam, (LPARAM) lParam);
+    }
+
+    template<typename T_MSG, typename T_WPARAM>
+    /// This calls SendMessageW even if UNICODE was not defined
+    LRESULT SendMsg(HWND hwnd, T_MSG msg, T_WPARAM wParam)
+    {
+        // C-style case used to let compiler determine which cast is needed for specific parameter type
+        return ::SendMessageW(hwnd, (UINT) msg, (WPARAM) wParam, NULL);
+    }
+
+    template<typename T_MSG>
+    /// This calls SendMessageW even if UNICODE was not defined
+    LRESULT SendMsg(HWND hwnd, T_MSG msg)
+    {
+        // C-style case used to let compiler determine which cast is needed for specific parameter type
+        return ::SendMessageW(hwnd, (UINT) msg, NULL, NULL);
+    }
+
     /// Sets title to use in all calls to ttlib::MsgBox.
     ///
     /// Title will be automatically converted to UTF16.
