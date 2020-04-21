@@ -92,20 +92,20 @@ ttlib::cstr ttlib::GetListboxText(HWND hwnd, WPARAM index)
 
 bool ttlib::GetListboxText(HWND hwnd, WPARAM index, std::string& str)
 {
-    str.assign(ttlib::emptystring);
+    str.clear();
 
-    auto cb = SendMessageW(hwnd, LB_GETTEXTLEN, index, 0);
-    if (cb != LB_ERR)
+    auto cb = ttlib::SendMsg(hwnd, LB_GETTEXTLEN, index);
+    if (!tt::err(cb))
     {
-        auto str16 = std::make_unique<wchar_t[]>(cb + 1).get();
-        cb = SendMessageW(hwnd, LB_GETTEXT, index, (WPARAM) str16);
-        if (cb != LB_ERR)
+        auto str16 = std::make_unique<wchar_t[]>(cb + 1);
+        cb = ttlib::SendMsg(hwnd, LB_GETTEXT, index, str16.get());
+        if (!tt::err(cb))
         {
-            ttlib::utf16to8({ str16, static_cast<size_t>(cb) }, str);
+            ttlib::utf16to8({ str16.get(), static_cast<size_t>(cb) }, str);
         }
     }
 
-    return (cb != LB_ERR);
+    return !tt::err(cb);
 }
 
 ttlib::cstr ttlib::GetComboLBText(HWND hwnd, WPARAM index)
@@ -117,20 +117,20 @@ ttlib::cstr ttlib::GetComboLBText(HWND hwnd, WPARAM index)
 
 bool ttlib::GetComboLBText(HWND hwnd, WPARAM index, std::string& str)
 {
-    str.assign(ttlib::emptystring);
+    str.clear();
 
-    auto cb = SendMessageW(hwnd, CB_GETLBTEXTLEN, index, 0);
-    if (cb != CB_ERR)
+    auto cb = ttlib::SendMsg(hwnd, CB_GETLBTEXTLEN, index);
+    if (!tt::err(cb))
     {
-        auto str16 = std::make_unique<wchar_t[]>(cb + 1).get();
-        cb = SendMessageW(hwnd, CB_GETLBTEXT, index, (WPARAM) str16);
-        if (cb != CB_ERR)
+        auto str16 = std::make_unique<wchar_t[]>(cb + 1);
+        cb = SendMessageW(hwnd, CB_GETLBTEXT, index, (WPARAM) str16.get());
+        if (!tt::err(cb))
         {
-            ttlib::utf16to8({ str16, static_cast<size_t>(cb) }, str);
+            ttlib::utf16to8({ str16.get(), static_cast<size_t>(cb) }, str);
         }
     }
 
-    return (cb != CB_ERR);
+    return !tt::err(cb);
 }
 
 void ttlib::SetWndText(HWND hwnd, std::string_view utf8str)
@@ -212,39 +212,39 @@ using namespace ttlib;
 
 cstr& cstr::GetWndText(HWND hwnd)
 {
-    assign(ttlib::emptystring);
+    clear();
     auto len = GetWindowTextLengthW(hwnd);
     if (len > 0)
     {
         ++len;
-        auto str16 = std::make_unique<wchar_t[]>(len).get();
-        len = GetWindowTextW(hwnd, str16, len);
-        ttlib::utf16to8({ str16, static_cast<size_t>(len) }, *this);
+        auto str16 = std::make_unique<wchar_t[]>(len);
+        len = GetWindowTextW(hwnd, str16.get(), len);
+        ttlib::utf16to8({ str16.get(), static_cast<size_t>(len) }, *this);
     }
     return *this;
 }
 
 cstr& cstr::GetListBoxText(HWND hwndCtrl, size_t sel)
 {
-    assign(ttlib::emptystring);
+    clear();
 
-    if (sel == tt::npos)
+    if (tt::err(sel))
     {
-        sel = SendMessageW(hwndCtrl, LB_GETCURSEL, 0, 0);
-        if (sel == tt::err)
+        sel = ttlib::SendMsg(hwndCtrl, LB_GETCURSEL);
+        if (tt::err(sel))
         {
             return *this;
         }
     }
 
-    auto len = SendMessageW(hwndCtrl, LB_GETTEXTLEN, sel, 0);
-    if (len != LB_ERR)
+    auto len = ttlib::SendMsg(hwndCtrl, LB_GETTEXTLEN, sel);
+    if (!tt::err(len))
     {
-        auto str16 = std::make_unique<wchar_t[]>(len + 1).get();
-        len = SendMessageW(hwndCtrl, LB_GETTEXT, sel, (WPARAM) str16);
-        if (len != LB_ERR)
+        auto str16 = std::make_unique<wchar_t[]>(len + 1);
+        len = SendMsg(hwndCtrl, LB_GETTEXT, sel, str16.get());
+        if (!tt::err(len))
         {
-            ttlib::utf16to8({ str16, static_cast<size_t>(len) }, *this);
+            ttlib::utf16to8({ str16.get(), static_cast<size_t>(len) }, *this);
         }
     }
 
@@ -253,25 +253,25 @@ cstr& cstr::GetListBoxText(HWND hwndCtrl, size_t sel)
 
 cstr& cstr::GetComboLBText(HWND hwndCtrl, size_t sel)
 {
-    assign(ttlib::emptystring);
+    clear();
 
-    if (sel == tt::npos)
+    if (tt::err(sel))
     {
-        sel = SendMessageW(hwndCtrl, CB_GETCURSEL, 0, 0);
-        if (sel == tt::err)
+        sel = ttlib::SendMsg(hwndCtrl, CB_GETCURSEL);
+        if (tt::err(sel))
         {
             return *this;
         }
     }
 
-    auto len = SendMessageW(hwndCtrl, CB_GETLBTEXTLEN, sel, 0);
-    if (len != LB_ERR)
+    auto len = ttlib::SendMsg(hwndCtrl, CB_GETLBTEXTLEN, sel);
+    if (tt::err(len))
     {
-        auto str16 = std::make_unique<wchar_t[]>(len + 1).get();
-        len = SendMessageW(hwndCtrl, CB_GETLBTEXT, sel, (WPARAM) str16);
-        if (len != LB_ERR)
+        auto str16 = std::make_unique<wchar_t[]>(len + 1);
+        len = ttlib::SendMsg(hwndCtrl, CB_GETLBTEXT, sel, str16.get());
+        if (!tt::err(len))
         {
-            ttlib::utf16to8({ str16, static_cast<size_t>(len) }, *this);
+            ttlib::utf16to8({ str16.get(), static_cast<size_t>(len) }, *this);
         }
     }
 
