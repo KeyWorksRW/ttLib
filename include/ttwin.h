@@ -2,7 +2,7 @@
 // Name:      ttlib::win
 // Purpose:   Class for working with windows
 // Author:    Ralph Walden
-// Copyright: Copyright (c) 2018-2019 KeyWorks Software (Ralph Walden)
+// Copyright: Copyright (c) 2018-2020 KeyWorks Software (Ralph Walden)
 // License:   Apache License (see ../LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
@@ -44,10 +44,7 @@ namespace ttlib
         void SetClassBkgrnd(HBRUSH hbkgrnd) { m_WndClass.hbrBackground = hbkgrnd; }
 
         void SetClassCursor(HCURSOR hcur) { m_WndClass.hCursor = hcur; }
-        void SetClassMenu(size_t idMenuResource)
-        {
-            m_WndClass.lpszMenuName = reinterpret_cast<LPCWSTR>(idMenuResource);
-        }
+        void SetClassMenu(size_t idMenuResource) { m_WndClass.lpszMenuName = reinterpret_cast<LPCWSTR>(idMenuResource); }
 
         /// Name will be converted to UTF16 before storing it in WndClass()
         void SetClassName(std::string_view ClassName);
@@ -58,20 +55,14 @@ namespace ttlib
         void SetWndExtra(int cbExtra) { m_WndClass.cbWndExtra = cbExtra; }
         void SetClsExtra(int cbExtra) { m_WndClass.cbWndExtra = cbExtra; }
 
-        void SetClassIcon(size_t idIcon)
-        {
-            m_WndClass.hIcon = LoadIconW(ttlib::lang_info.hinstResource, (LPCWSTR) idIcon);
-        }
+        void SetClassIcon(size_t idIcon) { m_WndClass.hIcon = LoadIconW(ttlib::lang_info.hinstResource, (LPCWSTR) idIcon); }
         void SetClassIcon(HICON hIcon) { m_WndClass.hIcon = hIcon; }
-        void SetClassSmallIcon(size_t idIcon)
-        {
-            m_WndClass.hIconSm = LoadIconW(ttlib::lang_info.hinstResource, (LPCWSTR) idIcon);
-        }
+        void SetClassSmallIcon(size_t idIcon) { m_WndClass.hIconSm = LoadIconW(ttlib::lang_info.hinstResource, (LPCWSTR) idIcon); }
         void SetClassSmallIcon(HICON hIcon) { m_WndClass.hIconSm = hIcon; }
 
         /// Title will automatically be converted to UTF16
-        bool CreateWnd(const std::string& Title, DWORD dwExStyle, DWORD dwStyle, HWND hwndParent = NULL,
-                       RECT* prc = NULL, HMENU hmenu = NULL);
+        bool CreateWnd(const std::string& Title, DWORD dwExStyle, DWORD dwStyle, HWND hwndParent = NULL, RECT* prc = NULL,
+                       HMENU hmenu = NULL);
 
         /// Attaches to a window not created by win, updates m_ClassName, m_hwnd and m_hwndParent.
         // bool AttachWnd(HWND hwnd);
@@ -79,15 +70,46 @@ namespace ttlib
         // if hwnd is NULL, subclass our own window.
         bool SubClass(HWND hwnd = NULL);
 
-        // Class functions
-
-        LRESULT SendMsg(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
+        template<typename T_MSG, typename T_WPARAM, typename T_LPARAM>
+        LRESULT SendMsg(T_MSG msg, T_WPARAM wParam, T_LPARAM lParam) const
         {
-            return ::SendMessage(m_hwnd, msg, wParam, lParam);
+            // C-style case used to let compiler determine which cast is needed for specific parameter type
+            return ::SendMessageW(m_hwnd, (UINT) msg, (WPARAM) wParam, (LPARAM) lParam);
         }
-        LRESULT PostMsg(UINT msg, WPARAM wParam = 0, LPARAM lParam = 0) const
+
+        template<typename T_MSG, typename T_WPARAM>
+        LRESULT SendMsg(T_MSG msg, T_WPARAM wParam) const
         {
-            return ::PostMessage(m_hwnd, msg, wParam, lParam);
+            // C-style case used to let compiler determine which cast is needed for specific parameter type
+            return ::SendMessageW(m_hwnd, (UINT) msg, (WPARAM) wParam, NULL);
+        }
+
+        template<typename T_MSG>
+        LRESULT SendMsg(T_MSG msg) const
+        {
+            // C-style case used to let compiler determine which cast is needed for specific parameter type
+            return ::SendMessageW(m_hwnd, (UINT) msg, NULL, NULL);
+        }
+
+        template<typename T_MSG, typename T_WPARAM, typename T_LPARAM>
+        LRESULT PostMsg(T_MSG msg, T_WPARAM wParam, T_LPARAM lParam) const
+        {
+            // C-style case used to let compiler determine which cast is needed for specific parameter type
+            return ::PostMessageW(m_hwnd, (UINT) msg, (WPARAM) wParam, (LPARAM) lParam);
+        }
+
+        template<typename T_MSG, typename T_WPARAM>
+        LRESULT PostMsg(T_MSG msg, T_WPARAM wParam) const
+        {
+            // C-style case used to let compiler determine which cast is needed for specific parameter type
+            return ::PostMessageW(m_hwnd, (UINT) msg, (WPARAM) wParam, NULL);
+        }
+
+        template<typename T_MSG>
+        LRESULT PostMsg(T_MSG msg) const
+        {
+            // C-style case used to let compiler determine which cast is needed for specific parameter type
+            return ::PostMessageW(m_hwnd, (UINT) msg, NULL, NULL);
         }
 
         void ShowWindow(int nCmdShow = SW_SHOW) { ::ShowWindow(m_hwnd, nCmdShow); }
@@ -118,8 +140,6 @@ namespace ttlib
         // Use protected, not private because other classes inherit from this class, and currently expect access to
         // the class members.
     protected:
-        // Class members
-
         std::wstring m_ClassName;
 
         WNDCLASSEXW m_WndClass;

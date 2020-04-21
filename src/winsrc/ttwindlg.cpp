@@ -145,25 +145,11 @@ INT_PTR WINAPI ttlib::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-int dlg::GetControlInteger(int id) const
-{
-    char szBuf[20];
-    if (::GetWindowTextA(gethwnd(id), szBuf, sizeof(szBuf) - 1) == 0)
-        return -1;
-    return ttlib::atoi(szBuf);
-}
-
-void dlg::SetControlInteger(int id, int val) const
-{
-    std::stringstream str;
-    str << val;
-    SetWindowTextA(gethwnd(id), str.str().c_str());
-}
-
 void dlg::EnableShadeBtns()
 {
     if (!m_pShadedBtns)
     {
+        // This will be destroyed when processing WM_DESTROY rather than in the class's dtor
         m_pShadedBtns = new ttlib::MultiBtn;
         if (m_pShadedBtns)
             m_pShadedBtns->Initialize(*this);
