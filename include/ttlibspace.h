@@ -63,8 +63,12 @@ namespace tt
     /// Use to compare a size_t against -1
     constexpr size_t npos = static_cast<size_t>(-1);
 
-    /// Use to compare a size_t against -1
-    constexpr size_t err = static_cast<size_t>(-1);
+    template<typename T>
+    /// Compares result against -1
+    constexpr bool err(T result)
+    {
+        return (static_cast<ptrdiff_t>(result)) == -1;
+    }
 
     enum class CASE : size_t
     {
@@ -80,17 +84,21 @@ namespace tt
         both
     };
 
+    // Windows defines the values as long which on Windows is a 32-bit value. On UNIX long is often a 64-bit value. int is not guaranteed
+    // to be 32-bits, but that's it's most likely size and we KNOW that long will be wrong on some platforms.
+
     /// Equivalent to Windows RECT structure -- this makes it available on non-Windows
     /// platforms.
     struct WINRECT
     {
-        int32_t left;
-        int32_t top;
-        int32_t right;
-        int32_t bottom;
+        int left;
+        int top;
+        int right;
+        int bottom;
 
-        inline int32_t GetWidth() const { return std::abs(right - left); }
-        inline int32_t GetHeight() const { return std::abs(bottom - top); }
+        inline int GetWidth() const { return std::abs(right - left); }
+        inline int GetHeight() const { return std::abs(bottom - top); }
+        inline bool isPosInRect(int xPos, int yPos) { return (xPos >= left && xPos <= right && yPos >= top && yPos <= bottom); }
     };
 
 }  // namespace tt
@@ -103,10 +111,7 @@ namespace ttlib
     extern const std::string emptystring;
 
     /// Only valid for ANSI characters
-    constexpr inline bool isalpha(char ch) noexcept
-    {
-        return ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z'));
-    }
+    constexpr inline bool isalpha(char ch) noexcept { return ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')); }
 
     constexpr inline bool isdigit(char ch) noexcept { return ((ch >= '0' && ch <= '9') || ch == '-'); }
 
@@ -114,10 +119,7 @@ namespace ttlib
     constexpr inline bool isutf8(char ch) noexcept { return ((ch & 0xC0) != 0x80); }
 
     /// Returns true if character is a space, tab, eol or form feed character.
-    constexpr inline bool iswhitespace(char ch) noexcept
-    {
-        return (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' || ch == '\f');
-    }
+    constexpr inline bool iswhitespace(char ch) noexcept { return (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' || ch == '\f'); }
 
     /// Returns true if character is a period, comma, semi-colon, colon, question or exclamation
     constexpr inline bool ispunctuation(char ch) noexcept
@@ -145,7 +147,8 @@ namespace ttlib
     bool contains(std::string_view main, std::string_view sub, tt::CASE checkcase = tt::CASE::exact);
 
     /// Returns true if any string in the iteration list appears somewhere in the the main string.
-    template<class iterT> bool strContains(std::string_view str, iterT iter, tt::CASE checkcase = tt::CASE::exact)
+    template<class iterT>
+    bool strContains(std::string_view str, iterT iter, tt::CASE checkcase = tt::CASE::exact)
     {
         for (auto& strIter: iter)
         {
@@ -227,8 +230,7 @@ namespace ttlib
 
     /// Performs a check to see if a directory entry is a filename and contains the
     /// specified extension.
-    bool hasextension(std::filesystem::directory_entry name, std::string_view extension,
-                      tt::CASE checkcase = tt::CASE::exact);
+    bool hasextension(std::filesystem::directory_entry name, std::string_view extension, tt::CASE checkcase = tt::CASE::exact);
 
     /// Confirms newdir exists and is a directory and then changes to that directory.
     ///
@@ -318,8 +320,8 @@ namespace ttlib
     ttlib::cstr LoadTextResource(DWORD idResource, HMODULE hmodResource = NULL);
 
     /// Converts all text to UTF16 before calling ShellExecuteW(...)
-    HINSTANCE ShellRun(std::string_view filename, std::string_view args, std::string_view directory,
-                       INT nShow = SW_SHOWNORMAL, HWND hwndParent = NULL);
+    HINSTANCE ShellRun(std::string_view filename, std::string_view args, std::string_view directory, INT nShow = SW_SHOWNORMAL,
+                       HWND hwndParent = NULL);
 
     HFONT CreateLogFont(std::string_view TypeFace, size_t point, bool Bold = false, bool Italics = false);
 
