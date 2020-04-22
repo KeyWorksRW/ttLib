@@ -35,19 +35,14 @@ namespace ttlib
         using bsv = std::basic_string_view<char, std::char_traits<char>>;
 
     public:
-        // clang-format off
-
-        cview(std::string str) : bsv(str.c_str(), str.length()) { }
-        cview(std::stringstream str) : bsv(str.str().c_str(), str.str().length()) { }
-        cview(const char* str, size_t len) : bsv(str, len) { }
-        cview(const char* str) : bsv(str) { }
-
-        // clang-format on
+        cview(const std::string& str) : bsv(str.c_str(), str.length()) {}
+        cview(const char* str, size_t len) : bsv(str, len) {}
+        cview(const char* str) : bsv(str) {}
 
         // A string view is not guarenteed to be zero-terminated, so you can't construct from it
         cview(std::string_view str) = delete;
 
-        /// View is zero-terminated, so c_str() can be used wherever std::string.c_str()
+        /// cview is zero-terminated, so c_str() can be used wherever std::string.c_str()
         /// would be used.
         constexpr const char* c_str() const noexcept { return data(); };
 
@@ -64,10 +59,7 @@ namespace ttlib
         size_t locate(std::string_view str, size_t posStart = 0, tt::CASE check = tt::CASE::exact) const;
 
         /// Returns true if the sub string exists
-        bool contains(std::string_view sub, tt::CASE checkcase = tt::CASE::exact) const
-        {
-            return (locate(sub, 0, checkcase) != npos);
-        }
+        bool contains(std::string_view sub, tt::CASE checkcase = tt::CASE::exact) const { return (locate(sub, 0, checkcase) != npos); }
 
         /// Returns true if any string in the iteration list appears somewhere in the the main string.
         template<class iterT>
@@ -108,16 +100,10 @@ namespace ttlib
         constexpr void remove_suffix(size_type n) = delete;
 
         /// Returns true if current filename contains the specified case-insensitive extension.
-        bool hasExtension(std::string_view ext) const
-        {
-            return ttlib::issameas(extension(), ext, tt::CASE::either);
-        }
+        bool hasExtension(std::string_view ext) const { return ttlib::issameas(extension(), ext, tt::CASE::either); }
 
         /// Returns true if current filename contains the specified case-insensitive file name.
-        bool hasFilename(std::string_view name) const
-        {
-            return ttlib::issameas(filename(), name, tt::CASE::either);
-        }
+        bool hasFilename(std::string_view name) const { return ttlib::issameas(filename(), name, tt::CASE::either); }
 
         /// Returns a view to the current extension. View is empty if there is no extension.
         ///
