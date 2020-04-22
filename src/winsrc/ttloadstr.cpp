@@ -107,3 +107,22 @@ bool ttlib::LoadStringEx(std::string& Result, WORD id)
     }
     return false;
 }
+
+std::vector<std::pair<WORD, std::string>> tt_stringtable;
+
+const char* ttlib::translate(WORD id)
+{
+    for (auto& iter: tt_stringtable)
+    {
+        if (iter.first == id)
+            return iter.second.c_str();
+    }
+    std::string str;
+    if (ttlib::LoadStringEx(str, id))
+    {
+        auto& pair = tt_stringtable.emplace_back(std::make_pair(id, str));
+        return pair.second.c_str();
+    }
+
+    return ttlib::emptystring.c_str();
+}

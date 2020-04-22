@@ -368,6 +368,10 @@ namespace ttlib
     /// in ttlib::lang_info. String is converted to UTF8 before storing in Result.
     ttlib::cstr LoadStringEx(WORD id);
 
+    /// If you put an id in the _tt() macro (see ttTR.h), this will effectively call
+    /// LoadStringEx(), store the result and return a pointer to the string.
+    const char* translate(WORD id);
+
     /// Set the resource handle and language to use for loading resources. If hinstResource
     /// is NULL, the current executable is used. Otherwise it must be the handle returned
     /// by LoadLibrary().
