@@ -63,13 +63,6 @@ namespace tt
     /// Use to compare a size_t against -1
     constexpr size_t npos = static_cast<size_t>(-1);
 
-    template<typename T>
-    /// Compares result against -1
-    constexpr bool err(T result)
-    {
-        return (static_cast<ptrdiff_t>(result)) == -1;
-    }
-
     enum class CASE : size_t
     {
         exact,
@@ -127,6 +120,13 @@ namespace ttlib
         return (ch == '.' || ch == ',' || ch == ';' || ch == ':' || ch == '?' || ch == '!');
     }
 
+    template<typename T>
+    /// Compares result against -1
+    constexpr bool isError(T result)
+    {
+        return (static_cast<ptrdiff_t>(result)) == -1;
+    }
+
     /// Returns true if strings are identical
     bool issameas(std::string_view str1, std::string_view str2, tt::CASE checkcase = tt::CASE::exact);
 
@@ -146,8 +146,8 @@ namespace ttlib
     /// Same as findstr but with a boolean return instead of a string_view.
     bool contains(std::string_view main, std::string_view sub, tt::CASE checkcase = tt::CASE::exact);
 
-    /// Returns true if any string in the iteration list appears somewhere in the the main string.
     template<class iterT>
+    /// Returns true if any string in the iteration list appears somewhere in the the main string.
     bool strContains(std::string_view str, iterT iter, tt::CASE checkcase = tt::CASE::exact)
     {
         for (auto& strIter: iter)
