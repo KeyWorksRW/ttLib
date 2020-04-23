@@ -81,11 +81,3 @@ targetsR: $(BldScript)
 
 deps: $(BldScript)
 	ninja -f $(BldScript) -t deps
-
-########## Creates or updates ninja file any time .srcfiles.yaml changes ##########
-
-$(BldScript): .srcfiles.yaml .srcfiles.win.yaml
-	ttBld.exe -u$(cmplr)
-
-$(BldScriptD): .srcfiles.yaml .srcfiles.win.yaml
-	ttBld.exe -u$(cmplr)D

@@ -16,6 +16,8 @@ Options:
     IncDirs:    winsrc/precompile;../include
     TargetDir:  ../lib
 
+    MakeDir:     bld       # auto-generate makefile in specified directory
+
 Files:
     ttconsole.cpp    # class that sets/restores console foreground color
     ttcstr.cpp       # Class for handling zero-terminated char strings.
