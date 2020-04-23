@@ -23,11 +23,3 @@ If you have MINGW installed and both MINGW and the **clang-cl** compiler are in 
 ## Building ttLib.lib
 
 While ttLib.lib is designed to be cross-platform, currently it can only be built under Windows. Cross platform building is planned, but not ETA as of yet.
-
-## ttTrace
-
-In the **ttTrace/** directory is code used to build a Windows app that will display strings sent to it using the **ttTRACE** macro found in the **ttlib/include/ttdebug.h** header file.
-
-## WTL
-
-This directory contains a snapshot of Windows Template Library version 10. It's required to build the **ttTrace**, as well as being used in some **KeyWorks Software** projects, so it's included as part of this repository.
