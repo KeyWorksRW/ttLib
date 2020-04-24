@@ -11,6 +11,18 @@
     <Type Name="ttlib::openfile">
       <DisplayString>{m_filename,s}</DisplayString>
     </Type>
+  <Type Name="ttlib::cview">
+    <Intrinsic Name="size" Expression="_Mysize" />
+    <Intrinsic Name="data" Expression="_Mydata" />
+    <DisplayString>{_Mydata,s}</DisplayString>
+    <Expand>
+      <Item Name="[size]" ExcludeView="simple">size()</Item>
+      <ArrayItems>
+        <Size>size()</Size>
+        <ValuePointer>data()</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
 
     <!-- wxWidgets visualizers -->
 
