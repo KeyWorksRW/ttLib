@@ -17,18 +17,28 @@
 #endif
 
 #include "ttTR.h"
+#include "ttcstr.h"
 
-std::map<const std::string, std::string> tt_translations;
+std::map<const std::string, ttlib::cstr> tt_translations;
 
-const char* ttlib::translate(const std::string& str)
+// We already have ttlib::emptystring, but it's a const and returning it causes a compiler error, so we create a
+// non-const here to return. Note that this does provide the option of setting the string to a specific value to
+// indicate an error, since it only gets returned if an empty string is passed, or in the case of translate(WORD id), it
+// is returned if the resource id doesn't exists.
+
+ttlib::cstr _tt__emptystr;
+
+const ttlib::cstr& ttlib::translate(const std::string& str)
 {
     if (str.empty())
-        return str.c_str();
+    {
+        return _tt__emptystr;
+    }
 
     auto found = tt_translations.find(str);
     if (found != tt_translations.end())
     {
-        return found->second.c_str();
+        return found->second;
     }
     else
     {
@@ -42,7 +52,7 @@ const char* ttlib::translate(const std::string& str)
                 auto translated = tt_translations.insert({ psz, strTranslation->utf8_str().data() });
                 if (translated.second)
                 {
-                    return translated.first->second.c_str();
+                    return translated.first->second;
                 }
             }
             else
@@ -51,7 +61,7 @@ const char* ttlib::translate(const std::string& str)
                 auto translated = tt_translations.insert({ psz, psz });
                 if (translated.second)
                 {
-                    return translated.first->second.c_str();
+                    return translated.first->second;
                 }
             }
         }
@@ -60,7 +70,7 @@ const char* ttlib::translate(const std::string& str)
             auto translated = tt_translations.insert({ psz, psz });
             if (translated.second)
             {
-                return translated.first->second.c_str();
+                return translated.first->second;
             }
         }
 #else   // !defined(_WX_DEFS_H_)
@@ -68,72 +78,14 @@ const char* ttlib::translate(const std::string& str)
         auto translated = tt_translations.insert({ str, str });
         if (translated.second)
         {
-            return translated.first->second.c_str();
+            return translated.first->second;
         }
 #endif  // _WX_DEFS_H_
     }
 
     // We only get here if the passed string ptr is null, or the unordered_map was unable to insert
     // the string.
-    return str.c_str();
-}
-
-const char* ttTranslate(const char* psz)
-{
-    if (psz)
-    {
-        auto found = tt_translations.find(psz);
-        if (found != tt_translations.end())
-        {
-            return found->second.c_str();
-        }
-        else
-        {
-#if defined(_WX_DEFS_H_)
-            auto trans = wxTranslations::Get();
-            if (trans)
-            {
-                auto strTranslation = trans->GetTranslatedString(psz);
-                if (strTranslation)
-                {
-                    auto translated = tt_translations.insert({ psz, strTranslation->utf8_str().data() });
-                    if (translated.second)
-                    {
-                        return translated.first->second.c_str();
-                    }
-                }
-                else
-                {
-                    // No translation available, make certain we don't try again.
-                    auto translated = tt_translations.insert({ psz, psz });
-                    if (translated.second)
-                    {
-                        return translated.first->second.c_str();
-                    }
-                }
-            }
-            else
-            {
-                auto translated = tt_translations.insert({ psz, psz });
-                if (translated.second)
-                {
-                    return translated.first->second.c_str();
-                }
-            }
-#else   // !defined(_WX_DEFS_H_)
-        // Currently all that happens is the string is added without translation.
-            auto translated = tt_translations.insert({ psz, psz });
-            if (translated.second)
-            {
-                return translated.first->second.c_str();
-            }
-#endif  // _WX_DEFS_H_
-        }
-    }
-
-    // We only get here if the passed string ptr is null, or the unordered_map was unable to insert
-    // the string.
-    return psz;
+    return _tt__emptystr;
 }
 
 void clearTranslations() noexcept

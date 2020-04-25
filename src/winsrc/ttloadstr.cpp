@@ -15,7 +15,8 @@
 #include <map>
 #include <string_view>
 
-#include "ttcstr.h"
+#include "ttcstr.h"   // cstr -- Classes for handling zero-terminated char strings.
+#include "ttdebug.h"  // ttASSERT macros
 
 namespace ttlib
 {
@@ -108,22 +109,29 @@ bool ttlib::LoadStringEx(std::string& Result, WORD id)
     return false;
 }
 
-std::map<WORD, std::string> tt_stringtable;
+std::map<WORD, ttlib::cstr> tt_stringtable;
+extern ttlib::cstr _tt__emptystr;
 
-const char* ttlib::translate(WORD id)
+const ttlib::cstr ttlib::translate(WORD id)
 {
     auto found = tt_stringtable.find(id);
     if (found != tt_stringtable.end())
     {
-        return found->second.c_str();
+        return found->second;
     }
 
     std::string str;
     if (ttlib::LoadStringEx(str, id))
     {
-        auto entry = tt_stringtable.insert({id, str });
-        return entry.first->second.c_str();
+        auto entry = tt_stringtable.insert({ id, str });
+        return entry.first->second;
     }
 
-    return ttlib::emptystring.c_str();
+#if !defined(NDEBUG)  // Starts debug section.
+    _tt__emptystr.Format("String Resource id %u not found", id);
+    ttFAIL_MSG(_tt__emptystr);
+    _tt__emptystr.clear();
+#endif
+
+    return _tt__emptystr;
 }
