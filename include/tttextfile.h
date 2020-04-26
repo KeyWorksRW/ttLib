@@ -71,7 +71,7 @@ namespace ttlib
         /// pointer.
         void ReadArray(const char** begin);
 
-        /// Reads an count items from an array of char* strings.
+        /// Reads count items from an array of char* strings.
         void ReadArray(const char** begin, size_t count);
 
         /// Writes each line to the file adding a '\n' to the end of the line.
@@ -124,6 +124,9 @@ namespace ttlib
             if (size())
                 erase(begin() + (size() - 1));
         }
+
+        template<typename T>
+        void operator+=(T str) { emplace_back(str); }
 
     protected:
         // Converts lines into a vector of ttlib::cstr members. Lines can end with \n, \r, or \r\n.
