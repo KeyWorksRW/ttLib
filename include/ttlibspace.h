@@ -8,6 +8,10 @@
 
 #pragma once
 
+#if !(__cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L))
+    #error "The contents of <ttlibspace.h> are available only with C++17 or later."
+#endif
+
 // With #pragma once, a header guard shouldn't be necessary and causes unwanted indentation by clang-format. The
 // following #if/#endif check verifies that the file wasn't read twice.
 

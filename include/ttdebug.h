@@ -14,6 +14,10 @@
 
 #pragma once
 
+#if !(__cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L))
+    #error "The contents of <ttlibspace.h> are available only with C++17 or later."
+#endif
+
 #if !defined(_WIN32)
     #error The functions and macros in this header file are only available on Windows
 #endif  // _WIN32

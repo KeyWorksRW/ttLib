@@ -8,6 +8,10 @@
 
 #pragma once
 
+#if !(__cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L))
+    #error "The contents of <ttlibspace.h> are available only with C++17 or later."
+#endif
+
 /// @file
 /// Contains classes for reading line-oriented SBCS or UTF8 files. Use ttlib::textfile if you
 /// need to make changes to the file. Use ttlib::viewfile is you just want to examine, but not

@@ -12,6 +12,10 @@
     #error "This header file can only be used when compiling for Windows"
 #endif
 
+#if !(__cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L))
+    #error "The contents of <ttlibspace.h> are available only with C++17 or later."
+#endif
+
 #include <winerror.h>
 #include <winreg.h>
 

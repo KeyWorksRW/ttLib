@@ -15,6 +15,10 @@
 
 #pragma once
 
+#if !(__cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L))
+    #error "The contents of <ttlibspace.h> are available only with C++17 or later."
+#endif
+
 #if defined(ttASSERT)
     #error Either include ttassert.h or ttdebug.h -- don't include both!
 #endif
