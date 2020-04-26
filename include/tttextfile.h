@@ -77,6 +77,9 @@ namespace ttlib
         /// Writes each line to the file adding a '\n' to the end of the line.
         bool WriteFile(std::string_view filename) const;
 
+        /// Writes to the same file that was previously read
+        bool WriteFile() const { return !m_filename.empty() ? WriteFile(m_filename) : false; }
+
         /// Searches every line to see if it contains the sub-string.
         ///
         /// startline is the zero-based offset to the line to start searching.
