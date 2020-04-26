@@ -16,10 +16,12 @@
     #include <wx/intl.h>
 #endif
 
+#include "ttcmap.h"  // cmap -- std::map<template, ttlib::cstr>
+
 #include "ttTR.h"
 #include "ttcstr.h"
 
-std::map<const std::string, ttlib::cstr> tt_translations;
+ttlib::cmap<const std::string> tt_translations;
 
 // We already have ttlib::emptystring, but it's a const and returning it causes a compiler error, so we create a
 // non-const here to return. Note that this does provide the option of setting the string to a specific value to
@@ -35,50 +37,45 @@ const ttlib::cstr& ttlib::translate(const std::string& str)
         return _tt__emptystr;
     }
 
-    auto found = tt_translations.find(str);
-    if (found != tt_translations.end())
+    if (auto [found, value] = tt_translations.getValue(str); found)
     {
-        return found->second;
+        return value;
     }
+
     else
     {
 #if defined(_WX_DEFS_H_)
-        auto trans = wxTranslations::Get();
-        if (trans)
+        if (auto trans = wxTranslations::Get(); trans)
         {
-            auto strTranslation = trans->GetTranslatedString(psz);
-            if (strTranslation)
+            if (auto strTranslation = trans->GetTranslatedString(str); !strTranslation.empty())
             {
-                auto translated = tt_translations.insert({ psz, strTranslation->utf8_str().data() });
-                if (translated.second)
+                if (auto [pair, success] = tt_translations.insert({ str, strTranslation->utf8_str().data() }, success))
                 {
-                    return translated.first->second;
+                    return pair->second;
                 }
             }
             else
             {
                 // No translation available, make certain we don't try again.
-                auto translated = tt_translations.insert({ psz, psz });
-                if (translated.second)
+                if (auto [pair, success] = tt_translations.insert({ str, str }); success)
                 {
-                    return translated.first->second;
+                    return pair->second;
                 }
             }
         }
         else
         {
-            auto translated = tt_translations.insert({ psz, psz });
-            if (translated.second)
+            // No translation available, make certain we don't try again.
+            if (auto [pair, success] = tt_translations.insert({ str, str }); success)
             {
-                return translated.first->second;
+                return pair->second;
             }
         }
 #else   // !defined(_WX_DEFS_H_)
         // Currently all that happens is the string is added without translation.
-        auto translated = tt_translations.insert({ str, str });
-        if (translated.second)
+        if (auto [pair, success] = tt_translations.insert({ str, str }); success)
         {
-            return translated.first->second;
+            return pair->second;
         }
 #endif  // _WX_DEFS_H_
     }
@@ -88,7 +85,7 @@ const ttlib::cstr& ttlib::translate(const std::string& str)
     return _tt__emptystr;
 }
 
-void clearTranslations() noexcept
+void ttlib::clearTranslations() noexcept
 {
     tt_translations.clear();
 }
