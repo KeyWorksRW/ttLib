@@ -20,8 +20,7 @@
 
 namespace ttlib
 {
-    /// Contains a vector of cstr classes with some additional functionality such
-    /// as only adding a string if it doesn't already exist.
+    /// Contains a vector of cstr classes
     class cstrVector : public std::vector<ttlib::cstr>
     {
     public:
@@ -31,40 +30,28 @@ namespace ttlib
         /// Same as find(pos, str) but with a boolean result
         bool bfind(size_type pos, std::string_view str) const { return (at(pos).find(str) != tt::npos); }
 
-        /// Only appends the string if it doesn't already exist.
-        ///
-        /// Returns true if the string was added, false if it already existed.
-        bool append(std::string_view str, tt::CASE checkcase = tt::CASE::exact)
+        /// Only adds the string if it doesn't already exist.
+        ttlib::cstr& append(std::string_view str, tt::CASE checkcase = tt::CASE::exact)
         {
-            if (find(0, str, checkcase) != tt::npos)
+            if (auto index = find(0, str, checkcase); !ttlib::isError(index))
             {
-                return false;
+                return at(index);
             }
-            push_back(str);
-            return true;
+            return emplace_back(str);
         }
 
         /// Only adds the filename if it doesn't already exist. On Windows, the case of the
         /// filename is ignored when checking to see if the filename already exists.
-        ///
-        /// Returns true if the file was added, false if it already existed.
-        bool addfilename(std::string_view filename)
+        ttlib::cstr& addfilename(std::string_view filename)
         {
-            for (auto iter: *this)
-            {
 #if defined(_WIN32)
-                if (iter.comparei(filename) == 0)
-                    return false;
+                return append(filename, tt::CASE::either);
 #else
-                if (iter.compare(filename) == 0)
-                    return false;
+                return append(filename, tt::CASE::exact);
 #endif  // _WIN32
-            }
-            push_back(filename);
-            return true;
         }
 
-        bool hasFilename(std::string_view filename)
+        bool hasFilename(std::string_view filename) const
         {
 #if defined(_WIN32)
             return (find(0, filename, tt::CASE::either) != tt::npos);
@@ -78,6 +65,8 @@ namespace ttlib
         {
             return find(0, str, checkcase);
         }
+
+        /// Finds the position of the first string identical to the specified string.
         size_t find(size_t start, std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
 
         /// Finds the position of the first string with specified prefix.
@@ -85,6 +74,8 @@ namespace ttlib
         {
             return findprefix(0, prefix, checkcase);
         }
+
+        /// Finds the position of the first string with specified prefix.
         size_t findprefix(size_t start, std::string_view prefix, tt::CASE checkcase = tt::CASE::exact) const;
 
         /// Finds the position of the first string containing the specified sub-string.
@@ -92,10 +83,12 @@ namespace ttlib
         {
             return contains(0, substring, checkcase);
         }
+
+        /// Finds the position of the first string containing the specified sub-string.
         size_t contains(size_t start, std::string_view substring, tt::CASE checkcase = tt::CASE::exact) const;
 
         /// Unlike append(), this will add the string even if it already exists.
-        void operator+=(std::string_view str) { push_back(str); }
+        void operator+=(std::string_view str) { emplace_back(str); }
     };
 
 }  // namespace ttlib
