@@ -771,7 +771,7 @@ cstr& cdecl cstr::Format(std::string_view format, ...)
 
             if (format.at(pos) == '%')
             {
-                buffer << format[++pos];
+                buffer << format[pos];
                 continue;
             }
 
