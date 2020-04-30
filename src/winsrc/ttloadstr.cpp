@@ -110,7 +110,13 @@ bool ttlib::LoadStringEx(std::string& Result, WORD id)
 }
 
 std::map<WORD, ttlib::cstr> tt_stringtable;
-extern ttlib::cstr _tt__emptystr;
+
+namespace ttTR
+{
+    extern ttlib::cstr trEmpty;
+}
+
+using namespace ttTR;
 
 const ttlib::cstr ttlib::translate(WORD id)
 {
@@ -128,10 +134,10 @@ const ttlib::cstr ttlib::translate(WORD id)
     }
 
 #if !defined(NDEBUG)  // Starts debug section.
-    _tt__emptystr.Format("String Resource id %u not found", id);
-    ttFAIL_MSG(_tt__emptystr);
-    _tt__emptystr.clear();
+    trEmpty.Format("String Resource id %u not found", id);
+    ttFAIL_MSG(trEmpty);
+    trEmpty.clear();
 #endif
 
-    return _tt__emptystr;
+    return trEmpty;
 }
