@@ -27,6 +27,17 @@ cmd::cmd(int argc, char** argv, std::string_view description)
     m_description = description;
 }
 
+void cmd::addOption(std::string_view name, std::string_view description)
+{
+    TT_ASSERT(!name.empty());
+
+    auto popt = std::make_unique<cmd::Option>();
+    popt->m_description = description;
+    popt->m_flags = 0;
+
+    m_options.emplace(shortlong(name), std::move(popt));
+}
+
 void cmd::addOption(std::string_view name, std::string_view description, size_t flags)
 {
     TT_ASSERT(!name.empty());
@@ -34,6 +45,20 @@ void cmd::addOption(std::string_view name, std::string_view description, size_t 
     auto popt = std::make_unique<cmd::Option>();
     popt->m_description = description;
     popt->m_flags = flags;
+
+    m_options.emplace(shortlong(name), std::move(popt));
+}
+
+void cmd::addOption(std::string_view name, std::string_view description, size_t flags, size_t setvalue)
+{
+    TT_ASSERT(!name.empty());
+
+    auto popt = std::make_unique<cmd::Option>();
+    popt->m_description = description;
+    popt->m_flags = flags;
+
+    if (flags & cmd::shared_val)
+        popt->m_setvalue = setvalue;
 
     m_options.emplace(shortlong(name), std::move(popt));
 }
@@ -170,6 +195,13 @@ bool cmd::parse()
                 if (!(option->m_flags & cmd::needsarg))
                 {
                     option->m_result = "true";
+                    if (option->m_flags & cmd::shared_val)
+                    {
+                        if (m_sharedvalue == tt::npos)
+                            m_sharedvalue = option->m_setvalue;
+                        else
+                            m_sharedvalue |= option->m_setvalue;
+                    }
                     continue;
                 }
 
