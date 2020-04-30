@@ -6,35 +6,47 @@
 // License:   Apache License (see LICENSE)
 /////////////////////////////////////////////////////////////////////////////
 
-// Note: currently, translation only occurs when compiled with wxWidgets.
-
 #include "pch.h"
 
 #include <map>
+#include <optional>
 
 #if defined(_WX_DEFS_H_)
     #include <wx/intl.h>
 #endif
 
-#include "ttcmap.h"  // cmap -- std::map<template, ttlib::cstr>
-
 #include "ttTR.h"
 #include "ttcstr.h"
 
-ttlib::cmap<const std::string> tt_translations;
+namespace ttTR
+{
+    ttlib::cstr trEmpty;
+
+    class cmap : public std::map<const std::string, ttlib::cstr>
+    {
+    public:
+        std::pair<bool, const ttlib::cstr&> getValue(const std::string& key) const
+        {
+            if (auto found = find(key); found != end())
+                return { true, found->second };
+            else
+                return { false, trEmpty };
+        }
+    };
+}  // namespace ttTR
+
+ttTR::cmap tt_translations;
 
 // We already have ttlib::emptystring, but it's a const and returning it causes a compiler error, so we create a
 // non-const here to return. Note that this does provide the option of setting the string to a specific value to
 // indicate an error, since it only gets returned if an empty string is passed, or in the case of translate(WORD id), it
 // is returned if the resource id doesn't exists.
 
-ttlib::cstr _tt__emptystr;
-
 const ttlib::cstr& ttlib::translate(const std::string& str)
 {
     if (str.empty())
     {
-        return _tt__emptystr;
+        return ttTR::trEmpty;
     }
 
     if (auto [found, value] = tt_translations.getValue(str); found)
@@ -82,7 +94,7 @@ const ttlib::cstr& ttlib::translate(const std::string& str)
 
     // We only get here if the passed string ptr is null, or the unordered_map was unable to insert
     // the string.
-    return _tt__emptystr;
+    return ttTR::trEmpty;
 }
 
 void ttlib::clearTranslations() noexcept
