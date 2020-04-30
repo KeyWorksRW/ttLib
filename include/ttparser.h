@@ -49,7 +49,7 @@ namespace ttlib
             invalid_arg,      // expected a string, an option was specified instead (string started with - or /)
         };
 
-        cmd(int argc, char** argv, std::string_view description);
+        cmd(int argc, char** argv);
 
         /// Adds an option that isn't followed by an argument. Call isOption(name) to
         /// find out if the option was specified.
@@ -117,7 +117,6 @@ namespace ttlib
 
     private:
         ttlib::cstrVector m_extras;  // arguments specified that were not associated with an option
-        ttlib::cstr m_description;
         std::vector<Result> m_results;
         ttlib::cstrVector m_originalArgs;
 

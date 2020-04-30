@@ -19,12 +19,10 @@ using namespace ttlib;
 // apps couldn't use this, nor could wide-char (UNICODE) Windows console or wxWidgets apps use it. It's inefficient to
 // convert "char** argv" to a vector, but doing so means we can support additional types of command lines.
 
-cmd::cmd(int argc, char** argv, std::string_view description)
+cmd::cmd(int argc, char** argv)
 {
     for (auto argpos = 1; argpos < argc; ++argpos)
         m_originalArgs += argv[argpos];
-
-    m_description = description;
 }
 
 void cmd::addOption(std::string_view name, std::string_view description)
@@ -270,7 +268,6 @@ bool cmd::parse()
 std::vector<ttlib::cstr> cmd::getUsage()
 {
     std::vector<ttlib::cstr> usage;
-    usage.emplace_back(m_description);
 
     size_t maxSize = 0;
     for (auto option = m_options.begin(); option != m_options.end(); ++option)
