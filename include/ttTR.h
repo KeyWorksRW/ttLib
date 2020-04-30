@@ -29,6 +29,8 @@
 
 #include <string>
 
+#include "ttcstr.h"
+
 namespace ttlib
 {
     class cstr;
