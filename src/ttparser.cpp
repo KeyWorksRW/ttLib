@@ -70,6 +70,19 @@ void cmd::addOption(std::string_view name, std::string_view description, size_t 
     m_options.emplace(shortlong(name), std::move(popt));
 }
 
+void cmd::addHiddenOption(std::string_view name, size_t flags, size_t setvalue)
+{
+    TT_ASSERT(!name.empty());
+
+    auto popt = std::make_unique<cmd::Option>();
+    popt->m_flags = flags | cmd::hidden;
+
+    if (flags & cmd::shared_val)
+        popt->m_setvalue = setvalue;
+
+    m_options.emplace(shortlong(name), std::move(popt));
+}
+
 // If the name contains a '|' character, then break it into a short name and a long name. The
 // two names are then added to the m_shortlong map so that any option name request that has a
 // short name can be remapped to it's long name.
@@ -292,6 +305,8 @@ std::vector<ttlib::cstr> cmd::getUsage()
 
     for (auto option = m_options.begin(); option != m_options.end(); ++option)
     {
+        if (option->second->m_flags & cmd::hidden)
+            continue;
         auto& entry = usage.emplace_back();
         entry.Format(format, option->first.c_str(), option->second->m_description.c_str());
     }

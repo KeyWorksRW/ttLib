@@ -35,6 +35,7 @@ namespace ttlib
             required = 1 << 0,    // option is required
             needsarg = 1 << 1,    // option is followed by an argument
             shared_val = 1 << 2,  // option sets a specific value
+            hidden = 1 << 3,  // option will not be added to usage
 
             help = 1 << 15,  // option indicates user is requesting help
         };
@@ -69,10 +70,6 @@ namespace ttlib
         /// Adds an option with with one or more bit-flags set (required, needsrg, shared_val)
         void addOption(std::string_view name, std::string_view description, size_t flags);
 
-        /// If this option appears on the command line, cmd::isHelpRequested() will return
-        /// true.
-        void addHelpOption(std::string_view name, std::string_view description) { addOption(name, description, cmd::help); }
-
         /// Call this with flags set to cmd::shared_val and if the option is encountered, it
         /// will set a shared value to setvalue.
         ///
@@ -80,6 +77,13 @@ namespace ttlib
         /// encountered, the value is OR'd with the previous value, allowing you to use
         /// options to set bit flags.
         void addOption(std::string_view name, std::string_view description, size_t flags, size_t setvalue);
+
+        /// Adds an option that will not be added to the getUsage() list
+        void addHiddenOption(std::string_view name, size_t flags = 0, size_t setvalue = 0);
+
+        /// If this option appears on the command line, cmd::isHelpRequested() will return
+        /// true.
+        void addHelpOption(std::string_view name, std::string_view description) { addOption(name, description, cmd::help); }
 
         /// Call this to parse whatever command line was passed to the constructor
         ///
