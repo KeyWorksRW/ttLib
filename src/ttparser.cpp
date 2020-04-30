@@ -25,6 +25,15 @@ cmd::cmd(int argc, char** argv)
         m_originalArgs += argv[argpos];
 }
 
+cmd::cmd(int argc, wchar_t** argv)
+{
+    for (auto argpos = 1; argpos < argc; ++argpos)
+    {
+        auto& arg = m_originalArgs.emplace_back();
+        arg.assignUTF16(argv[argpos]);
+    }
+}
+
 void cmd::addOption(std::string_view name, std::string_view description)
 {
     TT_ASSERT(!name.empty());
