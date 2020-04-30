@@ -33,9 +33,13 @@ rule lib
 
 build $outdir/pch.obj: compilePCH pch.cpp
 
+build $outdir/ttTR.obj: compile ttTR.cpp | $outdir/pch.obj
+
 build $outdir/ttconsole.obj: compile ttconsole.cpp | $outdir/pch.obj
 
 build $outdir/ttcstr.obj: compile ttcstr.cpp | $outdir/pch.obj
+
+build $outdir/ttcvector.obj: compile ttcvector.cpp | $outdir/pch.obj
 
 build $outdir/ttcview.obj: compile ttcview.cpp | $outdir/pch.obj
 
@@ -43,15 +47,9 @@ build $outdir/ttenumstr.obj: compile ttenumstr.cpp | $outdir/pch.obj
 
 build $outdir/ttlibspace.obj: compile ttlibspace.cpp | $outdir/pch.obj
 
-build $outdir/ttpath.obj: compile ttpath.cpp | $outdir/pch.obj
-
-build $outdir/ttnamespace.obj: compile ttnamespace.cpp | $outdir/pch.obj
+build $outdir/ttparser.obj: compile ttparser.cpp | $outdir/pch.obj
 
 build $outdir/tttextfile.obj: compile tttextfile.cpp | $outdir/pch.obj
-
-build $outdir/ttTR.obj: compile ttTR.cpp | $outdir/pch.obj
-
-build $outdir/ttcvector.obj: compile ttcvector.cpp | $outdir/pch.obj
 
 build $outdir/ttdib.obj: compile winsrc/ttdib.cpp | $outdir/pch.obj
 
@@ -78,16 +76,15 @@ build $outdir/ttwindlg.obj: compile winsrc/ttwindlg.cpp | $outdir/pch.obj
 build $outdir/ttwinspace.obj: compile winsrc/ttwinspace.cpp | $outdir/pch.obj
 
 build ../lib/ttLib.lib : lib $
+  $outdir/ttTR.obj $
   $outdir/ttconsole.obj $
   $outdir/ttcstr.obj $
+  $outdir/ttcvector.obj $
   $outdir/ttcview.obj $
   $outdir/ttenumstr.obj $
   $outdir/ttlibspace.obj $
-  $outdir/ttpath.obj $
-  $outdir/ttnamespace.obj $
+  $outdir/ttparser.obj $
   $outdir/tttextfile.obj $
-  $outdir/ttTR.obj $
-  $outdir/ttcvector.obj $
   $outdir/ttdib.obj $
   $outdir/ttdirdlg.obj $
   $outdir/ttloadstr.obj $

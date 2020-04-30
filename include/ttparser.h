@@ -36,7 +36,7 @@ namespace ttlib
             needsarg = 1 << 1,    // option is followed by an argument
             shared_val = 1 << 2,  // option sets a specific value
 
-            help = 1 << 31,  // option indicates user is requesting help
+            help = 1 << 15,  // option indicates user is requesting help
         };
 
         /// result of parsing the command line
