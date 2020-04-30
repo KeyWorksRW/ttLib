@@ -1,14 +1,14 @@
 # Requires ttBld.exe version 1.5.0 or higher to process
 
 Options:
-    Project:    ttLib   # project target name
+    Project:    ttLib      # project target name
     Exe_type:   lib        # [window | console | lib | dll]
     Pch:        pch.h      # precompiled header
     Optimize:   space      # [space | speed] optimization
     Warn:       4          # [1-4]
 
     CFlags_cmn: -std:c++17 /Zc:__cplusplus -DUNICODE # flags to pass to the compiler in all builds
-    CFlags_dbg: /JMC
+    CFlags_dbg: /JMC       # use just-my-code debugging
 
     Crt_rel:    dll        # [static | dll] type of CRT to link to in release builds
     Crt_dbg:    dll        # [static | dll] type of CRT to link to in debug builds
@@ -19,16 +19,17 @@ Options:
     MakeDir:     bld       # auto-generate makefile in specified directory
 
 Files:
+    ttTR.cpp         # Function for translating strings
     ttconsole.cpp    # class that sets/restores console foreground color
     ttcstr.cpp       # Class for handling zero-terminated char strings.
+    ttcvector.cpp    # Vector class for storing ttlib::cstr strings
     ttcview.cpp      # string_view functionality on a zero-terminated char string.
     ttenumstr.cpp    # ttEnumStr, ttEnumStr
     ttlibspace.cpp   # ttlib namespace functions
-    ttpath.cpp       # Contains functions for working with filesystem::path and filesystem::directory
     ttnamespace.cpp  # tt namespace functions
+    ttparser.cpp     # Command line parser
+    ttpath.cpp       # Contains functions for working with filesystem::path and filesystem::directory
     tttextfile.cpp   # Classes for reading and writing text files.
-    ttTR.cpp         # Function for translating strings
-    ttcvector.cpp    # Vector class for storing ttlib::cstr strings
 
 # Windows only files
 

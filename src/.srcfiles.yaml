@@ -16,13 +16,14 @@ Options:
     TargetDir:  ../lib
 
 Files:
+    ttTR.cpp         # Function for translating strings
     ttconsole.cpp    # class that sets/restores console foreground color
     ttcstr.cpp       # Class for handling zero-terminated char strings.
+    ttcvector.cpp    # Vector class for storing ttlib::cstr strings
     ttcview.cpp      # string_view functionality on a zero-terminated char string.
     ttenumstr.cpp    # ttEnumStr, ttEnumStr
     ttlibspace.cpp   # ttlib namespace functions
-    ttpath.cpp       # Contains functions for working with filesystem::path and filesystem::directory
     ttnamespace.cpp  # tt namespace functions
+    ttpath.cpp       # Contains functions for working with filesystem::path and filesystem::directory
     tttextfile.cpp   # Classes for reading and writing text files.
-    ttTR.cpp         # Function for translating strings
-    ttcvector.cpp    # Vector class for storing ttlib::cstr strings
+    ttparser.cpp     # Command line parser
