@@ -49,7 +49,18 @@ namespace ttlib
             invalid_arg,      // expected a string, an option was specified instead (string started with - or /)
         };
 
+        /// Construct this with the arguments passed to your main() function.
         cmd(int argc, char** argv);
+
+        /// Construct this with the arguments passed to your main() function.
+        cmd(int argc, wchar_t** argv);
+
+#if defined(_WIN32)
+        /// This constructor will call a Windows API to get the UNICODE command line for the
+        /// current process which it will then convert into a vector of UTF8 strings (see
+        /// getAllArgs())
+        cmd();
+#endif  // _WIN32
 
         /// Adds an option that isn't followed by an argument. Call isOption(name) to
         /// find out if the option was specified.

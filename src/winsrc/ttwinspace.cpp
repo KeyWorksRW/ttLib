@@ -204,6 +204,23 @@ HFONT ttlib::CreateLogFont(std::string_view TypeFace, size_t point, bool Bold, b
     return hfont;
 }
 
+//////////////////////////////// Windows-only ttlib::cmd functions ////////////////////////
+
+#include "ttparser.h"
+
+ttlib::cmd::cmd()
+{
+    int argc;
+    auto argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+
+    for (auto argpos = 1; argpos < argc; ++argpos)
+    {
+        auto& arg = m_originalArgs.emplace_back();
+        arg.assignUTF16(argv[argpos]);
+    }
+    LocalFree(argv);
+}
+
 //////////////////////////////// Windows-only ttlib::cstr functions ////////////////////////
 
 #include "ttcstr.h"
