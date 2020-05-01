@@ -131,6 +131,13 @@ namespace ttlib
         return (static_cast<ptrdiff_t>(result)) == -1;
     }
 
+    template<typename T>
+    /// Compares result against -1 -- use with returns from find, contains, locate, etc.
+    constexpr bool isFound(T result)
+    {
+        return (static_cast<ptrdiff_t>(result)) != -1;
+    }
+
     /// Returns true if strings are identical
     bool issameas(std::string_view str1, std::string_view str2, tt::CASE checkcase = tt::CASE::exact);
 
