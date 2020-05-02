@@ -181,6 +181,11 @@ bool cmd::parse()
 #endif  // _WIN32
         {
             arg.remove_prefix(1);
+
+            // long names are sometimes specified with -- so remove the second hyphen if that's the case
+            if (arg[0] == '-')
+                arg.remove_prefix(1);
+
             // If the argument is followed by a quote, then add it whether this is an argument type or not
             if (auto pos = arg.find('"'); pos != tt::npos)
             {
