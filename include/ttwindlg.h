@@ -714,7 +714,25 @@ namespace ttlib
 
         LRESULT SetSel(WPARAM index);
 
-        ttlib::cstr GetItemText(int item, int subitem = 0, int maxTextLen = 1024);
+        template<typename T_INDEX>
+        ttlib::cstr GetItemText(T_INDEX item)
+        {
+            return GetLVText((int) item, 0, 1024);
+        }
+
+        template<typename T_INDEX>
+        ttlib::cstr GetItemText(T_INDEX item, T_INDEX subitem)
+        {
+            return GetLVText((int) item, (int) subitem, 1024);
+        }
+
+        template<typename T_INDEX, typename T_SIZE>
+        ttlib::cstr GetItemText(T_INDEX item, T_INDEX subitem, T_SIZE maxTextLen)
+        {
+            return GetLVText((int) item, (int) subitem, (int) maxTextLen);
+        }
+
+        ttlib::cstr GetLVText(int item, int subitem = 0, int maxTextLen = 1024);
 
         bool GetItem(LVITEM* pItem) { return ::SendMessage(m_hwnd, LVM_GETITEM, 0, (LPARAM) pItem) ? true : false; }
         bool SetItem(LVITEM* pItem) { return ::SendMessage(m_hwnd, LVM_SETITEM, 0, (LPARAM) pItem) ? true : false; }
@@ -729,7 +747,14 @@ namespace ttlib
         void clear() const { ::SendMessage(m_hwnd, LVM_DELETEALLITEMS, 0, 0); }
 
         int add(std::string_view str, LPARAM lparam = -1);
-        BOOL addsubstring(std::string_view str, int iItem, int iSubItem);
+
+        template<typename T_INDEX>
+        bool addsubstring(std::string_view str, T_INDEX iItem, T_INDEX iSubItem)
+        {
+            return addsub(str, (int) iItem, (int) iSubItem);
+        }
+
+        bool addsub(std::string_view str, int iItem, int iSubItem);
 
         void InsertColumn(int iColumn, std::string_view utf8str, int width = -1);
         void InsertColumn(int iColumn, const std::wstring& str, int width = -1);

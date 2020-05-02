@@ -257,7 +257,7 @@ int dlgListView::add(std::string_view str, LPARAM lparam)
     return static_cast<int>(::SendMessageW(m_hwnd, LVM_INSERTITEMW, 0, (LPARAM) &lvi));
 }
 
-BOOL dlgListView::addsubstring(std::string_view str, int iItem, int iSubItem)
+bool dlgListView::addsub(std::string_view str, int iItem, int iSubItem)
 {
     std::wstring str16;
     ttlib::utf8to16(str, str16);
@@ -268,7 +268,7 @@ BOOL dlgListView::addsubstring(std::string_view str, int iItem, int iSubItem)
     lvi.pszText = (LPWSTR) str16.c_str();
     lvi.iItem = iItem;
     lvi.iSubItem = iSubItem;
-    return (BOOL)::SendMessageW(m_hwnd, LVM_SETITEMW, 0, (LPARAM) &lvi);
+    return ::SendMessageW(m_hwnd, LVM_SETITEMW, 0, (LPARAM) &lvi);
 }
 
 void dlgListView::InsertColumn(int iColumn, std::string_view utf8str, int width)
@@ -297,7 +297,7 @@ LRESULT dlgListView::SetSel(WPARAM index)
     return ::SendMessageW(m_hwnd, LVM_SETITEMSTATE, index, (LPARAM) &lvi);
 }
 
-ttlib::cstr dlgListView::GetItemText(int item, int subitem, int maxTextLen)
+ttlib::cstr dlgListView::GetLVText(int item, int subitem, int maxTextLen)
 {
     auto str16 = std::make_unique<wchar_t[]>(maxTextLen);
     LVITEMW lvi;
