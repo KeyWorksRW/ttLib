@@ -299,18 +299,18 @@ LRESULT dlgListView::SetSel(WPARAM index)
 
 ttlib::cstr dlgListView::GetItemText(int item, int subitem, int maxTextLen)
 {
-    auto str16 = std::make_unique<wchar_t[]>(maxTextLen).get();
+    auto str16 = std::make_unique<wchar_t[]>(maxTextLen);
     LVITEMW lvi;
     lvi.mask = LVIF_TEXT;
     lvi.iItem = item;
     lvi.iSubItem = subitem;
     lvi.cchTextMax = maxTextLen;
-    lvi.pszText = str16;
+    lvi.pszText = str16.get();
     auto len = ::SendMessageW(m_hwnd, LVM_GETITEMTEXTW, (WPARAM) item, (LPARAM) &lvi);
     ttASSERT(len < maxTextLen);
 
     ttlib::cstr utf8;
-    ttlib::utf16to8({ str16, static_cast<size_t>(len) }, utf8);
+    ttlib::utf16to8({ str16.get(), static_cast<size_t>(len) }, utf8);
     return utf8;
 }
 

@@ -64,9 +64,9 @@ bool ttlib::GetWndText(HWND hwnd, std::string& str)
     {
         ++len;  // Add room for trailing zero
 
-        auto str16 = std::make_unique<wchar_t[]>(len).get();
-        len = GetWindowTextW(hwnd, str16, len);
-        ttlib::utf16to8({ str16, static_cast<size_t>(len) }, str);
+        auto str16 = std::make_unique<wchar_t[]>(len);
+        len = GetWindowTextW(hwnd, str16.get(), len);
+        ttlib::utf16to8({ str16.get(), static_cast<size_t>(len) }, str);
         return true;
     }
     else
