@@ -21,7 +21,7 @@
 
 #include <string>
 
-#include "ttenumstr.h"  // enumstr -- Enumerate through substrings in a string
+#include "ttmultistr.h"
 
 namespace ttlib
 {
@@ -75,8 +75,8 @@ namespace ttlib
 
         // The following can be used to read/write vectors of strings instead of using REG_MULTI_SZ
 
-        ttlib::enumstr ReadEnumstr(std::string_view name);
-        bool WriteEnumstr(std::string_view name, const ttlib::enumstr& estr);
+        ttlib::multistr ReadEnumstr(std::string_view name);
+        bool WriteEnumstr(std::string_view name, const ttlib::multistr& estr);
 
         /// This will read a REG_QWORD value in 64-bit builds, and REG_DWORD in 32-bit builds
         ///

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttenumstr.cpp
-// Purpose:   Enumerate through substrings in a string
+// Name:      ttlib::multistr, ttlib::multiview
+// Purpose:   Breaks a single string into multiple strings
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2018-2020 KeyWorks Software (Ralph Walden)
 // License:   Apache License (see ../LICENSE)
@@ -8,11 +8,11 @@
 
 #include "pch.h"
 
-#include "ttenumstr.h"
+#include "ttmultistr.h"
 
 using namespace ttlib;
 
-enumstr::enumstr(std::string_view str, char separator)
+multistr::multistr(std::string_view str, char separator)
 {
     size_t start = 0;
     size_t end = str.find_first_of(separator);
@@ -30,7 +30,7 @@ enumstr::enumstr(std::string_view str, char separator)
     back().assign(str.substr(start));
 }
 
-enumview::enumview(std::string_view str, char separator)
+multiview::multiview(std::string_view str, char separator)
 {
     size_t start = 0;
     size_t end = str.find_first_of(separator);

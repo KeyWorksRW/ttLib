@@ -74,13 +74,13 @@ bool registry::WriteString(std::string_view name, std::string_view value)
                            static_cast<DWORD>(value16.size()) + sizeof(wchar_t)) == ERROR_SUCCESS);
 }
 
-ttlib::enumstr registry::ReadEnumstr(std::string_view name)
+ttlib::multistr registry::ReadEnumstr(std::string_view name)
 {
-    ttlib::enumstr result(ReadString(name));
+    ttlib::multistr result(ReadString(name));
     return result;
 }
 
-bool registry::WriteEnumstr(std::string_view name, const ttlib::enumstr& estr)
+bool registry::WriteEnumstr(std::string_view name, const ttlib::multistr& estr)
 {
     std::string str;
     for (auto& iter: estr)

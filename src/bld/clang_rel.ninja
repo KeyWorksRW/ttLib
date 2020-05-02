@@ -43,7 +43,7 @@ build $outdir/ttcvector.obj: compile ttcvector.cpp | $outdir/pch.obj
 
 build $outdir/ttcview.obj: compile ttcview.cpp | $outdir/pch.obj
 
-build $outdir/ttenumstr.obj: compile ttenumstr.cpp | $outdir/pch.obj
+build $outdir/ttmultistr.obj: compile ttmultistr.cpp | $outdir/pch.obj
 
 build $outdir/ttlibspace.obj: compile ttlibspace.cpp | $outdir/pch.obj
 
@@ -81,7 +81,7 @@ build ../lib/ttLib.lib : lib $
   $outdir/ttcstr.obj $
   $outdir/ttcvector.obj $
   $outdir/ttcview.obj $
-  $outdir/ttenumstr.obj $
+  $outdir/ttmultistr.obj $
   $outdir/ttlibspace.obj $
   $outdir/ttparser.obj $
   $outdir/tttextfile.obj $
