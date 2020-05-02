@@ -37,19 +37,20 @@ INT_PTR dlg::DoModal(HWND hwndParent)
 
     m_isModeless = false;
     INT_PTR result =
-        ::DialogBoxParamA(GetModuleHandle(NULL), MAKEINTRESOURCEA(m_idTemplate), m_hwndParent, (DLGPROC) ttlib::DlgProc, (LPARAM) this);
+        ::DialogBoxParamW(GetModuleHandleW(NULL), MAKEINTRESOURCEW(m_idTemplate), m_hwndParent, (DLGPROC) ttlib::DlgProc, (LPARAM) this);
 
 #if !defined(NDEBUG)  // Starts debug section.
     // If creation failed because there was no dialog resource, report that specific condition in Debug builds.
     if (result == -1)
     {
-        HRSRC hrsrc = FindResourceA(GetModuleHandle(NULL), MAKEINTRESOURCEA(m_idTemplate), (char*) RT_DIALOG);
+        HRSRC hrsrc = FindResourceW(GetModuleHandle(NULL), MAKEINTRESOURCEW(m_idTemplate), (wchar_t*) RT_DIALOG);
         ttASSERT_MSG(hrsrc, "Missing dialog template");
         if (!hrsrc)
             return result;
     }
 #endif
     ttASSERT_MSG(result != -1, "Failed to create dialog box");
+
     return result;
 }
 
@@ -60,15 +61,14 @@ HWND dlg::DoModeless(HWND hwndParent)
     if (hwndParent)
         m_hwndParent = hwndParent;
     m_isModeless = true;
-    return ::CreateDialogParamA(GetModuleHandle(NULL), MAKEINTRESOURCEA(m_idTemplate), m_hwndParent, (DLGPROC) ttlib::DlgProc,
-                                (LPARAM) this);
+    return ::CreateDialogParamW(GetModuleHandle(NULL), MAKEINTRESOURCEW(m_idTemplate), m_hwndParent, (DLGPROC) ttlib::DlgProc, (LPARAM) this);
 }
 
 INT_PTR WINAPI ttlib::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     if (msg == WM_INITDIALOG)  // this is the only time that pThis will be NULL
     {
-        SetWindowLongPtrA(hdlg, DWLP_USER, (LONG_PTR) lParam);
+        SetWindowLongPtrW(hdlg, DWLP_USER, (LONG_PTR) lParam);
         auto pThis = reinterpret_cast<ttlib::dlg*>(lParam);
         pThis->m_hwnd = hdlg;
         if (!(pThis->m_hwndParent && IsWindow(pThis->m_hwndParent)))
@@ -85,7 +85,7 @@ INT_PTR WINAPI ttlib::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam)
         return TRUE;
     }
 
-    auto pThis = reinterpret_cast<ttlib::dlg*>(GetWindowLongPtrA(hdlg, DWLP_USER));
+    auto pThis = reinterpret_cast<ttlib::dlg*>(GetWindowLongPtrW(hdlg, DWLP_USER));
     if (!pThis)
         return FALSE;
 
@@ -96,12 +96,19 @@ INT_PTR WINAPI ttlib::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam)
             delete pThis->m_pShadedBtns;
             pThis->m_pShadedBtns = nullptr;
         }
+
+        // We let the calling app see the WM_DESTROY message, but we ignore it's result
+        LRESULT lResult;
+        pThis->OnMsgMap(msg, wParam, lParam, lResult);
+
 #if !defined(NDEBUG)  // Starts debug section.
         // This allows a destructor to verify that the window was destroyed before the destructor was called
 
         if (pThis->m_isModeless)
             pThis->m_hwnd = nullptr;
 #endif
+
+        return 0;
     }
 
     LRESULT lResult = 0;  // This is passed by reference to OnCmdCaseMap
@@ -121,10 +128,14 @@ INT_PTR WINAPI ttlib::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam)
                     pThis->m_isInitializing = false;
                     pThis->OnOK();
                     if (pThis->m_isCancelEnd)
+                    {
                         pThis->m_isCancelEnd = false;
+                    }
                     else
+                    {
                         // do NOT call EndDialog--it will fail if this is a modeless dialog
                         pThis->CloseDialog(IDOK);
+                    }
                     break;
 
                 case IDCANCEL:
@@ -278,12 +289,12 @@ void dlgListView::InsertColumn(int iColumn, const std::wstring& str, int width)
     ::SendMessageW(m_hwnd, LVM_INSERTCOLUMNW, (WPARAM) iColumn, (LPARAM) &lvc);
 }
 
-LRESULT dlgListView::SetCurSel(int pos)
+LRESULT dlgListView::SetSel(WPARAM index)
 {
-    LVITEMA lvi;
+    LVITEMW lvi;
     lvi.stateMask = 0x0F;
     lvi.state = LVIS_FOCUSED | LVIS_SELECTED;
-    return ::SendMessageA(m_hwnd, LVM_SETITEMSTATE, pos, (LPARAM) &lvi);
+    return ::SendMessageW(m_hwnd, LVM_SETITEMSTATE, index, (LPARAM) &lvi);
 }
 
 ttlib::cstr dlgListView::GetItemText(int item, int subitem, int maxTextLen)
@@ -303,12 +314,14 @@ ttlib::cstr dlgListView::GetItemText(int item, int subitem, int maxTextLen)
     return utf8;
 }
 
-LRESULT dlgListView::SetCurSel(const char* pszItem)
+LRESULT dlgListView::SetCurSel(std::string_view item)
 {
-    LV_FINDINFOA lvfi;
+    std::wstring str16;
+    ttlib::utf8to16(item, str16);
+    LV_FINDINFOW lvfi;
     lvfi.flags = LVFI_STRING;
-    lvfi.psz = pszItem;
-    auto pos = ::SendMessageA(m_hwnd, LVM_FINDITEM, (WPARAM) -1, (LPARAM) &lvfi);
+    lvfi.psz = str16.data();
+    auto pos = ::SendMessageW(m_hwnd, LVM_FINDITEM, (WPARAM) -1, (LPARAM) &lvfi);
     return (pos != -1) ? SetCurSel((int) pos) : -1;
 }
 
