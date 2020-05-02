@@ -146,13 +146,13 @@ namespace ttlib
         template<typename T_ID>
         void EnableControl(T_ID id, BOOL isEnable = TRUE) const
         {
-            (void) ::EnableWindow(gethwnd(id), isEnable);
+            ::EnableWindow(gethwnd(id), isEnable);
         }
 
         template<typename T_ID>
         void DisableControl(T_ID id) const
         {
-            (void) ::EnableWindow(gethwnd(id), FALSE);
+            ::EnableWindow(gethwnd(id), FALSE);
         }
 
         template<typename T_ID>
@@ -610,10 +610,7 @@ namespace ttlib
             return SendMsg(LB_SETITEMDATA, index, data);
         }
 
-        LRESULT GetItemRect(RECT* prc) const
-        {
-            return SendMsg(LB_GETITEMRECT, GetCurSel(), prc);
-        }
+        LRESULT GetItemRect(RECT* prc) const { return SendMsg(LB_GETITEMRECT, GetCurSel(), prc); }
 
         template<typename T_INDEX>
         LRESULT GetItemRect(RECT* prc, T_INDEX index) const
@@ -706,8 +703,16 @@ namespace ttlib
         void Attach(HWND hwndCtrl) { m_hwnd = hwndCtrl; }
 
         int GetCurSel() { return static_cast<int>(::SendMessage(m_hwnd, LVM_GETNEXTITEM, (WPARAM) -1, MAKELPARAM(LVNI_SELECTED, 0))); }
-        LRESULT SetCurSel(int pos);
-        LRESULT SetCurSel(const char* pszItem);
+
+        LRESULT SetCurSel(std::string_view item);
+
+        template<typename T_INDEX>
+        LRESULT SetCurSel(T_INDEX pos)
+        {
+            return SetSel((WPARAM) pos);
+        }
+
+        LRESULT SetSel(WPARAM index);
 
         ttlib::cstr GetItemText(int item, int subitem = 0, int maxTextLen = 1024);
 
@@ -717,7 +722,10 @@ namespace ttlib
         LRESULT InsertItem(LVITEM* pitem) { return ::SendMessage(m_hwnd, LVM_INSERTITEM, 0, (LPARAM) pitem); }
 
         template<typename T_INDEX>
-        BOOL DeleteItem(T_INDEX index) { return (BOOL)::SendMessage(m_hwnd, LVM_DELETEITEM, (WPARAM) index, 0); }
+        BOOL DeleteItem(T_INDEX index)
+        {
+            return (BOOL)::SendMessage(m_hwnd, LVM_DELETEITEM, (WPARAM) index, 0);
+        }
         void clear() const { ::SendMessage(m_hwnd, LVM_DELETEALLITEMS, 0, 0); }
 
         int add(std::string_view str, LPARAM lparam = -1);
