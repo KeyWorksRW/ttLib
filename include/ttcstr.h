@@ -29,6 +29,14 @@
 #if defined(__WXMSW__)
     #include <wx/string.h>
 #endif
+namespace tt
+{
+    enum REPLACE : bool
+    {
+        once = false,
+        all = true,
+    };
+}  // namespace tt
 
 namespace ttlib
 {
@@ -76,10 +84,7 @@ namespace ttlib
         size_t locate(std::string_view str, size_t posStart = 0, tt::CASE check = tt::CASE::exact) const;
 
         /// Returns true if the sub string exists
-        bool contains(std::string_view sub, tt::CASE checkcase = tt::CASE::exact) const
-        {
-            return (locate(sub, 0, checkcase) != npos);
-        }
+        bool contains(std::string_view sub, tt::CASE checkcase = tt::CASE::exact) const { return (locate(sub, 0, checkcase) != npos); }
 
         /// Returns true if any string in the iteration list appears somewhere in the the main string.
         template<class iterT>
@@ -164,7 +169,7 @@ namespace ttlib
         size_t ExtractSubString(std::string_view src, size_t offset = 0);
 
         /// Replace first (or all) occurrences of substring with another one
-        size_t Replace(std::string_view oldtext, std::string_view newtext, bool replaceAll = false,
+        size_t Replace(std::string_view oldtext, std::string_view newtext, bool replaceAll = tt::REPLACE::once,
                        tt::CASE checkcase = tt::CASE::exact);
 
         /// Replace everything from pos to the end of the current string with str
@@ -218,16 +223,10 @@ namespace ttlib
         }
 
         /// Returns true if current filename contains the specified case-insensitive extension.
-        bool hasExtension(std::string_view ext) const
-        {
-            return ttlib::issameas(extension(), ext, tt::CASE::either);
-        }
+        bool hasExtension(std::string_view ext) const { return ttlib::issameas(extension(), ext, tt::CASE::either); }
 
         /// Returns true if current filename contains the specified case-insensitive file name.
-        bool hasFilename(std::string_view name) const
-        {
-            return ttlib::issameas(filename(), name, tt::CASE::either);
-        }
+        bool hasFilename(std::string_view name) const { return ttlib::issameas(filename(), name, tt::CASE::either); }
 
         /// Returns a view to the current extension. View is empty if there is no extension.
         ///
