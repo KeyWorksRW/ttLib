@@ -174,15 +174,21 @@ namespace ttlib
         }
 
         template<typename T_ID>
+        void GetCheck(T_ID id, bool& checked) const
+        {
+            checked =  (SendItemMsg(id, BM_GETCHECK) == BST_CHECKED);
+        }
+
+        template<typename T_ID>
         bool IsChecked(T_ID id) const
         {
             return GetCheck(id);
         }
 
         template<typename T_ID>
-        void SetCheck(T_ID id, BOOL bCheck = TRUE) const
+        void SetCheck(T_ID id, bool checked = true) const
         {
-            SendItemMsg(id, BM_SETCHECK, bCheck);
+            SendItemMsg(id, BM_SETCHECK, checked);
         }
 
         template<typename T_ID>
