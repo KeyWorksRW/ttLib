@@ -20,7 +20,7 @@
 
 using namespace ttlib;
 
-ThrdPool::ThrdPool(ThreadFunction function)
+ThrdPool::ThrdPool(ThreadFunction function, int maxthreads)
 {
     m_function = function;
 
@@ -29,6 +29,11 @@ ThrdPool::ThrdPool(ThreadFunction function)
 
     // Always leave one CPU available. It will remain available to the caller for handling UI, I/O, etc.
     m_cThreads = si.dwNumberOfProcessors - 1;
+
+    // Allow the caller to override the number of threads, but only if it is within a usable range.
+    if (maxthreads > 0 && maxthreads < static_cast<int>(m_cThreads))
+        m_cThreads = maxthreads;
+
     m_threads.resize(m_cThreads);
     m_ahsemDone = static_cast<HANDLE*>(std::malloc(sizeof(HANDLE) * m_cThreads));
     if (!m_ahsemDone)

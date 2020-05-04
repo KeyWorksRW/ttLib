@@ -46,7 +46,11 @@ namespace ttlib
     {
     public:
         /// Construct with a pointer to the function each thread should call
-        ThrdPool(ThreadFunction function);
+        ///
+        /// The default maxthreads value of -1 means create as many threads as possible,
+        /// minus one thread so that the caller won't be deadlocked. Any other value you
+        /// provide will be adjusted so as not to exceed CPUs - 1
+        ThrdPool(ThreadFunction function, int maxthreads = -1);
         ~ThrdPool();
 
         /// This will not return until an available thread from the pool is found
@@ -73,7 +77,7 @@ namespace ttlib
     private:
         std::vector<THRD_INFO> m_threads;
 
-        // Number of threads created (CPUs - 1)
+        // Number of threads created
         DWORD m_cThreads;
 
         // This is the caller-supplied function that each thread will call
