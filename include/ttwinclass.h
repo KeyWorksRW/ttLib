@@ -47,18 +47,41 @@ namespace tt
         int32_t bottom;
 #endif  // _WIN32
 
+        WINRECT(const WINRECT& rcSrc) { Copy(rcSrc); }
+        WINRECT()
+        {
+            left = 0;
+            top = 0;
+            right = 0;
+            bottom = 0;
+        }
+
+        template<typename T>
+        WINRECT(T l, T t, T r, T b)
+        {
+            left = l;
+            top = t;
+            right = r;
+            bottom = b;
+        }
+
+        inline void Copy(const WINRECT& rcSrc) noexcept
+        {
+            left = rcSrc.left;
+            right = rcSrc.right;
+            top = rcSrc.top;
+            bottom = rcSrc.bottom;
+        }
+
         inline int Width() const { return std::abs(right - left); }
         inline int Height() const { return std::abs(bottom - top); }
 
-        template<typename T>
-        inline bool isPosInRect(WINPOINT pt) const noexcept
-        {
-            return (pt.x >= left && pt.x <= right && pt.y >= top && pt.y <= bottom);
-        }
+        inline bool isPosInRect(WINPOINT pt) const noexcept { return (pt.x >= left && pt.x <= right && pt.y >= top && pt.y <= bottom); }
 
+        template<typename T>
         inline bool isPosInRect(T xPos, T yPos) const noexcept
         {
-            return ((int32_t)xPos >= left && (int32_t)xPos <= right && (int32_t)yPos >= top && (int32_t)yPos <= bottom);
+            return ((int32_t) xPos >= left && (int32_t) xPos <= right && (int32_t) yPos >= top && (int32_t) yPos <= bottom);
         }
 
         inline void clear() { left = top = right = bottom = 0; }
