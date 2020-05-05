@@ -81,29 +81,6 @@ namespace tt
         both
     };
 
-    // Windows defines the values as long which on Windows is a 32-bit value. On UNIX long is often a 64-bit value. int is not guaranteed
-    // to be 32-bits, but that's it's most likely size and we KNOW that long will be wrong on some platforms.
-
-    /// Equivalent to Windows RECT structure -- this makes it available on non-Windows
-    /// platforms.
-
-#if defined(_WIN32)
-    struct WINRECT : RECT
-    {
-#else
-    struct WINRECT
-    {
-        int left;
-        int top;
-        int right;
-        int bottom;
-#endif  // _WIN32
-
-        inline int Width() const { return std::abs(right - left); }
-        inline int Height() const { return std::abs(bottom - top); }
-        inline bool isPosInRect(int xPos, int yPos) { return (xPos >= left && xPos <= right && yPos >= top && yPos <= bottom); }
-    };
-
 }  // namespace tt
 
 namespace ttlib
