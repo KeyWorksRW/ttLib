@@ -70,9 +70,11 @@ namespace ttlib
 
         std::wstring to_utf16() const;
 
-        /// Caution: ttlib::cview is only valid until ttlib::cstr is modified or destroyed.
+        /// Caution: ttlib::cview will be invalid if ttlib::cstr is modified or destroyed.
         ttlib::cview subview(size_t start = 0) const noexcept
         {
+            if (ttlib::isError(start))
+                start = length();
             assert(start <= length());
             return ttlib::cview(c_str() + start, length() - start);
         }
