@@ -308,15 +308,18 @@ size_t cstr::Replace(std::string_view oldtext, std::string_view newtext, bool re
         return false;
 
     size_t replacements = 0;
-    size_t pos;
-    while (pos = locate(oldtext, 0, checkcase), pos != npos)
+    if (auto pos = locate(oldtext, 0, checkcase); ttlib::isFound(pos))
     {
-        erase(pos, oldtext.length());
-        insert(pos, newtext);
-        ++replacements;
-        pos += newtext.length();
-        if (!replaceAll)
-            break;
+        do
+        {
+            erase(pos, oldtext.length());
+            insert(pos, newtext);
+            ++replacements;
+            pos += newtext.length();
+            if (pos >= size() || !replaceAll)
+                break;
+            pos = locate(oldtext, pos, checkcase);
+        } while (ttlib::isFound(pos));
     }
 
     return replacements;
