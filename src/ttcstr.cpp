@@ -439,8 +439,7 @@ cstr& cstr::replace_extension(std::string_view newExtension)
         return *this;
     }
 
-    auto pos = find_last_of('.');
-    if (pos != npos)
+    if (auto pos = find_last_of('.'); ttlib::isFound(pos))
     {
         // If the string only contains . or .. then it is a folder
         if (pos == 0 || (pos == 1 && at(0) != '.'))
@@ -459,7 +458,7 @@ cstr& cstr::replace_extension(std::string_view newExtension)
             replace(pos, length() - pos, newExtension);
         }
     }
-    else
+    else if (newExtension.size())
     {
         // Current filename doesn't have an extension, so append the new one
         if (newExtension.at(0) != '.')
@@ -476,7 +475,7 @@ ttlib::cview cstr::extension() const noexcept
         return "";
 
     auto pos = find_last_of('.');
-    if (pos == npos)
+    if (!ttlib::isFound(pos))
         return "";
 
     // . by itself is a folder
