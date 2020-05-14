@@ -1,4 +1,4 @@
-# Requires ttBld.exe version 1.5.0 or higher to process
+# Requires ttBld.exe version 1.4.0 or higher to process -- see https://github.com/KeyWorksRW/ttBld
 
 Options:
     Project:    ttLib      # project target name
@@ -15,8 +15,6 @@ Options:
 
     IncDirs:    winsrc/precompile;../include
     TargetDir:  ../lib
-
-    MakeDir:     bld       # auto-generate makefile in specified directory
 
 Files:
     ttTR.cpp         # Function for translating strings

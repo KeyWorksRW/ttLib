@@ -1,4 +1,4 @@
-# Requires ttBld.exe version 1.0.0 or higher to process
+# Requires ttBld.exe version 1.4.0 or higher to process -- see https://github.com/KeyWorksRW/ttBld
 
 Options:
     Project:    ttLib   # project target name
