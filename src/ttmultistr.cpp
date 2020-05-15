@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttlib::multistr, ttlib::multiview
+// Name:      ttmultistr.cpp
 // Purpose:   Breaks a single string into multiple strings
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2018-2020 KeyWorks Software (Ralph Walden)
-// License:   Apache License (see ../LICENSE)
+// License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
 #include "pch.h"

@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttlib::registry class
+// Name:      ttregistry.h
 // Purpose:   Class for working with the Windows registry
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 1998-2020 KeyWorks Software (Ralph Walden)
-// License:   Apache License (see ../LICENSE)
+// License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once

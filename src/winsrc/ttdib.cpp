@@ -3,7 +3,7 @@
 // Purpose:   Class for handling Device Independent Bitmap
 // Author:    Davide Pizzolato
 // Copyright: Copyright (c) [2001-2019] Davide Pizzolato
-// License:   CPOL License (see ../../license_code_project.htm )
+// License:   CPOL License -- see ../../license_code_project.htm
 /////////////////////////////////////////////////////////////////////////////
 
 //////////////// Derivative work ////////////////////////////////////////////

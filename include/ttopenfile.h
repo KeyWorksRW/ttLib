@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttlib::openfile
+// Name:      ttopenfile.h
 // Purpose:   Wrapper around Windows GetOpenFileName() API
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2002-2020 KeyWorks Software (Ralph Walden)
-// License:   MIT License (see %lic_name%)
+// License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once

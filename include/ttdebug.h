@@ -3,7 +3,7 @@
 // Purpose:   ttASSERT macros
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2000-2020 KeyWorks Software (Ralph Walden)
-// License:   Apache License (see ../LICENSE)
+// License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
 // Under a _DEBUG build, these ASSERTS will display a message box giving you the

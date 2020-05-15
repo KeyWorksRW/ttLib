@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttCDirDlg
+// Name:      ttdirdlg.h
 // Purpose:   Class for displaying a dialog to select a directory
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2019-2020 KeyWorks Software (Ralph Walden)
-// License:   Apache License (see ../LICENSE)
+// License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
 /// Caution! This class will call COM functions, which means you must have called CoInitializeEx for the thread
