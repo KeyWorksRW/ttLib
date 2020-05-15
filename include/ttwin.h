@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttlib::win
+// Name:      ttwin.h
 // Purpose:   Class for working with windows
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2018-2020 KeyWorks Software (Ralph Walden)
-// License:   Apache License (see ../LICENSE)
+// License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
 // Do NOT use this class to create a MDI windows!
@@ -19,8 +19,6 @@
 #include <string_view>
 
 #include <wtypes.h>
-
-#include "ttlibspace.h"
 
 #if !defined(BEGIN_TTMSG_MAP)
     #include "ttcasemap.h"  // Macros for mapping Windows messages to functions

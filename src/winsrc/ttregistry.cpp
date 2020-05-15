@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttlib::registry class
+// Name:      ttregistry.cpp
 // Purpose:   Class for working with the Windows registry
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 1998-2020 KeyWorks Software (Ralph Walden)
-// License:   MIT License (see %lic_name%)
+// License:   Apache License -- see ../../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
 #include "pch.h"

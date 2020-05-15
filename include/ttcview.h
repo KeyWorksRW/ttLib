@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttlib::cview
+// Name:      ttcview.h
 // Purpose:   string_view functionality on a zero-terminated char string.
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2020 KeyWorks Software (Ralph Walden)
-// License:   Apache License (see LICENSE)
+// License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
 /// @file
@@ -21,7 +21,7 @@
 #pragma once
 
 #if !(__cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L))
-    #error "The contents of <ttlibspace.h> are available only with C++17 or later."
+    #error "The contents of <ttcview.h> are available only with C++17 or later."
 #endif
 
 #define _TTLIB_CVIEW_AVAILABLE_
@@ -29,8 +29,6 @@
 #include <filesystem>
 #include <sstream>
 #include <string_view>
-
-#include "ttlibspace.h"
 
 namespace ttlib
 {

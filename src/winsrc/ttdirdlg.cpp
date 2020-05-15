@@ -3,7 +3,7 @@
 // Purpose:   Class for displaying a dialog to select a directory
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2019-2020 KeyWorks Software (Ralph Walden)
-// License:   Apache License (see ../LICENSE)
+// License:   Apache License -- see ../../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
 //  Derived from:  http://code.msdn.microsoft.com/CppShellCommonFileDialog-17b20409

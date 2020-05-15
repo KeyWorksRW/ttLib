@@ -3,7 +3,7 @@
 // Purpose:   Windows-only ttlib namespace functions
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 1992-2020 KeyWorks Software (Ralph Walden)
-// License:   Apache License (see ../LICENSE)
+// License:   Apache License -- see ../../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
 #include "pch.h"  // precompiled header

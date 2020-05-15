@@ -1,15 +1,15 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      include\ttcvector.h
+// Name:      ttcvector.h
 // Purpose:   Vector of ttlib::cstr strings
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2020 KeyWorks Software (Ralph Walden)
-// License:   Apache License (see LICENSE)
+// License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
 
 #if !(__cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L))
-    #error "The contents of <ttlibspace.h> are available only with C++17 or later."
+    #error "The contents of <ttcvector.h> are available only with C++17 or later."
 #endif
 
 /// @file

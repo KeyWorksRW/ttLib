@@ -1,16 +1,15 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      shadebtn.h
+// Name:      ttshadebtn.cpp
 // Purpose:   Class for implementing an owner-draw button
 // Author:    Davide Pizzolato
 // Copyright: Copyright (c) [2001-2019] Davide Pizzolato
-// Licence:   The Code Project Open License (see ../CPOL.md)
+// License:   CPOL License -- see ../../license_code_project.htm
 /////////////////////////////////////////////////////////////////////////////
 
 //////////////// Derivative work ////////////////////////////////////////////
 // Changes:   Derived from CxShadeButton, changed to remove MFC requirement
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
-// Notes:     The above Code Project License also applies to the derivative work
 /////////////////////////////////////////////////////////////////////////////
 
 // For the original, see article at https://www.codeproject.com/articles/1121/ShadeBtn

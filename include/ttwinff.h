@@ -1,15 +1,15 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttlib::winff class
+// Name:      ttwinff.h
 // Purpose:   Wrapper around Windows FindFile
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2020 KeyWorks Software (Ralph Walden)
-// License:   Apache License (see ../LICENSE)
+// License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
 
 #if !(__cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L))
-    #error "The contents of <ttlibspace.h> are available only with C++17 or later."
+    #error "The contents of <ttwinff.h> are available only with C++17 or later."
 #endif
 
 #if !defined(_WIN32)

@@ -3,7 +3,7 @@
 // Purpose:   Contains structures that add methods to some Windows structures
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 1998-2020 KeyWorks Software (Ralph Walden)
-// License:   Apache License (see ../LICENSE)
+// License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
 /// These header-only structures provides some additional methods for working with some of the Windows structures. The

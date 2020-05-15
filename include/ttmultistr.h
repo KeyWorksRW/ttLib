@@ -1,15 +1,15 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttlib::multistr, ttlib::multiview
+// Name:      ttmultistr.h
 // Purpose:   Breaks a single string into multiple strings
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2018-2020 KeyWorks Software (Ralph Walden)
-// License:   Apache License (see ../LICENSE)
+// License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
 
 #if !(__cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L))
-    #error "The contents of <ttlibspace.h> are available only with C++17 or later."
+    #error "The contents of <ttmultistr.h> are available only with C++17 or later."
 #endif
 
 #include "ttcstr.h"

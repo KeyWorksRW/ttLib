@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttloadstr
+// Name:      ttloadstr.cpp
 // Purpose:   Load a language-specific version of a string resource
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2020 KeyWorks Software (Ralph Walden)
-// License:   MIT License (see %lic_name%)
+// License:   Apache License -- see ../../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
 #include "pch.h"

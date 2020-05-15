@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttlib namespace
+// Name:      ttlibspace.h
 // Purpose:   Contains the ttlib namespace functions/declarations common to all ttLib libraries
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 1998-2020 KeyWorks Software (Ralph Walden)
-// License:   Apache License (see ../LICENSE)
+// License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once

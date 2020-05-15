@@ -3,7 +3,7 @@
 // Purpose:   ttASSERT macros
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2000-2020 KeyWorks Software (Ralph Walden)
-// License:   Apache License (see ../LICENSE)
+// License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
 // Under a _DEBUG build, these ASSERTS will display a message box giving you the
@@ -15,7 +15,7 @@
 #pragma once
 
 #if !(__cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L))
-    #error "The contents of <ttlibspace.h> are available only with C++17 or later."
+    #error "The contents of <ttdebug.h> are available only with C++17 or later."
 #endif
 
 #if !defined(_WIN32)
@@ -33,7 +33,7 @@
 
 #include <sstream>
 
-#include "../include/ttcview.h"
+#include "ttcview.h"
 
 namespace ttlib
 {

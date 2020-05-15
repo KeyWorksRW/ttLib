@@ -1,15 +1,15 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttlib::cstr
+// Name:      ttcstr.h
 // Purpose:   Classes for handling zero-terminated char strings.
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2020 KeyWorks Software (Ralph Walden)
-// License:   Apache License (see LICENSE)
+// License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
 
 #if !(__cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L))
-    #error "The contents of <ttlibspace.h> are available only with C++17 or later."
+    #error "The contents of <ttcstr.h> are available only with C++17 or later."
 #endif
 
 /// @file
@@ -24,7 +24,6 @@
 #include <string_view>
 
 #include "ttcview.h"
-#include "ttlibspace.h"
 
 #if defined(__WXMSW__)
     #include <wx/string.h>

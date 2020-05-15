@@ -3,7 +3,7 @@
 // Purpose:   Macros for mapping Windows messages to functions
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2019 KeyWorks Software (Ralph Walden)
-// License:   Apache License (see ../LICENSE)
+// License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
 /*

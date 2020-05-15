@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttlib::ThrdPool
+// Name:      ttthrdpool.cpp
 // Purpose:   Class for utilizing Windows heap manager
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2010-2020 KeyWorks Software (Ralph Walden)
-// License:   Apache License (see ../LICENSE)
+// License:   Apache License -- see ../../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
 #include "pch.h"

@@ -3,7 +3,7 @@
 // Purpose:   Class for displaying a dialog
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2002-2019 KeyWorks Software (Ralph Walden)
-// License:   Apache License (see ../LICENSE)
+// License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -25,7 +25,6 @@
 
 #include "ttcstr.h"      // cstr -- Classes for handling zero-terminated char strings.
 #include "ttdebug.h"     // ttASSERT macros
-#include "ttlibspace.h"  // Contains the ttlib namespace functions/declarations common to all ttLib libraries
 #include "ttmultibtn.h"  // ttlib::MultiBtn
 
 #ifndef BEGIN_TTMSG_MAP

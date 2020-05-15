@@ -3,7 +3,7 @@
 // Purpose:   Class for creating a Modal or Modeless dialog box
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 1998-2019 KeyWorks Software (Ralph Walden)
-// License:   Apache License (see ../LICENSE)
+// License:   Apache License -- see ../../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
 #include "pch.h"
