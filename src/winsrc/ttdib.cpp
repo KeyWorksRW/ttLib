@@ -3,14 +3,13 @@
 // Purpose:   Class for handling Device Independent Bitmap
 // Author:    Davide Pizzolato
 // Copyright: Copyright (c) [2001-2019] Davide Pizzolato
-// Licence:   The Code Project Open License (see ../CPOL.md)
+// License:   CPOL License (see ../../license_code_project.htm )
 /////////////////////////////////////////////////////////////////////////////
 
 //////////////// Derivative work ////////////////////////////////////////////
-// Changes:
+// Changes:   Derived from CxDib and CxShadeButton, changed to remove MFC requirement
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2019-2020 KeyWorks Software (Ralph Walden)
-// Notes:     The above Code Project License also applies to the derivative work
 /////////////////////////////////////////////////////////////////////////////
 
 #include "pch.h"

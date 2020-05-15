@@ -1,16 +1,13 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttCDib
+// Name:      ttdib.h
 // Purpose:   Class for handling Device Independent Bitmap
-// Author:    Ralph Walden
-// Copyright: Copyright (c) 2001-2019 KeyWorks Software (Ralph Walden)
-// License:   Apache License (see ../LICENSE)
+// License:   CPOL License (see ../license_code_project.htm )
 /////////////////////////////////////////////////////////////////////////////
 
 //////////////// Derivative work ////////////////////////////////////////////
-// Changes:     Derived from CxDib and CxShadeButton, changed to remove MFC requirement
-// Author:      Ralph Walden
-// Copyright:   Copyright (c) 2001-2020 KeyWorks Software (Ralph Walden)
-// Notes:       The above Code Project License also applies to the derivative work
+// Changes:   Derived from CxDib and CxShadeButton, changed to remove MFC requirement
+// Author:    Ralph Walden
+// Copyright: Copyright (c) 2001-2020 KeyWorks Software (Ralph Walden)
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once

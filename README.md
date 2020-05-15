@@ -7,3 +7,11 @@ The source code for the library is split into two primary directories. The **src
 For information on how to build the project, see [Building](BUILD.md).
 
 If you wish to contribute to the project, please refer to the [Contributing](CONTRIBUTING.md) documentation.
+
+## License
+
+There are multiple licenses used by this project.
+
+All KeyWorks Software contributions use a Apache License 2.0 [LICENSE](LICENSE).
+
+The **ttdib** and **ttshadebtn** header and source files use a CPOL [LICENSE](license_code_project.htm)
