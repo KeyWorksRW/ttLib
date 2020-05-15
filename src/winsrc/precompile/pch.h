@@ -27,3 +27,7 @@
 
 #include <windows.h>
 #include <stdlib.h>
+
+#include "ttlibspace.h"
+
+#undef TT_ASSERT

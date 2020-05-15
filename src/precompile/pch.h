@@ -43,3 +43,5 @@
 #include <string_view>
 
 #include "ttlibspace.h"
+
+#undef TT_ASSERT

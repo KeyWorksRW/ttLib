@@ -36,7 +36,7 @@ cmd::cmd(int argc, wchar_t** argv)
 
 void cmd::addOption(std::string_view name, std::string_view description)
 {
-    TT_ASSERT(!name.empty());
+    assert(!name.empty());
 
     auto popt = std::make_unique<cmd::Option>();
     popt->m_description = description;
@@ -47,7 +47,7 @@ void cmd::addOption(std::string_view name, std::string_view description)
 
 void cmd::addOption(std::string_view name, std::string_view description, size_t flags)
 {
-    TT_ASSERT(!name.empty());
+    assert(!name.empty());
 
     auto popt = std::make_unique<cmd::Option>();
     popt->m_description = description;
@@ -58,7 +58,7 @@ void cmd::addOption(std::string_view name, std::string_view description, size_t 
 
 void cmd::addOption(std::string_view name, std::string_view description, size_t flags, size_t setvalue)
 {
-    TT_ASSERT(!name.empty());
+    assert(!name.empty());
 
     auto popt = std::make_unique<cmd::Option>();
     popt->m_description = description;
@@ -72,7 +72,7 @@ void cmd::addOption(std::string_view name, std::string_view description, size_t 
 
 void cmd::addHiddenOption(std::string_view name, size_t flags, size_t setvalue)
 {
-    TT_ASSERT(!name.empty());
+    assert(!name.empty());
 
     auto popt = std::make_unique<cmd::Option>();
     popt->m_flags = flags | cmd::hidden;
@@ -115,7 +115,7 @@ cstr cmd::shortlong(std::string_view name)
 // Option can be a short name, a long name, or two combined names separated with a '|'.
 cmd::Option* cmd::findOption(std::string_view option) const
 {
-    TT_ASSERT(!option.empty());
+    assert(!option.empty());
 
     ttlib::cstr longname;
     if (auto pos = option.find('|'); !ttlib::isError(pos))
@@ -142,7 +142,7 @@ cmd::Option* cmd::findOption(std::string_view option) const
 
 bool cmd::isOption(std::string_view name) const
 {
-    TT_ASSERT(!name.empty());
+    assert(!name.empty());
 
     if (auto option = findOption(name); option)
     {
@@ -153,7 +153,7 @@ bool cmd::isOption(std::string_view name) const
 
 std::optional<ttlib::cstr> cmd::getOption(std::string_view name)
 {
-    TT_ASSERT(!name.empty());
+    assert(!name.empty());
 
     if (auto option = findOption(name); option)
     {
