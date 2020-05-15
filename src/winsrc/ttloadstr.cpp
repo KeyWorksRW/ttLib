@@ -15,6 +15,7 @@
 #include <map>
 #include <string_view>
 
+#include "ttTR.h"     // cmap -- Function for translating strings
 #include "ttcstr.h"   // cstr -- Classes for handling zero-terminated char strings.
 #include "ttdebug.h"  // ttASSERT macros
 
@@ -111,11 +112,6 @@ bool ttlib::LoadStringEx(std::string& Result, WORD id)
 
 std::map<WORD, ttlib::cstr> tt_stringtable;
 
-namespace ttTR
-{
-    extern ttlib::cstr trEmpty;
-}
-
 using namespace ttTR;
 
 const ttlib::cstr ttlib::translate(WORD id)
@@ -135,7 +131,7 @@ const ttlib::cstr ttlib::translate(WORD id)
 
 #if !defined(NDEBUG)  // Starts debug section.
     trEmpty.Format("String Resource id %u not found", id);
-    ttFAIL_MSG(trEmpty);
+    assertm(false, trEmpty.c_str());
     trEmpty.clear();
 #endif
 
