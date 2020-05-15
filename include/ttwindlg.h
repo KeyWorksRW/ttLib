@@ -25,7 +25,6 @@
 
 #include "ttcstr.h"      // cstr -- Classes for handling zero-terminated char strings.
 #include "ttdebug.h"     // ttASSERT macros
-#include "ttlibspace.h"  // Contains the ttlib namespace functions/declarations common to all ttLib libraries
 #include "ttmultibtn.h"  // ttlib::MultiBtn
 
 #ifndef BEGIN_TTMSG_MAP

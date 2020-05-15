@@ -8,6 +8,10 @@
 
 #pragma once
 
+#if !(__cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L))
+    #error "The contents of <ttparser.h> are available only with C++17 or later."
+#endif
+
 #include <map>
 #include <memory>
 #include <optional>
@@ -23,7 +27,6 @@
 
 #include <ttcstr.h>      // cstr -- Classes for handling zero-terminated char strings.
 #include <ttcvector.h>   // cstrVector -- Vector of ttlib::cstr strings
-#include <ttlibspace.h>  // Contains the ttlib namespace functions/declarations common to all ttLib libraries
 
 namespace ttlib
 {

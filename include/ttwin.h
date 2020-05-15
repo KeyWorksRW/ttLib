@@ -20,8 +20,6 @@
 
 #include <wtypes.h>
 
-#include "ttlibspace.h"
-
 #if !defined(BEGIN_TTMSG_MAP)
     #include "ttcasemap.h"  // Macros for mapping Windows messages to functions
 #endif
