@@ -146,6 +146,10 @@ bool cmd::isOption(std::string_view name) const
 
     if (auto option = findOption(name); option)
     {
+        if ((option->m_flags & needsarg))
+        {
+            return (option->m_result.size());
+        }
         return (!option->m_result.empty() && option->m_result.issameas("true"));
     }
     return false;
@@ -157,6 +161,10 @@ std::optional<ttlib::cstr> cmd::getOption(std::string_view name)
 
     if (auto option = findOption(name); option)
     {
+        if ((option->m_flags & needsarg) && option->m_result.empty())
+        {
+            return {};
+        }
         return { option->m_result };
     }
     return {};
