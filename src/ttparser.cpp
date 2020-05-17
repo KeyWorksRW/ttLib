@@ -23,6 +23,7 @@ cmd::cmd(int argc, char** argv)
 {
     for (auto argpos = 1; argpos < argc; ++argpos)
         m_originalArgs += argv[argpos];
+    m_hasCommandArgs = true;
 }
 
 cmd::cmd(int argc, wchar_t** argv)
@@ -32,6 +33,7 @@ cmd::cmd(int argc, wchar_t** argv)
         auto& arg = m_originalArgs.emplace_back();
         arg.assignUTF16(argv[argpos]);
     }
+    m_hasCommandArgs = true;
 }
 
 void cmd::addOption(std::string_view name, std::string_view description)
@@ -170,8 +172,26 @@ std::optional<ttlib::cstr> cmd::getOption(std::string_view name)
     return {};
 }
 
+bool cmd::parse(int argc, char** argv)
+{
+    for (auto argpos = 1; argpos < argc; ++argpos)
+        m_originalArgs += argv[argpos];
+    m_hasCommandArgs = true;
+    return parse();
+}
+
 bool cmd::parse()
 {
+    if (!m_hasCommandArgs)
+    {
+#if defined(_WIN32)
+        WinInit();
+#else
+        m_results.emplace_back(Result::no_argc);
+        return false;
+#endif  // _WIN32
+    }
+
     bool result = true;
 
     // We need to look at the next argument with a check for going beyond the end, so we use argpos instead of a normal

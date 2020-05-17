@@ -208,7 +208,7 @@ HFONT ttlib::CreateLogFont(std::string_view TypeFace, size_t point, bool Bold, b
 
 #include "ttparser.h"
 
-ttlib::cmd::cmd()
+void ttlib::cmd::WinInit()
 {
     int argc;
     auto argv = CommandLineToArgvW(GetCommandLineW(), &argc);
