@@ -63,17 +63,22 @@ namespace ttlib
     /// If you use a numerical id in the _tt() macro, this will load the string from a
     /// STRINGTABLE resource and return a pointer to the string.
     const ttlib::cstr translate(WORD id);
-
-#endif
+#endif  // _WIN32
 
 // This is only useful if you have BOTH translated STRINGTABLE resources and xgettext translated .mo files. Otherwise, either include
 // ttTR.h and use _tt() macros or include wx/intl.h and use _() macros.
-#if defined(_WX_INTL_H_)
-    inline const ttlib::cstr& translate(const std::string& str)
+#if wxUSE_INTL
+    #include <wx/intl.h>
+
+    #if defined(_WIN32)
+    const ttlib::cstr xtranslate(WORD id) { return translate(id); }
+    #endif  // _WIN32
+
+    inline const ttlib::cstr& xtranslate(const std::string& str)
     {
         if (auto [found, value] = tt_translations.getValue(str); found)
             return value;
-        if (auto strTranslation = wxTranslations::Get()->GetTranslatedString(str); strTranslation->size())
+        if (auto strTranslation = wxTranslations::Get()->GetTranslatedString(str); strTranslation)
         {
             ttlib::cstr tmp;
             tmp.assign(strTranslation->utf8_str().data());
@@ -83,22 +88,31 @@ namespace ttlib
             }
         }
 
+        if (auto [pair, success] = tt_translations.insert({ str, str }); success)
+        {
+            return pair->second;
+        }
+
         // This should never happen, but an empty string is returned just in case...
         return ttTR::trEmpty;
     }
 #else
 
-    /// Returns either a translated string, or the original string if no translation is available.
+    /// Currently, without wxUSE_INTL the string cannot be translated -- so the original is
+    /// returned.
     const ttlib::cstr& translate(const std::string& str);
 
-#endif
+#endif  // wxUSE_INTL
 
     /// Clears all previously translated strings. Required after changing locale.
     void clearTranslations() noexcept;
 }  // namespace ttlib
 
-/// Macro that can be parsed by xgettext to add a string to translate.
-#define _tt(txt) ttlib::translate((txt))
+#if wxUSE_INTL
+    #define _tt(txt) ttlib::xtranslate((txt))
+#else
+    #define _tt(txt) ttlib::translate((txt))
+#endif
 
 /// This macro can be placed around static text that you want xgettext.exe to extract for
 /// translation using the "xgettext.exe -kttTR" keyword option.
