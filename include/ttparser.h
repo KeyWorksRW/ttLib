@@ -12,6 +12,24 @@
     #error "The contents of <ttparser.h> are available only with C++17 or later."
 #endif
 
+/// @file
+///
+/// When compiled for Windows, ttlib::cmd can get the command-line from Windows itself,
+/// ensuring that all arguments are converted to UTF8. To utilize this, construct with
+/// an empty ctor and call an empty parse().
+///
+/// @code{.cpp}
+///
+///     ttlib::cmd cmdLine;
+///
+///     #if defined(_WIN32)
+///         cmdLine.parse();
+///     #else
+///         cmdLine.parse(argc, argv);
+///     #endif
+///
+/// @endcode
+
 #include <map>
 #include <memory>
 #include <optional>
@@ -25,8 +43,8 @@
     #include <cassert>
 #endif
 
-#include <ttcstr.h>      // cstr -- Classes for handling zero-terminated char strings.
-#include <ttcvector.h>   // cstrVector -- Vector of ttlib::cstr strings
+#include <ttcstr.h>     // cstr -- Classes for handling zero-terminated char strings.
+#include <ttcvector.h>  // cstrVector -- Vector of ttlib::cstr strings
 
 namespace ttlib
 {
@@ -38,7 +56,7 @@ namespace ttlib
             required = 1 << 0,    // option is required
             needsarg = 1 << 1,    // option is followed by an argument
             shared_val = 1 << 2,  // option sets a specific value
-            hidden = 1 << 3,  // option will not be added to usage
+            hidden = 1 << 3,      // option will not be added to usage
 
             help = 1 << 15,  // option indicates user is requesting help
         };
@@ -47,10 +65,15 @@ namespace ttlib
         enum class Result : size_t
         {
             success,
-            unknown_opt,      // command line contained an argument not specified
-            missing,          // a required option did not appear on the command line
-            noarg,            // option expected an argument, but no argument was provided on the command line
-            invalid_arg,      // expected a string, an option was specified instead (string started with - or /)
+            unknown_opt,  // command line contained an argument not specified
+            missing,      // a required option did not appear on the command line
+            noarg,        // option expected an argument, but no argument was provided on the command line
+            invalid_arg,  // expected a string, an option was specified instead (string started with - or /)
+
+            // The following error will only occur when compiling for non-Windows OS. On Windows, the command line will
+            // be retrieved from Windows if you didn't specify it in the ctor or parse().
+
+            no_argc,  // means you constructed with cmd() but did not call parse(argc, argv)
         };
 
         /// Construct this with the arguments passed to your main() function.
@@ -59,12 +82,8 @@ namespace ttlib
         /// Construct this with the arguments passed to your main() function.
         cmd(int argc, wchar_t** argv);
 
-#if defined(_WIN32)
-        /// This constructor will call a Windows API to get the UNICODE command line for the
-        /// current process which it will then convert into a vector of UTF8 strings (see
-        /// getAllArgs())
-        cmd();
-#endif  // _WIN32
+        // If no arguments specified in ctor, then they must be specified in parse()
+        cmd() {}
 
         /// Adds an option that isn't followed by an argument. Call isOption(name) to
         /// find out if the option was specified.
@@ -92,7 +111,13 @@ namespace ttlib
         ///
         /// If this returns false, then call getResults() to get a vector of all the errors
         /// that occurred.
+        ///
+        /// On Windows, if you did not pass in argc/argv to the ctor, this will retrieve the
+        /// command-line from Windows.
         bool parse();
+
+        /// Construct this with the arguments passed to your main() function.
+        bool parse(int argc, char** argv);
 
         /// If true, it means a -? option was encountered, or an option with the cmd::help
         /// flag was encountered
@@ -154,6 +179,13 @@ namespace ttlib
         size_t m_sharedvalue { tt::npos };
 
         bool m_HelpRequested { false };
+        bool m_hasCommandArgs { false };
+
+#if defined(_WIN32)
+        // Called internally by parse() if m_hasCommandArgs is false. It will call
+        // GetCommandLineW() to get the command-line arguments from Windows.
+        void WinInit();
+#endif  // _WIN32
 
     protected:
         ttlib::cstr shortlong(std::string_view name);
