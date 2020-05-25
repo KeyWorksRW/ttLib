@@ -1,6 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttlibspace.h
-// Purpose:   Contains the ttlib namespace functions/declarations common to all ttLib libraries
+// Purpose:   ttlib namespace functions and declarations
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 1998-2020 KeyWorks Software (Ralph Walden)
 // License:   Apache License -- see ../LICENSE
@@ -26,21 +25,23 @@
 #include <string>
 #include <string_view>
 
-// Some useful macros if you don't already have them
-
-#ifndef assertm
-/// assert with a message
-    #define assertm(exp, msg) assert(((void) msg, exp))
-#endif
-
 #if defined(NDEBUG)
-    #define DBG_PARAM(param) /* param */
+    /// Use this macro to comment out parameters that are not used in Release builds
+    #define DBG_PARAM(param) (/* param */)
 #else
-/// Use this macro around a function parameter that you only use in DEBUG builds. In
-/// non-debug builds, the argument is commented out.
+    /// Use this macro to comment out parameters that are only used in Debug builds
     #define DBG_PARAM(param) param
 #endif
 
+#if _WIN32
+    // Use this macro to comment out parameters that are not used when building for Windows
+    #define UNUSED_IN_WIN32(param) (/* param */)
+#else
+    // Use this macro to comment out parameters that are not used when building for Windows
+    #define UNUSED_IN_WIN32(param) param
+#endif
+
+// Using TT_ASSERT macros provides different assertion handling depending on the platform
 #if !defined(TT_ASSERT)
     #if defined(_WIN32)
         #define TT_ASSERT(exp)          ttASSERT(exp)
@@ -52,6 +53,11 @@
         #define TT_ASSERT(exp)          assert(exp)
         #define TT_ASSERT_MSG(exp, msg) assert(((void) msg, exp))
     #endif
+#endif
+
+#ifndef assertm
+    /// assert with a message
+    #define assertm(exp, msg) assert(((void) msg, exp))
 #endif
 
 #if defined(_WIN32)
