@@ -45,25 +45,15 @@ namespace ttlib
         using bs = std::basic_string<char, std::char_traits<char>, std::allocator<char>>;
 
     public:
-        // clang-format off
         cstr(void) : bs() {}
-        cstr(const char* psz) : bs(psz) { }
-        cstr(std::string_view view) : bs(view) { }
-        cstr(ttlib::cview view) : bs(view) { }
-        cstr(const cstr& str) : bs(str) { }
-        cstr(const std::string& str) : bs(str) { }
-        cstr(const std::filesystem::path& path) : bs(path.string(), path.string().size() ) { }
-        cstr(const std::filesystem::directory_entry& dir) : bs(dir.path().string(), dir.path().string().size()) { }
+        cstr(const char* psz) : bs(psz) {}
+        cstr(std::string_view view) : bs(view) {}
+        cstr(std::wstring_view view) : bs(std::move(utf16to8(view))) {}
+        cstr(ttlib::cview view) : bs(view) {}
+        cstr(const cstr& str) : bs(str) {}
+        cstr(const std::string& str) : bs(str) {}
 
-        // clang-format on
-
-#if defined(__WXMSW__)
-        /// Converts wxString to a UTF8 string.
-        ///
-        /// This is needed for Windows because wxString is UTF16 and we need to convert it
-        /// to UTF8. On POSIX, wxString is already UTF8 so no conversion is needed.
-        cstr(wxString& str) { assign(str.utf8_str().data()); }
-#endif
+        cstr(const std::filesystem::directory_entry& dir) : bs(dir.path().string(), dir.path().string().size()) {}
 
         void assignUTF16(std::wstring_view str);
 
@@ -253,6 +243,7 @@ namespace ttlib
 
         /// Replaces the filename portion of the string. Returns a view to the entire string.
         cstr& replace_filename(std::string_view newFilename);
+        cstr& replace_filename(std::wstring_view newFilename) { return replace_filename(utf16to8(newFilename)); }
 
         /// Removes the filename portion of the string. Returns a view to the entire string.
         cstr& remove_filename() { return replace_filename(""); }
@@ -260,6 +251,7 @@ namespace ttlib
         /// Appends the filename -- assumes current string is a path. This will add a trailing
         /// slash (if needed) before adding the filename.
         cstr& append_filename(std::string_view filename);
+        cstr& append_filename(std::wstring_view filename) { return append_filename(utf16to8(filename)); }
 
         /// Makes the current path relative to the supplied path. Supplied path should not
         /// contain a filename.
@@ -276,6 +268,36 @@ namespace ttlib
 
         /// Returns true if the current string refers to an existing directory.
         bool dirExists() const;
+
+        cstr& operator<<(std::string_view str)
+        {
+            *this += str;
+            return *this;
+        }
+
+        cstr& operator<<(std::wstring_view str)
+        {
+            *this += utf16to8(str);
+            return *this;
+        }
+
+        cstr& operator<<(char ch)
+        {
+            *this += ch;
+            return *this;
+        }
+
+        cstr& operator<<(int i)
+        {
+            *this += itoa(i);
+            return *this;
+        }
+
+        cstr& operator<<(size_t i)
+        {
+            *this += itoa(i);
+            return *this;
+        }
 
         //////////////////////////////// Windows-only section ////////////////////////
         //                                                                          //
