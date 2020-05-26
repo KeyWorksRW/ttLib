@@ -27,7 +27,7 @@
 
 #if defined(NDEBUG)
     /// Use this macro to comment out parameters that are not used in Release builds
-    #define DBG_PARAM(param) (/* param */)
+    #define DBG_PARAM(param) /* param */
 #else
     /// Use this macro to comment out parameters that are only used in Debug builds
     #define DBG_PARAM(param) param
@@ -35,7 +35,7 @@
 
 #if _WIN32
     // Use this macro to comment out parameters that are not used when building for Windows
-    #define UNUSED_IN_WIN32(param) (/* param */)
+    #define UNUSED_IN_WIN32(param) /* param */
 #else
     // Use this macro to comment out parameters that are not used when building for Windows
     #define UNUSED_IN_WIN32(param) param
