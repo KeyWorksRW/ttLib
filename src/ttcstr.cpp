@@ -686,12 +686,6 @@ std::wstring cstr::to_utf16() const
     return str16;
 }
 
-void cstr::assignUTF16(std::wstring_view str)
-{
-    clear();
-    ttlib::utf16to8(str, *this);
-}
-
 std::string_view cstr::subview(size_t start, size_t len) const noexcept
 {
     if (start >= size())

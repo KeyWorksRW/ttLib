@@ -55,7 +55,35 @@ namespace ttlib
 
         cstr(const std::filesystem::directory_entry& dir) : bs(dir.path().string(), dir.path().string().size()) {}
 
-        void assignUTF16(std::wstring_view str);
+        cstr& assignUTF16(std::wstring_view str)
+        {
+            *this = utf16to8(str);
+            return *this;
+        }
+
+        /// If you pass wxWidgets::wx_str() to this function it will convert from UTF16 to
+        /// UTF8 on Windows, or copy it on other platforms
+        cstr& utf(std::wstring_view str)
+        {
+            *this = utf16to8(str);
+            return *this;
+        }
+
+        /// If you pass wxWidgets::wx_str() to this function it will convert from UTF16 to
+        /// UTF8 on Windows, or copy it on other platforms
+        cstr& utf(std::string_view str)
+        {
+            *this = str;
+            return *this;
+        }
+
+#if defined(_WIN32)
+        /// Returns a copy of the string converted to UTF16 on Windows, or a normal copy on other platforms
+        std::wstring wx_str() const { return to_utf16(); };
+#else
+        /// Returns a copy of the string converted to UTF16 on Windows, or a normal copy on other platforms
+        std::string wx_str() const { return substr(); }
+#endif  // _WIN32
 
         std::wstring to_utf16() const;
 
