@@ -24,6 +24,8 @@
     #error "The contents of <ttcview.h> are available only with C++17 or later."
 #endif
 
+#include "ttlibspace.h"  // ttlib namespace functions and declarations
+
 #define _TTLIB_CVIEW_AVAILABLE_
 
 #include <filesystem>
