@@ -18,10 +18,6 @@
     #error "The contents of <ttdebug.h> are available only with C++17 or later."
 #endif
 
-#if !defined(_WIN32)
-    #error The functions and macros in this header file are only available on Windows
-#endif  // _WIN32
-
 // With #pragma once, a header guard shouldn't be necessary and causes unwanted indentation by clang-format. The
 // following #if/#endif check verifies that the file wasn't read twice.
 
@@ -31,16 +27,14 @@
     #define _TT_LIB_DEBUG_H_GUARD_  // sanity check to confirm that #pragma once is working as expected
 #endif
 
-#include <sstream>
+#if defined(_WIN32)
 
-#include "ttcview.h"
+    #include <sstream>
+
+    #include "ttcview.h"
 
 namespace ttlib
 {
-    // ttASSERTS are enabled by default -- you can change that state with this function.
-    void allow_asserts(bool allowasserts = false);
-
-    int CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc, int line);
 
     /// The following messages are passed to ttlib::wintrace() to talk to the ttTrace.exe app and include a text string.
 
@@ -82,10 +76,13 @@ namespace ttlib
     constexpr const unsigned int WMP_SHOW_SCRIPT = (WM_USER + 0x205);
     constexpr const unsigned int WMP_SHOW_ERROR = (WM_USER + 0x206);
 
+    /// Used by the ttTRACE_LAUNCH() macro to launch ttTrace.exe if it isn't already running
+    constexpr const unsigned int WMP_LAUNCH_TRACE = (WM_USER + 0x250);
+
     /// Use this to send CLEAR, HIDE, or SHOW messages that don't include any text
     void wintrace(unsigned int type = WMP_CLEAR_TRACE);
 
-    /// handle to ttTrace main window (if it was running when ttTrace was called)
+    /// handle to the ttTrace main window
     extern HWND hwndTrace;
 
     /// class name of window to send trace messages to
@@ -93,6 +90,11 @@ namespace ttlib
 
     /// name of shared memory to write to
     extern const char* txtTraceShareName;
+
+    // Called by ttDISABLE_ASSERTS and ttENABLE_ASSERTS macros in Debug builds
+    void allow_asserts(bool allowasserts = false);
+
+    int CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc, int line);
 }  // namespace ttlib
 
 // bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond, const char* msg);
@@ -106,7 +108,11 @@ inline bool ttAssertionMsg(const char* filename, const char* function, int line,
 
 __declspec(noreturn) void ttOOM(void);
 
-#ifdef _DEBUG
+#endif  // end of Windows-only section.
+
+// Following section is so that tt macros will be removed in BOTH Release and all non-Windows builds
+
+#if !defined(NDEBUG) && defined(_WIN32)
     #define ttASSERT(cond)                                                               \
         {                                                                                \
             if (!(cond) && ttAssertionMsg(__FILE__, __func__, __LINE__, #cond, nullptr)) \
@@ -184,7 +190,13 @@ __declspec(noreturn) void ttOOM(void);
     // This still executes the expression in non-DEBUG builds, it just doesn't check the result.
     #define ttVERIFY(exp) (void) ((!!(exp)) || ttAssertionMsg(__FILE__, __func__, __LINE__, #exp, nullptr))
 
-    /// All ttTRACE macros are automatically removed in Release builds. Call ttlib::wintrace
+    /// Causes all calls to ttAssertionMsg to immediately return.
+    #define ttDISABLE_ASSERTS() ttlib::allow_asserts(false)
+
+    /// Causes ttAssertionMsg to run normally
+    #define ttENABLE_ASSERTS()  ttlib::allow_asserts(true)
+
+    /// All ttTRACE macros are automatically removed in Release builds. Call ttlib::wintrace()
     /// directly if you need tracing in a release build.
     #define ttTRACE(msg)         ttlib::wintrace(msg, ttlib::WMP_TRACE_GENERAL)
     #define ttTRACE_ERROR(msg)   ttlib::wintrace(msg, ttlib::WMP_TRACE_ERROR)
@@ -194,12 +206,17 @@ __declspec(noreturn) void ttOOM(void);
     #define ttTRACE_PROPERTY(msg) ttlib::wintrace(msg, ttlib::WMP_TRACE_PROPERTY)
     #define ttTRACE_SCRIPT(msg)   ttlib::wintrace(msg, ttlib::WMP_TRACE_SCRIPT)
 
-    #define ttTRACE_CLEAR() ttlib::wintrace(ttlib::WMP_CLEAR_TRACE);
+    #define ttTRACE_CLEAR()    ttlib::wintrace(ttlib::WMP_CLEAR_TRACE)
+    #define ttTRACE_TITLE(msg) ttlib::wintrace(msg, ttlib::WMP_SET_TITLE)
 
-    #define ttDISABLE_ASSERTS ttSetAsserts(true)
-    #define ttENABLE_ASSERTS  ttSetAsserts(false)
+    /// Use this to send any of the WMP_SHOW_... or WMP_HIDE... messages.
+    #define ttTRACE_FILTER(type) ttlib::wintrace(type)
 
-#else  // not _DEBUG
+    /// This will try to locate the window for ttTrace.exe, and attempt to launch it if
+    /// the window is not found.
+    #define ttTRACE_LAUNCH() ttlib::wintrace(ttlib::WMP_LAUNCH_TRACE)
+
+#else  // Release build or non-Windows build
 
     #define ttASSERT(cond)
     #define ttASSERT_MSG(cond, msg)
@@ -217,12 +234,17 @@ __declspec(noreturn) void ttOOM(void);
     #define ttTRACE_SCRIPT(msg)
 
     #define ttTRACE_CLEAR()
+    #define ttTRACE_TITLE(msg)
+
+    #define ttTRACE_FILTER(type)
+
+    #define ttTRACE_LAUNCH()
 
     #define ttASSERT_NONEMPTY(ptr)
     #define ttASSERT_STRING(str)
 
-    #define ttDISABLE_ASSERTS
-    #define ttENABLE_ASSERTS
+    #define ttDISABLE_ASSERTS()
+    #define ttENABLE_ASSERTS()
 
     #define ttASSERT_HRESULT(hr, pszMsg)
     #define ttLAST_ERROR()
@@ -232,4 +254,4 @@ __declspec(noreturn) void ttOOM(void);
             throw msg;   \
         }
 
-#endif  // _DEBUG
+#endif  // End Release/_WIN32 conditional
