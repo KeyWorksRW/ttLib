@@ -167,7 +167,10 @@ void ttlib::wintrace(const std::string& msg, unsigned int type)
         throw std::invalid_argument("wintrace msg must not exceed 4092 bytes");
 
     std::strcpy(ttdbg::g_pszTraceMap, msg.c_str());
-    std::strcat(ttdbg::g_pszTraceMap, "\n");
+
+    // For compatability with KeyView, ttTrace always add it's own \n character after receiving a WMP_GENERAL_MSG
+    if (type != WMP_TRACE_GENERAL)
+        std::strcat(ttdbg::g_pszTraceMap, "\n");
 
     SendMessageW(ttlib::hwndTrace, type, 0, 0);
 
