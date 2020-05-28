@@ -37,44 +37,74 @@
 
 namespace ttlib
 {
-    /// Displays message in ttTrace.exe window if it is running.
-    void wintrace(const std::string& msg);
-    /// Clears all text in ttTrace.exe window (if it is running).
-    void wintraceclear();
-
     // ttASSERTS are enabled by default -- you can change that state with this function.
     void allow_asserts(bool allowasserts = false);
+
+    int CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc, int line);
+
+    /// The following messages are passed to ttlib::wintrace() to talk to the ttTrace.exe app and include a text string.
+
+    /// The message names are modeled after the messages sent by KeyHelp. However, you can use them however you want.
+    /// The ttTrace Window has a Preferences dialog that controls which messages are displayed. By default, all messages
+    /// are displayed, but you can shut off the ones you don't currently want to see.
+
+    /// This message is saved so that if it the exact same message is sent more than once,
+    /// then only the first one will be displayed until a different message is sent.
+    constexpr const unsigned int WMP_TRACE_GENERAL = (WM_USER + 0x1f3);
+
+    constexpr const unsigned int WMP_TRACE_EVENT = (WM_USER + 0x1f4);
+    constexpr const unsigned int WMP_TRACE_WARNING = (WM_USER + 0x1f5);
+    constexpr const unsigned int WMP_TRACE_PROPERTY = (WM_USER + 0x1f6);
+    constexpr const unsigned int WMP_TRACE_SCRIPT = (WM_USER + 0x1f7);
+    constexpr const unsigned int WMP_TRACE_ERROR = (WM_USER + 0x1f8);
+
+    constexpr const unsigned int WMP_SET_TITLE = (WM_USER + 0x1fa);  // set ttTrace window title
+
+    /// Displays message in ttTrace.exe window if it is running. By default, this will not
+    /// show the same msg string more than once until a different string is sent.
+    void wintrace(const std::string& msg, unsigned int type = WMP_TRACE_GENERAL);
+
+    /// The following messages are sent to ttlib::wintrace without a text string.
+
+    constexpr const unsigned int WMP_CLEAR_TRACE = (WM_USER + 0x1f9);  // clears the ttTrace window
+
+    constexpr const unsigned int WMP_HIDE_GENERAL = (WM_USER + 0x1fb);
+    constexpr const unsigned int WMP_HIDE_EVENT = (WM_USER + 0x1fc);
+    constexpr const unsigned int WMP_HIDE_WARNING = (WM_USER + 0x1fd);
+    constexpr const unsigned int WMP_HIDE_PROPERTY = (WM_USER + 0x1fe);
+    constexpr const unsigned int WMP_HIDE_SCRIPT = (WM_USER + 0x1ff);
+    constexpr const unsigned int WMP_HIDE_ERROR = (WM_USER + 0x200);
+
+    constexpr const unsigned int WMP_SHOW_GENERAL = (WM_USER + 0x201);
+    constexpr const unsigned int WMP_SHOW_EVENT = (WM_USER + 0x202);
+    constexpr const unsigned int WMP_SHOW_WARNING = (WM_USER + 0x203);
+    constexpr const unsigned int WMP_SHOW_PROPERTY = (WM_USER + 0x204);
+    constexpr const unsigned int WMP_SHOW_SCRIPT = (WM_USER + 0x205);
+    constexpr const unsigned int WMP_SHOW_ERROR = (WM_USER + 0x206);
+
+    /// Use this to send CLEAR, HIDE, or SHOW messages that don't include any text
+    void wintrace(unsigned int type = WMP_CLEAR_TRACE);
+
+    /// handle to ttTrace main window (if it was running when ttTrace was called)
+    extern HWND hwndTrace;
+
+    /// class name of window to send trace messages to
+    extern const char* txtTraceClass;
+
+    /// name of shared memory to write to
+    extern const char* txtTraceShareName;
 }  // namespace ttlib
 
 // bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond, const char* msg);
-bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond,
-                    const std::string& msg);
+bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond, const std::string& msg);
 bool ttdoReportLastError(const char* filename, const char* function, int line);
 
-inline bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond,
-                           const std::stringstream& msg)
+inline bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond, const std::stringstream& msg)
 {
     return ttAssertionMsg(filename, function, line, cond, msg.str().c_str());
 }
 
 __declspec(noreturn) void ttOOM(void);
-
-namespace ttlib
-{
-    // handle to ttTrace main window (if it was running when ttTrace was called
-    extern HWND hwndTrace;
-
-    extern const UINT WMP_TRACE_GENERAL;  // WM_USER + 0x1f3;    // general message to send to ttTrace
-    extern const UINT WMP_TRACE_MSG;      // WM_USER + 0x1f5;    // trace message to send to ttTrace
-    extern const UINT WMP_CLEAR_TRACE;    // WM_USER + 0x1f9;    // clears the ttTrace window
-
-    // class name of window to send trace messages to
-    extern const char* txtTraceClass;
-    // name of shared memory to write to
-    extern const char* txtTraceShareName;
-
-    int CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc, int line);
-}  // namespace ttlib
 
 #ifdef _DEBUG
     #define ttASSERT(cond)                                                               \
@@ -151,13 +181,20 @@ namespace ttlib
             }                                                      \
         }
 
-    // this still executes the expression in non-DEBUG build, it just doesn't check result
+    // This still executes the expression in non-DEBUG builds, it just doesn't check the result.
     #define ttVERIFY(exp) (void) ((!!(exp)) || ttAssertionMsg(__FILE__, __func__, __LINE__, #exp, nullptr))
 
-    /// ttTRACE is automatically removed in Release builds. Call ttlib::wintrace directly
-    /// if you need tracing in a release build.
-    #define ttTRACE(msg)    ttlib::wintrace(msg)
-    #define ttTRACE_CLEAR() ttlib::wintraceclear();
+    /// All ttTRACE macros are automatically removed in Release builds. Call ttlib::wintrace
+    /// directly if you need tracing in a release build.
+    #define ttTRACE(msg)         ttlib::wintrace(msg, ttlib::WMP_TRACE_GENERAL)
+    #define ttTRACE_ERROR(msg)   ttlib::wintrace(msg, ttlib::WMP_TRACE_ERROR)
+    #define ttTRACE_WARNING(msg) ttlib::wintrace(msg, ttlib::WMP_TRACE_WARNING)
+
+    #define ttTRACE_EVENT(msg)    ttlib::wintrace(msg, ttlib::WMP_TRACE_EVENT)
+    #define ttTRACE_PROPERTY(msg) ttlib::wintrace(msg, ttlib::WMP_TRACE_PROPERTY)
+    #define ttTRACE_SCRIPT(msg)   ttlib::wintrace(msg, ttlib::WMP_TRACE_SCRIPT)
+
+    #define ttTRACE_CLEAR() ttlib::wintrace(ttlib::WMP_CLEAR_TRACE);
 
     #define ttDISABLE_ASSERTS ttSetAsserts(true)
     #define ttENABLE_ASSERTS  ttSetAsserts(false)
@@ -172,6 +209,13 @@ namespace ttlib
     #define ttVERIFY(exp) ((void) (exp))
 
     #define ttTRACE(msg)
+    #define ttTRACE_ERROR(msg)
+    #define ttTRACE_WARNING(msg)
+
+    #define ttTRACE_EVENT(msg)
+    #define ttTRACE_PROPERTY(msg)
+    #define ttTRACE_SCRIPT(msg)
+
     #define ttTRACE_CLEAR()
 
     #define ttASSERT_NONEMPTY(ptr)

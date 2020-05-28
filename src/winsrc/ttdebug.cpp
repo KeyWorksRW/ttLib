@@ -20,11 +20,7 @@
 #include "ttcstr.h"   // Classes for handling zero-terminated char strings.
 #include "ttdebug.h"  // ttASSERT macros
 
-const UINT ttlib::WMP_TRACE_GENERAL = WM_USER + 0x1f3;
-const UINT ttlib::WMP_TRACE_MSG = WM_USER + 0x1f5;
-const UINT ttlib::WMP_CLEAR_TRACE = WM_USER + 0x1f9;  // clears the ttTrace window
-
-// DO NOT CHANGE THESE TWO NAMES! Multiple applications expect these names and will no longer send trace messages
+// DO NOT CHANGE THESE TWO NAMES! Multiple applications expect these names and will no longer display trace messages
 // if you change them.
 
 const char* ttlib::txtTraceClass = "KeyViewMsgs";
@@ -119,7 +115,7 @@ int ttlib::CheckItemID(HWND hwnd, int id, const char* pszID, const char* filenam
 
 // WARNING! Do not call ttASSERT in this function or you will end up with a recursive call.
 
-void ttlib::wintrace(const std::string& msg)
+void ttlib::wintrace(const std::string& msg, unsigned int type)
 {
     // We don't want two threads trying to send text at the same time. The ttCCritLock class prevents a second call
     // to the function until the first call has completed.
@@ -168,18 +164,18 @@ void ttlib::wintrace(const std::string& msg)
     }
 
     if (msg.size() > 4092)
-        throw std::invalid_argument("msg must not exceed 4092 bytes");
+        throw std::invalid_argument("wintrace msg must not exceed 4092 bytes");
 
     std::strcpy(ttdbg::g_pszTraceMap, msg.c_str());
     std::strcat(ttdbg::g_pszTraceMap, "\n");
 
-    SendMessageA(ttlib::hwndTrace, ttlib::WMP_TRACE_MSG, 0, 0);
+    SendMessageW(ttlib::hwndTrace, type, 0, 0);
 
     UnmapViewOfFile(ttdbg::g_pszTraceMap);
     ttdbg::g_pszTraceMap = nullptr;
 }
 
-void ttlib::wintraceclear()
+void ttlib::wintrace(unsigned int type)
 {
     std::unique_lock<std::mutex> classLock(ttdbg::mutexTrace);
 
@@ -189,5 +185,5 @@ void ttlib::wintraceclear()
     if (!ttlib::hwndTrace || !IsWindow(ttlib::hwndTrace))
         return;
 
-    SendMessageA(ttlib::hwndTrace, ttlib::WMP_CLEAR_TRACE, 0, 0);
+    SendMessageW(ttlib::hwndTrace, type, 0, 0);
 }
