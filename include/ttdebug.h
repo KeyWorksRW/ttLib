@@ -18,10 +18,6 @@
     #error "The contents of <ttdebug.h> are available only with C++17 or later."
 #endif
 
-#if !defined(_WIN32)
-    #error The functions and macros in this header file are only available on Windows
-#endif  // _WIN32
-
 // With #pragma once, a header guard shouldn't be necessary and causes unwanted indentation by clang-format. The
 // following #if/#endif check verifies that the file wasn't read twice.
 
@@ -31,16 +27,14 @@
     #define _TT_LIB_DEBUG_H_GUARD_  // sanity check to confirm that #pragma once is working as expected
 #endif
 
-#include <sstream>
+#if defined(_WIN32)
 
-#include "ttcview.h"
+    #include <sstream>
+
+    #include "ttcview.h"
 
 namespace ttlib
 {
-    // ttASSERTS are enabled by default -- you can change that state with this function.
-    void allow_asserts(bool allowasserts = false);
-
-    int CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc, int line);
 
     /// The following messages are passed to ttlib::wintrace() to talk to the ttTrace.exe app and include a text string.
 
@@ -93,6 +87,11 @@ namespace ttlib
 
     /// name of shared memory to write to
     extern const char* txtTraceShareName;
+
+    // Called by ttDISABLE_ASSERTS and ttENABLE_ASSERTS macros in Debug builds
+    void allow_asserts(bool allowasserts = false);
+
+    int CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc, int line);
 }  // namespace ttlib
 
 // bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond, const char* msg);
@@ -106,7 +105,11 @@ inline bool ttAssertionMsg(const char* filename, const char* function, int line,
 
 __declspec(noreturn) void ttOOM(void);
 
-#ifdef _DEBUG
+#endif  // end of Windows-only section.
+
+// Following section is so that tt macros will be removed in BOTH Release and all non-Windows builds
+
+#if !defined(NDEBUG) && defined(_WIN32)
     #define ttASSERT(cond)                                                               \
         {                                                                                \
             if (!(cond) && ttAssertionMsg(__FILE__, __func__, __LINE__, #cond, nullptr)) \
@@ -184,8 +187,11 @@ __declspec(noreturn) void ttOOM(void);
     // This still executes the expression in non-DEBUG builds, it just doesn't check the result.
     #define ttVERIFY(exp) (void) ((!!(exp)) || ttAssertionMsg(__FILE__, __func__, __LINE__, #exp, nullptr))
 
-    #define ttDISABLE_ASSERTS ttSetAsserts(true)
-    #define ttENABLE_ASSERTS  ttSetAsserts(false)
+    /// Causes all calls to ttAssertionMsg to immediately return.
+    #define ttDISABLE_ASSERTS ttlib::allow_asserts(false)
+
+    /// Causes ttAssertionMsg to run normally
+    #define ttENABLE_ASSERTS  ttlib::allow_asserts(true)
 
     /// All ttTRACE macros are automatically removed in Release builds. Call ttlib::wintrace()
     /// directly if you need tracing in a release build.
@@ -203,7 +209,7 @@ __declspec(noreturn) void ttOOM(void);
     /// Use this to send any of the WMP_SHOW_... or WMP_HIDE... messages.
     #define ttTRACE_FILTER(type) ttlib::wintrace(type)
 
-#else  // not _DEBUG
+#else  // Release build or non-Windows build
 
     #define ttASSERT(cond)
     #define ttASSERT_MSG(cond, msg)
@@ -239,4 +245,4 @@ __declspec(noreturn) void ttOOM(void);
             throw msg;   \
         }
 
-#endif  // _DEBUG
+#endif  // End Release/_WIN32 conditional
