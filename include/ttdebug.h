@@ -184,7 +184,10 @@ __declspec(noreturn) void ttOOM(void);
     // This still executes the expression in non-DEBUG builds, it just doesn't check the result.
     #define ttVERIFY(exp) (void) ((!!(exp)) || ttAssertionMsg(__FILE__, __func__, __LINE__, #exp, nullptr))
 
-    /// All ttTRACE macros are automatically removed in Release builds. Call ttlib::wintrace
+    #define ttDISABLE_ASSERTS ttSetAsserts(true)
+    #define ttENABLE_ASSERTS  ttSetAsserts(false)
+
+    /// All ttTRACE macros are automatically removed in Release builds. Call ttlib::wintrace()
     /// directly if you need tracing in a release build.
     #define ttTRACE(msg)         ttlib::wintrace(msg, ttlib::WMP_TRACE_GENERAL)
     #define ttTRACE_ERROR(msg)   ttlib::wintrace(msg, ttlib::WMP_TRACE_ERROR)
@@ -194,10 +197,11 @@ __declspec(noreturn) void ttOOM(void);
     #define ttTRACE_PROPERTY(msg) ttlib::wintrace(msg, ttlib::WMP_TRACE_PROPERTY)
     #define ttTRACE_SCRIPT(msg)   ttlib::wintrace(msg, ttlib::WMP_TRACE_SCRIPT)
 
-    #define ttTRACE_CLEAR() ttlib::wintrace(ttlib::WMP_CLEAR_TRACE);
+    #define ttTRACE_CLEAR()    ttlib::wintrace(ttlib::WMP_CLEAR_TRACE)
+    #define ttTRACE_TITLE(msg) ttlib::wintrace(msg, ttlib::WMP_SET_TITLE)
 
-    #define ttDISABLE_ASSERTS ttSetAsserts(true)
-    #define ttENABLE_ASSERTS  ttSetAsserts(false)
+    /// Use this to send any of the WMP_SHOW_... or WMP_HIDE... messages.
+    #define ttTRACE_FILTER(type) ttlib::wintrace(type)
 
 #else  // not _DEBUG
 
@@ -217,6 +221,9 @@ __declspec(noreturn) void ttOOM(void);
     #define ttTRACE_SCRIPT(msg)
 
     #define ttTRACE_CLEAR()
+    #define ttTRACE_TITLE(msg)
+
+    #define ttTRACE_FILTER(type)
 
     #define ttASSERT_NONEMPTY(ptr)
     #define ttASSERT_STRING(str)
