@@ -12,12 +12,11 @@
     #error "This module can only be compiled for Windows"
 #endif
 
-#include <sstream>
-
-#include "ttdebug.h"
-#include "ttlibspace.h"
+#include "ttdebug.h"     // ttASSERT macros
+#include "ttlibspace.h"  // ttlib namespace functions and declarations
 #include "ttmultibtn.h"  // MultiBtn
 #include "ttshadebtn.h"  // ttlib::ShadeBtn
+#include <ttcstr.h>      // cstr -- Classes for handling zero-terminated char strings.
 
 using namespace ttlib;
 
@@ -33,7 +32,6 @@ BOOL WINAPI ttlib::EnumBtnProc(HWND hwnd, LPARAM lval)
             ttlib::ShadeBtn* pBtn = new ttlib::ShadeBtn;
             pBtn->Initialize(hwnd, pMultiBtn->m_btnShade);
             pMultiBtn->m_Buttons.emplace_back(pBtn);
-
         }
     }
     return TRUE;
@@ -71,9 +69,9 @@ void MultiBtn::SetIcon(int idBtn, int idIcon, UINT nIconAlign)
     }
 
 #if !defined(NDEBUG)  // Starts debug section.
-    std::stringstream msg;
+    ttlib::cstr msg;
     msg << "MultiBtn::SetIcon was unable to find the button id: " << idBtn;
-    ttlib::wintrace(msg.str());
+    ttlib::wintrace(msg);
 #endif
 }
 
@@ -91,8 +89,8 @@ void MultiBtn::SetIcon(int idBtn, const std::string& IconName, UINT nIconAlign)
     }
 
 #if !defined(NDEBUG)  // Starts debug section.
-    std::stringstream msg;
+    ttlib::cstr msg;
     msg << "MultiBtn::SetIcon was unable to find the button id: " << idBtn;
-    ttlib::wintrace(msg.str());
+    ttlib::wintrace(msg);
 #endif
 }

@@ -50,7 +50,8 @@ bool ttAssertionMsg(const char* filename, const char* function, int line, const 
     ttlib::cstr fname(filename);
     fname.make_relative(std::filesystem::absolute(".").u8string());
 
-    std::stringstream str;
+    ttlib::cstr str;
+
     if (cond)
         str << "Expression: " << cond << "\n\n";
     if (!msg.empty())
@@ -61,12 +62,7 @@ bool ttAssertionMsg(const char* filename, const char* function, int line, const 
     str << "Line: " << line << "\n\n";
     str << "Press Retry to break into a debugger.";
 
-    // Converting to utf16 requires begin() and end() which stringstream doesn't support
-    std::string copy(str.str());
-
-    std::wstring str16;
-    ttlib::utf8to16(copy, str16);
-    auto answer = MessageBoxW(GetActiveWindow(), str16.c_str(), L"Assertion failed!", MB_ABORTRETRYIGNORE | MB_ICONSTOP);
+    auto answer = MessageBoxW(GetActiveWindow(), str.to_utf16().c_str(), L"Assertion failed!", MB_ABORTRETRYIGNORE | MB_ICONSTOP);
 
     if (answer == IDRETRY)
     {
@@ -102,9 +98,9 @@ int ttlib::CheckItemID(HWND hwnd, int id, const char* pszID, const char* filenam
 {
     if (::GetDlgItem(hwnd, id) == NULL)
     {
-        std::stringstream msg;
+        ttlib::cstr msg;
         msg << "Invalid dialog control id: " << pszID << " (" << id << ')';
-        if (ttAssertionMsg(filename, function, line, pszID, msg.str().c_str()))
+        if (ttAssertionMsg(filename, function, line, pszID, msg.c_str()))
         {
             DebugBreak();
         }

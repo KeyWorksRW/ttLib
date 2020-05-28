@@ -37,7 +37,7 @@
         #define CHECK_DLG_ID(id)                                                  \
             if (!::GetDlgItem(*this, id))                                         \
             {                                                                     \
-                std::stringstream msg;                                            \
+                ttlib::cstr msg;                                                  \
                 msg << "Invalid dialog control id: " << #id << " (" << id << ')'; \
                 if (ttAssertionMsg(__FILE__, __func__, __LINE__, #id, msg))       \
                 {                                                                 \
@@ -137,9 +137,9 @@ namespace ttlib
         template<typename T_ID, typename T_VAL>
         void SetControlInteger(T_ID id, T_VAL val) const
         {
-            std::stringstream str;
+            ttlib::cstr str;
             str << val;
-            SetWindowTextA(gethwnd(id), str.str().c_str());
+            SetWindowTextA(gethwnd(id), str.c_str());
         }
 
         template<typename T_ID>
@@ -175,7 +175,7 @@ namespace ttlib
         template<typename T_ID>
         void GetCheck(T_ID id, bool& checked) const
         {
-            checked =  (SendItemMsg(id, BM_GETCHECK) == BST_CHECKED);
+            checked = (SendItemMsg(id, BM_GETCHECK) == BST_CHECKED);
         }
 
         template<typename T_ID>

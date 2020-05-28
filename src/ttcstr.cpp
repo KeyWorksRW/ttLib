@@ -15,7 +15,6 @@
 #include <iomanip>
 #include <ios>
 #include <locale>
-#include <sstream>
 
 #include "ttcstr.h"
 #include "ttlibspace.h"

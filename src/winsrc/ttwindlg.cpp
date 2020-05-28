@@ -12,8 +12,6 @@
     #error "This module can only be compiled for Windows"
 #endif
 
-#include <sstream>
-
 #include <VersionHelpers.h>
 
 #include "ttwindlg.h"
