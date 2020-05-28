@@ -76,10 +76,13 @@ namespace ttlib
     constexpr const unsigned int WMP_SHOW_SCRIPT = (WM_USER + 0x205);
     constexpr const unsigned int WMP_SHOW_ERROR = (WM_USER + 0x206);
 
+    /// Used by the ttTRACE_LAUNCH() macro to launch ttTrace.exe if it isn't already running
+    constexpr const unsigned int WMP_LAUNCH_TRACE = (WM_USER + 0x250);
+
     /// Use this to send CLEAR, HIDE, or SHOW messages that don't include any text
     void wintrace(unsigned int type = WMP_CLEAR_TRACE);
 
-    /// handle to ttTrace main window (if it was running when ttTrace was called)
+    /// handle to the ttTrace main window
     extern HWND hwndTrace;
 
     /// class name of window to send trace messages to
@@ -188,10 +191,10 @@ __declspec(noreturn) void ttOOM(void);
     #define ttVERIFY(exp) (void) ((!!(exp)) || ttAssertionMsg(__FILE__, __func__, __LINE__, #exp, nullptr))
 
     /// Causes all calls to ttAssertionMsg to immediately return.
-    #define ttDISABLE_ASSERTS ttlib::allow_asserts(false)
+    #define ttDISABLE_ASSERTS() ttlib::allow_asserts(false)
 
     /// Causes ttAssertionMsg to run normally
-    #define ttENABLE_ASSERTS  ttlib::allow_asserts(true)
+    #define ttENABLE_ASSERTS()  ttlib::allow_asserts(true)
 
     /// All ttTRACE macros are automatically removed in Release builds. Call ttlib::wintrace()
     /// directly if you need tracing in a release build.
@@ -208,6 +211,10 @@ __declspec(noreturn) void ttOOM(void);
 
     /// Use this to send any of the WMP_SHOW_... or WMP_HIDE... messages.
     #define ttTRACE_FILTER(type) ttlib::wintrace(type)
+
+    /// This will try to locate the window for ttTrace.exe, and attempt to launch it if
+    /// the window is not found.
+    #define ttTRACE_LAUNCH() ttlib::wintrace(ttlib::WMP_LAUNCH_TRACE)
 
 #else  // Release build or non-Windows build
 
@@ -231,11 +238,13 @@ __declspec(noreturn) void ttOOM(void);
 
     #define ttTRACE_FILTER(type)
 
+    #define ttTRACE_LAUNCH()
+
     #define ttASSERT_NONEMPTY(ptr)
     #define ttASSERT_STRING(str)
 
-    #define ttDISABLE_ASSERTS
-    #define ttENABLE_ASSERTS
+    #define ttDISABLE_ASSERTS()
+    #define ttENABLE_ASSERTS()
 
     #define ttASSERT_HRESULT(hr, pszMsg)
     #define ttLAST_ERROR()

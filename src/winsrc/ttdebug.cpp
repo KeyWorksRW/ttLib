@@ -25,18 +25,17 @@
 
 const char* ttlib::txtTraceClass = "KeyViewMsgs";
 const char* ttlib::txtTraceShareName = "hhw_share";
-HWND ttlib::hwndTrace = NULL;
+HWND ttlib::hwndTrace { reinterpret_cast<HWND>(-1) };  // -1 means search for the ttTrace.exe main window
 
 namespace ttdbg
 {
     std::mutex mutexAssert;
     std::mutex mutexTrace;
 
-    bool allowAsserts { true };  // Setting this to true will cause AssertionMsg to return without doing anything
+    bool allowAsserts { true };  // Setting this to true will cause ttAssertionMsg to return without doing anything
 
     HANDLE hTraceMapping { NULL };
     char* g_pszTraceMap { nullptr };
-    DWORD g_cLastTickCheck { 0 };  // used to determine whether to check for hwndTrace again
 }  // namespace ttdbg
 
 // Don't use std::string_view for msg -- we special-case a null pointer
@@ -117,30 +116,30 @@ int ttlib::CheckItemID(HWND hwnd, int id, const char* pszID, const char* filenam
 
 void ttlib::wintrace(const std::string& msg, unsigned int type)
 {
-    // We don't want two threads trying to send text at the same time. The ttCCritLock class prevents a second call
+    if (msg.empty())
+        return;
+
+    // We don't want two threads trying to send text at the same time. The lock prevents a second call
     // to the function until the first call has completed.
 
     std::unique_lock<std::mutex> classLock(ttdbg::mutexTrace);
 
-    if (msg.empty())
+    // Until wintrace() is called for the first time, hwndTrace == -1, which means we search once, and only once to see
+    // if it is running. If it's not running before the first call to wintrace(), then ttTRACE_FILTER(WMP_LAUNCH_TRACE)
+    // needs to be called either after ttTrace.exe is run, or to have ttLib try to launch it.
+
+    if (ttlib::hwndTrace == reinterpret_cast<HWND>(-1))
+        ttlib::hwndTrace = FindWindowA(ttlib::txtTraceClass, NULL);
+
+    if (!ttlib::hwndTrace)
         return;
 
-    if (!(ttlib::hwndTrace && IsWindow(ttlib::hwndTrace)))
+    // If the trace program was closed, the window handle will be invalid, so set it to NULL and stop trying to send it
+    // messages.
+    if (!IsWindow(ttlib::hwndTrace))
     {
-        // Trace could be called a lot, and we don't really want to be searching for the window constantly.
-
-        DWORD cCurTick = GetTickCount();
-        cCurTick /= 1000;  // convert to seconds
-
-        if (ttdbg::g_cLastTickCheck == 0 || cCurTick > ttdbg::g_cLastTickCheck + 5)
-        {
-            ttlib::hwndTrace = FindWindowA(ttlib::txtTraceClass, NULL);
-            if (!ttlib::hwndTrace)
-            {
-                ttdbg::g_cLastTickCheck = cCurTick;
-                return;
-            }
-        }
+        ttlib::hwndTrace = NULL;
+        return;
     }
 
     if (!ttdbg::hTraceMapping)
@@ -182,11 +181,33 @@ void ttlib::wintrace(unsigned int type)
 {
     std::unique_lock<std::mutex> classLock(ttdbg::mutexTrace);
 
-    if (!ttlib::hwndTrace)
+    if (type == WMP_LAUNCH_TRACE)
+    {
+        ttlib::hwndTrace = FindWindowA(ttlib::txtTraceClass, NULL);
+        if (!ttlib::hwndTrace)
+        {
+            ttlib::ShellRun("ttTrace.exe", ttlib::emptystring, ttlib::emptystring);
+            Sleep(250);  // Give the app time to launch
+
+            // This will cause the next call to wintrace() to look for the trace window
+            ttlib::hwndTrace = reinterpret_cast<HWND>(-1);
+        }
+        return;
+    }
+
+    if (ttlib::hwndTrace == reinterpret_cast<HWND>(-1))
         ttlib::hwndTrace = FindWindowA(ttlib::txtTraceClass, NULL);
 
-    if (!ttlib::hwndTrace || !IsWindow(ttlib::hwndTrace))
+    if (!ttlib::hwndTrace)
         return;
+
+    // If the trace program was closed, the window handle will be invalid, so set it to NULL and stop trying to send it
+    // messages.
+    if (!IsWindow(ttlib::hwndTrace))
+    {
+        ttlib::hwndTrace = NULL;
+        return;
+    }
 
     SendMessageW(ttlib::hwndTrace, type, 0, 0);
 }
