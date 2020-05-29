@@ -116,7 +116,7 @@ __declspec(noreturn) void ttOOM(void);
         {                                                                                \
             if (!(cond) && ttAssertionMsg(__FILE__, __func__, __LINE__, #cond, nullptr)) \
             {                                                                            \
-                DebugBreak();                                                            \
+                __debugbreak();                                                            \
             }                                                                            \
         }
 
@@ -124,21 +124,21 @@ __declspec(noreturn) void ttOOM(void);
         {                                                                            \
             if (!(cond) && ttAssertionMsg(__FILE__, __func__, __LINE__, #cond, msg)) \
             {                                                                        \
-                DebugBreak();                                                        \
+                __debugbreak();                                                        \
             }                                                                        \
         }
 
     #define ttFAIL(msg)                                                 \
         if (ttAssertionMsg(__FILE__, __func__, __LINE__, nullptr, msg)) \
         {                                                               \
-            DebugBreak();                                               \
+            __debugbreak();                                               \
         }
 
     #define ttFAIL_MSG(msg)                                                 \
         {                                                                   \
             if (ttAssertionMsg(__FILE__, __func__, __LINE__, nullptr, msg)) \
             {                                                               \
-                DebugBreak();                                               \
+                __debugbreak();                                               \
             }                                                               \
         }
 
@@ -146,7 +146,7 @@ __declspec(noreturn) void ttOOM(void);
         {                                                                                 \
             if (FAILED(hr) && ttAssertionMsg(__FILE__, __func__, __LINE__, nullptr, msg)) \
             {                                                                             \
-                DebugBreak();                                                             \
+                __debugbreak();                                                             \
             }                                                                             \
         }
 
@@ -154,7 +154,7 @@ __declspec(noreturn) void ttOOM(void);
         {                                                                                                        \
             if ((!psz || !*psz) && ttAssertionMsg(__FILE__, __func__, __LINE__, #psz, "Null or empty pointer!")) \
             {                                                                                                    \
-                DebugBreak();                                                                                    \
+                __debugbreak();                                                                                    \
             }                                                                                                    \
         }
 
@@ -162,7 +162,7 @@ __declspec(noreturn) void ttOOM(void);
         {                                                                                           \
             if (str.empty() && ttAssertionMsg(__FILE__, __func__, __LINE__, #str, "Empty string!")) \
             {                                                                                       \
-                DebugBreak();                                                                       \
+                __debugbreak();                                                                       \
             }                                                                                       \
         }
 
@@ -172,7 +172,7 @@ __declspec(noreturn) void ttOOM(void);
         {                                                                   \
             if (ttAssertionMsg(__FILE__, __func__, __LINE__, nullptr, msg)) \
             {                                                               \
-                DebugBreak();                                               \
+                __debugbreak();                                               \
             }                                                               \
             throw msg;                                                      \
         }
@@ -182,7 +182,7 @@ __declspec(noreturn) void ttOOM(void);
         {                                                          \
             if (ttdoReportLastError(__FILE__, __func__, __LINE__)) \
             {                                                      \
-                DebugBreak();                                      \
+                __debugbreak();                                      \
             }                                                      \
         }
 
