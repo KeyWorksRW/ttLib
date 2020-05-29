@@ -164,7 +164,7 @@ void ttlib::wintrace(const std::string& msg, unsigned int type)
     std::strcpy(ttdbg::g_pszTraceMap, msg.c_str());
 
     // For compatability with KeyView, ttTrace always add it's own \n character after receiving a WMP_GENERAL_MSG
-    if (type != WMP_TRACE_GENERAL)
+    if (type != WMP_TRACE_GENERAL && type != WMP_SET_TITLE)
         std::strcat(ttdbg::g_pszTraceMap, "\n");
 
     SendMessageW(ttlib::hwndTrace, type, 0, 0);
