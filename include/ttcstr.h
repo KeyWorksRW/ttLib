@@ -25,9 +25,6 @@
 
 #include "ttcview.h"
 
-#if defined(__WXMSW__)
-    #include <wx/string.h>
-#endif
 namespace tt
 {
     enum REPLACE : bool
@@ -222,10 +219,6 @@ namespace ttlib
         /// %z is considered unsigned unless the value is -1.
         cstr& cdecl Format(std::string_view format, ...);
 
-#if defined(__WXMSW__)
-        wxString FromUTF8() const { return wxString::FromUTF8(*this); }
-#endif
-
         /// Caution: view is only valid until cstr is modified or destroyed!
         std::string_view subview(size_t start, size_t len) const noexcept;
 
@@ -358,5 +351,6 @@ namespace ttlib
         };
 
 #endif
-    };
+    };  // end cstr class
+
 }  // namespace ttlib
