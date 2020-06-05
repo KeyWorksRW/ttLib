@@ -25,6 +25,7 @@ Files:
     ttmultistr.cpp   # ttlib::multistr, ttlib::multiview
     ttlibspace.cpp   # ttlib namespace functions
     ttparser.cpp     # Command line parser
+    ttstrings.cpp    # Class for handling zero-terminated char strings.
     tttextfile.cpp   # Classes for reading and writing text files.
 
 # Windows only files
