@@ -16,7 +16,6 @@
 
 #include <shlobj.h>
 
-#include "ttTR.h"
 #include "ttdebug.h"  // ttASSERT macros
 #include "ttlibspace.h"
 
@@ -28,7 +27,7 @@ using namespace ttlib;
 
 DirDlg::DirDlg()
 {
-    m_Title = _tt("Select a Folder");
+    m_Title = "Select a Folder";
 }
 
 bool DirDlg::GetFolderName(HWND hwndParent)

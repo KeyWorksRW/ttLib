@@ -49,6 +49,8 @@ build $outdir/ttlibspace.obj: compile ttlibspace.cpp | $outdir/pch.obj
 
 build $outdir/ttparser.obj: compile ttparser.cpp | $outdir/pch.obj
 
+build $outdir/ttstrings.obj: compile ttstrings.cpp | $outdir/pch.obj
+
 build $outdir/tttextfile.obj: compile tttextfile.cpp | $outdir/pch.obj
 
 build $outdir/ttdib.obj: compile winsrc/ttdib.cpp | $outdir/pch.obj
@@ -84,6 +86,7 @@ build ../lib/ttLib.lib : lib $
   $outdir/ttmultistr.obj $
   $outdir/ttlibspace.obj $
   $outdir/ttparser.obj $
+  $outdir/ttstrings.obj $
   $outdir/tttextfile.obj $
   $outdir/ttdib.obj $
   $outdir/ttdirdlg.obj $
