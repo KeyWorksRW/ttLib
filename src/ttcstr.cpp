@@ -12,6 +12,7 @@
 #include <cctype>
 #include <cstdarg>
 #include <cstdlib>
+#include <filesystem>
 #include <iomanip>
 #include <ios>
 #include <locale>
@@ -21,6 +22,8 @@
 
 using namespace ttlib;
 using namespace tt;
+
+namespace fs = std::filesystem;
 
 bool cstr::issameas(std::string_view str, CASE checkcase) const
 {
@@ -599,16 +602,53 @@ cstr& cstr::assignCwd()
     return *this;
 }
 
-/// Uses const std::string& instead of std::string_view because std::filesystem::relative
-/// will not accept a string_view.
-cstr& cstr::make_relative(const std::string& relative_to)
+cstr& cstr::make_relative(ttlib::cview relative_to)
 {
-    if (!empty() && !relative_to.empty())
+    if (empty())
+        return *this;
+
+    auto to = fs::absolute(fs::u8path(c_str()));
+
+    ttlib::cstr relto;
+    if (relative_to.size())
     {
-        auto current = std::filesystem::u8path(c_str());
-        auto relto = std::filesystem::u8path(relative_to);
-        assign(std::filesystem::relative(current, relto).u8string());
+        relto.assign(relative_to);
     }
+    else
+    {
+        relto.assign(".");
+    }
+    auto from = fs::absolute(fs::u8path(relto.c_str()));
+
+    // At this point, both from and to are absolute paths
+
+    auto iterFrom = from.begin();
+    auto iterTo = to.begin();
+
+    // Loop through both while they are the same to find nearest common directory
+    while (iterFrom != from.end() && iterTo != to.end() && *iterTo == *iterFrom)
+    {
+        ++iterTo;
+        ++iterFrom;
+    }
+
+    // Replace from path segments with '..' (from => nearest common directory)
+    auto finalPath = fs::path {};
+    while (iterFrom != from.end())
+    {
+        finalPath /= "..";
+        ++iterFrom;
+    }
+
+    // Append the remainder of the to path (nearest common directory => to)
+    while (iterTo != to.end())
+    {
+        finalPath /= *iterTo;
+        ++iterTo;
+    }
+
+    assign(finalPath.u8string());
+
     return *this;
 }
 
