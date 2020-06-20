@@ -33,13 +33,13 @@ namespace ttdbg
     std::mutex mutexTrace;
 
     bool allowAsserts { true };  // Setting this to true will cause ttAssertionMsg to return without doing anything
+    bool allowDuplicates { true };  // Setting this to false will prevent any assert msg from being displayed more than once
 
     HANDLE hTraceMapping { NULL };
     char* g_pszTraceMap { nullptr };
+    std::vector<ttlib::cstr> g_priorAsserts;
 }  // namespace ttdbg
 
-// Don't use std::string_view for msg -- we special-case a null pointer
-// bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond, const char* msg)
 bool ttAssertionMsg(const char* filename, const char* function, int line, const char* cond, const std::string& msg)
 {
     if (!ttdbg::allowAsserts)
@@ -47,20 +47,26 @@ bool ttAssertionMsg(const char* filename, const char* function, int line, const 
 
     std::unique_lock<std::mutex> classLock(ttdbg::mutexAssert);
 
-    ttlib::cstr fname(filename);
-    fname.make_relative(std::filesystem::absolute(".").u8string());
-
     ttlib::cstr str;
-
     if (cond)
         str << "Expression: " << cond << "\n\n";
     if (!msg.empty())
         str << "Comment: " << msg << "\n\n";
 
-    str << "File: " << fname << "\n";
+    str << "File: " << filename << "\n";
     str << "Function: " << function << "\n";
     str << "Line: " << line << "\n\n";
     str << "Press Retry to break into a debugger.";
+
+    if (!ttdbg::allowDuplicates)
+    {
+        for (auto& iter: ttdbg::g_priorAsserts)
+        {
+            if (iter.issameas(msg))
+                return false;
+        }
+        ttdbg::g_priorAsserts.emplace_back(msg);
+    }
 
     auto answer = MessageBoxW(GetActiveWindow(), str.to_utf16().c_str(), L"Assertion failed!", MB_ABORTRETRYIGNORE | MB_ICONSTOP);
 
@@ -79,6 +85,17 @@ bool ttAssertionMsg(const char* filename, const char* function, int line, const 
 void ttlib::allow_asserts(bool allowAsserts)
 {
     ttdbg::allowAsserts = allowAsserts;
+}
+
+void ttlib::duplicate_asserts(bool allowDuplicates)
+{
+    if (allowDuplicates == ttdbg::allowDuplicates)
+        return;
+
+    if (!ttdbg::allowDuplicates)
+        ttdbg::g_priorAsserts.clear();
+
+    ttdbg::allowDuplicates = allowDuplicates;
 }
 
 bool ttdoReportLastError(const char* filename, const char* function, int line)

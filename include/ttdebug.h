@@ -94,6 +94,11 @@ namespace ttlib
     // Called by ttDISABLE_ASSERTS and ttENABLE_ASSERTS macros in Debug builds
     void allow_asserts(bool allowasserts = false);
 
+    /// By default, duplicate assert messages are displayed. Set to false to prevent any previously seen assert.
+    ///
+    /// If you call this with true, all previously seen asserts will be cleared.
+    void duplicate_asserts(bool allowDuplicates = true);
+
     int CheckItemID(HWND hwnd, int id, const char* pszID, const char* pszFile, const char* pszFunc, int line);
 }  // namespace ttlib
 
