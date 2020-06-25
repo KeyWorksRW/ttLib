@@ -607,48 +607,9 @@ cstr& cstr::make_relative(ttlib::cview relative_to)
     if (empty())
         return *this;
 
-    auto to = fs::absolute(fs::u8path(c_str()));
-
-    ttlib::cstr relto;
-    if (relative_to.size())
-    {
-        relto.assign(relative_to);
-    }
-    else
-    {
-        relto.assign(".");
-    }
-    auto from = fs::absolute(fs::u8path(relto.c_str()));
-
-    // At this point, both from and to are absolute paths
-
-    auto iterFrom = from.begin();
-    auto iterTo = to.begin();
-
-    // Loop through both while they are the same to find nearest common directory
-    while (iterFrom != from.end() && iterTo != to.end() && *iterTo == *iterFrom)
-    {
-        ++iterTo;
-        ++iterFrom;
-    }
-
-    // Replace from path segments with '..' (from => nearest common directory)
-    auto finalPath = fs::path {};
-    while (iterFrom != from.end())
-    {
-        finalPath /= "..";
-        ++iterFrom;
-    }
-
-    // Append the remainder of the to path (nearest common directory => to)
-    while (iterTo != to.end())
-    {
-        finalPath /= *iterTo;
-        ++iterTo;
-    }
-
-    assign(finalPath.u8string());
-
+    auto current = fs::absolute(fs::u8path(c_str()));
+    auto rel_to = fs::absolute(fs::u8path(relative_to.c_str()));
+    assign(current.lexically_relative(rel_to).u8string());
     return *this;
 }
 
