@@ -71,6 +71,7 @@ namespace ttlib
     #include <wx/intl.h>
 
     #if defined(_WIN32)
+    [[deprecated("Use the macros in ttstring.h instead.")]]
     const ttlib::cstr xtranslate(WORD id) { return translate(id); }
     #endif  // _WIN32
 
@@ -100,6 +101,7 @@ namespace ttlib
 
     /// Currently, without wxUSE_INTL the string cannot be translated -- so the original is
     /// returned.
+    [[deprecated("Use the macros in ttstring.h instead.")]]
     const ttlib::cstr& translate(const std::string& str);
 
 #endif  // wxUSE_INTL

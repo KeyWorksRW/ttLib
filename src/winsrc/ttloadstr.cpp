@@ -15,7 +15,6 @@
 #include <map>
 #include <string_view>
 
-#include "ttTR.h"     // cmap -- Function for translating strings
 #include "ttcstr.h"   // cstr -- Classes for handling zero-terminated char strings.
 #include "ttdebug.h"  // ttASSERT macros
 
@@ -109,6 +108,8 @@ bool ttlib::LoadStringEx(std::string& Result, WORD id)
     }
     return false;
 }
+
+#include "ttTR.h"     // cmap -- Function for translating strings
 
 std::map<WORD, ttlib::cstr> tt_stringtable;
 
