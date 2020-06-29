@@ -69,10 +69,10 @@ void openfile::SetFilter(std::string_view filters)
         m_filters16 += '|';
 
     // Windows wants each filter part to be zero-terminated, so replace | with a zero
-    size_t pos = 0;
-    while (pos = m_filters16.find(L'|', pos), pos != tt::npos)
+    for (size_t pos = 0; m_filters16[pos]; ++pos)
     {
-        m_filters16[pos++] = 0;
+        if (m_filters16[pos] == L'|')
+            m_filters16[pos] = 0;
     }
     lpstrFilter = m_filters16.data();
 }
