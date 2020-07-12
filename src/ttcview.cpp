@@ -123,7 +123,7 @@ size_t cview::locate(std::string_view str, size_t posStart, tt::CASE checkcase) 
     return npos;
 }
 
-bool cview::viewspace() noexcept
+bool cview::moveto_space() noexcept
 {
     if (empty())
         return false;
@@ -142,7 +142,7 @@ bool cview::viewspace() noexcept
     }
 }
 
-bool cview::viewnonspace() noexcept
+bool cview::moveto_nonspace() noexcept
 {
     if (empty())
         return false;
@@ -161,7 +161,7 @@ bool cview::viewnonspace() noexcept
     }
 }
 
-bool cview::viewnextword() noexcept
+bool cview::moveto_nextword() noexcept
 {
     if (empty())
         return false;
@@ -212,7 +212,7 @@ cview cview::view_nondigit(size_t start) const
     return subview(length());
 }
 
-bool cview::viewdigit() noexcept
+bool cview::moveto_digit() noexcept
 {
     if (empty())
         return false;
@@ -231,7 +231,7 @@ bool cview::viewdigit() noexcept
     }
 }
 
-bool cview::viewnondigit() noexcept
+bool cview::moveto_nondigit() noexcept
 {
     if (empty())
         return false;
@@ -250,7 +250,7 @@ bool cview::viewnondigit() noexcept
     }
 }
 
-bool cview::viewextension() noexcept
+bool cview::moveto_extension() noexcept
 {
     if (empty())
         return false;
@@ -267,7 +267,7 @@ bool cview::viewextension() noexcept
     return true;
 }
 
-bool cview::viewfilename() noexcept
+bool cview::moveto_filename() noexcept
 {
     if (empty())
         return false;
@@ -454,7 +454,7 @@ std::string_view cview::subview(size_t start, size_t len) const
  * @param chBegin -- character that prefixes the string
  * @param chEnd -- character that terminates the string.
  */
-std::string_view cview::ViewSubString(size_t offset, char chBegin, char chEnd)
+std::string_view cview::view_substr(size_t offset, char chBegin, char chEnd)
 {
     if (empty() || offset >= size())
     {

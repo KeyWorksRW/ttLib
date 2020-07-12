@@ -154,14 +154,13 @@ namespace ttlib
         bool dirExists() const;
 
         /// Returns a view of the characters between chBegin and chEnd. This is typically used
-        /// to view the contents of a quoted string. Returns the position of the ending
-        ///  character in src.
+        /// to view the contents of a quoted string.
         ///
         /// Unless chBegin is a whitespace character, all whitespace characters starting with
         /// offset will be ignored.
-        std::string_view ViewSubString(size_t offset, char chBegin = '"', char chEnd = '"');
+        std::string_view view_substr(size_t offset, char chBegin = '"', char chEnd = '"');
 
-        // All of the following view_() functions will return subview(length()) if the specified character cannot be
+        // All of the following view_() functions will return an empty view if the specified character cannot be
         // found, or the start position is out of range (including start == npos).
 
         cview view_space(size_t start = 0) const { return subview(findspace(start)); }
@@ -174,33 +173,33 @@ namespace ttlib
         size_t gethash() const noexcept;
 
         /////////////////////////////////////////////////////////////////////////////////
-        // Note: all view...() functions start from the beginning of the view. On success
+        // Note: all moveto_() functions start from the beginning of the view. On success
         // they change the view and return true. On failure, the view remains unchanged.
         /////////////////////////////////////////////////////////////////////////////////
 
-        /// Set view to the next whitespace character
-        [[deprecated ("use view_space")]] bool viewspace() noexcept;
+        /// Move start position to the next whitespace character
+        bool moveto_space() noexcept;
 
-        /// Set view to the next non-whitespace character
-        [[deprecated ("use view_nonspace")]] bool viewnonspace() noexcept;
+        /// Move start position to the next non-whitespace character
+        bool moveto_nonspace() noexcept;
 
-        /// Set view to the next word (views the next whitespace, then the next non-whitespace
-        /// after that)
-        [[deprecated ("use view_stepover")]] bool viewnextword() noexcept;
+        /// Move start position to the next word (views the next whitespace, then the next
+        /// non-whitespace after that)
+        bool moveto_nextword() noexcept;
 
-        /// Set view to the next numerical character
-        [[deprecated ("use view_digit")]] bool viewdigit() noexcept;
+        /// Move start position to the next numerical character
+        bool moveto_digit() noexcept;
 
-        /// Set view to the next non-numerical character
-        [[deprecated ("use view_nondigit")]] bool viewnondigit() noexcept;
+        /// Move start position to the next non-numerical character
+        bool moveto_nondigit() noexcept;
 
-        /// Set view to the extension in the current path
-        [[deprecated ("use extension")]] bool viewextension() noexcept;
+        /// Move start position to the extension in the current path
+        bool moveto_extension() noexcept;
 
-        /// Set view to the filename in the current path.
+        /// Move start position to the filename in the current path.
         ///
         /// A filename is any string after the last '/' (or '\' on Windows) in the current
         /// view.
-        [[deprecated ("use filename")]] bool viewfilename() noexcept;
+        bool moveto_filename() noexcept;
     };
 }  // namespace ttlib
