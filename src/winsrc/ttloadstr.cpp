@@ -108,33 +108,3 @@ bool ttlib::LoadStringEx(std::string& Result, WORD id)
     }
     return false;
 }
-
-#include "ttTR.h"     // cmap -- Function for translating strings
-
-std::map<WORD, ttlib::cstr> tt_stringtable;
-
-using namespace ttTR;
-
-const ttlib::cstr ttlib::translate(WORD id)
-{
-    auto found = tt_stringtable.find(id);
-    if (found != tt_stringtable.end())
-    {
-        return found->second;
-    }
-
-    std::string str;
-    if (ttlib::LoadStringEx(str, id))
-    {
-        auto entry = tt_stringtable.insert({ id, str });
-        return entry.first->second;
-    }
-
-#if !defined(NDEBUG)  // Starts debug section.
-    trEmpty.Format("String Resource id %u not found", id);
-    assertm(false, trEmpty.c_str());
-    trEmpty.clear();
-#endif
-
-    return trEmpty;
-}

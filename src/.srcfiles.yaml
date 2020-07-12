@@ -25,4 +25,3 @@ Files:
     ttparser.cpp     # Command line parser
     ttstrings.cpp    # Class for handling zero-terminated char strings.
     tttextfile.cpp   # Classes for reading and writing text files.
-    ttTR.cpp         # Function for translating strings
