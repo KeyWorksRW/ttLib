@@ -413,3 +413,87 @@ size_t cview::stepover(size_t start) const
     }
     return pos;
 }
+
+std::wstring cview::to_utf16() const
+{
+    std::wstring str16;
+    ttlib::utf8to16(*this, str16);
+    return str16;
+}
+
+int cview::comparei(std::string_view str) const
+{
+    auto main = begin();
+    auto sub = str.begin();
+    while (sub != str.end())
+    {
+        auto diff = std::tolower(main[0]) - std::tolower(sub[0]);
+        if (diff != 0)
+            return diff;
+        ++main;
+        ++sub;
+        if (main == end())
+            return (sub != str.end() ? -1 : 0);
+    }
+
+    return (main != end() ? 1 : 0);
+}
+
+std::string_view cview::subview(size_t start, size_t len) const
+{
+    if (start >= size())
+        return {};
+#ifdef min
+    return std::string_view(c_str() + start, min(size() - start, len));
+#else
+    return std::string_view(c_str() + start, std::min(size() - start, len));
+#endif
+}
+
+/**
+ * @param chBegin -- character that prefixes the string
+ * @param chEnd -- character that terminates the string.
+ */
+std::string_view cview::ViewSubString(size_t offset, char chBegin, char chEnd)
+{
+    if (empty() || offset >= size())
+    {
+        return {};
+    }
+
+    // step over any leading whitespace unless chBegin is a whitespace character
+    if (!ttlib::iswhitespace(chBegin))
+    {
+        while (ttlib::iswhitespace(at(offset)))
+            ++offset;
+    }
+
+    if (at(offset) == chBegin)
+    {
+        ++offset;
+        auto start = offset;
+        while (offset < size() && at(offset) != chEnd)
+        {
+            // REVIEW: [KeyWorks - 01-26-2020] '\"' is also valid for the C compiler, though the slash
+            // is unnecessary. Should we support it?
+
+            // only check quotes -- a slash is valid before other character pairs.
+            if (at(offset) == '\\' && (chBegin == '"' || chBegin == '\'') && offset + 1 < size() && (at(offset + 1) == chEnd))
+            {
+                // step over an escaped quote if the string to fetch is within a quote
+                offset += 2;
+                continue;
+            }
+            ++offset;
+        }
+
+        return subview(start, offset - start);
+    }
+    else
+    {
+        // if the string didn't start with chBegin, just copy the string. Note that offset may have changed if
+        // chBegin was not whitespace and at(offset) was whitespace.
+
+        return subview(offset);
+    }
+}

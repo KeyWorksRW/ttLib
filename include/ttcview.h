@@ -26,8 +26,6 @@
 
 #include "ttlibspace.h"  // ttlib namespace functions and declarations
 
-#define _TTLIB_CVIEW_AVAILABLE_
-
 #include <filesystem>
 #include <sstream>
 #include <string_view>
@@ -53,11 +51,30 @@ namespace ttlib
         /// Can be used to pass the view to a function that expects a C-style string.
         operator const char*() const noexcept { return data(); }
 
-        /// Returns true if the sub-string is identical to the first part of the main string
-        bool issameas(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
+#if defined(_WIN32)
+        /// Returns a copy of the string converted to UTF16 on Windows, or a normal copy on other platforms
+        std::wstring wx_str() const { return to_utf16(); };
+#else
+        /// Returns a copy of the string converted to UTF16 on Windows, or a normal copy on other platforms
+        std::string wx_str() const { return std::string(*this); }
+#endif  // _WIN32
 
-        /// Returns true if the sub-string is identical to the first part of the main string
-        bool issameprefix(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
+        std::wstring to_utf16() const;
+
+        /// Returns a zero-terminated view. Unlike substr(), you can only specify the starting position.
+        cview subview(size_t start = 0) const
+        {
+            if (start > length())
+                start = length();
+            return cview(c_str() + start, length() - start);
+        }
+
+        /// Calling subview with a length parameter returns a standard string_view instead of
+        /// a zero-terminated cview.
+        std::string_view subview(size_t start, size_t len) const;
+
+        /// Case-insensitive comparison.
+        int comparei(std::string_view str) const;
 
         /// Locates the position of a substring.
         size_t locate(std::string_view str, size_t posStart = 0, tt::CASE check = tt::CASE::exact) const;
@@ -100,6 +117,14 @@ namespace ttlib
         /// Equivalent to findnonspace(findspace(start)).
         size_t stepover(size_t start = 0) const;
 
+        /// Returns true if the sub-string is identical to the first part of the main string
+        bool issameas(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
+
+        /// Returns true if the sub-string is identical to the first part of the main string
+        bool issameprefix(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
+
+        int atoi() const { return ttlib::atoi(*this); }
+
         // You can't remove a suffix and still have the view zero-terminated
         constexpr void remove_suffix(size_type n) = delete;
 
@@ -125,13 +150,13 @@ namespace ttlib
         /// Returns true if the current string refers to an existing directory.
         bool dirExists() const;
 
-        /// Returns a zero-terminated view. Unlike substr(), you can only specify the starting position.
-        cview subview(size_t start = 0) const
-        {
-            if (start > length())
-                start = length();
-            return cview(c_str() + start, length() - start);
-        }
+        /// Returns a view of the characters between chBegin and chEnd. This is typically used
+        /// to view the contents of a quoted string. Returns the position of the ending
+        ///  character in src.
+        ///
+        /// Unless chBegin is a whitespace character, all whitespace characters starting with
+        /// offset will be ignored.
+        std::string_view ViewSubString(size_t offset, char chBegin = '"', char chEnd = '"');
 
         // All of the following view_() functions will return subview(length()) if the specified character cannot be
         // found, or the start position is out of range (including start == npos).
