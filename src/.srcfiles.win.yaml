@@ -17,7 +17,6 @@ Options:
     TargetDir:  ../lib
 
 Files:
-    ttTR.cpp         # Function for translating strings
     ttconsole.cpp    # class that sets/restores console foreground color
     ttcstr.cpp       # Class for handling zero-terminated char strings.
     ttcvector.cpp    # Vector class for storing ttlib::cstr strings
