@@ -26,6 +26,9 @@
 
 #include "ttlibspace.h"  // ttlib namespace functions and declarations
 
+// This can be used to conditionalize code where <ttcview.h> is available or not
+#define _TTLIB_CVIEW_AVAILABLE_
+
 #include <filesystem>
 #include <sstream>
 #include <string_view>
