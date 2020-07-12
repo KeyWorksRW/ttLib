@@ -126,12 +126,21 @@ namespace ttlib
         bool dirExists() const;
 
         /// Returns a zero-terminated view. Unlike substr(), you can only specify the starting position.
-        cview subview(size_t start = 0) const noexcept
+        cview subview(size_t start = 0) const
         {
-            if (start >= size())
-                return "";
+            if (start > length())
+                start = length();
             return cview(c_str() + start, length() - start);
         }
+
+        // All of the following view_() functions will return subview(length()) if the specified character cannot be
+        // found, or the start position is out of range (including start == npos).
+
+        cview view_space(size_t start = 0) const { return subview(findspace(start)); }
+        cview view_nonspace(size_t start = 0) const { return subview(findnonspace(start)); }
+        cview view_stepover(size_t start = 0) const { return subview(stepover(start)); }
+        cview view_digit(size_t start = 0) const;
+        cview view_nondigit(size_t start = 0) const;
 
         /// Generates hash of current string using djb2 hash algorithm
         size_t gethash() const noexcept;
@@ -142,28 +151,28 @@ namespace ttlib
         /////////////////////////////////////////////////////////////////////////////////
 
         /// Set view to the next whitespace character
-        bool viewspace() noexcept;
+        [[deprecated ("use view_space")]] bool viewspace() noexcept;
 
         /// Set view to the next non-whitespace character
-        bool viewnonspace() noexcept;
+        [[deprecated ("use view_nonspace")]] bool viewnonspace() noexcept;
 
         /// Set view to the next word (views the next whitespace, then the next non-whitespace
         /// after that)
-        bool viewnextword() noexcept;
+        [[deprecated ("use view_stepover")]] bool viewnextword() noexcept;
 
         /// Set view to the next numerical character
-        bool viewdigit() noexcept;
+        [[deprecated ("use view_digit")]] bool viewdigit() noexcept;
 
         /// Set view to the next non-numerical character
-        bool viewnondigit() noexcept;
+        [[deprecated ("use view_nondigit")]] bool viewnondigit() noexcept;
 
         /// Set view to the extension in the current path
-        bool viewextension() noexcept;
+        [[deprecated ("use extension")]] bool viewextension() noexcept;
 
         /// Set view to the filename in the current path.
         ///
         /// A filename is any string after the last '/' (or '\' on Windows) in the current
         /// view.
-        bool viewfilename() noexcept;
+        [[deprecated ("use filename")]] bool viewfilename() noexcept;
     };
 }  // namespace ttlib

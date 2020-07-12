@@ -190,6 +190,28 @@ bool cview::viewnextword() noexcept
     }
 }
 
+cview cview::view_digit(size_t start) const
+{
+    for (; start < length(); ++start)
+    {
+        if (ttlib::isdigit(at(start)))
+            return subview(start);
+    }
+
+    return subview(length());
+}
+
+cview cview::view_nondigit(size_t start) const
+{
+    for (; start < length(); ++start)
+    {
+        if (!ttlib::isdigit(at(start)))
+            return subview(start);
+    }
+
+    return subview(length());
+}
+
 bool cview::viewdigit() noexcept
 {
     if (empty())
