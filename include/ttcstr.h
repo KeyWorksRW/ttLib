@@ -85,7 +85,7 @@ namespace ttlib
         std::wstring to_utf16() const;
 
         /// Caution: ttlib::cview will be invalid if ttlib::cstr is modified or destroyed.
-        ttlib::cview subview(size_t start = 0) const noexcept
+        ttlib::cview subview(size_t start = 0) const
         {
             if (ttlib::isError(start))
                 start = length();
@@ -220,7 +220,7 @@ namespace ttlib
         cstr& cdecl Format(std::string_view format, ...);
 
         /// Caution: view is only valid until cstr is modified or destroyed!
-        std::string_view subview(size_t start, size_t len) const noexcept;
+        std::string_view subview(size_t start, size_t len) const;
 
         /// Converts all backslashes in the string to forward slashes.
         ///
