@@ -100,31 +100,31 @@ namespace ttlib
         /// Find any one of the characters in a set. Returns offset if found, npos if not.
         ///
         /// This is equivalent to calling std::strpbrk but returns an offset instead of a pointer.
-        size_t findoneof(const std::string& set) const;
+        size_t find_oneof(const std::string& set) const;
 
         /// Returns offset to the next whitespace character starting with pos. Returns npos if
         /// there are no more whitespaces.
         ///
         /// A whitespace character is a space, tab, eol or form feed character.
-        size_t findspace(size_t start = 0) const;
+        size_t find_space(size_t start = 0) const;
 
         /// Returns offset to the next non-whitespace character starting with pos. Returns npos
         /// if there are no more non-whitespace characters.
         ///
         /// A whitespace character is a space, tab, eol or form feed character.
-        size_t findnonspace(size_t start = 0) const;
+        size_t find_nonspace(size_t start = 0) const;
 
         /// Returns an offset to the next word -- i.e., find the first non-whitedspace character
         /// after the next whitespace character.
         ///
-        /// Equivalent to findnonspace(findspace(start)).
+        /// Equivalent to find_nonspace(find_space(start)).
         size_t stepover(size_t start = 0) const;
 
         /// Returns true if the sub-string is identical to the first part of the main string
-        bool issameas(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
+        bool is_sameas(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
 
         /// Returns true if the sub-string is identical to the first part of the main string
-        bool issameprefix(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
+        bool is_sameprefix(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
 
         int atoi() const { return ttlib::atoi(*this); }
 
@@ -132,10 +132,10 @@ namespace ttlib
         constexpr void remove_suffix(size_type n) = delete;
 
         /// Returns true if current filename contains the specified case-insensitive extension.
-        bool hasExtension(std::string_view ext) const { return ttlib::issameas(extension(), ext, tt::CASE::either); }
+        bool has_extension(std::string_view ext) const { return ttlib::is_sameas(extension(), ext, tt::CASE::either); }
 
         /// Returns true if current filename contains the specified case-insensitive file name.
-        bool hasFilename(std::string_view name) const { return ttlib::issameas(filename(), name, tt::CASE::either); }
+        bool has_filename(std::string_view name) const { return ttlib::is_sameas(filename(), name, tt::CASE::either); }
 
         /// Returns a view to the current extension. View is empty if there is no extension.
         ///
@@ -148,10 +148,10 @@ namespace ttlib
         ttlib::cview filename() const noexcept;
 
         /// Returns true if the current string refers to an existing file.
-        bool fileExists() const;
+        bool file_exists() const;
 
         /// Returns true if the current string refers to an existing directory.
-        bool dirExists() const;
+        bool dir_exists() const;
 
         /// Returns a view of the characters between chBegin and chEnd. This is typically used
         /// to view the contents of a quoted string.
@@ -163,14 +163,14 @@ namespace ttlib
         // All of the following view_() functions will return an empty view if the specified character cannot be
         // found, or the start position is out of range (including start == npos).
 
-        cview view_space(size_t start = 0) const { return subview(findspace(start)); }
-        cview view_nonspace(size_t start = 0) const { return subview(findnonspace(start)); }
+        cview view_space(size_t start = 0) const { return subview(find_space(start)); }
+        cview view_nonspace(size_t start = 0) const { return subview(find_nonspace(start)); }
         cview view_stepover(size_t start = 0) const { return subview(stepover(start)); }
         cview view_digit(size_t start = 0) const;
         cview view_nondigit(size_t start = 0) const;
 
         /// Generates hash of current string using djb2 hash algorithm
-        size_t gethash() const noexcept;
+        size_t get_hash() const noexcept;
 
         /////////////////////////////////////////////////////////////////////////////////
         // Note: all moveto_() functions start from the beginning of the view. On success

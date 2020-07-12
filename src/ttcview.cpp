@@ -16,7 +16,7 @@
 
 using namespace ttlib;
 
-bool cview::issameas(std::string_view str, tt::CASE checkcase) const
+bool cview::is_sameas(std::string_view str, tt::CASE checkcase) const
 {
     if (size() != str.size())
         return false;
@@ -25,10 +25,10 @@ bool cview::issameas(std::string_view str, tt::CASE checkcase) const
         return str.empty();
 
     // if both strings have the same length, then we can compare as a prefix.
-    return issameprefix(str, checkcase);
+    return is_sameprefix(str, checkcase);
 }
 
-bool cview::issameprefix(std::string_view str, tt::CASE checkcase) const
+bool cview::is_sameprefix(std::string_view str, tt::CASE checkcase) const
 {
     if (str.empty())
         return empty();
@@ -130,7 +130,7 @@ bool cview::moveto_space() noexcept
     size_t pos;
     for (pos = 0; pos < length(); ++pos)
     {
-        if (ttlib::iswhitespace(at(pos)))
+        if (ttlib::is_whitespace(at(pos)))
             break;
     }
     if (pos >= length())
@@ -149,7 +149,7 @@ bool cview::moveto_nonspace() noexcept
     size_t pos;
     for (pos = 0; pos < length(); ++pos)
     {
-        if (!ttlib::iswhitespace(at(pos)))
+        if (!ttlib::is_whitespace(at(pos)))
             break;
     }
     if (pos >= length())
@@ -168,7 +168,7 @@ bool cview::moveto_nextword() noexcept
     size_t pos;
     for (pos = 0; pos < length(); ++pos)
     {
-        if (ttlib::iswhitespace(at(pos)))
+        if (ttlib::is_whitespace(at(pos)))
             break;
     }
     if (pos >= length())
@@ -179,7 +179,7 @@ bool cview::moveto_nextword() noexcept
     {
         for (++pos; pos < length(); ++pos)
         {
-            if (!ttlib::iswhitespace(at(pos)))
+            if (!ttlib::is_whitespace(at(pos)))
                 break;
         }
         if (pos >= length())
@@ -194,7 +194,7 @@ cview cview::view_digit(size_t start) const
 {
     for (; start < length(); ++start)
     {
-        if (ttlib::isdigit(at(start)))
+        if (ttlib::is_digit(at(start)))
             return subview(start);
     }
 
@@ -205,7 +205,7 @@ cview cview::view_nondigit(size_t start) const
 {
     for (; start < length(); ++start)
     {
-        if (!ttlib::isdigit(at(start)))
+        if (!ttlib::is_digit(at(start)))
             return subview(start);
     }
 
@@ -219,7 +219,7 @@ bool cview::moveto_digit() noexcept
     size_t pos;
     for (pos = 0; pos < length(); ++pos)
     {
-        if (ttlib::isdigit(at(pos)))
+        if (ttlib::is_digit(at(pos)))
             break;
     }
     if (pos >= length())
@@ -238,7 +238,7 @@ bool cview::moveto_nondigit() noexcept
     size_t pos;
     for (pos = 0; pos < length(); ++pos)
     {
-        if (!ttlib::isdigit(at(pos)))
+        if (!ttlib::is_digit(at(pos)))
             break;
     }
     if (pos >= length())
@@ -341,7 +341,7 @@ ttlib::cview cview::filename() const noexcept
     return { c_str() + pos + 1, length() - (pos + 1) };
 }
 
-bool cview::fileExists() const
+bool cview::file_exists() const
 {
     if (empty())
         return false;
@@ -349,7 +349,7 @@ bool cview::fileExists() const
     return (file.exists() && !file.is_directory());
 }
 
-bool cview::dirExists() const
+bool cview::dir_exists() const
 {
     if (empty())
         return false;
@@ -357,7 +357,7 @@ bool cview::dirExists() const
     return (file.exists() && file.is_directory());
 }
 
-size_t cview::gethash() const noexcept
+size_t cview::get_hash() const noexcept
 {
     if (empty())
         return 0;
@@ -374,7 +374,7 @@ size_t cview::gethash() const noexcept
     return hash;
 }
 
-size_t cview::findoneof(const std::string& set) const
+size_t cview::find_oneof(const std::string& set) const
 {
     if (set.empty())
         return tt::npos;
@@ -384,7 +384,7 @@ size_t cview::findoneof(const std::string& set) const
     return (static_cast<size_t>(pszFound - c_str()));
 }
 
-size_t cview::findspace(size_t start) const
+size_t cview::find_space(size_t start) const
 {
     if (start >= length())
         return npos;
@@ -394,7 +394,7 @@ size_t cview::findspace(size_t start) const
     return (static_cast<size_t>(pszFound - c_str()));
 }
 
-size_t cview::findnonspace(size_t start) const
+size_t cview::find_nonspace(size_t start) const
 {
     for (; start < length(); ++start)
     {
@@ -406,10 +406,10 @@ size_t cview::findnonspace(size_t start) const
 
 size_t cview::stepover(size_t start) const
 {
-    auto pos = findspace(start);
+    auto pos = find_space(start);
     if (pos != npos)
     {
-        pos = findnonspace(pos);
+        pos = find_nonspace(pos);
     }
     return pos;
 }
@@ -462,9 +462,9 @@ std::string_view cview::view_substr(size_t offset, char chBegin, char chEnd)
     }
 
     // step over any leading whitespace unless chBegin is a whitespace character
-    if (!ttlib::iswhitespace(chBegin))
+    if (!ttlib::is_whitespace(chBegin))
     {
-        while (ttlib::iswhitespace(at(offset)))
+        while (ttlib::is_whitespace(at(offset)))
             ++offset;
     }
 

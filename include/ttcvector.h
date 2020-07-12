@@ -38,7 +38,7 @@ namespace ttlib
         /// Only adds the string if it doesn't already exist.
         ttlib::cstr& append(T str, tt::CASE checkcase = tt::CASE::exact)
         {
-            if (auto index = find(0, str, checkcase); !ttlib::isError(index))
+            if (auto index = find(0, str, checkcase); !ttlib::is_error(index))
             {
                 return at(index);
             }
@@ -56,7 +56,7 @@ namespace ttlib
 #endif  // _WIN32
         }
 
-        bool hasFilename(std::string_view filename) const
+        bool has_filename(std::string_view filename) const
         {
 #if defined(_WIN32)
             return (find(0, filename, tt::CASE::either) != tt::npos);

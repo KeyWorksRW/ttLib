@@ -25,7 +25,7 @@ using namespace tt;
 
 namespace fs = std::filesystem;
 
-bool cstr::issameas(std::string_view str, CASE checkcase) const
+bool cstr::is_sameas(std::string_view str, CASE checkcase) const
 {
     if (size() != str.size())
         return false;
@@ -34,10 +34,10 @@ bool cstr::issameas(std::string_view str, CASE checkcase) const
         return str.empty();
 
     // if both strings have the same length and are non-empty, then we can compare as a prefix.
-    return issameprefix(str, checkcase);
+    return is_sameprefix(str, checkcase);
 }
 
-bool cstr::issameprefix(std::string_view str, CASE checkcase) const
+bool cstr::is_sameprefix(std::string_view str, CASE checkcase) const
 {
     if (str.empty())
         return empty();
@@ -120,13 +120,13 @@ cstr& cstr::trim(tt::TRIM where)
     {
         // Assume that most strings won't start with whitespace, so return as quickly as possible if that is the
         // case.
-        if (!ttlib::iswhitespace(front()))
+        if (!ttlib::is_whitespace(front()))
             return *this;
 
         size_t pos;
         for (pos = 1; pos < length(); ++pos)
         {
-            if (!ttlib::iswhitespace(c_str()[pos]))
+            if (!ttlib::is_whitespace(c_str()[pos]))
                 break;
         }
         replace(0, length(), substr(pos, length() - pos));
@@ -138,7 +138,7 @@ cstr& cstr::trim(tt::TRIM where)
  * @param chBegin -- character that prefixes the string
  * @param chEnd -- character that terminates the string.
  */
-std::string_view cstr::ViewSubString(size_t offset, char chBegin, char chEnd)
+std::string_view cstr::view_substr(size_t offset, char chBegin, char chEnd)
 {
     if (empty() || offset >= size())
     {
@@ -146,9 +146,9 @@ std::string_view cstr::ViewSubString(size_t offset, char chBegin, char chEnd)
     }
 
     // step over any leading whitespace unless chBegin is a whitespace character
-    if (!ttlib::iswhitespace(chBegin))
+    if (!ttlib::is_whitespace(chBegin))
     {
-        while (ttlib::iswhitespace(at(offset)))
+        while (ttlib::is_whitespace(at(offset)))
             ++offset;
     }
 
@@ -197,9 +197,9 @@ size_t cstr::AssignSubString(std::string_view src, char chBegin, char chEnd)
 
     size_t pos = 0;
     // step over any leading whitespace unless chBegin is a whitespace character
-    if (!ttlib::iswhitespace(chBegin))
+    if (!ttlib::is_whitespace(chBegin))
     {
-        while (ttlib::iswhitespace(src[pos]))
+        while (ttlib::is_whitespace(src[pos]))
             ++pos;
     }
 
@@ -249,7 +249,7 @@ size_t cstr::ExtractSubString(std::string_view src, size_t start)
 
     // start by finding the first non-whitespace character
     size_t pos = start;
-    while (pos < src.length() && ttlib::iswhitespace(src[pos]))
+    while (pos < src.length() && ttlib::is_whitespace(src[pos]))
     {
         ++pos;
     }
@@ -300,17 +300,17 @@ size_t cstr::ExtractSubString(std::string_view src, size_t start)
 /**
  * @param oldtext -- the text to search for
  * @param newtext -- the text to replace it with
- * @param replaceAll -- replace all occurrences or just the first one
+ * @param replace_all -- replace all occurrences or just the first one
  * @param CaseSensitive -- indicates whether or not to use a case-insensitive search
  * @return Number of replacements made
  */
-size_t cstr::Replace(std::string_view oldtext, std::string_view newtext, bool replaceAll, tt::CASE checkcase)
+size_t cstr::Replace(std::string_view oldtext, std::string_view newtext, bool replace_all, tt::CASE checkcase)
 {
     if (oldtext.empty())
         return false;
 
     size_t replacements = 0;
-    if (auto pos = locate(oldtext, 0, checkcase); ttlib::isFound(pos))
+    if (auto pos = locate(oldtext, 0, checkcase); ttlib::is_found(pos))
     {
         do
         {
@@ -318,10 +318,10 @@ size_t cstr::Replace(std::string_view oldtext, std::string_view newtext, bool re
             insert(pos, newtext);
             ++replacements;
             pos += newtext.length();
-            if (pos >= size() || !replaceAll)
+            if (pos >= size() || !replace_all)
                 break;
             pos = locate(oldtext, pos, checkcase);
-        } while (ttlib::isFound(pos));
+        } while (ttlib::is_found(pos));
     }
 
     return replacements;
@@ -379,7 +379,7 @@ size_t cstr::locate(std::string_view str, size_t posStart, CASE checkcase) const
     return npos;
 }
 
-size_t cstr::gethash() const noexcept
+size_t cstr::get_hash() const noexcept
 {
     if (empty())
         return 0;
@@ -441,7 +441,7 @@ cstr& cstr::replace_extension(std::string_view newExtension)
         return *this;
     }
 
-    if (auto pos = find_last_of('.'); ttlib::isFound(pos))
+    if (auto pos = find_last_of('.'); ttlib::is_found(pos))
     {
         // If the string only contains . or .. then it is a folder
         if (pos == 0 || (pos == 1 && at(0) != '.'))
@@ -477,7 +477,7 @@ ttlib::cview cstr::extension() const noexcept
         return "";
 
     auto pos = find_last_of('.');
-    if (!ttlib::isFound(pos))
+    if (!ttlib::is_found(pos))
         return "";
 
     // . by itself is a folder
@@ -623,7 +623,7 @@ cstr& cstr::make_absolute()
     return *this;
 }
 
-bool cstr::fileExists() const
+bool cstr::file_exists() const
 {
     if (empty())
         return false;
@@ -631,7 +631,7 @@ bool cstr::fileExists() const
     return (file.exists() && !file.is_directory());
 }
 
-bool cstr::dirExists() const
+bool cstr::dir_exists() const
 {
     if (empty())
         return false;
@@ -639,7 +639,7 @@ bool cstr::dirExists() const
     return (file.exists() && file.is_directory());
 }
 
-size_t cstr::findoneof(const char* pszSet) const
+size_t cstr::find_oneof(const char* pszSet) const
 {
     if (!pszSet || !*pszSet)
         return npos;
@@ -649,7 +649,7 @@ size_t cstr::findoneof(const char* pszSet) const
     return (static_cast<size_t>(pszFound - c_str()));
 }
 
-size_t cstr::findspace(size_t start) const
+size_t cstr::find_space(size_t start) const
 {
     if (start >= length())
         return npos;
@@ -659,7 +659,7 @@ size_t cstr::findspace(size_t start) const
     return (static_cast<size_t>(pszFound - c_str()));
 }
 
-size_t cstr::findnonspace(size_t start) const
+size_t cstr::find_nonspace(size_t start) const
 {
     for (; start < length(); ++start)
     {
@@ -671,10 +671,10 @@ size_t cstr::findnonspace(size_t start) const
 
 size_t cstr::stepover(size_t start) const
 {
-    auto pos = findspace(start);
+    auto pos = find_space(start);
     if (pos != npos)
     {
-        pos = findnonspace(pos);
+        pos = find_nonspace(pos);
     }
     return pos;
 }
@@ -709,7 +709,7 @@ bool cstr::assignEnvVar(ttlib::cview env_var)
     return true;
 }
 
-void cstr::eraseFrom(char ch)
+void cstr::erase_from(char ch)
 {
     auto pos = find(ch);
     if (pos != tt::npos)
@@ -719,7 +719,7 @@ void cstr::eraseFrom(char ch)
     }
 }
 
-void cstr::eraseFrom(std::string_view sub)
+void cstr::erase_from(std::string_view sub)
 {
     auto pos = find(sub);
     if (pos != tt::npos)
@@ -837,14 +837,14 @@ cstr& cdecl cstr::Format(std::string_view format, ...)
                 ++pos;
             }
 
-            if (ttlib::isdigit(format[pos]))
+            if (ttlib::is_digit(format[pos]))
             {
                 auto fieldWidth = ttlib::atoi(format.substr(pos));
                 buffer << std::setw(fieldWidth);
                 do
                 {
                     ++pos;
-                } while (pos < format.length() && ttlib::isdigit(format[pos]));
+                } while (pos < format.length() && ttlib::is_digit(format[pos]));
             }
 
             // For both %lc and %ls we assume a UTF16 string and convert it to UTF8.

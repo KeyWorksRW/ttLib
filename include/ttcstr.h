@@ -52,11 +52,12 @@ namespace ttlib
 
         cstr(const std::filesystem::directory_entry& dir) : bs(dir.path().string(), dir.path().string().size()) {}
 
-        cstr& assignUTF16(std::wstring_view str)
+        cstr& from_utf16(std::wstring_view str)
         {
             *this = utf16to8(str);
             return *this;
         }
+        std::wstring to_utf16() const;
 
         /// If you pass wxWidgets::wx_str() to this function it will convert from UTF16 to
         /// UTF8 on Windows, or copy it on other platforms
@@ -82,12 +83,10 @@ namespace ttlib
         std::string wx_str() const { return substr(); }
 #endif  // _WIN32
 
-        std::wstring to_utf16() const;
-
         /// Caution: ttlib::cview will be invalid if ttlib::cstr is modified or destroyed.
         ttlib::cview subview(size_t start = 0) const
         {
-            if (ttlib::isError(start))
+            if (ttlib::is_error(start))
                 start = length();
             assert(start <= length());
             return ttlib::cview(c_str() + start, length() - start);
@@ -117,44 +116,44 @@ namespace ttlib
         /// Find any one of the characters in a set. Returns offset if found, npos if not.
         ///
         /// This is equivalent to calling std::strpbrk but returns an offset instead of a pointer.
-        size_t findoneof(const char* pszSet) const;
+        size_t find_oneof(const char* pszSet) const;
 
         /// Returns offset to the next whitespace character starting with pos. Returns npos if
         /// there are no more whitespaces.
         ///
         /// A whitespace character is a space, tab, eol or form feed character.
-        size_t findspace(size_t start = 0) const;
-        ttlib::cview viewspace(size_t start = 0) const { return subview(findspace(start)); }
+        size_t find_space(size_t start = 0) const;
+        ttlib::cview view_space(size_t start = 0) const { return subview(find_space(start)); }
 
         /// Returns offset to the next non-whitespace character starting with pos. Returns npos
         /// if there are no more non-whitespace characters.
         ///
         /// A whitespace character is a space, tab, eol or form feed character.
-        size_t findnonspace(size_t start = 0) const;
-        ttlib::cview viewnonspace(size_t start = 0) const { return subview(findnonspace(start)); }
+        size_t find_nonspace(size_t start = 0) const;
+        ttlib::cview view_nonspace(size_t start = 0) const { return subview(find_nonspace(start)); }
 
         /// Returns an offset to the next word -- i.e., find the first non-whitedspace character
         /// after the next whitespace character.
         ///
-        /// Equivalent to findnonspace(findspace(start)).
+        /// Equivalent to find_nonspace(find_space(start)).
         size_t stepover(size_t start = 0) const;
-        ttlib::cview viewstepover(size_t start = 0) const { return subview(stepover(start)); }
+        ttlib::cview view_stepover(size_t start = 0) const { return subview(stepover(start)); }
 
         /// Returns true if the sub-string is identical to the first part of the main string
-        bool issameas(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
+        bool is_sameas(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
 
         /// Returns true if the sub-string is identical to the first part of the main string
-        bool issameprefix(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
+        bool is_sameprefix(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
 
         int atoi() const { return ttlib::atoi(*this); }
 
         /// If character is found, line is truncated from the character on, and then
         /// any trailing space is removed;
-        void eraseFrom(char ch);
+        void erase_from(char ch);
 
         /// If string is found, line is truncated from the string on, and then
         /// any trailing space is removed;
-        void eraseFrom(std::string_view sub);
+        void erase_from(std::string_view sub);
 
         /// Removes whitespace: ' ', \t, \r, \\n, \f
         ///
@@ -167,7 +166,7 @@ namespace ttlib
         ///
         /// Unless chBegin is a whitespace character, all whitespace characters starting with
         /// offset will be ignored.
-        std::string_view ViewSubString(size_t offset, char chBegin = '"', char chEnd = '"');
+        std::string_view view_substr(size_t offset, char chBegin = '"', char chEnd = '"');
 
         /// Assigns the string between chBegin and chEnd. This is typically used to copy the
         /// contents of a quoted string. Returns the position of the ending character in src.
@@ -185,18 +184,18 @@ namespace ttlib
         size_t ExtractSubString(std::string_view src, size_t offset = 0);
 
         /// Replace first (or all) occurrences of substring with another one
-        size_t Replace(std::string_view oldtext, std::string_view newtext, bool replaceAll = tt::REPLACE::once,
+        size_t Replace(std::string_view oldtext, std::string_view newtext, bool replace_all = tt::REPLACE::once,
                        tt::CASE checkcase = tt::CASE::exact);
 
         /// Replace everything from pos to the end of the current string with str
-        cstr& replaceAll(size_t pos, std::string_view str)
+        cstr& replace_all(size_t pos, std::string_view str)
         {
             replace(pos, length() - pos, str);
             return *this;
         }
 
         /// Generates hash of current string using djb2 hash algorithm
-        size_t gethash() const noexcept;
+        size_t get_hash() const noexcept;
 
         /// Convert the entire string to lower case. Assumes the string is UTF8.
         cstr& MakeLower();
@@ -235,10 +234,10 @@ namespace ttlib
         }
 
         /// Returns true if current filename contains the specified case-insensitive extension.
-        bool hasExtension(std::string_view ext) const { return ttlib::issameas(extension(), ext, tt::CASE::either); }
+        bool has_extension(std::string_view ext) const { return ttlib::is_sameas(extension(), ext, tt::CASE::either); }
 
         /// Returns true if current filename contains the specified case-insensitive file name.
-        bool hasFilename(std::string_view name) const { return ttlib::issameas(filename(), name, tt::CASE::either); }
+        bool has_filename(std::string_view name) const { return ttlib::is_sameas(filename(), name, tt::CASE::either); }
 
         /// Returns a view to the current extension. View is empty if there is no extension.
         ///
@@ -288,10 +287,10 @@ namespace ttlib
         cstr& assignCwd();
 
         /// Returns true if the current string refers to an existing file.
-        bool fileExists() const;
+        bool file_exists() const;
 
         /// Returns true if the current string refers to an existing directory.
-        bool dirExists() const;
+        bool dir_exists() const;
 
         cstr& operator<<(std::string_view str)
         {

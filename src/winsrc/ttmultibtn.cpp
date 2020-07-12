@@ -26,7 +26,7 @@ BOOL WINAPI ttlib::EnumBtnProc(HWND hwnd, LPARAM lval)
     if ((GetWindowLong(hwnd, GWL_STYLE) & 0x0f) < BS_CHECKBOX)
     {
         GetClassNameA(hwnd, szClass, sizeof(szClass));
-        if (ttlib::issameas(szClass, "Button", tt::CASE::either))
+        if (ttlib::is_sameas(szClass, "Button", tt::CASE::either))
         {
             ttlib::MultiBtn* pMultiBtn = reinterpret_cast<MultiBtn*>(lval);
             ttlib::ShadeBtn* pBtn = new ttlib::ShadeBtn;
