@@ -18,7 +18,7 @@ size_t cstrVector::find(size_t start, std::string_view str, CASE checkcase) cons
 {
     for (; start < size(); ++start)
     {
-        if (ttlib::issameas(at(start), str, checkcase))
+        if (ttlib::is_sameas(at(start), str, checkcase))
             return start;
     }
     return tt::npos;
@@ -30,7 +30,7 @@ size_t cstrVector::findprefix(size_t start, std::string_view str, CASE checkcase
     {
         for (; start < size(); ++start)
         {
-            if (ttlib::issameprefix(at(start), str, checkcase))
+            if (ttlib::is_sameprefix(at(start), str, checkcase))
                 return start;
         }
     }
@@ -38,7 +38,7 @@ size_t cstrVector::findprefix(size_t start, std::string_view str, CASE checkcase
     {
         for (; start < size(); ++start)
         {
-            if (ttlib::issameprefix(at(start), str, checkcase))
+            if (ttlib::is_sameprefix(at(start), str, checkcase))
                 return start;
         }
     }

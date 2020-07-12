@@ -31,7 +31,7 @@ cmd::cmd(int argc, wchar_t** argv)
     for (auto argpos = 1; argpos < argc; ++argpos)
     {
         auto& arg = m_originalArgs.emplace_back();
-        arg.assignUTF16(argv[argpos]);
+        arg.from_utf16(argv[argpos]);
     }
     m_hasCommandArgs = true;
 }
@@ -91,7 +91,7 @@ void cmd::addHiddenOption(std::string_view name, size_t flags, size_t setvalue)
 cstr cmd::shortlong(std::string_view name)
 {
     ttlib::cstr result;
-    if (auto pos = name.find('|'); !ttlib::isError(pos))
+    if (auto pos = name.find('|'); !ttlib::is_error(pos))
     {
         std::string shortname;
         shortname.assign(name.substr(0, pos));
@@ -120,7 +120,7 @@ cmd::Option* cmd::findOption(std::string_view option) const
     assert(!option.empty());
 
     ttlib::cstr longname;
-    if (auto pos = option.find('|'); !ttlib::isError(pos))
+    if (auto pos = option.find('|'); !ttlib::is_error(pos))
     {
         longname.assign(option.substr(pos + 1));
     }
@@ -152,7 +152,7 @@ bool cmd::isOption(std::string_view name) const
         {
             return (option->m_result.size());
         }
-        return (!option->m_result.empty() && option->m_result.issameas("true"));
+        return (!option->m_result.empty() && option->m_result.is_sameas("true"));
     }
     return false;
 }
@@ -229,7 +229,7 @@ bool cmd::parse()
                 continue;
             }
 
-            if (arg.issameprefix("?"))
+            if (arg.is_sameprefix("?"))
             {
                 m_HelpRequested = true;
                 continue;

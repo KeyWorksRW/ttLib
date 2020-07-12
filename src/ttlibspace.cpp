@@ -22,19 +22,19 @@ using namespace tt;
 // Global empty string.
 const std::string ttlib::emptystring { std::string() };
 
-const char* ttlib::nextut8fchar(const char* psz) noexcept
+const char* ttlib::next_utf8_char(const char* psz) noexcept
 {
     if (!psz)
         return nullptr;
     if (!*psz)
         return psz;
     size_t i = 0;
-    (void) (ttlib::isutf8(psz[++i]) || ttlib::isutf8(psz[++i]) || ttlib::isutf8(psz[++i]));
+    (void) (ttlib::is_utf8(psz[++i]) || ttlib::is_utf8(psz[++i]) || ttlib::is_utf8(psz[++i]));
 
     return psz + i;
 }
 
-size_t ttlib::gethash(std::string_view str) noexcept
+size_t ttlib::get_hash(std::string_view str) noexcept
 {
     if (str.empty())
         return 0;
@@ -49,14 +49,14 @@ size_t ttlib::gethash(std::string_view str) noexcept
     return hash;
 }
 
-std::string_view ttlib::findspace(std::string_view str) noexcept
+std::string_view ttlib::find_space(std::string_view str) noexcept
 {
     if (str.empty())
         return {};
     size_t pos;
     for (pos = 0; pos < str.length(); ++pos)
     {
-        if (ttlib::iswhitespace(str.at(pos)))
+        if (ttlib::is_whitespace(str.at(pos)))
             break;
     }
     if (pos >= str.length())
@@ -65,23 +65,23 @@ std::string_view ttlib::findspace(std::string_view str) noexcept
         return str.substr(pos);
 }
 
-size_t ttlib::findspace_pos(std::string_view str)
+size_t ttlib::find_space_pos(std::string_view str)
 {
-    auto view = ttlib::findspace(str);
+    auto view = ttlib::find_space(str);
     if (view.empty())
         return tt::npos;
     else
         return (str.size() - view.size());
 }
 
-std::string_view ttlib::findnonspace(std::string_view str) noexcept
+std::string_view ttlib::find_nonspace(std::string_view str) noexcept
 {
     if (str.empty())
         return {};
     size_t pos;
     for (pos = 0; pos < str.length(); ++pos)
     {
-        if (!ttlib::iswhitespace(str.at(pos)))
+        if (!ttlib::is_whitespace(str.at(pos)))
             break;
     }
     if (pos >= str.length())
@@ -90,9 +90,9 @@ std::string_view ttlib::findnonspace(std::string_view str) noexcept
         return str.substr(pos);
 }
 
-size_t ttlib::findnonspace_pos(std::string_view str) noexcept
+size_t ttlib::find_nonspace_pos(std::string_view str) noexcept
 {
-    auto view = ttlib::findnonspace(str);
+    auto view = ttlib::find_nonspace(str);
     if (view.empty())
         return tt::npos;
     else
@@ -107,7 +107,7 @@ std::string_view ttlib::stepover(std::string_view str) noexcept
     size_t pos;
     for (pos = 0; pos < str.length(); ++pos)
     {
-        if (ttlib::iswhitespace(str.at(pos)))
+        if (ttlib::is_whitespace(str.at(pos)))
             break;
     }
     if (pos >= str.length())
@@ -115,7 +115,7 @@ std::string_view ttlib::stepover(std::string_view str) noexcept
 
     for (; pos < str.length(); ++pos)
     {
-        if (!ttlib::iswhitespace(str.at(pos)))
+        if (!ttlib::is_whitespace(str.at(pos)))
             break;
     }
     if (pos >= str.length())
@@ -133,14 +133,14 @@ size_t ttlib::stepover_pos(std::string_view str) noexcept
         return (str.size() - view.size());
 }
 
-ttlib::cview ttlib::viewSpace(const std::string& str, size_t startpos) noexcept
+ttlib::cview ttlib::view_space(const std::string& str, size_t startpos) noexcept
 {
     if (str.empty() || startpos > str.length())
         return ttlib::cview(ttlib::emptystring.c_str(), 0);
     size_t pos;
     for (pos = startpos; pos < str.length(); ++pos)
     {
-        if (ttlib::iswhitespace(str.at(pos)))
+        if (ttlib::is_whitespace(str.at(pos)))
             break;
     }
     if (pos >= str.length())
@@ -149,14 +149,14 @@ ttlib::cview ttlib::viewSpace(const std::string& str, size_t startpos) noexcept
         return ttlib::cview(str.c_str() + pos, str.length() - pos);
 }
 
-ttlib::cview ttlib::viewNonspace(const std::string& str, size_t startpos) noexcept
+ttlib::cview ttlib::view_nonspace(const std::string& str, size_t startpos) noexcept
 {
     if (str.empty())
         return ttlib::cview(ttlib::emptystring.c_str(), 0);
     size_t pos;
     for (pos = startpos; pos < str.length(); ++pos)
     {
-        if (!ttlib::iswhitespace(str.at(pos)))
+        if (!ttlib::is_whitespace(str.at(pos)))
             break;
     }
     if (pos >= str.length())
@@ -165,7 +165,7 @@ ttlib::cview ttlib::viewNonspace(const std::string& str, size_t startpos) noexce
         return ttlib::cview(str.c_str() + pos, str.length() - pos);
 }
 
-ttlib::cview ttlib::viewStepover(const std::string& str, size_t startpos) noexcept
+ttlib::cview ttlib::view_stepover(const std::string& str, size_t startpos) noexcept
 {
     if (str.empty())
         return ttlib::cview(ttlib::emptystring.c_str(), 0);
@@ -173,7 +173,7 @@ ttlib::cview ttlib::viewStepover(const std::string& str, size_t startpos) noexce
     size_t pos;
     for (pos = startpos; pos < str.length(); ++pos)
     {
-        if (ttlib::iswhitespace(str.at(pos)))
+        if (ttlib::is_whitespace(str.at(pos)))
             break;
     }
     if (pos >= str.length())
@@ -181,7 +181,7 @@ ttlib::cview ttlib::viewStepover(const std::string& str, size_t startpos) noexce
 
     for (; pos < str.length(); ++pos)
     {
-        if (!ttlib::iswhitespace(str.at(pos)))
+        if (!ttlib::is_whitespace(str.at(pos)))
             break;
     }
     if (pos >= str.length())
@@ -190,7 +190,7 @@ ttlib::cview ttlib::viewStepover(const std::string& str, size_t startpos) noexce
         return ttlib::cview(str.c_str() + pos, str.length() - pos);
 }
 
-bool ttlib::issameprefix(std::string_view strMain, std::string_view strSub, CASE checkcase)
+bool ttlib::is_sameprefix(std::string_view strMain, std::string_view strSub, CASE checkcase)
 {
     if (strSub.empty())
         return strMain.empty();
@@ -233,7 +233,7 @@ bool ttlib::issameprefix(std::string_view strMain, std::string_view strSub, CASE
     return false;
 }
 
-std::string_view ttlib::findstr(std::string_view main, std::string_view sub, CASE checkcase)
+std::string_view ttlib::find_str(std::string_view main, std::string_view sub, CASE checkcase)
 {
     if (sub.empty())
         return {};
@@ -270,7 +270,7 @@ std::string_view ttlib::findstr(std::string_view main, std::string_view sub, CAS
 
 size_t ttlib::findstr_pos(std::string_view main, std::string_view sub, CASE checkcase)
 {
-    auto view = ttlib::findstr(main, sub, checkcase);
+    auto view = ttlib::find_str(main, sub, checkcase);
     if (view.empty())
         return tt::npos;
     else
@@ -279,10 +279,10 @@ size_t ttlib::findstr_pos(std::string_view main, std::string_view sub, CASE chec
 
 bool ttlib::contains(std::string_view main, std::string_view sub, CASE checkcase)
 {
-    return !ttlib::findstr(main, sub, checkcase).empty();
+    return !ttlib::find_str(main, sub, checkcase).empty();
 }
 
-bool ttlib::issameas(std::string_view str1, std::string_view str2, CASE checkcase)
+bool ttlib::is_sameas(std::string_view str1, std::string_view str2, CASE checkcase)
 {
     if (str1.size() != str2.size())
         return false;
@@ -315,7 +315,7 @@ int ttlib::atoi(std::string_view str) noexcept
     if (str.empty())
         return 0;
 
-    str = ttlib::findnonspace(str);
+    str = ttlib::find_nonspace(str);
 
     int total = 0;
     size_t pos = 0;
@@ -359,7 +359,7 @@ int ttlib::atoi(std::string_view str) noexcept
     return (negative ? -total : total);
 }
 
-std::string_view ttlib::findext(std::string_view str)
+std::string_view ttlib::find_extension(std::string_view str)
 {
     auto pos = str.rfind('.');
     if (pos == std::string_view::npos)
@@ -372,7 +372,7 @@ std::string_view ttlib::findext(std::string_view str)
     return str.substr(pos);
 }
 
-bool ttlib::isvalidfilechar(std::string_view str, size_t pos)
+bool ttlib::is_valid_filechar(std::string_view str, size_t pos)
 {
     if (str.empty() || pos > str.length())
         return false;
@@ -408,14 +408,14 @@ void ttlib::backslashestoforward(std::string& str)
     }
 }
 
-bool ttlib::hasextension(std::filesystem::directory_entry name, std::string_view extension, CASE checkcase)
+bool ttlib::has_extension(std::filesystem::directory_entry name, std::string_view extension, CASE checkcase)
 {
     if (!name.is_directory())
     {
         auto ext = name.path().extension();
         if (ext.empty())
             return false;
-        return ttlib::issameas(ext.string(), extension, checkcase);
+        return ttlib::is_sameas(ext.string(), extension, checkcase);
     }
     return false;
 }
@@ -445,7 +445,7 @@ bool ttlib::ChangeDir(std::string_view newdir)
     return false;
 }
 
-bool ttlib::dirExists(std::string_view dir)
+bool ttlib::dir_exists(std::string_view dir)
 {
     if (dir.empty())
         return false;
@@ -466,7 +466,7 @@ bool ttlib::dirExists(std::string_view dir)
     return false;
 }
 
-bool ttlib::fileExists(std::string_view filename)
+bool ttlib::file_exists(std::string_view filename)
 {
     if (filename.empty())
         return false;

@@ -97,53 +97,53 @@ namespace ttlib
     extern const std::string emptystring;
 
     /// Only valid for ANSI characters
-    constexpr inline bool isalpha(char ch) noexcept { return ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')); }
+    constexpr inline bool is_alpha(char ch) noexcept { return ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')); }
 
-    constexpr inline bool isdigit(char ch) noexcept { return ((ch >= '0' && ch <= '9') || ch == '-'); }
+    constexpr inline bool is_digit(char ch) noexcept { return ((ch >= '0' && ch <= '9') || ch == '-'); }
 
     /// Is ch the start of a utf8 sequence?
-    constexpr inline bool isutf8(char ch) noexcept { return ((ch & 0xC0) != 0x80); }
+    constexpr inline bool is_utf8(char ch) noexcept { return ((ch & 0xC0) != 0x80); }
 
     /// Returns true if character is a space, tab, eol or form feed character.
-    constexpr inline bool iswhitespace(char ch) noexcept { return (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' || ch == '\f'); }
+    constexpr inline bool is_whitespace(char ch) noexcept { return (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' || ch == '\f'); }
 
     /// Returns true if character is a period, comma, semi-colon, colon, question or exclamation
-    constexpr inline bool ispunctuation(char ch) noexcept
+    constexpr inline bool is_punctuation(char ch) noexcept
     {
         return (ch == '.' || ch == ',' || ch == ';' || ch == ':' || ch == '?' || ch == '!');
     }
 
     template<typename T>
-    /// Compares result against -1
-    constexpr bool isError(T result)
+    /// Compares result against -1 -- use with returns from find, contains, locate, etc.
+    constexpr bool is_error(T result)
     {
         return (static_cast<ptrdiff_t>(result)) == -1;
     }
 
     template<typename T>
     /// Compares result against -1 -- use with returns from find, contains, locate, etc.
-    constexpr bool isFound(T result)
+    constexpr bool is_found(T result)
     {
         return (static_cast<ptrdiff_t>(result)) != -1;
     }
 
     /// Returns true if strings are identical
-    bool issameas(std::string_view str1, std::string_view str2, tt::CASE checkcase = tt::CASE::exact);
+    bool is_sameas(std::string_view str1, std::string_view str2, tt::CASE checkcase = tt::CASE::exact);
 
     /// Returns true if the sub-string is identical to the first part of the main string
-    bool issameprefix(std::string_view strMain, std::string_view strSub, tt::CASE checkcase = tt::CASE::exact);
+    bool is_sameprefix(std::string_view strMain, std::string_view strSub, tt::CASE checkcase = tt::CASE::exact);
 
     /// Return a view to the portion of the string beginning with the sub string.
     ///
     /// Return view is empty if substring is not found.
-    std::string_view findstr(std::string_view main, std::string_view sub, tt::CASE checkcase = tt::CASE::exact);
+    std::string_view find_str(std::string_view main, std::string_view sub, tt::CASE checkcase = tt::CASE::exact);
 
     /// Returns the position of sub within main, or npos if not found.
     size_t findstr_pos(std::string_view main, std::string_view sub, tt::CASE checkcase = tt::CASE::exact);
 
     /// Returns true if the sub string exists withing the main string.
     ///
-    /// Same as findstr but with a boolean return instead of a string_view.
+    /// Same as find_str but with a boolean return instead of a string_view.
     bool contains(std::string_view main, std::string_view sub, tt::CASE checkcase = tt::CASE::exact);
 
     template<class iterT>
@@ -159,42 +159,42 @@ namespace ttlib
     }
 
     /// Returns a pointer to the next character in a UTF8 string.
-    const char* nextut8fchar(const char* psz) noexcept;
+    const char* next_utf8_char(const char* psz) noexcept;
 
     /// Returns view to the next whitespace character. View is empty if there are no more
     /// whitespaces.
-    std::string_view findspace(std::string_view str) noexcept;
+    std::string_view find_space(std::string_view str) noexcept;
 
     /// Returns position of next whitespace character or npos if not found.
-    size_t findspace_pos(std::string_view str);
+    size_t find_space_pos(std::string_view str);
 
     /// Returns view to the next non-whitespace character. View is empty if there are no
     /// non-whitespace characters.
-    std::string_view findnonspace(std::string_view str) noexcept;
+    std::string_view find_nonspace(std::string_view str) noexcept;
 
     /// Returns position of next non-whitespace character or npos if not found.
-    size_t findnonspace_pos(std::string_view str) noexcept;
+    size_t find_nonspace_pos(std::string_view str) noexcept;
 
-    /// Equivalent to findnonspace(findspace(str)).
+    /// Equivalent to find_nonspace(find_space(str)).
     std::string_view stepover(std::string_view str) noexcept;
 
-    /// Equivalent to findnonspace(findspace(str)) returning the position or npos.
+    /// Equivalent to find_nonspace(find_space(str)) returning the position or npos.
     size_t stepover_pos(std::string_view str) noexcept;
 
     /// Returns a zero-terminated view of the first whitespace character. View is empty if
     /// there is no whitespace character.
-    cview viewSpace(const std::string& str, size_t startpos = 0) noexcept;
+    cview view_space(const std::string& str, size_t startpos = 0) noexcept;
 
     /// Returns a zero-terminated view of the first non-whitespace character. View is empty
     /// if there is no non-whitespace character.
-    cview viewNonspace(const std::string& str, size_t startpos = 0) noexcept;
+    cview view_nonspace(const std::string& str, size_t startpos = 0) noexcept;
 
     /// Locates the next whitespace character, and returns a zero-terminated view to the
     /// first non-whitespace character after that whitespace character.
-    cview viewStepover(const std::string& str, size_t startpos = 0) noexcept;
+    cview view_stepover(const std::string& str, size_t startpos = 0) noexcept;
 
     /// Generates hash of string using djb2 hash algorithm
-    size_t gethash(std::string_view str) noexcept;
+    size_t get_hash(std::string_view str) noexcept;
 
     /// Converts a string into an integer.
     ///
@@ -215,12 +215,12 @@ namespace ttlib
     ttlib::cstr itoa(size_t val, bool format = false);
 
     /// Return a view to a filename's extension. View is empty if there is no extension.
-    std::string_view findext(std::string_view str);
+    std::string_view find_extension(std::string_view str);
 
     /// Determines whether the character at pos is part of a filename. This will
     /// differentiate between '.' being used as part of a path (. for current directory, or ..
     /// for relative directory) versus being the leading character in a file.
-    bool isvalidfilechar(std::string_view str, size_t pos);
+    bool is_valid_filechar(std::string_view str, size_t pos);
 
     /// Converts all backslashes in a filename to forward slashes.
     ///
@@ -230,7 +230,7 @@ namespace ttlib
 
     /// Performs a check to see if a directory entry is a filename and contains the
     /// specified extension.
-    bool hasextension(std::filesystem::directory_entry name, std::string_view extension, tt::CASE checkcase = tt::CASE::exact);
+    bool has_extension(std::filesystem::directory_entry name, std::string_view extension, tt::CASE checkcase = tt::CASE::exact);
 
     /// Confirms newdir exists and is a directory and then changes to that directory.
     ///
@@ -238,8 +238,8 @@ namespace ttlib
     /// if the directory is valid but could not be changed to.
     bool ChangeDir(std::string_view newdir);
 
-    bool dirExists(std::string_view dir);
-    bool fileExists(std::string_view filename);
+    bool dir_exists(std::string_view dir);
+    bool file_exists(std::string_view filename);
 
     void utf8to16(std::string_view str, std::wstring& dest);
     void utf16to8(std::wstring_view str, std::string& dest);

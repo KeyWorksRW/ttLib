@@ -65,7 +65,7 @@ namespace ttlib
             else if (cFileName[0] == L'.' && cFileName[1] == L'.' && !cFileName[2])
                 next();
             else
-                m_filename.assignUTF16(cFileName);
+                m_filename.from_utf16(cFileName);
         }
         ~winff()
         {
@@ -85,7 +85,7 @@ namespace ttlib
                     return next();
                 else if (cFileName[0] == L'.' && cFileName[1] == L'.' && !cFileName[2])
                     return next();
-                m_filename.assignUTF16(cFileName);
+                m_filename.from_utf16(cFileName);
                 return true;
             }
             else
@@ -105,7 +105,7 @@ namespace ttlib
             std::wstring str16;
             ttlib::utf8to16(filepattern, str16);
             m_hfind = FindFirstFileExW(str16.c_str(), FindExInfoBasic, this, FindExSearchNameMatch, nullptr, FIND_FIRST_EX_LARGE_FETCH);
-            m_filename.assignUTF16(cFileName);
+            m_filename.from_utf16(cFileName);
 
             // Use same rule as std::filesystem directory_iterator and skip . and ..
             if (cFileName[0] == L'.' && !cFileName[1])
@@ -113,7 +113,7 @@ namespace ttlib
             else if (cFileName[0] == L'.' && cFileName[1] == L'.' && !cFileName[2])
                 next();
             else
-                m_filename.assignUTF16(cFileName);
+                m_filename.from_utf16(cFileName);
             return isvalid();
         }
 
@@ -127,8 +127,8 @@ namespace ttlib
         char operator[](int pos) { return m_filename.at(pos); }
         char operator[](size_t pos) { return m_filename.at(pos); }
 
-        bool operator==(std::string_view name) { return m_filename.issameas(name); }
-        bool operator!=(std::string_view name) { return !m_filename.issameas(name); }
+        bool operator==(std::string_view name) { return m_filename.is_sameas(name); }
+        bool operator!=(std::string_view name) { return !m_filename.is_sameas(name); }
 
         // Caution: this is NOT a copy! It returns a pointer to the internal cstr buffer. Any
         // changes you make will be overwritten by a call to next() or newpattern().

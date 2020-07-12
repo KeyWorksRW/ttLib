@@ -25,7 +25,7 @@
 ///         ttlib::textfile file;
 ///         file.ReadFile(original.GetContainer());
 ///             ... // possible modifications.
-///         if (!file.issameas(original))
+///         if (!file.is_sameas(original))
 ///             file.WriteFile("your filename");
 ///      }
 ///
@@ -90,8 +90,8 @@ namespace ttlib
         size_t ReplaceInLine(std::string_view orgStr, std::string_view newStr, size_t startline = 0,
                              tt::CASE checkcase = tt::CASE::exact);
 
-        bool issameas(ttlib::textfile other, tt::CASE checkcase = tt::CASE::exact) const;
-        bool issameas(ttlib::viewfile other, tt::CASE checkcase = tt::CASE::exact) const;
+        bool is_sameas(ttlib::textfile other, tt::CASE checkcase = tt::CASE::exact) const;
+        bool is_sameas(ttlib::viewfile other, tt::CASE checkcase = tt::CASE::exact) const;
 
         /// Use addEmptyLine() if you need to modify the line after adding it to the end.
         ///
@@ -175,8 +175,8 @@ namespace ttlib
         size_t FindLineContaining(std::string_view str, size_t startline = 0,
                                   tt::CASE checkcase = tt::CASE::exact) const;
 
-        bool issameas(ttlib::textfile other, tt::CASE checkcase = tt::CASE::exact) const;
-        bool issameas(ttlib::viewfile other, tt::CASE checkcase = tt::CASE::exact) const;
+        bool is_sameas(ttlib::textfile other, tt::CASE checkcase = tt::CASE::exact) const;
+        bool is_sameas(ttlib::viewfile other, tt::CASE checkcase = tt::CASE::exact) const;
 
     protected:
         // Converts lines into a vector of std::string_view members. Lines can end with \n, \r, or \r\n.

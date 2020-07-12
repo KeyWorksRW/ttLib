@@ -74,7 +74,7 @@ bool DirDlg::GetFolderName(HWND hwndParent)
                 hr = psiResult->GetDisplayName(SIGDN_FILESYSPATH, &pwszPath);
                 if (SUCCEEDED(hr))
                 {
-                    assignUTF16(pwszPath);
+                    from_utf16(pwszPath);
                     CoTaskMemFree(pwszPath);
                 }
                 psiResult->Release();

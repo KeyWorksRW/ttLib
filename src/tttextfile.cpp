@@ -134,7 +134,7 @@ size_t textfile::ReplaceInLine(std::string_view orgStr, std::string_view newStr,
     return tt::npos;
 }
 
-bool textfile::issameas(viewfile other, CASE checkcase) const
+bool textfile::is_sameas(viewfile other, CASE checkcase) const
 {
     if (size() != other.size())
         return false;
@@ -142,13 +142,13 @@ bool textfile::issameas(viewfile other, CASE checkcase) const
     size_t pos = 0;
     for (; pos < other.size(); ++pos)
     {
-        if (!at(pos).issameas(other[pos], checkcase))
+        if (!at(pos).is_sameas(other[pos], checkcase))
             break;
     }
     return (pos == size());
 }
 
-bool textfile::issameas(textfile other, CASE checkcase) const
+bool textfile::is_sameas(textfile other, CASE checkcase) const
 {
     if (size() != other.size())
         return false;
@@ -156,7 +156,7 @@ bool textfile::issameas(textfile other, CASE checkcase) const
     size_t pos = 0;
     for (; pos < other.size(); ++pos)
     {
-        if (!at(pos).issameas(other[pos], checkcase))
+        if (!at(pos).is_sameas(other[pos], checkcase))
             break;
     }
     return (pos == size());
@@ -283,7 +283,7 @@ size_t viewfile::FindLineContaining(std::string_view str, size_t start, tt::CASE
     return tt::npos;
 }
 
-bool viewfile::issameas(viewfile other, CASE checkcase) const
+bool viewfile::is_sameas(viewfile other, CASE checkcase) const
 {
     if (size() != other.size())
         return false;
@@ -291,13 +291,13 @@ bool viewfile::issameas(viewfile other, CASE checkcase) const
     size_t pos = 0;
     for (; pos < other.size(); ++pos)
     {
-        if (!ttlib::issameas(at(pos), other[pos], checkcase))
+        if (!ttlib::is_sameas(at(pos), other[pos], checkcase))
             break;
     }
     return (pos == size());
 }
 
-bool viewfile::issameas(textfile other, CASE checkcase) const
+bool viewfile::is_sameas(textfile other, CASE checkcase) const
 {
     if (size() != other.size())
         return false;
@@ -305,7 +305,7 @@ bool viewfile::issameas(textfile other, CASE checkcase) const
     size_t pos = 0;
     for (; pos < other.size(); ++pos)
     {
-        if (!ttlib::issameas(at(pos), other[pos], checkcase))
+        if (!ttlib::is_sameas(at(pos), other[pos], checkcase))
             break;
     }
     return (pos == size());

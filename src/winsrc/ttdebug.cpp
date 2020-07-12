@@ -62,7 +62,7 @@ bool ttAssertionMsg(const char* filename, const char* function, int line, const 
     {
         for (auto& iter: ttdbg::g_priorAsserts)
         {
-            if (iter.issameas(msg))
+            if (iter.is_sameas(msg))
                 return false;
         }
         ttdbg::g_priorAsserts.emplace_back(msg);

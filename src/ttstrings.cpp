@@ -61,7 +61,7 @@ const char* _tt(const char* str)
 
     for (auto iter = _tt_english->begin(); iter != _tt_english->end(); ++iter)
     {
-        if (ttlib::issameas(iter->second, str))
+        if (ttlib::is_sameas(iter->second, str))
         {
             return _tt(iter->first);
         }
@@ -77,7 +77,7 @@ ttlib::cview _ttv(const char* str)
 
     for (auto iter = _tt_english->begin(); iter != _tt_english->end(); ++iter)
     {
-        if (ttlib::issameas(iter->second, str))
+        if (ttlib::is_sameas(iter->second, str))
         {
             return _ttv(iter->first);
         }
@@ -95,7 +95,7 @@ ttlib::cstr _ttc(const char* str)
 
     for (auto iter = _tt_english->begin(); iter != _tt_english->end(); ++iter)
     {
-        if (ttlib::issameas(iter->second, str))
+        if (ttlib::is_sameas(iter->second, str))
         {
             return _ttc(iter->first);
         }
@@ -115,7 +115,7 @@ std::wstring _ttwx(const char* str)
 
     for (auto iter = _tt_english->begin(); iter != _tt_english->end(); ++iter)
     {
-        if (ttlib::issameas(iter->second, str))
+        if (ttlib::is_sameas(iter->second, str))
         {
             return _ttwx(iter->first);
         }
