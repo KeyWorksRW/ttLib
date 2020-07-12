@@ -686,7 +686,7 @@ std::wstring cstr::to_utf16() const
     return str16;
 }
 
-std::string_view cstr::subview(size_t start, size_t len) const noexcept
+std::string_view cstr::subview(size_t start, size_t len) const
 {
     if (start >= size())
         return {};
