@@ -1,0 +1,44 @@
+# Requires ttBld.exe version 1.4.0 or higher to process -- see https://github.com/KeyWorksRW/ttBld
+
+Options:
+    Project:          ttLibwx    # project target name
+    Exe_type:         lib        # [window | console | lib | dll]
+    Pch:              pch.h      # precompiled header
+    Pch_cpp:          ../pch.cpp # source file used to build precompiled header
+    Optimize:         space      # [space | speed] optimization
+    Warn:             4          # [1-4]
+
+    CFlags_cmn:       -std:c++17 /Zc:__cplusplus -DUNICODE # flags to pass to the compiler in all builds
+
+    Crt_rel:          dll      # [static | dll] type of CRT to link to in release builds
+    Crt_dbg:          dll      # [static | dll] type of CRT to link to in debug builds
+
+    IncDirs:          precompile;../../include
+    TargetDir:        ../../lib
+
+Files:
+    ../ttconsole.cpp    # class that sets/restores console foreground color
+    ../ttcstr.cpp       # Class for handling zero-terminated char strings.
+    ../ttcvector.cpp    # Vector class for storing ttlib::cstr strings
+    ../ttcview.cpp      # string_view functionality on a zero-terminated char string.
+    ../ttmultistr.cpp   # ttlib::multistr, ttlib::multiview
+    ../ttlibspace.cpp   # ttlib namespace functions
+    ../ttparser.cpp     # Command line parser
+    ../ttstrings.cpp    # Class for handling zero-terminated char strings.
+    ../tttextfile.cpp   # Classes for reading and writing text files.
+
+# Windows only files
+
+    ../winsrc/ttdib.cpp           # ttCDib class
+    ../winsrc/ttdirdlg.cpp        # dialog for selecting a directory
+    ../winsrc/ttloadstr.cpp       # Load a language-specific version of a string resource
+    ../winsrc/ttmultibtn.cpp      # ttlib::MultiBtn class
+    ../winsrc/ttopenfile.cpp      # Wrapper around Windows GetOpenFileName() API
+    ../winsrc/ttregistry.cpp      # ttlib::registry -- class for working with Windows registry
+    ../winsrc/ttshadebtn.cpp      # ttCShadeBtn class
+    ../winsrc/ttthrdpool.cpp      # ttlib::ThrdPool
+    ../winsrc/ttwin.cpp           # ttlib::win class
+
+    ../winsrc/ttdebug.cpp         # debug and assertion handling
+    ../winsrc/ttwindlg.cpp        # ttlib::dlg -- class for creating a Modal or Modeless dialog box
+    ../winsrc/ttwinspace.cpp      # Windows-only ttlib namespace functions

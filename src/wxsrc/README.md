@@ -1,0 +1,1 @@
+This directory is used to build **ttLibwx.lib** on a Windows platform only. This variation of the library includes additional support for **wxWidgets**, which means the **wxWidgets** include directory must be in your $INCLUDE path in order to build the library.
