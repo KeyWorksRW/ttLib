@@ -27,8 +27,8 @@
 /// pass that as a const address. That's because wxString has a constructor for "foo" -- which it will NOT convert to
 /// UTF16 on Windows.
 
-#include <wx/string.h>  // wxString class
 #include <wx/filefn.h>  // File- and directory-related functions
+#include <wx/string.h>  // wxString class
 
 #include <ttcstr.h>   // cstr -- Classes for handling zero-terminated char strings.
 #include <ttcview.h>  // cview -- string_view functionality on a zero-terminated char string.
@@ -43,16 +43,17 @@ class ttString : public wxString
 public:
     using wxString::wxString;  // inherit all of wxString's constructors
 
+    ttString(const wxString& str) : wxString(str) {}
+    ttString(void) : wxString() {}
+
     ttString(const ttlib::cstr& str) { this->assign(str.wx_str()); }
     ttString(ttlib::cview str) { this->assign(str.wx_str()); }
-    ttString(void) : wxString() {}
 
 #if defined(_WIN32)
     // When compiling for Windows, assume all char* are utf8 strings and convert them to utf16 before assigning them.
 
     ttString(const char* str) { this->assign(ttlib::utf8to16(str)); }
     ttString(std::string_view str) { this->assign(ttlib::utf8to16(str)); }
-    ttString(std::wstring_view wstr) { this->assign(wstr.data(), wstr.size()); }
 #else
     ttString(std::string_view str) { this->assign(str.data(), str.size()); }
 #endif  // _WIN32
@@ -83,7 +84,7 @@ public:
     bool contains(wxString& sub, tt::CASE checkcase = tt::CASE::exact) const { return (locate(sub, 0, checkcase) != npos); }
 
     /// Returns true if any string in the iteration list appears somewhere in the the main string.
-    template <class iterT>
+    template<class iterT>
     bool strContains(iterT iter, tt::CASE checkcase = tt::CASE::exact)
     {
         for (auto& strIter: iter)
@@ -255,7 +256,11 @@ public:
     ttString& append_filename(ttString& filename);
 
     /// Replaces current string with the full path to the current working directory.
-    ttString& assignCwd() { assign(wxGetCwd()); return *this; };
+    ttString& assignCwd()
+    {
+        assign(wxGetCwd());
+        return *this;
+    };
 
     /// Changes any current path to an absolute path.
     ttString& make_absolute();
