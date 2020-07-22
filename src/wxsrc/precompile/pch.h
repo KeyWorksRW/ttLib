@@ -25,9 +25,23 @@
 
 #define WINVER 0x0A00  // Windows 10
 
-#include <windows.h>
-#include <stdlib.h>
+#define wxUSE_UNICODE     1
+#define wxUSE_NO_MANIFEST 1  // This is required for compiling using CLANG 8 and earlier
 
-#include "ttlibspace.h"
+#include <wx/defs.h>
+
+#define _WX_MISSING_H_  // prevent loading <wx/missing.h> which conflicts with <urlmon.h>
+#include "wx/msw/wrapcctl.h"
+
+#if wxUSE_COMMON_DIALOGS
+    #include <commdlg.h>
+#endif
+
+// Ensure that _DEBUG is defined in non-release builds
+#if !defined(NDEBUG) && !defined(_DEBUG)
+    #define _DEBUG
+#endif
+
+#include <ttlibspace.h>
 
 #undef TT_ASSERT
