@@ -33,6 +33,8 @@ void ttlib::SetLangInfo(HMODULE hinstResource, USHORT PrimaryLanguage, USHORT Su
     lang_info.hinstResource = hinstResource;
     lang_info.PrimaryLanguage = PrimaryLanguage;
     lang_info.SubLanguage = SubLanguage;
+
+    mapStrings.clear();
 }
 
 ttlib::cstr ttlib::LoadStringEx(WORD id)
