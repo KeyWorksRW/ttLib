@@ -29,6 +29,7 @@ Files:
     ../ttparser.cpp     # Command line parser
     ../ttstr.cpp        # Enhanced version of wxString
     ../ttstrings.cpp    # Class for handling zero-terminated char strings.
+    ../ttsvector.cpp    # Vector class for storing ttString strings
     ../tttextfile.cpp   # Classes for reading and writing text files.
 
 # Windows only files
