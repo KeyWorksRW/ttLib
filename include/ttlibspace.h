@@ -353,7 +353,7 @@ namespace ttlib
                        HWND hwndParent = NULL);
 
     /// Only available in ttLibwx.lib (wxWidgets + Windows)
-    HINSTANCE ShellRun(const wxString& filename, const wxString& args, const wxString& directory, INT nShow = SW_SHOWNORMAL,
+    HINSTANCE ShellRun(wxString& filename, wxString& args, wxString& directory, INT nShow = SW_SHOWNORMAL,
                        HWND hwndParent = NULL);
 
     HFONT CreateLogFont(std::string_view TypeFace, size_t point, bool Bold = false, bool Italics = false);

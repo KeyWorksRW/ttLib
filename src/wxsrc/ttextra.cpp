@@ -11,7 +11,7 @@
 
 #include "ttstr.h"  // ttString -- Enhanced version of wxString
 
-HINSTANCE ttlib::ShellRun(const wxString& filename, const wxString& args, const wxString& dir, INT nShow, HWND hwndParent)
+HINSTANCE ttlib::ShellRun(wxString& filename, wxString& args, wxString& dir, INT nShow, HWND hwndParent)
 {
     return ShellExecuteW(hwndParent, NULL, filename.c_str(), args.c_str(), dir.c_str(), nShow);
 }
