@@ -28,6 +28,7 @@
 /// UTF16 on Windows.
 
 #include <wx/string.h>  // wxString class
+#include <wx/filefn.h>  // File- and directory-related functions
 
 #include <ttcstr.h>   // cstr -- Classes for handling zero-terminated char strings.
 #include <ttcview.h>  // cview -- string_view functionality on a zero-terminated char string.
@@ -190,9 +191,7 @@ public:
     /// a different language.
     ttString& LoadStringEx(WORD idString)
     {
-        std::string result;
-        ttlib::LoadStringEx(result, idString);
-        assign(ttlib::utf8to16(result));
+        ttlib::LoadStringEx(*this, idString);
         return *this;
     };
 

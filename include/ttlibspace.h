@@ -25,19 +25,21 @@
 #include <string>
 #include <string_view>
 
+class wxString;  // for use with functions in ttLibwx.lib or UNIX builds that require wxWidgets
+
 #if defined(NDEBUG)
-    /// Use this macro to comment out parameters that are not used in Release builds
+/// Use this macro to comment out parameters that are not used in Release builds
     #define DBG_PARAM(param) /* param */
 #else
-    /// Use this macro to comment out parameters that are only used in Debug builds
+/// Use this macro to comment out parameters that are only used in Debug builds
     #define DBG_PARAM(param) param
 #endif
 
-#if _WIN32
-    // Use this macro to comment out parameters that are not used when building for Windows
+#if defined(_WIN32)
+// Use this macro to comment out parameters that are not used when building for Windows
     #define UNUSED_IN_WIN32(param) /* param */
 #else
-    // Use this macro to comment out parameters that are not used when building for Windows
+// Use this macro to comment out parameters that are not used when building for Windows
     #define UNUSED_IN_WIN32(param) param
 #endif
 
@@ -56,12 +58,12 @@
 #endif
 
 #ifndef assertm
-    /// assert with a message
+/// assert with a message
     #define assertm(exp, msg) assert(((void) msg, exp))
 #endif
 
 #if defined(_WIN32)
-    /// This is just a shortcut to make code easier to read
+/// This is just a shortcut to make code easier to read
     #define _ls(id) ttlib::LoadStringEx(static_cast<WORD>(id))
 #endif  // _WIN32
 
@@ -350,6 +352,10 @@ namespace ttlib
     HINSTANCE ShellRun(std::string_view filename, std::string_view args, std::string_view directory, INT nShow = SW_SHOWNORMAL,
                        HWND hwndParent = NULL);
 
+    /// Only available in ttLibwx.lib (wxWidgets + Windows)
+    HINSTANCE ShellRun(const wxString& filename, const wxString& args, const wxString& directory, INT nShow = SW_SHOWNORMAL,
+                       HWND hwndParent = NULL);
+
     HFONT CreateLogFont(std::string_view TypeFace, size_t point, bool Bold = false, bool Italics = false);
 
     struct LANGINFO
@@ -363,6 +369,10 @@ namespace ttlib
     /// Loads the string from the resource file using language and resource module specified
     /// in ttlib::lang_info. String is converted to UTF8 before storing in Result.
     bool LoadStringEx(std::string& Result, WORD id);
+
+    /// Loads the string from the resource file using language and resource module specified
+    /// in ttlib::lang_info. Only available in ttLibwx.lib (wxWidgets + Windows).
+    bool LoadStringEx(wxString& Result, WORD id);
 
     /// Loads the string from the resource file using language and resource module specified
     /// in ttlib::lang_info. String is converted to UTF8 before storing in Result.

@@ -18,15 +18,16 @@ Options:
     TargetDir:        ../../lib
 
 Files:
-    ttstr.cpp           # Enhanced version of wxString
+    ttextra.cpp         # Additional functions for wxWidgets on Windows
 
     ../ttconsole.cpp    # class that sets/restores console foreground color
     ../ttcstr.cpp       # Class for handling zero-terminated char strings.
     ../ttcvector.cpp    # Vector class for storing ttlib::cstr strings
     ../ttcview.cpp      # string_view functionality on a zero-terminated char string.
-    ../ttmultistr.cpp   # ttlib::multistr, ttlib::multiview
     ../ttlibspace.cpp   # ttlib namespace functions
+    ../ttmultistr.cpp   # ttlib::multistr, ttlib::multiview
     ../ttparser.cpp     # Command line parser
+    ../ttstr.cpp        # Enhanced version of wxString
     ../ttstrings.cpp    # Class for handling zero-terminated char strings.
     ../tttextfile.cpp   # Classes for reading and writing text files.
 
