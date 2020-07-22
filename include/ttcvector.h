@@ -16,7 +16,7 @@
 ///
 /// The ttlib::cstrVector class stores ttlib::cstr (zero-terminated char containter class) strings. It inherits
 /// from std::vector, providing all of the functionality of std::vector along with some functionality specific to
-/// string handling. most places where std::string<char> is used.
+/// string handling. It can be used in most places where std::string<char> is used.
 
 #include <vector>
 
