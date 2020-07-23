@@ -37,6 +37,10 @@
     #include <commdlg.h>
 #endif
 
+#include <cassert>
+#include <string>
+#include <string_view>
+
 // Ensure that _DEBUG is defined in non-release builds
 #if !defined(NDEBUG) && !defined(_DEBUG)
     #define _DEBUG
