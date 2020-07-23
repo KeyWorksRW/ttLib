@@ -4,7 +4,6 @@ Options:
     Project:          ttLibwx    # project target name
     Exe_type:         lib        # [window | console | lib | dll]
     Pch:              pch.h      # precompiled header
-    Pch_cpp:          ../pch.cpp # source file used to build precompiled header
     Optimize:         space      # [space | speed] optimization
     Warn:             4          # [1-4]
 
