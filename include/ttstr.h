@@ -69,45 +69,29 @@ public:
     int comparei(std::string_view str) const;
 
     /// Case-insensitive comparison.
-    int comparei(wxString& str) const { return CmpNoCase(str); };
+    int comparei_wx(const wxString& str) const { return CmpNoCase(str); };
 
     /// Locates the position of a substring.
     size_t locate(std::string_view str, size_t posStart = 0, tt::CASE checkcase = tt::CASE::exact) const;
 
     // Locates the position of a substring.
-    size_t locate(wxString& str, size_t posStart = 0, tt::CASE checkcase = tt::CASE::exact) const;
+    size_t locate_wx(const wxString& str, size_t posStart = 0, tt::CASE checkcase = tt::CASE::exact) const;
 
     /// Returns true if the sub string exists
     bool contains(std::string_view sub, tt::CASE checkcase = tt::CASE::exact) const { return (locate(sub, 0, checkcase) != npos); }
 
     // Returns true if the sub string exists
-    bool contains(wxString& sub, tt::CASE checkcase = tt::CASE::exact) const { return (locate(sub, 0, checkcase) != npos); }
-
-    /// Returns true if any string in the iteration list appears somewhere in the the main string.
-    template<class iterT>
-    bool strContains(iterT iter, tt::CASE checkcase = tt::CASE::exact)
-    {
-        for (auto& strIter: iter)
-        {
-            if (contains(strIter, checkcase))
-                return true;
-        }
-        return false;
-    }
+    bool contains_wx(const wxString& sub, tt::CASE checkcase = tt::CASE::exact) const { return (locate_wx(sub, 0, checkcase) != npos); }
 
     /// Find any one of the characters in a set. Returns offset if found, npos if not.
     ///
     /// This is equivalent to calling std::strpbrk but returns an offset instead of a pointer.
     size_t find_oneof(std::string_view set) const;
 
-#if defined(_WIN32)
-
     // Find any one of the characters in a set. Returns offset if found, npos if not.
     //
     // This is equivalent to calling std::wcspbrk but returns an offset instead of a pointer.
-    size_t find_oneof(std::wstring_view set) const;
-
-#endif
+    size_t find_oneof_wx(const wxString& set) const;
 
     /// Returns offset to the next whitespace character starting with pos. Returns npos if
     /// there are no more whitespaces.
@@ -150,7 +134,7 @@ public:
     /// On Windows, the string will first be converted to UTF16 before comparing.
     bool is_sameas(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
 
-    bool is_sameas(ttString& str, tt::CASE checkcase = tt::CASE::exact) const
+    bool is_sameas_wx(const wxString& str, tt::CASE checkcase = tt::CASE::exact) const
     {
         return (checkcase == tt::CASE::exact) ? Cmp(str) == 0 : CmpNoCase(str) == 0;
     }
@@ -159,7 +143,7 @@ public:
     bool is_sameprefix(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
 
     /// Returns true if the sub-string is identical to the first part of the main string
-    bool is_sameprefix(ttString& str, tt::CASE checkcase = tt::CASE::exact) const;
+    bool is_sameprefix_wx(const wxString& str, tt::CASE checkcase = tt::CASE::exact) const;
 
     int atoi() const
     {
@@ -178,7 +162,7 @@ public:
 
     /// If string is found, line is truncated from the string on, and then any trailing space
     /// is removed;
-    void erase_from(ttString& sub);
+    void erase_from_wx(const wxString& sub);
 
     /// Replace first (or all) occurrences of substring with another one
     size_t replace_view(std::string_view oldtext, std::string_view newtext, bool replace_all = tt::REPLACE::once);
@@ -222,8 +206,17 @@ public:
     /// ext param should begin with a period (e.g., ".cpp")
     bool has_extension(std::string_view ext, tt::CASE checkcase = tt::CASE::either) { return extension().is_sameas(ext, checkcase); }
 
+    /// ext param should begin with a period (e.g., ".cpp")
+    bool has_extension_wx(const wxString& ext, tt::CASE checkcase = tt::CASE::either) { return extension().is_sameas_wx(ext, checkcase); }
+
     /// Returns true if current filename contains the specified case-insensitive file name.
     bool has_filename(std::string_view name, tt::CASE checkcase = tt::CASE::either) const { return filename().is_sameas(name, checkcase); }
+
+    /// Returns true if current filename contains the specified case-insensitive file name.
+    bool has_filename_wx(const wxString& name, tt::CASE checkcase = tt::CASE::either) const
+    {
+        return filename().is_sameas_wx(name, checkcase);
+    }
 
     /// Returns a copy of the current extension or wxEmptyStr if there is no extension.
     ttString extension() const;
@@ -237,13 +230,13 @@ public:
 
     /// Replaces any existing extension with a new extension, or appends the extension if the
     /// current file name doesn't have an extension.
-    ttString& replace_extension(ttString& newExtension);
+    ttString& replace_extension_wx(const wxString& newExtension);
 
     /// Removes the extension portion of the file name.
     ttString& remove_extension() { return replace_extension(std::string_view()); };
 
     ttString& replace_filename(std::string_view newFilename = std::string_view());
-    ttString& replace_filename(ttString& newFilename);
+    ttString& replace_filename_wx(const wxString& newFilename);
 
     ttString& remove_filename() { return replace_filename(std::string_view()); };
 
@@ -253,7 +246,7 @@ public:
 
     /// Appends the file name -- assumes current string is a directory. This will add a
     /// trailing slash (if needed) before adding the filename.
-    ttString& append_filename(ttString& filename);
+    ttString& append_filename_wx(const wxString& filename);
 
     /// Replaces current string with the full path to the current working directory.
     ttString& assignCwd()
@@ -266,7 +259,7 @@ public:
     ttString& make_absolute();
 
     /// Returns the file name which can be used to access this file if the current directory is pathBase
-    ttString& make_relative(ttString& pathBase);
+    ttString& make_relative_wx(const wxString& pathBase);
 
     /// Returns the file name which can be used to access this file if the current directory is pathBase
     ttString& make_relative(ttlib::cview pathBase);

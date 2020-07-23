@@ -18,7 +18,7 @@ size_t strVector::find(size_t start, ttString& str, CASE checkcase) const
 {
     for (; start < size(); ++start)
     {
-        if (at(start).is_sameas(str, checkcase))
+        if (at(start).is_sameas_wx(str, checkcase))
             return start;
     }
     return tt::npos;
@@ -30,7 +30,7 @@ size_t strVector::findprefix(size_t start, ttString& str, CASE checkcase) const
     {
         for (; start < size(); ++start)
         {
-            if (at(start).is_sameprefix(str, checkcase))
+            if (at(start).is_sameprefix_wx(str, checkcase))
                 return start;
         }
     }
@@ -38,7 +38,7 @@ size_t strVector::findprefix(size_t start, ttString& str, CASE checkcase) const
     {
         for (; start < size(); ++start)
         {
-            if (at(start).is_sameprefix(str, checkcase))
+            if (at(start).is_sameprefix_wx(str, checkcase))
                 return start;
         }
     }
@@ -49,7 +49,7 @@ size_t strVector::contains(size_t start, ttString& str, CASE checkcase) const
 {
     for (; start < size(); ++start)
     {
-        if (at(start).contains(str, checkcase))
+        if (at(start).contains_wx(str, checkcase))
             return start;
     }
     return tt::npos;

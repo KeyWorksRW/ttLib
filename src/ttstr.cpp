@@ -149,7 +149,7 @@ size_t ttString::locate(std::string_view vstr, size_t posStart, tt::CASE checkca
     return npos;
 }
 
-size_t ttString::locate(wxString& str, size_t posStart, tt::CASE checkcase) const
+size_t ttString::locate_wx(const wxString& str, size_t posStart, tt::CASE checkcase) const
 {
     if (str.empty() || posStart >= size())
         return npos;
@@ -217,13 +217,12 @@ size_t ttString::find_oneof(std::string_view set) const
 
 #if defined(_WIN32)
 
-size_t ttString::find_oneof(std::wstring_view set) const
+size_t ttString::find_oneof_wx(const wxString& set) const
 {
     if (set.empty())
         return npos;
 
-    auto wset = std::wstring(set);
-    auto found = std::wcspbrk(c_str(), wset.c_str());
+    auto found = std::wcspbrk(c_str(), set.c_str());
     if (!found)
         return npos;
     return (static_cast<size_t>(found - c_str()));
@@ -326,7 +325,7 @@ bool ttString::is_sameprefix(std::string_view vstr, tt::CASE checkcase) const
     return false;
 }
 
-bool ttString::is_sameprefix(ttString& str, tt::CASE checkcase) const
+bool ttString::is_sameprefix_wx(const wxString& str, tt::CASE checkcase) const
 {
     if (str.empty())
         return empty();
@@ -446,7 +445,7 @@ void ttString::erase_from(std::string_view sub)
     }
 }
 
-void ttString::erase_from(ttString& sub)
+void ttString::erase_from_wx(const wxString& sub)
 {
     if (auto pos = find(sub); pos != npos)
     {
@@ -510,7 +509,7 @@ ttString& ttString::replace_extension(std::string_view newExtension)
     return *this;
 }
 
-ttString& ttString::replace_extension(ttString& newExtension)
+ttString& ttString::replace_extension_wx(const wxString& newExtension)
 {
     if (empty())
     {
@@ -589,7 +588,7 @@ ttString& ttString::replace_filename(std::string_view newFilename)
     return *this;
 }
 
-ttString& ttString::replace_filename(ttString& newFilename)
+ttString& ttString::replace_filename_wx(const wxString& newFilename)
 {
     if (empty())
     {
@@ -643,7 +642,7 @@ ttString& ttString::append_filename(std::string_view filename)
     return *this;
 }
 
-ttString& ttString::append_filename(ttString& filename)
+ttString& ttString::append_filename_wx(const wxString& filename)
 {
     if (filename.empty())
         return *this;
@@ -669,7 +668,7 @@ ttString& ttString::make_absolute()
     return *this;
 }
 
-ttString& ttString::make_relative(ttString& pathBase)
+ttString& ttString::make_relative_wx(const wxString& pathBase)
 {
     wxFileName file(*this);
     file.MakeRelativeTo(pathBase);
