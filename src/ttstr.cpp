@@ -9,6 +9,7 @@
 
 #include <cwchar>
 #include <cwctype>
+#include <filesystem>
 
 #include <wx/filename.h>
 
@@ -684,4 +685,39 @@ ttString& ttString::make_relative(ttlib::cview pathBase)
 
     assign(file.GetFullPath());
     return *this;
+}
+
+bool ttString::ChangeDir(bool is_dir) const
+{
+    if (empty())
+        return false;
+    try
+    {
+        if (is_dir)
+        {
+            auto dir = std::filesystem::directory_entry(std::filesystem::path(wx_str()));
+            if (dir.exists())
+            {
+                std::filesystem::current_path(dir);
+                return true;
+            }
+        }
+        else
+        {
+            ttString tmp(*this);
+            tmp.remove_filename();
+            if (tmp.empty())
+                return false;
+            auto dir = std::filesystem::directory_entry(std::filesystem::path(tmp.wx_str()));
+            if (dir.exists())
+            {
+                std::filesystem::current_path(dir);
+                return true;
+            }
+        }
+    }
+    catch (const std::exception& /* e */)
+    {
+    }
+    return false;
 }

@@ -276,4 +276,19 @@ public:
 
     /// Returns true if the current string refers to an existing directory.
     bool dir_exists() const { return wxDirExists(*this); };
+
+    /// Confirms current string is an existing directory and then changes to that directory.
+    ///
+    /// If is_dir is false, current sting is assumed to contain a filename in the path to
+    /// change to.
+    bool ChangeDir(bool is_dir = true) const;
+};
+
+/// This class saves the current working directory, and changes to that directory when the
+/// class is destroyed.
+class ttSaveCwd : public ttString
+{
+public:
+    ttSaveCwd() { assignCwd(); }
+    ~ttSaveCwd() { ChangeDir(); }
 };
