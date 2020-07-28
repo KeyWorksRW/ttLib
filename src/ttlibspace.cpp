@@ -311,7 +311,6 @@ bool ttlib::is_sameas(std::string_view str1, std::string_view str2, CASE checkca
 
 int ttlib::atoi(std::string_view str) noexcept
 {
-    assert(!str.empty());
     if (str.empty())
         return 0;
 
