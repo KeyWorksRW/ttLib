@@ -35,7 +35,6 @@
 
 namespace ttlib
 {
-
     /// The following messages are passed to ttlib::wintrace() to talk to the ttTrace.exe app and include a text string.
 
     /// The message names are modeled after the messages sent by KeyHelp. However, you can use them however you want.
@@ -117,33 +116,33 @@ __declspec(noreturn) void ttOOM(void);
 // Following section is so that tt macros will be removed in BOTH Release and all non-Windows builds
 
 #if !defined(NDEBUG) && defined(_WIN32)
-    #define ttASSERT(cond)                                                               \
-        {                                                                                \
-            if (!(cond) && ttAssertionMsg(__FILE__, __func__, __LINE__, #cond, nullptr)) \
-            {                                                                            \
-                __debugbreak();                                                            \
-            }                                                                            \
+    #define ttASSERT(cond)                                                          \
+        {                                                                           \
+            if (!(cond) && ttAssertionMsg(__FILE__, __func__, __LINE__, #cond, "")) \
+            {                                                                       \
+                __debugbreak();                                                     \
+            }                                                                       \
         }
 
     #define ttASSERT_MSG(cond, msg)                                                  \
         {                                                                            \
             if (!(cond) && ttAssertionMsg(__FILE__, __func__, __LINE__, #cond, msg)) \
             {                                                                        \
-                __debugbreak();                                                        \
+                __debugbreak();                                                      \
             }                                                                        \
         }
 
     #define ttFAIL(msg)                                                 \
         if (ttAssertionMsg(__FILE__, __func__, __LINE__, nullptr, msg)) \
         {                                                               \
-            __debugbreak();                                               \
+            __debugbreak();                                             \
         }
 
     #define ttFAIL_MSG(msg)                                                 \
         {                                                                   \
             if (ttAssertionMsg(__FILE__, __func__, __LINE__, nullptr, msg)) \
             {                                                               \
-                __debugbreak();                                               \
+                __debugbreak();                                             \
             }                                                               \
         }
 
@@ -151,7 +150,7 @@ __declspec(noreturn) void ttOOM(void);
         {                                                                                 \
             if (FAILED(hr) && ttAssertionMsg(__FILE__, __func__, __LINE__, nullptr, msg)) \
             {                                                                             \
-                __debugbreak();                                                             \
+                __debugbreak();                                                           \
             }                                                                             \
         }
 
@@ -159,7 +158,7 @@ __declspec(noreturn) void ttOOM(void);
         {                                                                                                        \
             if ((!psz || !*psz) && ttAssertionMsg(__FILE__, __func__, __LINE__, #psz, "Null or empty pointer!")) \
             {                                                                                                    \
-                __debugbreak();                                                                                    \
+                __debugbreak();                                                                                  \
             }                                                                                                    \
         }
 
@@ -167,7 +166,7 @@ __declspec(noreturn) void ttOOM(void);
         {                                                                                           \
             if (str.empty() && ttAssertionMsg(__FILE__, __func__, __LINE__, #str, "Empty string!")) \
             {                                                                                       \
-                __debugbreak();                                                                       \
+                __debugbreak();                                                                     \
             }                                                                                       \
         }
 
@@ -177,7 +176,7 @@ __declspec(noreturn) void ttOOM(void);
         {                                                                   \
             if (ttAssertionMsg(__FILE__, __func__, __LINE__, nullptr, msg)) \
             {                                                               \
-                __debugbreak();                                               \
+                __debugbreak();                                             \
             }                                                               \
             throw msg;                                                      \
         }
@@ -187,18 +186,18 @@ __declspec(noreturn) void ttOOM(void);
         {                                                          \
             if (ttdoReportLastError(__FILE__, __func__, __LINE__)) \
             {                                                      \
-                __debugbreak();                                      \
+                __debugbreak();                                    \
             }                                                      \
         }
 
     // This still executes the expression in non-DEBUG builds, it just doesn't check the result.
-    #define ttVERIFY(exp) (void) ((!!(exp)) || ttAssertionMsg(__FILE__, __func__, __LINE__, #exp, nullptr))
+    #define ttVERIFY(exp) (void) ((!!(exp)) || ttAssertionMsg(__FILE__, __func__, __LINE__, #exp, ""))
 
     /// Causes all calls to ttAssertionMsg to immediately return.
     #define ttDISABLE_ASSERTS() ttlib::allow_asserts(false)
 
     /// Causes ttAssertionMsg to run normally
-    #define ttENABLE_ASSERTS()  ttlib::allow_asserts(true)
+    #define ttENABLE_ASSERTS() ttlib::allow_asserts(true)
 
     /// All ttTRACE macros are automatically removed in Release builds. Call ttlib::wintrace()
     /// directly if you need tracing in a release build.
