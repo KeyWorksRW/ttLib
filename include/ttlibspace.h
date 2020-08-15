@@ -353,7 +353,7 @@ namespace ttlib
                        HWND hwndParent = NULL);
 
     /// Only available in ttLibwx.lib (wxWidgets + Windows)
-    HINSTANCE ShellRun(wxString& filename, wxString& args, wxString& directory, INT nShow = SW_SHOWNORMAL,
+    HINSTANCE ShellRun_wx(const wxString& filename, const wxString& args, const wxString& directory, INT nShow = SW_SHOWNORMAL,
                        HWND hwndParent = NULL);
 
     HFONT CreateLogFont(std::string_view TypeFace, size_t point, bool Bold = false, bool Italics = false);
@@ -377,6 +377,10 @@ namespace ttlib
     /// Loads the string from the resource file using language and resource module specified
     /// in ttlib::lang_info. String is converted to UTF8 before storing in Result.
     ttlib::cstr LoadStringEx(WORD id);
+
+    /// Loads the string from the resource file using language and resource module specified
+    /// in ttlib::lang_info. Only available in ttLibwx.lib (wxWidgets + Windows).
+    wxString LoadStringEx_wx(WORD id);
 
     /// Set the resource handle and language to use for loading resources. If hinstResource
     /// is NULL, the current executable is used. Otherwise it must be the handle returned
