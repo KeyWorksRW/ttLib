@@ -49,6 +49,11 @@ ttString& ttString::append_view(std::string_view str, size_t posStart, size_t le
 
 ttString& ttString::assign_view(std::string_view str, size_t posStart, size_t len)
 {
+    if (str.empty())
+    {
+        clear();
+        return *this;
+    }
     if (posStart >= str.size())
     {
         assertm(posStart < str.size(), "invalid starting position for append_view");
