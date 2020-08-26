@@ -28,11 +28,13 @@ namespace ttlib
     {
     public:
         multistr(std::string_view str, char separator = ';');
+        multistr(std::string_view str, std::string_view separator);
     };
 
     class multiview : public std::vector<std::string_view>
     {
     public:
         multiview(std::string_view view, char separator = ';');
+        multiview(std::string_view str, std::string_view separator);
     };
 }  // namespace ttlib
