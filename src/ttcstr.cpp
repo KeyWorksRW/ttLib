@@ -116,7 +116,9 @@ cstr& cstr::trim(tt::TRIM where)
         if (len + 1 < length())
             erase(len + 1, length() - len);
     }
-    if (where == tt::TRIM::left || where == tt::TRIM::both)
+
+    // If trim(right) was called above, the string may now be empty -- front() fails on an empty string
+    if (!empty() && (where == tt::TRIM::left || where == tt::TRIM::both))
     {
         // Assume that most strings won't start with whitespace, so return as quickly as possible if that is the
         // case.
@@ -131,6 +133,7 @@ cstr& cstr::trim(tt::TRIM where)
         }
         replace(0, length(), substr(pos, length() - pos));
     }
+
     return *this;
 }
 
