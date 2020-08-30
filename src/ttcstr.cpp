@@ -1046,3 +1046,48 @@ cstr& cdecl cstr::Format(std::string_view format, ...)
 
     return *this;
 }
+
+/////////////////// The following section is only built when building with wxWidgets header files ///////////////////
+
+// clang-format off
+#if defined(_WX_DEFS_H_)
+
+#include <wx/string.h>  // wxString class
+
+#if defined(_WIN32)
+    // This ctor is only available on Windows builds where wxString is UTF16. For non-Windows builds,
+    // a ctor for std::wstring_view is used insted.
+
+    cstr::cstr(const wxString& str)
+    {
+    #if defined(_WIN32)
+        utf16to8(str.wx_str(), *this);
+    #else
+        *this = str.c_str();
+    #endif
+}
+#endif  // _WIN32
+
+cstr& cstr::assign_wx(const wxString& str)
+{
+#if defined(_WIN32)
+    clear();
+    utf16to8(str.wx_str(), *this);
+#else
+    *this = str.c_str();
+#endif
+    return *this;
+}
+
+cstr& cstr::append_wx(const wxString& str)
+{
+#if defined(_WIN32)
+    utf16to8(str.wx_str(), *this);
+#else
+    *this += str.c_str();
+#endif
+    return *this;
+}
+// clang-format on
+
+#endif  // _WX_DEFS_H_

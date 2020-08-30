@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:      ttcstr.h
-// Purpose:   Classes for handling zero-terminated char strings.
+// Purpose:   std::string with additional methods
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2020 KeyWorks Software (Ralph Walden)
 // License:   Apache License -- see ../LICENSE
@@ -45,30 +45,33 @@ namespace ttlib
         cstr(void) : bs() {}
         cstr(const char* psz) : bs(psz) {}
         cstr(std::string_view view) : bs(view) {}
-        cstr(std::wstring_view view) : bs(std::move(utf16to8(view))) {}
         cstr(ttlib::cview view) : bs(view) {}
         cstr(const cstr& str) : bs(str) {}
         cstr(const std::string& str) : bs(str) {}
 
         cstr(const std::filesystem::directory_entry& dir) : bs(dir.path().string(), dir.path().string().size()) {}
 
+#if !defined(_WX_DEFS_H_) || !defined(_WIN32)
+        cstr(std::wstring_view view) : bs(std::move(utf16to8(view))) {}
+#else
+        cstr(const wxString& str);
+#endif
+
         cstr& from_utf16(std::wstring_view str)
         {
-            *this = utf16to8(str);
+            clear();
+            utf16to8(str, *this);
             return *this;
         }
         std::wstring to_utf16() const;
 
-        /// If you pass wxWidgets::wx_str() to this function it will convert from UTF16 to
-        /// UTF8 on Windows, or copy it on other platforms
         cstr& utf(std::wstring_view str)
         {
-            *this = utf16to8(str);
+            clear();
+            utf16to8(str, *this);
             return *this;
         }
 
-        /// If you pass wxWidgets::wx_str() to this function it will convert from UTF16 to
-        /// UTF8 on Windows, or copy it on other platforms
         cstr& utf(std::string_view str)
         {
             *this = str;
@@ -300,7 +303,7 @@ namespace ttlib
 
         cstr& operator<<(std::wstring_view str)
         {
-            *this += utf16to8(str);
+            utf16to8(str, *this);
             return *this;
         }
 
@@ -321,6 +324,19 @@ namespace ttlib
             *this += itoa(i);
             return *this;
         }
+
+        /////////////////////////////// wxWidgets-only section ///////////////////////
+        //                                                                          //
+        // The following functions require wxWidgets and ttlibwx.lib.               //
+        //                                                                          //
+        //////////////////////////////////////////////////////////////////////////////
+
+#if defined(_WX_DEFS_H_)
+
+        cstr& assign_wx(const wxString& str);
+        cstr& append_wx(const wxString& str);
+
+#endif
 
         //////////////////////////////// Windows-only section ////////////////////////
         //                                                                          //
