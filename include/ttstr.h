@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Purpose:   Enhanced version of wxString
+// Purpose:   wxString with additional methods similar to ttlib::cstr
 // Author:    Ralph Walden
 // Copyright: Copyright (c) 2020 KeyWorks Software (Ralph Walden)
 // License:   Apache License -- see ../LICENSE
@@ -46,14 +46,14 @@ public:
     ttString(const wxString& str) : wxString(str) {}
     ttString(void) : wxString() {}
 
-    ttString(const ttlib::cstr& str) { this->assign(str.wx_str()); }
-    ttString(ttlib::cview str) { this->assign(str.wx_str()); }
+    ttString(const ttlib::cstr& str);
+    ttString(ttlib::cview str);
 
 #if defined(_WIN32)
     // When compiling for Windows, assume all char* are utf8 strings and convert them to utf16 before assigning them.
 
-    ttString(const char* str) { this->assign(ttlib::utf8to16(str)); }
-    ttString(std::string_view str) { this->assign(ttlib::utf8to16(str)); }
+    ttString(const char* str) { this->assign(wxString::FromUTF8(str)); }
+    ttString(std::string_view str) { this->assign(wxString::FromUTF8(str.data(), str.size())); }
 #else
     ttString(std::string_view str) { this->assign(str.data(), str.size()); }
 #endif  // _WIN32
@@ -178,16 +178,13 @@ public:
         return static_cast<int>(val);
     }
 
-    /// If character is found, line is truncated from the character on, and then any trailing
-    /// space is removed;
+    /// If character is found, line is truncated from the character on
     void erase_from(char ch);
 
-    /// If string is found, line is truncated from the string on, and then any trailing space
-    /// is removed;
+    /// If string is found, line is truncated from the string on
     void erase_from(std::string_view sub);
 
-    /// If string is found, line is truncated from the string on, and then any trailing space
-    /// is removed;
+    /// If string is found, line is truncated from the string on
     void erase_from_wx(const wxString& sub);
 
     /// Replace first (or all) occurrences of substring with another one

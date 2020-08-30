@@ -13,19 +13,46 @@
 
 #include <wx/filename.h>
 
-#include <ttstr.h>  // ttString
+#include <ttstr.h>
+
+#include <ttcstr.h>   // cstr -- std::string with additional methods
+#include <ttcview.h>  // cview -- string_view functionality on a zero-terminated char string.
+
+ttString::ttString(const ttlib::cstr& str)
+{
+#if defined(_WIN32)
+    this->assign(wxString::FromUTF8(str.c_str(), str.size()));
+#else
+    this->assign(str.c_str());
+#endif  // _WIN32
+}
+
+ttString::ttString(ttlib::cview str)
+{
+#if defined(_WIN32)
+    this->assign(wxString::FromUTF8(str.c_str(), str.size()));
+#else
+    this->assign(str.c_str(), str.size());
+#endif  // _WIN32
+}
 
 ttlib::cstr ttString::sub_cstr(size_type pos, size_type count) const
 {
     ttlib::cstr str;
     if (pos == 0 && count == tt::npos)
-        str.utf(wx_str());
+    {
+#if defined(_WIN32)
+        utf16to8(wx_str(), str);
+#else
+        str = c_str();
+#endif  // _WIN32
+    }
     else if (pos < size())
     {
-        wxString tmp(*this, pos, size() - pos);
+        // wxString tmp(*this, pos, size() - pos);
 
-        // On Windows, this will convert to UTF8, otherwise it's a straight copy of tmp.c_str()
-        str.utf(tmp.wx_str());
+        // On Windows, this will convert to UTF8, otherwise it's a straight copy of tmp
+        str.assign_wx(Mid(pos, size() - pos));
     }
     return str;
 }
@@ -40,9 +67,9 @@ ttString& ttString::append_view(std::string_view str, size_t posStart, size_t le
     if (len == npos)
         len = (str.size() - posStart);
 #if defined(_WIN32)
-    this->append(ttlib::utf8to16(str), posStart, len);
+    this->append(wxString::FromUTF8(str.data() + posStart, len));
 #else
-    this->append(str.data(), posStart, len);
+    this->append(str.data() + posStart, len);
 #endif  // _WIN32
     return *this;
 }
@@ -60,11 +87,11 @@ ttString& ttString::assign_view(std::string_view str, size_t posStart, size_t le
         return *this;
     }
     if (len == npos)
-        len = str.size();
+        len = (str.size() - posStart);
 #if defined(_WIN32)
-    assign(ttlib::utf8to16(str), posStart, len);
+    this->assign(wxString::FromUTF8(str.data() + posStart, str.size()));
 #else
-    this->assign(str.data(), posStart, len);
+    this->assign(str.data() + posStart, len);
 #endif  // _WIN32
     return *this;
 }
@@ -277,14 +304,8 @@ size_t ttString::stepover(size_t start) const
 
 bool ttString::is_sameas(std::string_view str, tt::CASE checkcase) const
 {
-    if (size() != str.size())
-        return false;
-
-    if (empty())
-        return str.empty();
-
-    // if both strings have the same length and are non-empty, then we can compare as a prefix.
-    return is_sameprefix(str, checkcase);
+    ttString tmp(str);
+    return IsSameAs(tmp, checkcase == tt::CASE::exact);
 }
 
 bool ttString::is_sameprefix(std::string_view vstr, tt::CASE checkcase) const
@@ -369,7 +390,7 @@ ttString& ttString::backslashestoforward()
 {
     for (auto pos = find('\\'); pos != wxString::npos; pos = find('\\'))
     {
-        replace(pos, 1, "/");
+        replace(pos, 1, wxT("/"));
     }
     return *this;
 }
@@ -432,7 +453,6 @@ void ttString::erase_from(char ch)
     if (auto pos = find(ch); pos != npos)
     {
         erase(pos);
-        Trim();
     }
 }
 
@@ -446,7 +466,6 @@ void ttString::erase_from(std::string_view sub)
     if (pos != npos)
     {
         erase(pos);
-        Trim();
     }
 }
 
@@ -455,21 +474,15 @@ void ttString::erase_from_wx(const wxString& sub)
     if (auto pos = find(sub); pos != npos)
     {
         erase(pos);
-        Trim();
     }
 }
 
 size_t ttString::replace_view(std::string_view oldtext, std::string_view newtext, bool replace_all)
 {
-#if defined(_WIN32)
-    auto old_text = ttlib::utf8to16(oldtext);
-    auto replace_text = ttlib::utf8to16(newtext);
-#else
-    ttlib::cstr old_text(oldtext);
-    ttlib::cstr replace_text(newtext);
-#endif  // _WIN32
+    ttString old_text(oldtext);
+    ttString new_text(newtext);
 
-    return Replace(old_text, replace_text, replace_all);
+    return Replace(old_text, new_text, replace_all);
 }
 
 ttString& ttString::replace_extension(std::string_view newExtension)
