@@ -384,6 +384,17 @@ size_t cview::find_oneof(const std::string& set) const
     return (static_cast<size_t>(pszFound - c_str()));
 }
 
+size_t cview::find_oneof(cview set, size_t start) const
+{
+    if (set.empty())
+        return tt::npos;
+    auto view_start = subview(start);
+    const char* pszFound = std::strpbrk(view_start, set);
+    if (!pszFound)
+        return tt::npos;
+    return (static_cast<size_t>(pszFound - view_start.c_str()));
+}
+
 size_t cview::find_space(size_t start) const
 {
     if (start >= length())
