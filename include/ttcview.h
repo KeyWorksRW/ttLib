@@ -102,6 +102,11 @@ namespace ttlib
         /// This is equivalent to calling std::strpbrk but returns an offset instead of a pointer.
         size_t find_oneof(const std::string& set) const;
 
+        /// Find any one of the characters in a set. Returns offset if found, npos if not.
+        ///
+        /// This is equivalent to calling std::strpbrk but returns an offset instead of a pointer.
+        size_t find_oneof(cview set, size_t start) const;
+
         /// Returns offset to the next whitespace character starting with pos. Returns npos if
         /// there are no more whitespaces.
         ///
