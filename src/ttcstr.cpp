@@ -444,7 +444,11 @@ cstr& cstr::replace_extension(std::string_view newExtension)
         return *this;
     }
 
-    if (auto pos = find_last_of('.'); ttlib::is_found(pos))
+    auto pos_file = find_filename();
+    if (ttlib::is_error(pos_file))
+        pos_file = 0;
+
+    if (auto pos = find_last_of('.'); ttlib::is_found(pos) && pos > pos_file)
     {
         // If the string only contains . or .. then it is a folder
         if (pos == 0 || (pos == 1 && at(0) != '.'))

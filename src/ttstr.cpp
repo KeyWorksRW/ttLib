@@ -497,7 +497,11 @@ ttString& ttString::replace_extension(std::string_view newExtension)
         return *this;
     }
 
-    if (auto pos = find_last_of('.'); is_found(pos))
+    auto pos_file = find_filename();
+    if (ttlib::is_error(pos_file))
+        pos_file = 0;
+
+    if (auto pos = find_last_of('.'); is_found(pos) && pos > pos_file)
     {
         // If the string only contains . or .. then it is a folder
         if (pos == 0 || (pos == 1 && at(0) != '.'))
@@ -539,7 +543,11 @@ ttString& ttString::replace_extension_wx(const wxString& newExtension)
         return *this;
     }
 
-    if (auto pos = find_last_of('.'); is_found(pos))
+    auto pos_file = find_filename();
+    if (ttlib::is_error(pos_file))
+        pos_file = 0;
+
+    if (auto pos = find_last_of('.'); is_found(pos) && pos > pos_file)
     {
         // If the string only contains . or .. then it is a folder
         if (pos == 0 || (pos == 1 && at(0) != '.'))
@@ -567,6 +575,33 @@ ttString& ttString::replace_extension_wx(const wxString& newExtension)
     }
 
     return *this;
+}
+
+size_t ttString::find_filename() const noexcept
+{
+    if (empty())
+        return tt::npos;
+
+    auto pos = find_last_of('/');
+
+#if defined(_WIN32)
+    // Windows filenames can contain both forward and back slashes, so check for a backslash as well.
+    auto back = find_last_of('\\');
+    if (back != npos)
+    {
+        // If there is no forward slash, or the backslash appears after the forward slash, then use it's position.
+        if (pos == npos || back > pos)
+            pos = back;
+    }
+#endif
+    if (pos == npos)
+    {
+        pos = find_last_of(':');
+        if (pos == npos)
+            return tt::npos;
+    }
+
+    return pos + 1;
 }
 
 ttString& ttString::replace_filename(std::string_view newFilename)
