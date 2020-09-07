@@ -247,6 +247,9 @@ public:
     /// Returns a copy of the current filename or wxEmptyStr if there is no filename.
     ttString filename() const;
 
+    /// Returns offset to the current filename or tt::npos if there is no filename.
+    size_t find_filename() const noexcept;
+
     /// Replaces any existing extension with a new extension, or appends the extension if the
     /// current file name doesn't have an extension.
     ttString& replace_extension(std::string_view newExtension);
