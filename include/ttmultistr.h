@@ -27,14 +27,31 @@ namespace ttlib
     class multistr : public std::vector<ttlib::cstr>
     {
     public:
-        multistr(std::string_view str, char separator = ';');
-        multistr(std::string_view str, std::string_view separator);
+        multistr() {}
+
+        multistr(std::string_view str, char separator = ';') { SetString(str, separator); }
+
+        // Use this when a character sequence (such as "/r/n") separates the substrings
+        multistr(std::string_view str, std::string_view separator) { SetString(str, separator); }
+
+        // Clears the current vector of parsed strings and creates a new vector
+        void SetString(std::string_view str, char separator = ';');
+        void SetString(std::string_view str, std::string_view separator);
     };
 
     class multiview : public std::vector<std::string_view>
     {
     public:
-        multiview(std::string_view view, char separator = ';');
-        multiview(std::string_view str, std::string_view separator);
+        // Similar to multistr, only the vector consists of views into the original string
+        multiview() {}
+
+        multiview(std::string_view str, char separator = ';') { SetString(str, separator); }
+
+        // Use this when a character sequence (such as "/r/n") separates the substrings
+        multiview(std::string_view str, std::string_view separator) { SetString(str, separator); }
+
+        // Clears the current vector of parsed strings and creates a new vector
+        void SetString(std::string_view str, char separator = ';');
+        void SetString(std::string_view str, std::string_view separator);
     };
 }  // namespace ttlib
