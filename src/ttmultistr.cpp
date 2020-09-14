@@ -12,8 +12,9 @@
 
 using namespace ttlib;
 
-multistr::multistr(std::string_view str, char separator)
+void multistr::SetString(std::string_view str, char separator)
 {
+    clear();
     size_t start = 0;
     size_t end = str.find_first_of(separator);
     while (end != std::string_view::npos)
@@ -30,8 +31,9 @@ multistr::multistr(std::string_view str, char separator)
     back().assign(str.substr(start));
 }
 
-multistr::multistr(std::string_view str, std::string_view separator)
+void multistr::SetString(std::string_view str, std::string_view separator)
 {
+    clear();
     size_t start = 0;
     size_t end = str.find_first_of(separator);
     while (end != std::string_view::npos)
@@ -48,8 +50,11 @@ multistr::multistr(std::string_view str, std::string_view separator)
     back().assign(str.substr(start));
 }
 
-multiview::multiview(std::string_view str, char separator)
+/////////////////////////////////////// multiview ///////////////////////////////////////
+
+void multiview::SetString(std::string_view str, char separator)
 {
+    clear();
     size_t start = 0;
     size_t end = str.find_first_of(separator);
     while (end != std::string_view::npos)
@@ -64,8 +69,9 @@ multiview::multiview(std::string_view str, char separator)
     push_back(str.substr(start));
 }
 
-multiview::multiview(std::string_view str, std::string_view separator)
+void multiview::SetString(std::string_view str, std::string_view separator)
 {
+    clear();
     size_t start = 0;
     size_t end = str.find_first_of(separator);
     while (end != std::string_view::npos)
