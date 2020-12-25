@@ -774,18 +774,17 @@ cstr& cdecl cstr::Format(std::string_view format, ...)
     {
         for (pos = 0; pos < format.length(); ++pos)
         {
-            if (format[pos] != '%')
+            // Use .at(pos) not .[pos] to throw an exception if invalid format string is used
+            if (format.at(pos) != '%')
             {
-                buffer << format[pos];
+                buffer << format.at(pos);
                 continue;
             }
             ++pos;
 
-            // From here on out we use at() rather than [] so that an exception is thrown if pos exceeds range.
-
             if (format.at(pos) == '%')
             {
-                buffer << format[pos];
+                buffer << format.at(pos);
                 continue;
             }
 
@@ -848,21 +847,21 @@ cstr& cdecl cstr::Format(std::string_view format, ...)
             }
 
             bool LeftFieldWidth = false;
-            if (format[pos] == '-')
+            if (format.at(pos) == '-')
             {
                 buffer << std::left;
                 LeftFieldWidth = true;
                 ++pos;
             }
 
-            if (ttlib::is_digit(format[pos]))
+            if (ttlib::is_digit(format.at(pos)))
             {
                 auto fieldWidth = ttlib::atoi(format.substr(pos));
                 buffer << std::setw(fieldWidth);
                 do
                 {
                     ++pos;
-                } while (pos < format.length() && ttlib::is_digit(format[pos]));
+                } while (pos < format.length() && ttlib::is_digit(format.at(pos)));
             }
 
             // For both %lc and %ls we assume a UTF16 string and convert it to UTF8.
