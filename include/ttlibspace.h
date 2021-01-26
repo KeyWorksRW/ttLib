@@ -20,6 +20,7 @@
     #define _TTLIB_NAMESPACE_H_GUARD_  // sanity check to confirm that #pragma once is working as expected
 #endif
 
+#include <cctype>
 #include <filesystem>  // directory_entry
 #include <stdlib.h>    // for std::abs(long)
 #include <string>
@@ -98,22 +99,23 @@ namespace ttlib
 
     extern const std::string emptystring;
 
-    /// Only valid for ANSI characters
-    constexpr inline bool is_alpha(char ch) noexcept { return ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')); }
+    // These functions are provided for convenience since they cast a char to unsigned char before calling the std::
+    // library function.
 
-    constexpr inline bool is_digit(char ch) noexcept { return ((ch >= '0' && ch <= '9') || ch == '-'); }
+    inline bool is_alnum(char ch) { return std::isalnum(static_cast<unsigned char>(ch)); }
+    inline bool is_alpha(char ch) { return std::isalpha(static_cast<unsigned char>(ch)); }
+    inline bool is_blank(char ch) { return std::isblank(static_cast<unsigned char>(ch)); }
+    inline bool is_cntrl(char ch) { return std::iscntrl(static_cast<unsigned char>(ch)); }
+    inline bool is_digit(char ch) { return std::isdigit(static_cast<unsigned char>(ch)); }
+    inline bool is_graph(char ch) { return std::isgraph(static_cast<unsigned char>(ch)); }
+    inline bool is_lower(char ch) { return std::islower(static_cast<unsigned char>(ch)); }
+    inline bool is_print(char ch) { return std::isprint(static_cast<unsigned char>(ch)); }
+    inline bool is_punctuation(char ch) { return std::ispunct(static_cast<unsigned char>(ch)); }
+    inline bool is_upper(char ch) { return std::isupper(static_cast<unsigned char>(ch)); }
+    inline bool is_whitespace(char ch) { return std::isspace(static_cast<unsigned char>(ch)); }
 
     /// Is ch the start of a utf8 sequence?
     constexpr inline bool is_utf8(char ch) noexcept { return ((ch & 0xC0) != 0x80); }
-
-    /// Returns true if character is a space, tab, eol or form feed character.
-    constexpr inline bool is_whitespace(char ch) noexcept { return (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' || ch == '\f'); }
-
-    /// Returns true if character is a period, comma, semi-colon, colon, question or exclamation
-    constexpr inline bool is_punctuation(char ch) noexcept
-    {
-        return (ch == '.' || ch == ',' || ch == ';' || ch == ':' || ch == '?' || ch == '!');
-    }
 
     template<typename T>
     /// Compares result against -1 -- use with returns from find, contains, locate, etc.
