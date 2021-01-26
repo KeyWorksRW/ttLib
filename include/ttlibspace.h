@@ -249,6 +249,24 @@ namespace ttlib
     std::wstring utf8to16(std::string_view str);
     ttlib::cstr utf16to8(std::wstring_view str);
 
+    /// Remove locale-dependent whitespace from right side of string
+    inline void RightTrim(std::string& s)
+    {
+        s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), s.end());
+    }
+
+    /// Remove locale-dependent whitespace from left side of string
+    inline void LeftTrim(std::string& s)
+    {
+        s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) { return !std::isspace(ch); }));
+    }
+
+    /// Remove locale-dependent whitespace from left and right side of string
+    inline void BothTrim(std::string& s)
+    {
+        ttlib::LeftTrim(s);
+        ttlib::RightTrim(s);
+    }
 }  // namespace ttlib
 
 // clang-format off
@@ -354,7 +372,7 @@ namespace ttlib
 
     /// Only available in ttLibwx.lib (wxWidgets + Windows)
     HINSTANCE ShellRun_wx(const wxString& filename, const wxString& args, const wxString& directory, INT nShow = SW_SHOWNORMAL,
-                       HWND hwndParent = NULL);
+                          HWND hwndParent = NULL);
 
     HFONT CreateLogFont(std::string_view TypeFace, size_t point, bool Bold = false, bool Italics = false);
 

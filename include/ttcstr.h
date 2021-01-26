@@ -168,6 +168,25 @@ namespace ttlib
         /// where: TRIM::right, TRIM::left, or TRIM::both
         cstr& trim(tt::TRIM where = tt::TRIM::right);
 
+        /// Remove locale-dependent whitespace from right side
+        inline void RightTrim()
+        {
+            erase(std::find_if(rbegin(), rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), end());
+        }
+
+        /// Remove locale-dependent whitespace from left side
+        inline void LeftTrim()
+        {
+            erase(begin(), std::find_if(begin(), end(), [](unsigned char ch) { return !std::isspace(ch); }));
+        }
+
+        /// Remove locale-dependent whitespace from left and right side
+        inline void BothTrim()
+        {
+            LeftTrim();
+            RightTrim();
+        }
+
         /// Returns a view of the characters between chBegin and chEnd. This is typically used
         /// to view the contents of a quoted string. Returns the position of the ending
         ///  character in src.
