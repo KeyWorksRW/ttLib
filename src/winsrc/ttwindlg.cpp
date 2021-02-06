@@ -72,7 +72,7 @@ INT_PTR WINAPI ttlib::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam)
         if (!(pThis->m_hwndParent && IsWindow(pThis->m_hwndParent)))
             pThis->m_hwndParent = GetActiveWindow();
 
-        INT_PTR lResult = 0;
+        LRESULT lResult = 0;
         if (pThis->OnMsgMap(msg, wParam, lParam, lResult))
             return lResult;
 
