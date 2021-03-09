@@ -109,8 +109,6 @@ inline bool ttAssertionMsg(const char* filename, const char* function, int line,
     return ttAssertionMsg(filename, function, line, cond, msg.str().c_str());
 }
 
-__declspec(noreturn) void ttOOM(void);
-
 #endif  // end of Windows-only section.
 
 // Following section is so that tt macros will be removed in BOTH Release and all non-Windows builds
