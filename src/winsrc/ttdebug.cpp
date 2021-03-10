@@ -1,8 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttdebug.cpp
 // Purpose:   Various debugging functionality
 // Author:    Ralph Walden
-// Copyright: Copyright (c) 1998-2020 KeyWorks Software (Ralph Walden)
+// Copyright: Copyright (c) 1998-2021 KeyWorks Software (Ralph Walden)
 // License:   Apache License -- see ../../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
@@ -32,7 +31,7 @@ namespace ttdbg
     std::mutex mutexAssert;
     std::mutex mutexTrace;
 
-    bool allowAsserts { true };  // Setting this to true will cause ttAssertionMsg to return without doing anything
+    bool allowAsserts { true };     // Setting this to true will cause ttAssertionMsg to return without doing anything
     bool allowDuplicates { true };  // Setting this to false will prevent any assert msg from being displayed more than once
 
     HANDLE hTraceMapping { NULL };
@@ -119,7 +118,7 @@ int ttlib::CheckItemID(HWND hwnd, int id, const char* pszID, const char* filenam
         msg << "Invalid dialog control id: " << pszID << " (" << id << ')';
         if (ttAssertionMsg(filename, function, line, pszID, msg.c_str()))
         {
-            DebugBreak();
+            __debugbreak();
         }
     }
     return id;
