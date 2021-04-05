@@ -206,5 +206,11 @@ namespace ttlib
         /// A filename is any string after the last '/' (or '\' on Windows) in the current
         /// view.
         bool moveto_filename() noexcept;
+
+        bool operator==(ttlib::cview str)
+        {
+            return this->is_sameas(str);
+        }
+
     };
 }  // namespace ttlib
