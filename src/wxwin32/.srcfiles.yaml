@@ -27,7 +27,7 @@ Files:
     ../ttcview.cpp      # string_view functionality on a zero-terminated char string.
     ../ttlibspace.cpp   # ttlib namespace functions
     ../ttmultistr.cpp   # ttlib::multistr, ttlib::multiview
-    # ../ttparser.cpp     # Command line parser
+    ../ttparser.cpp     # Command line parser
     ../ttstr.cpp        # Enhanced version of wxString
     ../ttstrings.cpp    # Class for handling zero-terminated char strings.
     ../ttsvector.cpp    # Vector class for storing ttString strings
