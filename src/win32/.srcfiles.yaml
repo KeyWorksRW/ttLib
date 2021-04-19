@@ -29,8 +29,7 @@ Files:
     ../ttsvector.cpp    # Vector class for storing ttString strings
     ../tttextfile.cpp   # Classes for reading and writing text files.
 
-    # Disabled due to compiler errors when compiling for 32-bit
-    # ../ttparser.cpp     # Command line parser
+    ../ttparser.cpp     # Command line parser
 
 # Windows only files
 
