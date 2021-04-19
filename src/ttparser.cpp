@@ -203,7 +203,7 @@ bool cmd::parse()
             continue;
 
 #if defined(_WIN32)
-        if (arg[0] == '-' || arg[0] == '/')
+        if (arg.at(0) == '-' || arg.at(0) == '/')
 #else
         if (arg[0] == '-')
 #endif  // _WIN32
@@ -211,7 +211,7 @@ bool cmd::parse()
             arg.remove_prefix(1);
 
             // long names are sometimes specified with -- so remove the second hyphen if that's the case
-            if (arg[0] == '-')
+            if (arg.at(0) == '-')
                 arg.remove_prefix(1);
 
             // If the argument is followed by a quote, then add it whether this is an argument type or not
@@ -271,7 +271,7 @@ bool cmd::parse()
                 arg = m_originalArgs[argpos].subview();
 
 #if defined(_WIN32)
-                if (arg.empty() || arg[0] == '-' || arg[0] == '/')
+                if (arg.empty() || arg.at(0) == '-' || arg.at(0) == '/')
 #else
                 if (arg.empty() || arg[0] == '-')
 #endif  // _WIN32
@@ -293,7 +293,7 @@ bool cmd::parse()
         }
         else
         {
-            if (arg[0] == '"')
+            if (arg.at(0) == '"')
             {
                 auto entry = m_extras.emplace_back();
                 entry.ExtractSubString(arg);
