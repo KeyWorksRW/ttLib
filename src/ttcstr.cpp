@@ -215,12 +215,15 @@ size_t cstr::AssignSubString(std::string_view src, char chBegin, char chEnd)
             // REVIEW: [KeyWorks - 01-26-2020] '\"' is also valid for the C compiler, though the slash
             // is unnecessary. Should we support it?
 
-            // only check quotes -- a slash is valid before other character pairs.
-            if (src[pos] == '\\' && (chBegin == '"' || chBegin == '\'') && pos + 1 < src.length() && (src[pos + 1] == chEnd))
+            // only check quotes and backslashes -- a slash is ignored before other character pairs.
+            if (src[pos] == '\\' && pos + 1 < src.length())
             {
-                // step over an escaped quote if the string to fetch is within a quote
-                pos += 2;
-                continue;
+                if (src[pos + 1] == '\\' || ((chBegin == '"' || chBegin == '\'') && src[pos + 1] == chEnd))
+                {
+                    // step over an escaped quote if the string to fetch is within a quote
+                    pos += 2;
+                    continue;
+                }
             }
             ++pos;
         }
