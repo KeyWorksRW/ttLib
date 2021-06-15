@@ -23,8 +23,6 @@
 using namespace ttlib;
 using namespace tt;
 
-namespace fs = std::filesystem;
-
 bool cstr::is_sameas(std::string_view str, CASE checkcase) const
 {
     if (size() != str.size())
@@ -608,7 +606,12 @@ cstr& cstr::append_filename(std::string_view filename)
 
 cstr& cstr::assignCwd()
 {
-    assign(std::filesystem::absolute(".").u8string());
+#ifdef _MSC_VER
+    clear();
+    utf16to8(std::filesystem::absolute(".").c_str());
+#else
+    assign(std::filesystem::absolute("."));
+#endif
     return *this;
 }
 
@@ -617,9 +620,16 @@ cstr& cstr::make_relative(ttlib::cview relative_to)
     if (empty())
         return *this;
 
-    auto current = fs::absolute(fs::u8path(c_str()));
-    auto rel_to = fs::absolute(fs::u8path(relative_to.c_str()));
-    assign(current.lexically_relative(rel_to).u8string());
+#ifdef _MSC_VER
+    auto current = std::filesystem::absolute(std::filesystem::path(to_utf16()));
+    auto rel_to = std::filesystem::absolute(std::filesystem::path(relative_to.to_utf16()));
+    clear();
+    utf16to8(current.lexically_relative(rel_to).c_str());
+#else
+    auto current = std::filesystem::absolute(std::filesystem::path(c_str()));
+    auto rel_to = std::filesystem::absolute(std::filesystem::path(relative_to.c_str()));
+    assign(current.lexically_relative(rel_to).string());
+#endif
     return *this;
 }
 
@@ -627,8 +637,14 @@ cstr& cstr::make_absolute()
 {
     if (!empty())
     {
-        auto current = std::filesystem::u8path(c_str());
-        assign(std::filesystem::absolute(current).u8string());
+#ifdef _MSC_VER
+        auto current = std::filesystem::path(to_utf16());
+        clear();
+        utf16to8(std::filesystem::absolute(current).c_str());
+#else
+        auto current = std::filesystem::path(c_str());
+        assign(std::filesystem::absolute(current).string());
+#endif
     }
     return *this;
 }
@@ -637,7 +653,11 @@ bool cstr::file_exists() const
 {
     if (empty())
         return false;
-    auto file = std::filesystem::directory_entry(std::filesystem::u8path(c_str()));
+#ifdef _MSC_VER
+    auto file = std::filesystem::directory_entry(std::filesystem::path(to_utf16()));
+#else
+    auto file = std::filesystem::directory_entry(std::filesystem::path(c_str()));
+#endif
     return (file.exists() && !file.is_directory());
 }
 
@@ -645,7 +665,11 @@ bool cstr::dir_exists() const
 {
     if (empty())
         return false;
-    auto file = std::filesystem::directory_entry(std::filesystem::u8path(c_str()));
+#ifdef _MSC_VER
+    auto file = std::filesystem::directory_entry(std::filesystem::path(to_utf16()));
+#else
+    auto file = std::filesystem::directory_entry(std::filesystem::path(c_str()));
+#endif
     return (file.exists() && file.is_directory());
 }
 

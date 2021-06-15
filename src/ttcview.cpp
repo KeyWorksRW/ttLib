@@ -345,7 +345,11 @@ bool cview::file_exists() const
 {
     if (empty())
         return false;
-    auto file = std::filesystem::directory_entry(std::filesystem::u8path(c_str()));
+#ifdef _MSC_VER
+    auto file = std::filesystem::directory_entry(std::filesystem::path((to_utf16())));
+#else
+    auto file = std::filesystem::directory_entry(std::filesystem::path(c_str()));
+#endif
     return (file.exists() && !file.is_directory());
 }
 
@@ -353,7 +357,11 @@ bool cview::dir_exists() const
 {
     if (empty())
         return false;
-    auto file = std::filesystem::directory_entry(std::filesystem::u8path(c_str()));
+#ifdef _MSC_VER
+    auto file = std::filesystem::directory_entry(std::filesystem::path(to_utf16()));
+#else
+    auto file = std::filesystem::directory_entry(std::filesystem::path(c_str()));
+#endif
     return (file.exists() && file.is_directory());
 }
 
@@ -378,10 +386,10 @@ size_t cview::find_oneof(const std::string& set) const
 {
     if (set.empty())
         return tt::npos;
-    const char* pszFound = std::strpbrk(c_str(), set.c_str());
-    if (!pszFound)
+    auto pFound = std::strpbrk(c_str(), set.c_str());
+    if (!pFound)
         return tt::npos;
-    return (static_cast<size_t>(pszFound - c_str()));
+    return (static_cast<size_t>(pFound - c_str()));
 }
 
 size_t cview::find_oneof(cview set, size_t start) const
@@ -389,20 +397,20 @@ size_t cview::find_oneof(cview set, size_t start) const
     if (set.empty())
         return tt::npos;
     auto view_start = subview(start);
-    const char* pszFound = std::strpbrk(view_start, set);
-    if (!pszFound)
+    auto pFound = std::strpbrk(view_start, set);
+    if (!pFound)
         return tt::npos;
-    return (static_cast<size_t>(pszFound - view_start.c_str()));
+    return (static_cast<size_t>(pFound - view_start.c_str()));
 }
 
 size_t cview::find_space(size_t start) const
 {
     if (start >= length())
         return npos;
-    const char* pszFound = std::strpbrk(c_str() + start, " \t\r\n\f");
-    if (!pszFound)
+    auto pFound = std::strpbrk(c_str() + start, " \t\r\n\f");
+    if (!pFound)
         return npos;
-    return (static_cast<size_t>(pszFound - c_str()));
+    return (static_cast<size_t>(pFound - c_str()));
 }
 
 size_t cview::find_nonspace(size_t start) const
