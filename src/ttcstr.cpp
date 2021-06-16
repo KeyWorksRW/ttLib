@@ -624,7 +624,7 @@ cstr& cstr::make_relative(ttlib::cview relative_to)
     auto current = std::filesystem::absolute(std::filesystem::path(to_utf16()));
     auto rel_to = std::filesystem::absolute(std::filesystem::path(relative_to.to_utf16()));
     clear();
-    utf16to8(current.lexically_relative(rel_to).c_str());
+    ttlib::utf16to8(current.lexically_relative(rel_to).wstring(), *this);
 #else
     auto current = std::filesystem::absolute(std::filesystem::path(c_str()));
     auto rel_to = std::filesystem::absolute(std::filesystem::path(relative_to.c_str()));
@@ -640,7 +640,7 @@ cstr& cstr::make_absolute()
 #ifdef _MSC_VER
         auto current = std::filesystem::path(to_utf16());
         clear();
-        utf16to8(std::filesystem::absolute(current).c_str());
+        ttlib::utf16to8(std::filesystem::absolute(current).wstring(), *this);
 #else
         auto current = std::filesystem::path(c_str());
         assign(std::filesystem::absolute(current).string());
