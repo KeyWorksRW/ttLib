@@ -162,6 +162,83 @@ namespace ttlib
         return false;
     }
 
+    // Combining has_member() and add_if() lets you use a std::vector like a std::set -- the vector will have have a lower
+    // memory footprint, but searching will be slower.
+
+    template <class T>
+    bool has_member(const std::vector<T>& vec, std::string_view str, tt::CASE checkcase = tt::CASE::exact)
+    {
+        for (size_t idx = 0; idx < vec.size(); ++idx)
+        {
+            if (ttlib::is_sameas(vec[idx], str, checkcase))
+                return true;
+        }
+        return false;
+    }
+
+    // Case-insensitive when compiled for Windows, otherwise case-sensitive
+    template <class T>
+#if defined(_WIN32)
+    bool has_filename(const std::vector<T>& vec, std::string_view str, tt::CASE checkcase = tt::CASE::either)
+#else
+    bool has_filename(const std::vector<T>& vec, std::string_view str, tt::CASE checkcase = tt::CASE::exact)
+#endif
+    {
+        for (size_t idx = 0; idx < vec.size(); ++idx)
+        {
+            if (ttlib::is_sameas(vec[idx], str, checkcase))
+                return true;
+        }
+        return false;
+    }
+
+    /// Only adds the string if it doesn't already exist.
+    template <class T>
+    void add_if(std::vector<T>& vec, std::string_view str, tt::CASE checkcase = tt::CASE::exact)
+    {
+        for (size_t idx = 0; idx < vec.size(); ++idx)
+        {
+            if (ttlib::is_sameas(vec[idx], str, checkcase))
+                return;
+        }
+        vec.emplace_back(str);
+    }
+
+    template <class T>
+    size_t find_member(const std::vector<T>& vec, std::string_view str, tt::CASE checkcase = tt::CASE::exact)
+    {
+        for (size_t idx = 0; idx < vec.size(); ++idx)
+        {
+            if (ttlib::is_sameas(vec[idx], str, checkcase))
+                return idx;
+        }
+        return tt::npos;
+    }
+
+    /// Search the entire vector for a member containing the substring.
+    template <class T>
+    size_t find_substr(std::vector<T>& vec, std::string_view str, tt::CASE checkcase = tt::CASE::exact)
+    {
+        for (size_t idx = 0; idx < vec.size(); ++idx)
+        {
+            if (ttlib::contains(vec[idx], str))
+                return idx;
+        }
+        return tt::npos;
+    }
+
+    /// Search the vector from the given start index for a member containing the substring.
+    template <class T>
+    size_t find_substr(std::vector<T>& vec, size_t start, std::string_view str, tt::CASE checkcase = tt::CASE::exact)
+    {
+        for (size_t idx = start; idx < vec.size(); ++idx)
+        {
+            if (ttlib::contains(vec[idx], str))
+                return idx;
+        }
+        return tt::npos;
+    }
+
     /// Returns a pointer to the next character in a UTF8 string.
     const char* next_utf8_char(const char* psz) noexcept;
 
