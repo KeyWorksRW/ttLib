@@ -346,3 +346,22 @@ std::vector<ttlib::cstr> cmd::getUsage()
 
     return usage;
 }
+
+#if defined(_WIN32)
+
+    #include <shellapi.h>
+
+void cmd::WinInit()
+{
+    int argc;
+    auto argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+
+    for (auto argpos = 1; argpos < argc; ++argpos)
+    {
+        auto& arg = m_originalArgs.emplace_back();
+        arg.from_utf16(argv[argpos]);
+    }
+    LocalFree(argv);
+}
+
+#endif  // _WIN32
