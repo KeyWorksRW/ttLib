@@ -226,6 +226,12 @@ public:
     /// Note: Windows API functions work fine with forward slashes instead of backslashes.
     ttString& backslashestoforward();
 
+    /// Converts all forward slashes in the string to backward slashes.
+    ///
+    /// Note: Windows API functions normally work fine with forward slashes instead of
+    /// backslashes.
+    ttString& forwardslashestoback();
+
     /// ext param should begin with a period (e.g., ".cpp")
     bool has_extension(std::string_view ext, tt::CASE checkcase = tt::CASE::either) { return extension().is_sameas(ext, checkcase); }
 

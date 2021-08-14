@@ -395,6 +395,15 @@ ttString& ttString::backslashestoforward()
     return *this;
 }
 
+ttString& ttString::forwardslashestoback()
+{
+    for (auto pos = find('/'); pos != tt::npos; pos = find('/'))
+    {
+        replace(pos, 1, L"\\");
+    }
+    return *this;
+}
+
 ttString ttString::extension() const
 {
     if (empty())

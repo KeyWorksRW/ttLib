@@ -252,6 +252,12 @@ namespace ttlib
         /// Note: Windows works just fine using forward slashes instead of backslashes.
         cstr& backslashestoforward();
 
+        /// Converts all forward slashes in the string to backward slashes.
+        ///
+        /// Note: Windows API functions normally work fine with forward slashes instead of
+        /// backslashes.
+        cstr& forwardslashestoback();
+
         /// Add a trailing forward slash (default is only if there isn't one already)
         void addtrailingslash(bool always = false)
         {

@@ -421,15 +421,20 @@ cstr& cstr::MakeUpper()
     return *this;
 }
 
-/// Converts all backslashes in the string to forward slashes.
-///
-/// Note: Windows handles paths that use forward slashes, so backslashes are normally
-/// unnecessary.
 cstr& cstr::backslashestoforward()
 {
     for (auto pos = find('\\'); pos != std::string::npos; pos = find('\\'))
     {
         replace(pos, 1, "/");
+    }
+    return *this;
+}
+
+cstr& cstr::forwardslashestoback()
+{
+    for (auto pos = find('/'); pos != std::string::npos; pos = find('/'))
+    {
+        replace(pos, 1, "\\");
     }
     return *this;
 }
