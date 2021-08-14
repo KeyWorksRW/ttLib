@@ -19,8 +19,14 @@ namespace ttlib
     class cwd : public ttlib::cstr
     {
     public:
+        enum : bool
+        {
+            no_restore = false,
+            restore = true
+        };
+
         // Specify true to restore the directory in the destructor
-        cwd(bool restore = false)
+        cwd(bool restore = cwd::no_restore)
         {
             assignCwd();
             if (restore)
