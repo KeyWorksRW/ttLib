@@ -14,8 +14,6 @@
 
 #include <wtypes.h>
 
-#include <sstream>
-
 // This dialog class has no base requirements other than compiling for Windows. It can be used whether your app is
 // using ATL, WTL, wxWidgets, or is just a console app that needs a dialog box.
 
