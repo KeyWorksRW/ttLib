@@ -19,7 +19,6 @@
 /// conversions, file name handling, etc.
 
 #include <cassert>
-#include <filesystem>
 #include <string>
 #include <string_view>
 
