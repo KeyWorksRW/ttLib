@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Purpose:   ttlib namespace functions and declarations
 // Author:    Ralph Walden
-// Copyright: Copyright (c) 1998-2020 KeyWorks Software (Ralph Walden)
+// Copyright: Copyright (c) 1998-2021 KeyWorks Software (Ralph Walden)
 // License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
