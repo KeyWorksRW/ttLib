@@ -1,8 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:      ttmultistr.h
 // Purpose:   Breaks a single string into multiple strings
 // Author:    Ralph Walden
-// Copyright: Copyright (c) 2018-2020 KeyWorks Software (Ralph Walden)
+// Copyright: Copyright (c) 2018-2021 KeyWorks Software (Ralph Walden)
 // License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
@@ -12,7 +11,8 @@
     #error "The contents of <ttmultistr.h> are available only with C++17 or later."
 #endif
 
-#include "ttcstr.h"
+#include "ttcstr.h"   // cstr -- std::string with additional methods
+#include "ttsview.h"  // sview -- std::string_view with additional methods
 
 /// @file
 /// These two classes break a string containing substrings into a vector of substrings. Use ttlib::multistr if you want
@@ -39,7 +39,7 @@ namespace ttlib
         void SetString(std::string_view str, std::string_view separator);
     };
 
-    class multiview : public std::vector<std::string_view>
+    class multiview : public std::vector<ttlib::sview>
     {
     public:
         // Similar to multistr, only the vector consists of views into the original string
