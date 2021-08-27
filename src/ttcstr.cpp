@@ -614,9 +614,9 @@ cstr& cstr::assignCwd()
 {
 #ifdef _MSC_VER
     clear();
-    utf16to8(std::filesystem::absolute(".").c_str());
+    utf16to8(std::filesystem::current_path().c_str(), *this);
 #else
-    assign(std::filesystem::absolute("."));
+    assign(std::filesystem::current_path().c_str());
 #endif
     return *this;
 }
