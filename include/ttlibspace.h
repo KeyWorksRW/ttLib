@@ -87,7 +87,8 @@ namespace tt
     {
         right,
         left,
-        both
+        both,
+        none
     };
 
 }  // namespace tt
