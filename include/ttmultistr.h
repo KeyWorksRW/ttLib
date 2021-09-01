@@ -29,14 +29,14 @@ namespace ttlib
     public:
         multistr() {}
 
-        multistr(std::string_view str, char separator = ';') { SetString(str, separator); }
+        multistr(std::string_view str, char separator = ';', tt::TRIM trim = tt::TRIM::none) { SetString(str, separator, trim); }
 
         // Use this when a character sequence (such as "/r/n") separates the substrings
-        multistr(std::string_view str, std::string_view separator) { SetString(str, separator); }
+        multistr(std::string_view str, std::string_view separator, tt::TRIM trim = tt::TRIM::none) { SetString(str, separator, trim); }
 
         // Clears the current vector of parsed strings and creates a new vector
-        void SetString(std::string_view str, char separator = ';');
-        void SetString(std::string_view str, std::string_view separator);
+        void SetString(std::string_view str, char separator = ';', tt::TRIM trim = tt::TRIM::none);
+        void SetString(std::string_view str, std::string_view separator, tt::TRIM trim = tt::TRIM::none);
     };
 
     class multiview : public std::vector<ttlib::sview>
@@ -45,13 +45,13 @@ namespace ttlib
         // Similar to multistr, only the vector consists of views into the original string
         multiview() {}
 
-        multiview(std::string_view str, char separator = ';') { SetString(str, separator); }
+        multiview(std::string_view str, char separator = ';', tt::TRIM trim = tt::TRIM::none) { SetString(str, separator, trim); }
 
         // Use this when a character sequence (such as "/r/n") separates the substrings
-        multiview(std::string_view str, std::string_view separator) { SetString(str, separator); }
+        multiview(std::string_view str, std::string_view separator, tt::TRIM trim = tt::TRIM::none) { SetString(str, separator, trim); }
 
         // Clears the current vector of parsed strings and creates a new vector
-        void SetString(std::string_view str, char separator = ';');
-        void SetString(std::string_view str, std::string_view separator);
+        void SetString(std::string_view str, char separator = ';', tt::TRIM trim = tt::TRIM::none);
+        void SetString(std::string_view str, std::string_view separator, tt::TRIM trim = tt::TRIM::none);
     };
 }  // namespace ttlib
