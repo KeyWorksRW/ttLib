@@ -47,7 +47,7 @@ void multistr::SetString(std::string_view str, char separator, tt::TRIM trim)
         {
             auto temp_end = end;
             if (end == tt::npos)
-                temp_end = str.length() - start;
+                temp_end = str.length();
             while (temp_end > start && ttlib::is_whitespace(str.at(temp_end - 1)))
             {
                 --temp_end;
@@ -111,7 +111,7 @@ void multistr::SetString(std::string_view str, std::string_view separator, tt::T
         {
             auto temp_end = end;
             if (end == tt::npos)
-                temp_end = str.length() - start;
+                temp_end = str.length();
             while (temp_end > start && ttlib::is_whitespace(str.at(temp_end - 1)))
             {
                 --temp_end;
@@ -177,7 +177,7 @@ void multiview::SetString(std::string_view str, char separator, tt::TRIM trim)
         {
             auto temp_end = end;
             if (end == tt::npos)
-                temp_end = str.length() - start;
+                temp_end = str.length();
             while (temp_end > start && ttlib::is_whitespace(str.at(temp_end - 1)))
             {
                 --temp_end;
@@ -241,7 +241,7 @@ void multiview::SetString(std::string_view str, std::string_view separator, tt::
         {
             auto temp_end = end;
             if (end == tt::npos)
-                temp_end = str.length() - start;
+                temp_end = str.length();
             while (temp_end > start && ttlib::is_whitespace(str.at(temp_end - 1)))
             {
                 --temp_end;
