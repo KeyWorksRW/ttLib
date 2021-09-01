@@ -152,7 +152,7 @@ namespace ttlib
         /// Returns true if the sub-string is identical to the first part of the main string
         bool is_sameprefix(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
 
-        int atoi() const { return ttlib::atoi(*this); }
+        int atoi(size_t start = 0) const { return ttlib::atoi(c_str() + start); }
 
         /// If character is found, line is truncated from the character on, and then
         /// any trailing space is removed;

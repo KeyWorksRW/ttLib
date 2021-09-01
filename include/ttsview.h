@@ -96,7 +96,7 @@ namespace ttlib
         /// Returns true if the sub-string is identical to the first part of the main string
         bool is_sameprefix(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
 
-        int atoi() const { return ttlib::atoi(*this); }
+        int atoi(size_t start = 0) const { return ttlib::atoi(data() + start); }
 
         /// Returns true if current filename contains the specified case-insensitive extension.
         bool has_extension(std::string_view ext) const { return ttlib::is_sameas(extension(), ext, tt::CASE::either); }
