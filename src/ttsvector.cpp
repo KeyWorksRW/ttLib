@@ -6,10 +6,9 @@
 // License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
-#include "pch.h"
-
-#include "ttlibspace.h"
 #include "ttsvector.h"
+
+#include "ttlibspace.h"  // ttlib namespace functions and declarations
 
 using namespace ttlib;
 using namespace tt;

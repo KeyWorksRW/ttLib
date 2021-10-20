@@ -15,11 +15,11 @@
     #error "The contents of <ttview.h> are available only with C++17 or later."
 #endif
 
+#include <string_view>
+
 #include "ttcstr.h"      // cstr -- std::string with additional methods
 #include "ttcview.h"     // cview -- string_view functionality on a zero-terminated char string.
 #include "ttlibspace.h"  // ttlib namespace functions and declarations
-
-#include <string_view>
 
 namespace ttlib
 {
