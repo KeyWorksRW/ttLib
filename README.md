@@ -4,7 +4,12 @@ This repository contains several classes and functions that have been used in mo
 
 The source code for the library is split into two primary directories. The **src/** directory contains code that should work on any platform. The **src/winsrc/** directory contains code that can only be used when compiling for Windows.
 
-For information on how to build the project, see [Building](BUILD.md).
+The easiest way to build the libraries is to run the following commands:
+
+```
+    cmake -G "Ninja Multi-Config" . -B build
+    cmake.exe --build build --config Release
+```
 
 If you wish to contribute to the project, please refer to the [Contributing](CONTRIBUTING.md) documentation.
 
