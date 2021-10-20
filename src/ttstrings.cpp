@@ -6,9 +6,7 @@
 // License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
-#include "pch.h"
-
-#include "../include/ttstrings.h"
+#include "ttstrings.h"
 
 const char* _tt(int id)
 {

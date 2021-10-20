@@ -6,11 +6,9 @@
 // License:   Apache License -- see ../../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
-#include "pch.h"
-
 #include <winreg.h>
 
-#include "ttlibspace.h"
+#include "ttlibspace.h"  // ttlib namespace functions and declarations
 #include "ttregistry.h"
 
 using namespace ttlib;

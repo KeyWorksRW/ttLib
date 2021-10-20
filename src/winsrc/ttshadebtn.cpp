@@ -21,16 +21,14 @@
     important check will need to be in ttMultiBtn -- since that's where all the button subclassing is done.
 */
 
-#include "pch.h"
-
 #if !defined(_WIN32)
     #error "This module can only be compiled for Windows"
 #endif
 
-#include "ttcstr.h"
+#include "ttshadebtn.h"  // ShadeBtn
+#include "ttcstr.h"      // cstr -- std::string with additional methods
 #include "ttdebug.h"     // ttASSERT macros
 #include "ttlibspace.h"  // Contains the ttlib namespace functions/declarations common to all ttLib libraries
-#include "ttshadebtn.h"  // ShadeBtn
 
 #ifndef max
     #define max(a, b) (((a) > (b)) ? (a) : (b))

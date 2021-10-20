@@ -5,8 +5,6 @@
 // License:   Apache License -- see ../../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
-#include "pch.h"  // precompiled header
-
 // This module is *NOT* compiled into any of the library variations -- it is designed for programs that
 // compile ttLib source code directly rather than using a library.
 

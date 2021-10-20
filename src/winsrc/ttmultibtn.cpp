@@ -6,17 +6,15 @@
 // License:   Apache License -- see ../../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
-#include "pch.h"
-
 #if !defined(_WIN32)
     #error "This module can only be compiled for Windows"
 #endif
 
+#include "ttmultibtn.h"  // MultiBtn
+#include "ttcstr.h"      // cstr -- Classes for handling zero-terminated char strings.
 #include "ttdebug.h"     // ttASSERT macros
 #include "ttlibspace.h"  // ttlib namespace functions and declarations
-#include "ttmultibtn.h"  // MultiBtn
 #include "ttshadebtn.h"  // ttlib::ShadeBtn
-#include <ttcstr.h>      // cstr -- Classes for handling zero-terminated char strings.
 
 using namespace ttlib;
 

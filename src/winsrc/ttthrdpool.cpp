@@ -6,8 +6,6 @@
 // License:   Apache License -- see ../../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
-#include "pch.h"
-
 #if !defined(_WIN32)
     #error "This module can only be compiled for Windows"
 #endif
@@ -15,7 +13,7 @@
 #include <cassert>
 #include <exception>
 
-#include "ttdebug.h"
+#include "ttdebug.h"  // ttASSERT macros
 #include "ttthrdpool.h"
 
 using namespace ttlib;

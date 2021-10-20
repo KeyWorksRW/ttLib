@@ -8,18 +8,15 @@
 
 //  Derived from:  http://code.msdn.microsoft.com/CppShellCommonFileDialog-17b20409
 
-#include "pch.h"
-
 #if !defined(_WIN32)
     #error "This module can only be compiled for Windows"
 #endif
 
 #include <shlobj.h>
 
-#include "ttdebug.h"  // ttASSERT macros
-#include "ttlibspace.h"
-
-#include "ttdirdlg.h"  // DirDlg
+#include "ttdebug.h"     // ttASSERT macros
+#include "ttdirdlg.h"    // DirDlg
+#include "ttlibspace.h"  // ttlib namespace functions and declarations
 
 using namespace ttlib;
 
