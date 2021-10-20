@@ -81,10 +81,13 @@ namespace ttlib
         size_t locate(std::string_view str, size_t posStart = 0, tt::CASE check = tt::CASE::exact) const;
 
         /// Returns true if the sub string exists
-        bool contains(std::string_view sub, tt::CASE checkcase = tt::CASE::exact) const { return (locate(sub, 0, checkcase) != npos); }
+        bool contains(std::string_view sub, tt::CASE checkcase = tt::CASE::exact) const
+        {
+            return (locate(sub, 0, checkcase) != npos);
+        }
 
         /// Returns true if any string in the iteration list appears somewhere in the the main string.
-        template<class iterT>
+        template <class iterT>
         bool strContains(iterT iter, tt::CASE checkcase = tt::CASE::exact)
         {
             for (auto& strIter: iter)
@@ -205,10 +208,6 @@ namespace ttlib
         /// view.
         bool moveto_filename() noexcept;
 
-        bool operator==(ttlib::cview str)
-        {
-            return this->is_sameas(str);
-        }
-
+        bool operator==(ttlib::cview str) { return this->is_sameas(str); }
     };
 }  // namespace ttlib

@@ -58,7 +58,8 @@ namespace ttlib
         void ReadString(std::string_view str);
 
         /// Iterate through a list adding each iteration as a line.
-        template<class iterT> void Read(const iterT iter)
+        template <class iterT>
+        void Read(const iterT iter)
         {
             for (const auto& line: iter)
             {
@@ -82,8 +83,7 @@ namespace ttlib
         /// Searches every line to see if it contains the sub-string.
         ///
         /// startline is the zero-based offset to the line to start searching.
-        size_t FindLineContaining(std::string_view str, size_t startline = 0,
-                                  tt::CASE checkcase = tt::CASE::exact) const;
+        size_t FindLineContaining(std::string_view str, size_t startline = 0, tt::CASE checkcase = tt::CASE::exact) const;
 
         /// If a line is found that contains orgStr, it will be replaced by newStr and the
         /// line position is returned. If no line is found, tt::npos is returned.
@@ -127,8 +127,11 @@ namespace ttlib
                 erase(begin() + (size() - 1));
         }
 
-        template<typename T>
-        void operator+=(T str) { emplace_back(str); }
+        template <typename T>
+        void operator+=(T str)
+        {
+            emplace_back(str);
+        }
 
     protected:
         // Converts lines into a vector of ttlib::cstr members. Lines can end with \n, \r, or \r\n.
@@ -172,8 +175,7 @@ namespace ttlib
         /// Searches every line to see if it contains the sub-string.
         ///
         /// startline is the zero-based offset to the line to start searching.
-        size_t FindLineContaining(std::string_view str, size_t startline = 0,
-                                  tt::CASE checkcase = tt::CASE::exact) const;
+        size_t FindLineContaining(std::string_view str, size_t startline = 0, tt::CASE checkcase = tt::CASE::exact) const;
 
         bool is_sameas(ttlib::textfile other, tt::CASE checkcase = tt::CASE::exact) const;
         bool is_sameas(ttlib::viewfile other, tt::CASE checkcase = tt::CASE::exact) const;

@@ -39,7 +39,8 @@ bool ttAssertionMsg(const char* filename, const char* function, int line, const 
     str << "Line: " << line << "\n\n";
     str << "Press Retry to break into a debugger.";
 
-    auto answer = MessageBoxW(GetActiveWindow(), str.to_utf16().c_str(), L"Assertion failed!", MB_ABORTRETRYIGNORE | MB_ICONSTOP);
+    auto answer =
+        MessageBoxW(GetActiveWindow(), str.to_utf16().c_str(), L"Assertion failed!", MB_ABORTRETRYIGNORE | MB_ICONSTOP);
 
     if (answer == IDRETRY)
     {

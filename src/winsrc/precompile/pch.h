@@ -25,8 +25,8 @@
 
 #define WINVER 0x0A00  // Windows 10
 
-#include <windows.h>
 #include <stdlib.h>
+#include <windows.h>
 
 #include "ttlibspace.h"
 

@@ -34,7 +34,7 @@ namespace ttlib
         /// Same as find(pos, str) but with a boolean result
         bool bfind(size_type pos, std::string_view str) const { return (at(pos).find(str) != tt::npos); }
 
-        template<typename T>
+        template <typename T>
         /// Only adds the string if it doesn't already exist.
         ttlib::cstr& append(T str, tt::CASE checkcase = tt::CASE::exact)
         {
@@ -50,9 +50,9 @@ namespace ttlib
         ttlib::cstr& addfilename(std::string_view filename)
         {
 #if defined(_WIN32)
-                return append(filename, tt::CASE::either);
+            return append(filename, tt::CASE::either);
 #else
-                return append(filename, tt::CASE::exact);
+            return append(filename, tt::CASE::exact);
 #endif  // _WIN32
         }
 
@@ -66,10 +66,7 @@ namespace ttlib
         }
 
         /// Finds the position of the first string identical to the specified string.
-        size_t find(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const
-        {
-            return find(0, str, checkcase);
-        }
+        size_t find(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const { return find(0, str, checkcase); }
 
         /// Finds the position of the first string identical to the specified string.
         size_t find(size_t start, std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
@@ -92,9 +89,12 @@ namespace ttlib
         /// Finds the position of the first string containing the specified sub-string.
         size_t contains(size_t start, std::string_view substring, tt::CASE checkcase = tt::CASE::exact) const;
 
-        template<typename T>
+        template <typename T>
         /// Unlike append(), this will add the string even if it already exists.
-        void operator+=(T str) { emplace_back(str); }
+        void operator+=(T str)
+        {
+            emplace_back(str);
+        }
     };
 
 }  // namespace ttlib

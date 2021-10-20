@@ -34,8 +34,8 @@ INT_PTR dlg::DoModal(HWND hwndParent)
         m_hwndParent = hwndParent;
 
     m_isModeless = false;
-    INT_PTR result =
-        ::DialogBoxParamW(GetModuleHandleW(NULL), MAKEINTRESOURCEW(m_idTemplate), m_hwndParent, (DLGPROC) ttlib::DlgProc, (LPARAM) this);
+    INT_PTR result = ::DialogBoxParamW(GetModuleHandleW(NULL), MAKEINTRESOURCEW(m_idTemplate), m_hwndParent,
+                                       (DLGPROC) ttlib::DlgProc, (LPARAM) this);
 
 #if !defined(NDEBUG)  // Starts debug section.
     // If creation failed because there was no dialog resource, report that specific condition in Debug builds.
@@ -59,7 +59,8 @@ HWND dlg::DoModeless(HWND hwndParent)
     if (hwndParent)
         m_hwndParent = hwndParent;
     m_isModeless = true;
-    return ::CreateDialogParamW(GetModuleHandle(NULL), MAKEINTRESOURCEW(m_idTemplate), m_hwndParent, (DLGPROC) ttlib::DlgProc, (LPARAM) this);
+    return ::CreateDialogParamW(GetModuleHandle(NULL), MAKEINTRESOURCEW(m_idTemplate), m_hwndParent,
+                                (DLGPROC) ttlib::DlgProc, (LPARAM) this);
 }
 
 INT_PTR WINAPI ttlib::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -119,36 +120,36 @@ INT_PTR WINAPI ttlib::DlgProc(HWND hdlg, UINT msg, WPARAM wParam, LPARAM lParam)
     switch (msg)
     {
         case WM_COMMAND:
-        {
-            switch (LOWORD(wParam))
             {
-                case IDOK:
-                    pThis->m_isInitializing = false;
-                    pThis->OnOK();
-                    if (pThis->m_isCancelEnd)
-                    {
-                        pThis->m_isCancelEnd = false;
-                    }
-                    else
-                    {
-                        // do NOT call EndDialog--it will fail if this is a modeless dialog
-                        pThis->CloseDialog(IDOK);
-                    }
-                    break;
+                switch (LOWORD(wParam))
+                {
+                    case IDOK:
+                        pThis->m_isInitializing = false;
+                        pThis->OnOK();
+                        if (pThis->m_isCancelEnd)
+                        {
+                            pThis->m_isCancelEnd = false;
+                        }
+                        else
+                        {
+                            // do NOT call EndDialog--it will fail if this is a modeless dialog
+                            pThis->CloseDialog(IDOK);
+                        }
+                        break;
 
-                case IDCANCEL:
-                    pThis->OnCancel();
-                    if (pThis->m_isCancelEnd)
-                        pThis->m_isCancelEnd = false;
-                    else
-                        pThis->CloseDialog(IDCANCEL);
-                    break;
+                    case IDCANCEL:
+                        pThis->OnCancel();
+                        if (pThis->m_isCancelEnd)
+                            pThis->m_isCancelEnd = false;
+                        else
+                            pThis->CloseDialog(IDCANCEL);
+                        break;
 
-                default:
-                    break;
+                    default:
+                        break;
+                }
             }
-        }
-        break;
+            break;
     }
 
     return 0;

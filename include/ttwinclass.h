@@ -24,7 +24,7 @@ namespace tt
 #endif  // _WIN32
         inline void clear() noexcept { x = y = 0; }
 
-        template<typename T>
+        template <typename T>
         inline void offset(T xoff, T yoff) noexcept
         {
             x += (int32_t) xoff;
@@ -56,7 +56,7 @@ namespace tt
             bottom = 0;
         }
 
-        template<typename T>
+        template <typename T>
         WINRECT(T l, T t, T r, T b)
         {
             left = l;
@@ -76,9 +76,12 @@ namespace tt
         inline int Width() const { return std::abs(right - left); }
         inline int Height() const { return std::abs(bottom - top); }
 
-        inline bool isPosInRect(WINPOINT pt) const noexcept { return (pt.x >= left && pt.x <= right && pt.y >= top && pt.y <= bottom); }
+        inline bool isPosInRect(WINPOINT pt) const noexcept
+        {
+            return (pt.x >= left && pt.x <= right && pt.y >= top && pt.y <= bottom);
+        }
 
-        template<typename T>
+        template <typename T>
         inline bool isPosInRect(T xPos, T yPos) const noexcept
         {
             return ((int32_t) xPos >= left && (int32_t) xPos <= right && (int32_t) yPos >= top && (int32_t) yPos <= bottom);

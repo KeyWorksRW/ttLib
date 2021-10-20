@@ -8,8 +8,8 @@
 
 #include "pch.h"
 
-#include "ttsvector.h"
 #include "ttlibspace.h"
+#include "ttsvector.h"
 
 using namespace ttlib;
 using namespace tt;

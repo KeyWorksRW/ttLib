@@ -118,14 +118,14 @@ namespace ttlib
     /// Is ch the start of a utf8 sequence?
     constexpr inline bool is_utf8(char ch) noexcept { return ((ch & 0xC0) != 0x80); }
 
-    template<typename T>
+    template <typename T>
     /// Compares result against -1 -- use with returns from find, contains, locate, etc.
     constexpr bool is_error(T result)
     {
         return (static_cast<ptrdiff_t>(result)) == -1;
     }
 
-    template<typename T>
+    template <typename T>
     /// Compares result against -1 -- use with returns from find, contains, locate, etc.
     constexpr bool is_found(T result)
     {
@@ -151,7 +151,7 @@ namespace ttlib
     /// Same as find_str but with a boolean return instead of a string_view.
     bool contains(std::string_view main, std::string_view sub, tt::CASE checkcase = tt::CASE::exact);
 
-    template<class iterT>
+    template <class iterT>
     /// Returns true if any string in the iteration list appears somewhere in the the main string.
     bool strContains(std::string_view str, iterT iter, tt::CASE checkcase = tt::CASE::exact)
     {
@@ -312,7 +312,8 @@ namespace ttlib
 
     /// Performs a check to see if a directory entry is a filename and contains the
     /// specified extension.
-    bool has_extension(std::filesystem::directory_entry name, std::string_view extension, tt::CASE checkcase = tt::CASE::exact);
+    bool has_extension(std::filesystem::directory_entry name, std::string_view extension,
+                       tt::CASE checkcase = tt::CASE::exact);
 
     /// Confirms newdir exists and is a directory and then changes to that directory.
     ///
@@ -365,7 +366,7 @@ namespace ttlib
 
 namespace ttlib
 {
-    template<typename T_MSG, typename T_WPARAM, typename T_LPARAM>
+    template <typename T_MSG, typename T_WPARAM, typename T_LPARAM>
     /// Calls SendMessageW() without having to cast the parameter types to UINT, WPARAM
     /// and LPARAM
     ///
@@ -376,7 +377,7 @@ namespace ttlib
         return ::SendMessageW(hwnd, (UINT) msg, (WPARAM) wParam, (LPARAM) lParam);
     }
 
-    template<typename T_MSG, typename T_WPARAM>
+    template <typename T_MSG, typename T_WPARAM>
     /// This calls SendMessageW even if UNICODE was not defined
     LRESULT SendMsg(HWND hwnd, T_MSG msg, T_WPARAM wParam)
     {
@@ -384,7 +385,7 @@ namespace ttlib
         return ::SendMessageW(hwnd, (UINT) msg, (WPARAM) wParam, NULL);
     }
 
-    template<typename T_MSG>
+    template <typename T_MSG>
     /// This calls SendMessageW even if UNICODE was not defined
     LRESULT SendMsg(HWND hwnd, T_MSG msg)
     {
@@ -447,12 +448,12 @@ namespace ttlib
     ttlib::cstr LoadTextResource(DWORD idResource, HMODULE hmodResource = NULL);
 
     /// Converts all text to UTF16 before calling ShellExecuteW(...)
-    HINSTANCE ShellRun(std::string_view filename, std::string_view args, std::string_view directory, INT nShow = SW_SHOWNORMAL,
-                       HWND hwndParent = NULL);
+    HINSTANCE ShellRun(std::string_view filename, std::string_view args, std::string_view directory,
+                       INT nShow = SW_SHOWNORMAL, HWND hwndParent = NULL);
 
     /// Only available in ttLibwx.lib (wxWidgets + Windows)
-    HINSTANCE ShellRun_wx(const wxString& filename, const wxString& args, const wxString& directory, INT nShow = SW_SHOWNORMAL,
-                          HWND hwndParent = NULL);
+    HINSTANCE ShellRun_wx(const wxString& filename, const wxString& args, const wxString& directory,
+                          INT nShow = SW_SHOWNORMAL, HWND hwndParent = NULL);
 
     HFONT CreateLogFont(std::string_view TypeFace, size_t point, bool Bold = false, bool Italics = false);
 

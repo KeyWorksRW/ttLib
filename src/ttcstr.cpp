@@ -164,7 +164,8 @@ std::string_view cstr::view_substr(size_t offset, char chBegin, char chEnd)
             // is unnecessary. Should we support it?
 
             // only check quotes -- a slash is valid before other character pairs.
-            if (at(offset) == '\\' && (chBegin == '"' || chBegin == '\'') && offset + 1 < size() && (at(offset + 1) == chEnd))
+            if (at(offset) == '\\' && (chBegin == '"' || chBegin == '\'') && offset + 1 < size() &&
+                (at(offset + 1) == chEnd))
             {
                 // step over an escaped quote if the string to fetch is within a quote
                 offset += 2;

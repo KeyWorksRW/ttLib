@@ -76,22 +76,25 @@ namespace ttlib
         size_t find(size_t start, ttString& str, tt::CASE checkcase = tt::CASE::exact) const;
 
         /// Finds the position of the first string with specified prefix.
-        size_t findprefix(ttString& prefix, tt::CASE checkcase = tt::CASE::exact) const { return findprefix(0, prefix, checkcase); }
+        size_t findprefix(ttString& prefix, tt::CASE checkcase = tt::CASE::exact) const
+        {
+            return findprefix(0, prefix, checkcase);
+        }
 
         /// Finds the position of the first string with specified prefix.
         size_t findprefix(size_t start, ttString& prefix, tt::CASE checkcase = tt::CASE::exact) const;
 
         /// Finds the position of the first string containing the specified sub-string.
-        size_t contains(ttString& substring, tt::CASE checkcase = tt::CASE::exact) const { return contains(0, substring, checkcase); }
+        size_t contains(ttString& substring, tt::CASE checkcase = tt::CASE::exact) const
+        {
+            return contains(0, substring, checkcase);
+        }
 
         /// Finds the position of the first string containing the specified sub-string.
         size_t contains(size_t start, ttString& substring, tt::CASE checkcase = tt::CASE::exact) const;
 
         /// Unlike append(), this will add the string even if it already exists.
-        void operator+=(ttString& str)
-        {
-            emplace_back(str);
-        }
+        void operator+=(ttString& str) { emplace_back(str); }
     };
 
 }  // namespace ttlib

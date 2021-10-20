@@ -47,3 +47,32 @@ Files:
     ../winsrc/ttdebug.cpp         # debug and assertion handling
     ../winsrc/ttwindlg.cpp        # ttlib::dlg -- class for creating a Modal or Modeless dialog box
     ../winsrc/ttwinspace.cpp      # Windows-only ttlib namespace functions
+
+Headers:
+    ../../include/ttcasemap.h
+    ../../include/ttconsole.h
+    ../../include/ttcvector.h
+    ../../include/ttcview.h
+    ../../include/ttcwd.h
+    ../../include/ttdebug.h
+    ../../include/ttdib.h
+    ../../include/ttdirdlg.h
+    ../../include/ttlibspace.h
+    ../../include/ttmultibtn.h
+    ../../include/ttmultistr.h
+    ../../include/ttopenfile.h
+    ../../include/ttparser.h
+    ../../include/ttregistry.h
+    ../../include/ttshadebtn.h
+    ../../include/ttstr.h
+    ../../include/ttstrings.h
+    ../../include/ttsvector.h
+    ../../include/ttsview.h
+    ../../include/tttextfile.h
+    ../../include/ttthrdpool.h
+    ../../include/tttime.h
+    ../../include/ttwin.h
+    ../../include/ttwinclass.h
+    ../../include/ttwindlg.h
+    ../../include/ttwinff.h
+    ../../include/ttcstr.h
