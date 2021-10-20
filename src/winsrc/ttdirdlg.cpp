@@ -14,10 +14,9 @@
 
 #include <shlobj.h>
 
-#include "ttdebug.h"  // ttASSERT macros
-#include "ttlibspace.h"
-
-#include "ttdirdlg.h"  // DirDlg
+#include "ttdebug.h"     // ttASSERT macros
+#include "ttdirdlg.h"    // DirDlg
+#include "ttlibspace.h"  // ttlib namespace functions and declarations
 
 using namespace ttlib;
 

@@ -13,7 +13,7 @@
 #include <cassert>
 #include <exception>
 
-#include "ttdebug.h"
+#include "ttdebug.h"  // ttASSERT macros
 #include "ttthrdpool.h"
 
 using namespace ttlib;

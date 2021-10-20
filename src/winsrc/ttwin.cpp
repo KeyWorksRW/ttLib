@@ -10,9 +10,9 @@
     #error "This module can only be compiled for Windows"
 #endif
 
+#include "ttwin.h"    // ttlib::win
 #include "ttcstr.h"   // cstr -- Classes for handling zero-terminated char strings.
 #include "ttdebug.h"  // ttASSERT macros
-#include "ttwin.h"    // ttlib::win
 
 using namespace ttlib;
 
