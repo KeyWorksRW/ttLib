@@ -21,6 +21,7 @@ Files:
     ttcstr.cpp       # Class for handling zero-terminated char strings.
     ttcvector.cpp    # Vector class for storing ttlib::cstr strings
     ttcview.cpp      # string_view functionality on a zero-terminated char string.
+    ttsview.cpp      # std::string_view with additional methods
     ttmultistr.cpp   # ttlib::multistr, ttlib::multiview
     ttlibspace.cpp   # ttlib namespace functions
     ttparser.cpp     # Command line parser
@@ -45,5 +46,6 @@ Files:
 
 wxWidgets:
     ttstr.cpp               # Enhanced version of wxString
+    ttsvector.cpp           # Vector class for storing ttString strings
     wxsrc/ttextra.cpp       # Additional functions for wxWidgets on Windows
     winsrc/ttdebug_min.cpp  # Minimal debugging functionality

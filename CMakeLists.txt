@@ -37,15 +37,15 @@ if (NOT isMultiConfig)
     endif()
 endif()
 
-
 # Create the cross-platform library
 add_library(ttLib STATIC
     src/ttconsole.cpp    # class that sets/restores console foreground color
     src/ttcstr.cpp       # Class for handling zero-terminated char strings.
     src/ttcvector.cpp    # Vector class for storing ttlib::cstr strings
     src/ttcview.cpp      # string_view functionality on a zero-terminated char string.
-    src/ttmultistr.cpp   # ttlib::multistr, ttlib::multiview
+    src/ttsview.cpp      # std::string_view with additional methods
     src/ttlibspace.cpp   # ttlib namespace functions
+    src/ttmultistr.cpp   # ttlib::multistr, ttlib::multiview
     src/ttparser.cpp     # Command line parser
     src/ttstrings.cpp    # Class for handling zero-terminated char strings.
     src/tttextfile.cpp   # Classes for reading and writing text files.
