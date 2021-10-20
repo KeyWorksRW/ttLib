@@ -937,14 +937,14 @@ cstr& cdecl cstr::Format(std::string_view format, ...)
                 if (width != WIDTH_LONG)
                 {
                     if (kflag)
-                        buffer << std::quoted(va_arg(args, std::string_view));
+                        buffer << std::quoted(va_arg(args, std::string));
                     else
-                        buffer << va_arg(args, std::string_view);
+                        buffer << va_arg(args, std::string);
                 }
                 else
                 {
                     std::wstring str16;
-                    str16 += va_arg(args, std::wstring_view);
+                    str16 += va_arg(args, std::wstring);
                     std::string str8;
                     ttlib::utf16to8(str16, str8);
                     if (kflag)
