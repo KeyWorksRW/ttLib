@@ -79,9 +79,12 @@ namespace ttlib
 
         // Call within OnEnd() to cancel ending the dialog
         void CancelEnd() { m_isCancelEnd = true; }
-        BOOL CloseDialog(INT_PTR result = IDOK) { return (m_isModeless ? DestroyWindow(m_hwnd) : ::EndDialog(m_hwnd, result)); }
+        BOOL CloseDialog(INT_PTR result = IDOK)
+        {
+            return (m_isModeless ? DestroyWindow(m_hwnd) : ::EndDialog(m_hwnd, result));
+        }
 
-        template<typename T_ID>
+        template <typename T_ID>
         /// Get the window handle of a control
         HWND gethwnd(T_ID id) const
         {
@@ -91,25 +94,25 @@ namespace ttlib
         // The following get/set functions automatically convert to/from UTF16/UTF8 allowing calls to the
         // UNICODE versions of the Windows API while still using. 8-bit UTF8 strings
 
-        template<typename T_ID>
+        template <typename T_ID>
         bool GetControlText(T_ID id, std::string& str)
         {
             return ttlib::GetWndText(gethwnd(id), str);
         }
 
-        template<typename T_ID>
+        template <typename T_ID>
         ttlib::cstr GetControlText(T_ID id)
         {
             return ttlib::GetWndText(gethwnd(id));
         }
 
-        template<typename T_ID>
+        template <typename T_ID>
         int GetControlTextLength(T_ID id) const
         {
             return ::GetWindowTextLengthW(gethwnd(id));
         }
 
-        template<typename T_ID>
+        template <typename T_ID>
         void SetControlText(T_ID id, std::string_view utf8str)
         {
             ttlib::SetWndText(gethwnd(id), utf8str);
@@ -117,13 +120,13 @@ namespace ttlib
 
         void SetDlgTitle(std::string_view utf8str) { ttlib::SetWndText(m_hwnd, utf8str); }
 
-        template<typename T_ID>
+        template <typename T_ID>
         BOOL GetControlRect(T_ID id, RECT* prc) const
         {
             return ::GetWindowRect(gethwnd(id), prc);
         }
 
-        template<typename T_ID>
+        template <typename T_ID>
         int GetControlInteger(T_ID id) const
         {
             char buffer[32];
@@ -132,7 +135,7 @@ namespace ttlib
             return ttlib::atoi(buffer);
         }
 
-        template<typename T_ID, typename T_VAL>
+        template <typename T_ID, typename T_VAL>
         void SetControlInteger(T_ID id, T_VAL val) const
         {
             ttlib::cstr str;
@@ -140,139 +143,139 @@ namespace ttlib
             SetWindowTextA(gethwnd(id), str.c_str());
         }
 
-        template<typename T_ID>
+        template <typename T_ID>
         void EnableControl(T_ID id, BOOL isEnable = TRUE) const
         {
             ::EnableWindow(gethwnd(id), isEnable);
         }
 
-        template<typename T_ID>
+        template <typename T_ID>
         void DisableControl(T_ID id) const
         {
             ::EnableWindow(gethwnd(id), FALSE);
         }
 
-        template<typename T_ID>
+        template <typename T_ID>
         void ShowControl(T_ID id) const
         {
             ::ShowWindow(gethwnd(id), SW_SHOW);
         }
 
-        template<typename T_ID>
+        template <typename T_ID>
         void HideControl(T_ID id) const
         {
             ::ShowWindow(gethwnd(id), SW_HIDE);
         }
 
-        template<typename T_ID>
+        template <typename T_ID>
         bool GetCheck(T_ID id) const
         {
             return (SendItemMsg(id, BM_GETCHECK) == BST_CHECKED);
         }
 
-        template<typename T_ID>
+        template <typename T_ID>
         void GetCheck(T_ID id, bool& checked) const
         {
             checked = (SendItemMsg(id, BM_GETCHECK) == BST_CHECKED);
         }
 
-        template<typename T_ID>
+        template <typename T_ID>
         bool IsChecked(T_ID id) const
         {
             return GetCheck(id);
         }
 
-        template<typename T_ID>
+        template <typename T_ID>
         void SetCheck(T_ID id, bool checked = true) const
         {
             SendItemMsg(id, BM_SETCHECK, checked);
         }
 
-        template<typename T_ID>
+        template <typename T_ID>
         void UnCheck(T_ID id) const
         {
             SendItemMsg(id, BM_SETCHECK, FALSE);
         }
 
-        template<typename T_ID, typename T_MSG, typename T_WPARAM, typename T_LPARAM>
+        template <typename T_ID, typename T_MSG, typename T_WPARAM, typename T_LPARAM>
         LRESULT SendItemMsg(T_ID id, T_MSG msg, T_WPARAM wParam, T_LPARAM lParam) const
         {
             return ::SendMessage(gethwnd(id), (UINT) msg, (WPARAM) wParam, (LPARAM) lParam);
         }
 
-        template<typename T_ID, typename T_MSG, typename T_WPARAM>
+        template <typename T_ID, typename T_MSG, typename T_WPARAM>
         LRESULT SendItemMsg(T_ID id, T_MSG msg, T_WPARAM wParam) const
         {
             return ::SendMessage(gethwnd(id), (UINT) msg, (WPARAM) wParam, NULL);
         }
 
-        template<typename T_ID, typename T_MSG>
+        template <typename T_ID, typename T_MSG>
         LRESULT SendItemMsg(T_ID id, T_MSG msg) const
         {
             return ::SendMessage(gethwnd(id), (UINT) msg, NULL, NULL);
         }
 
-        template<typename T_ID, typename T_MSG, typename T_WPARAM, typename T_LPARAM>
+        template <typename T_ID, typename T_MSG, typename T_WPARAM, typename T_LPARAM>
         LRESULT PostItemMsg(T_ID id, T_MSG msg, T_WPARAM wParam, T_LPARAM lParam) const
         {
             return ::PostMessage(gethwnd(id), (UINT) msg, (WPARAM) wParam, (LPARAM) lParam);
         }
 
-        template<typename T_ID, typename T_MSG, typename T_WPARAM>
+        template <typename T_ID, typename T_MSG, typename T_WPARAM>
         LRESULT PostItemMsg(T_ID id, T_MSG msg, T_WPARAM wParam) const
         {
             return ::PostMessage(gethwnd(id), (UINT) msg, (WPARAM) wParam, NULL);
         }
 
-        template<typename T_ID, typename T_MSG>
+        template <typename T_ID, typename T_MSG>
         LRESULT PostItemMsg(T_ID id, T_MSG msg) const
         {
             return ::PostMessage(gethwnd(id), (UINT) msg, NULL, NULL);
         }
 
-        template<typename T_MSG, typename T_WPARAM, typename T_LPARAM>
+        template <typename T_MSG, typename T_WPARAM, typename T_LPARAM>
         LRESULT SendMsg(T_MSG msg, T_WPARAM wParam, T_LPARAM lParam) const
         {
             return ::SendMessage(m_hwnd, (UINT) msg, (WPARAM) wParam, (LPARAM) lParam);
         }
 
-        template<typename T_MSG, typename T_WPARAM>
+        template <typename T_MSG, typename T_WPARAM>
         LRESULT SendMsg(T_MSG msg, T_WPARAM wParam) const
         {
             return ::SendMessage(m_hwnd, (UINT) msg, (WPARAM) wParam, NULL);
         }
 
-        template<typename T_MSG>
+        template <typename T_MSG>
         LRESULT SendMsg(T_MSG msg) const
         {
             return ::SendMessage(m_hwnd, (UINT) msg, NULL, NULL);
         }
 
-        template<typename T_MSG, typename T_WPARAM, typename T_LPARAM>
+        template <typename T_MSG, typename T_WPARAM, typename T_LPARAM>
         LRESULT PostMsg(T_MSG msg, T_WPARAM wParam, T_LPARAM lParam) const
         {
             return ::PostMessage(m_hwnd, (UINT) msg, (WPARAM) wParam, (LPARAM) lParam);
         }
 
-        template<typename T_MSG, typename T_WPARAM>
+        template <typename T_MSG, typename T_WPARAM>
         LRESULT PostMsg(T_MSG msg, T_WPARAM wParam) const
         {
             return ::PostMessage(m_hwnd, (UINT) msg, (WPARAM) wParam, NULL);
         }
 
-        template<typename T_MSG>
+        template <typename T_MSG>
         LRESULT PostMsg(T_MSG msg) const
         {
             return ::PostMessage(m_hwnd, (UINT) msg, NULL, NULL);
         }
 
-        template<typename T_HANDLE>
+        template <typename T_HANDLE>
         HICON SetIcon(T_HANDLE hIcon, BOOL BigIcon = TRUE)
         {
             return reinterpret_cast<HICON>(SendMsg(WM_SETICON, BigIcon, hIcon));
         }
 
-        template<typename T_ID>
+        template <typename T_ID>
         void SetFocus(T_ID idControl) const
         {
             ::SetFocus(gethwnd(idControl));
@@ -333,21 +336,21 @@ namespace ttlib
         }
         void Initialize(HWND hdlg, int id) { m_hwnd = ::GetDlgItem(hdlg, id); }
 
-        template<typename T_MSG, typename T_WPARAM, typename T_LPARAM>
+        template <typename T_MSG, typename T_WPARAM, typename T_LPARAM>
         LRESULT SendMsg(T_MSG msg, T_WPARAM wParam, T_LPARAM lParam) const
         {
             // C-style case used to let compiler determine which cast is needed for specific parameter type
             return ::SendMessageW(m_hwnd, (UINT) msg, (WPARAM) wParam, (LPARAM) lParam);
         }
 
-        template<typename T_MSG, typename T_WPARAM>
+        template <typename T_MSG, typename T_WPARAM>
         LRESULT SendMsg(T_MSG msg, T_WPARAM wParam) const
         {
             // C-style case used to let compiler determine which cast is needed for specific parameter type
             return ::SendMessageW(m_hwnd, (UINT) msg, (WPARAM) wParam, NULL);
         }
 
-        template<typename T_MSG>
+        template <typename T_MSG>
         LRESULT SendMsg(T_MSG msg) const
         {
             // C-style case used to let compiler determine which cast is needed for specific parameter type
@@ -359,13 +362,13 @@ namespace ttlib
         bool GetText(std::string& str) { return ttlib::GetWndText(m_hwnd, str); }
         ttlib::cstr GetText() { return ttlib::GetWndText(m_hwnd); }
 
-        template<typename T_INDEX>
+        template <typename T_INDEX>
         bool GetLBText(T_INDEX index, std::string& str)
         {
             return ttlib::GetComboLBText(m_hwnd, (WPARAM) index, str);
         }
 
-        template<typename T_INDEX>
+        template <typename T_INDEX>
         ttlib::cstr GetLBText(T_INDEX index)
         {
             return ttlib::GetComboLBText(m_hwnd, (WPARAM) index);
@@ -380,7 +383,7 @@ namespace ttlib
             return SendMsg(CB_ADDSTRING, 0, str16.c_str());
         }
 
-        template<typename T_INDEX>
+        template <typename T_INDEX>
         LRESULT insert(T_INDEX index, std::string_view str)
         {
             std::wstring str16;
@@ -416,19 +419,19 @@ namespace ttlib
         void ResetContent() const { SendMsg(CB_RESETCONTENT); }
         void Reset() const { SendMsg(CB_RESETCONTENT); }
 
-        template<typename T_INDEX>
+        template <typename T_INDEX>
         LRESULT DeleteString(T_INDEX index) const
         {
             return SendMsg(CB_DELETESTRING, index);
         }
 
-        template<typename T_INDEX>
+        template <typename T_INDEX>
         LRESULT GetItemData(T_INDEX index) const
         {
             return SendMsg(CB_GETITEMDATA, index);
         }
 
-        template<typename T_INDEX>
+        template <typename T_INDEX>
         LRESULT SetItemData(T_INDEX index, LPARAM data) const
         {
             return SendMsg(CB_SETITEMDATA, index, data);
@@ -438,13 +441,16 @@ namespace ttlib
 
         LRESULT SetCurSel() const { return SendMsg(CB_SETCURSEL, 0); }
 
-        template<typename T_INDEX>
+        template <typename T_INDEX>
         LRESULT SetCurSel(T_INDEX index) const
         {
             return SendMsg(CB_SETCURSEL, index);
         }
 
-        LRESULT GetEditSel(DWORD* pStart, DWORD* pEnd) const { return SendMsg(CB_GETEDITSEL, (WPARAM) pStart, (LPARAM) pEnd); }
+        LRESULT GetEditSel(DWORD* pStart, DWORD* pEnd) const
+        {
+            return SendMsg(CB_GETEDITSEL, (WPARAM) pStart, (LPARAM) pEnd);
+        }
         void SetEditSel(int iStart, int iEnd) const { (void) SendMsg(CB_SETEDITSEL, 0, MAKELPARAM(iStart, iEnd)); }
         void SelectEditContol(void) const { SendMsg(CB_SETEDITSEL, 0, MAKELPARAM(0, -1)); }
 
@@ -495,7 +501,7 @@ namespace ttlib
 
         bool GetText(std::string& str) { return ttlib::GetWndText(m_hwnd, str); }
 
-        template<typename T_INDEX>
+        template <typename T_INDEX>
         bool GetLBText(T_INDEX index, std::string& str)
         {
             return ttlib::GetListboxText(m_hwnd, (WPARAM) index, str);
@@ -503,7 +509,7 @@ namespace ttlib
 
         ttlib::cstr GetText() { return ttlib::GetWndText(m_hwnd); }
 
-        template<typename T_INDEX>
+        template <typename T_INDEX>
         ttlib::cstr GetLBText(T_INDEX index)
         {
             return ttlib::GetListboxText(m_hwnd, (WPARAM) index);
@@ -518,7 +524,7 @@ namespace ttlib
             return SendMsg(LB_ADDSTRING, 0, str16.c_str());
         }
 
-        template<typename T_INDEX>
+        template <typename T_INDEX>
         LRESULT insert(T_INDEX index, std::string_view str)
         {
             std::wstring str16;
@@ -550,21 +556,21 @@ namespace ttlib
         LRESULT size() const { return SendMsg(LB_GETCOUNT); }
         LRESULT clear() const { return SendMsg(LB_RESETCONTENT); }
 
-        template<typename T_MSG, typename T_WPARAM, typename T_LPARAM>
+        template <typename T_MSG, typename T_WPARAM, typename T_LPARAM>
         LRESULT SendMsg(T_MSG msg, T_WPARAM wParam, T_LPARAM lParam) const
         {
             // C-style case used to let compiler determine which cast is needed for specific parameter type
             return ::SendMessageW(m_hwnd, (UINT) msg, (WPARAM) wParam, (LPARAM) lParam);
         }
 
-        template<typename T_MSG, typename T_WPARAM>
+        template <typename T_MSG, typename T_WPARAM>
         LRESULT SendMsg(T_MSG msg, T_WPARAM wParam) const
         {
             // C-style case used to let compiler determine which cast is needed for specific parameter type
             return ::SendMessageW(m_hwnd, (UINT) msg, (WPARAM) wParam, NULL);
         }
 
-        template<typename T_MSG>
+        template <typename T_MSG>
         LRESULT SendMsg(T_MSG msg) const
         {
             // C-style case used to let compiler determine which cast is needed for specific parameter type
@@ -593,7 +599,7 @@ namespace ttlib
 
         void SetFont(HFONT hfont, bool redraw = false) { SendMsg(WM_SETFONT, hfont, (redraw ? TRUE : FALSE)); }
 
-        template<typename T_INDEX>
+        template <typename T_INDEX>
         LRESULT DeleteString(T_INDEX index) const
         {
             return SendMsg(LB_DELETESTRING, index);
@@ -601,13 +607,13 @@ namespace ttlib
 
         // void  RemoveListItem();  // removes currently selected item
 
-        template<typename T_INDEX>
+        template <typename T_INDEX>
         LRESULT GetItemData(T_INDEX index) const
         {
             return SendMsg(LB_GETITEMDATA, index);
         }
 
-        template<typename T_INDEX>
+        template <typename T_INDEX>
         LRESULT SetItemData(T_INDEX index, int data) const
         {
             return SendMsg(LB_SETITEMDATA, index, data);
@@ -615,7 +621,7 @@ namespace ttlib
 
         LRESULT GetItemRect(RECT* prc) const { return SendMsg(LB_GETITEMRECT, GetCurSel(), prc); }
 
-        template<typename T_INDEX>
+        template <typename T_INDEX>
         LRESULT GetItemRect(RECT* prc, T_INDEX index) const
         {
             return SendMsg(LB_GETITEMRECT, index, prc);
@@ -637,7 +643,7 @@ namespace ttlib
             return SendMsg(LB_SETCURSEL, 0);
         }
 
-        template<typename T_INDEX>
+        template <typename T_INDEX>
         // Works on single selection listbox only
         LRESULT SetCurSel(T_INDEX index) const
         {
@@ -648,13 +654,13 @@ namespace ttlib
 
         LRESULT GetTopIndex(void) const { return SendMsg(LB_GETTOPINDEX); }
 
-        template<typename T_INDEX>
+        template <typename T_INDEX>
         void SetTopIndex(T_INDEX index) const
         {
             SendMsg(LB_SETTOPINDEX, index);
         }
 
-        template<typename T_INDEX>
+        template <typename T_INDEX>
         // For multi-select list boxes
         LRESULT GetSel(T_INDEX index) const
         {
@@ -663,7 +669,7 @@ namespace ttlib
             return SendMsg(LB_GETSEL, index);
         }
 
-        template<typename T_INDEX>
+        template <typename T_INDEX>
         void SetSel(T_INDEX index, BOOL select = TRUE) const
         {
             ttASSERT_MSG((GetWindowLong(m_hwnd, GWL_STYLE) & (LBS_MULTIPLESEL | LBS_EXTENDEDSEL)),
@@ -705,11 +711,14 @@ namespace ttlib
         void Initialize(HWND hdlg, int id) { m_hwnd = ::GetDlgItem(hdlg, id); };
         void Attach(HWND hwndCtrl) { m_hwnd = hwndCtrl; }
 
-        int GetCurSel() { return static_cast<int>(::SendMessage(m_hwnd, LVM_GETNEXTITEM, (WPARAM) -1, MAKELPARAM(LVNI_SELECTED, 0))); }
+        int GetCurSel()
+        {
+            return static_cast<int>(::SendMessage(m_hwnd, LVM_GETNEXTITEM, (WPARAM) -1, MAKELPARAM(LVNI_SELECTED, 0)));
+        }
 
         LRESULT SetCurSel(std::string_view item);
 
-        template<typename T_INDEX>
+        template <typename T_INDEX>
         LRESULT SetCurSel(T_INDEX pos)
         {
             return SetSel((WPARAM) pos);
@@ -717,19 +726,19 @@ namespace ttlib
 
         LRESULT SetSel(WPARAM index);
 
-        template<typename T_INDEX>
+        template <typename T_INDEX>
         ttlib::cstr GetItemText(T_INDEX item)
         {
             return GetLVText((int) item, 0, 1024);
         }
 
-        template<typename T_INDEX>
+        template <typename T_INDEX>
         ttlib::cstr GetItemText(T_INDEX item, T_INDEX subitem)
         {
             return GetLVText((int) item, (int) subitem, 1024);
         }
 
-        template<typename T_INDEX, typename T_SIZE>
+        template <typename T_INDEX, typename T_SIZE>
         ttlib::cstr GetItemText(T_INDEX item, T_INDEX subitem, T_SIZE maxTextLen)
         {
             return GetLVText((int) item, (int) subitem, (int) maxTextLen);
@@ -742,7 +751,7 @@ namespace ttlib
 
         LRESULT InsertItem(LVITEM* pitem) { return ::SendMessage(m_hwnd, LVM_INSERTITEM, 0, (LPARAM) pitem); }
 
-        template<typename T_INDEX>
+        template <typename T_INDEX>
         BOOL DeleteItem(T_INDEX index)
         {
             return (BOOL)::SendMessage(m_hwnd, LVM_DELETEITEM, (WPARAM) index, 0);
@@ -751,7 +760,7 @@ namespace ttlib
 
         int add(std::string_view str, LPARAM lparam = -1);
 
-        template<typename T_INDEX>
+        template <typename T_INDEX>
         bool addsubstring(std::string_view str, T_INDEX iItem, T_INDEX iSubItem)
         {
             return addsub(str, (int) iItem, (int) iSubItem);

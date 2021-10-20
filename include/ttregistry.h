@@ -39,24 +39,15 @@ namespace ttlib
         bool Open(std::string_view name, REGSAM access = KEY_READ, HKEY hkey = HKEY_CURRENT_USER);
 
         /// If a key was already open, this will automatically close it first.
-        bool OpenLocal(std::string_view name, REGSAM access = KEY_READ)
-        {
-            return Open(name, access, HKEY_LOCAL_MACHINE);
-        }
+        bool OpenLocal(std::string_view name, REGSAM access = KEY_READ) { return Open(name, access, HKEY_LOCAL_MACHINE); }
 
         /// If a key was already open, this will automatically close it first.
-        bool OpenClasses(std::string_view name, REGSAM access = KEY_READ)
-        {
-            return Open(name, access, HKEY_CLASSES_ROOT);
-        }
+        bool OpenClasses(std::string_view name, REGSAM access = KEY_READ) { return Open(name, access, HKEY_CLASSES_ROOT); }
 
         /// Use this call if you need to write to the regisry.
         ///
         /// If a key was already open, this will automatically close it first.
-        bool OpenAllAccess(std::string_view name, HKEY hkey = HKEY_CURRENT_USER)
-        {
-            return Open(name, KEY_ALL_ACCESS, hkey);
-        }
+        bool OpenAllAccess(std::string_view name, HKEY hkey = HKEY_CURRENT_USER) { return Open(name, KEY_ALL_ACCESS, hkey); }
 
         /// If a key was already open, this will automatically close it first.
         bool Create(std::string_view name, HKEY hkey = HKEY_CURRENT_USER);

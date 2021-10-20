@@ -60,12 +60,11 @@ namespace ttlib
         void SetFlat(bool bFlag) { m_flat = bFlag; }
 
         void SetIcon(UINT nIcon, UINT nIconAlign = BS_CENTER, UINT nIconDown = 0, UINT nIconHighLight = 0);
-        void SetIcon(const std::string& IconName, UINT nIconAlign = BS_CENTER, UINT nIconDown = 0,
-                     UINT nIconHighLight = 0);
+        void SetIcon(const std::string& IconName, UINT nIconAlign = BS_CENTER, UINT nIconDown = 0, UINT nIconHighLight = 0);
         void SetIcon(HICON hIcon, UINT nIconAlign, UINT nIconDown, UINT nIconHighLight);
 
-        void SetShade(tt::SHADE shadeID = tt::SHADE::noise, BYTE granularity = 8, BYTE highlight = 10,
-                      BYTE coloring = 0, COLORREF color = 0);
+        void SetShade(tt::SHADE shadeID = tt::SHADE::noise, BYTE granularity = 8, BYTE highlight = 10, BYTE coloring = 0,
+                      COLORREF color = 0);
         void SetTextAlign(UINT nTextAlign);
         COLORREF SetTextColor(COLORREF new_color);
 

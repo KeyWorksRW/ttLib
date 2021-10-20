@@ -55,7 +55,10 @@ namespace ttlib
 
         void SetClassIcon(size_t idIcon) { m_WndClass.hIcon = LoadIconW(ttlib::lang_info.hinstResource, (LPCWSTR) idIcon); }
         void SetClassIcon(HICON hIcon) { m_WndClass.hIcon = hIcon; }
-        void SetClassSmallIcon(size_t idIcon) { m_WndClass.hIconSm = LoadIconW(ttlib::lang_info.hinstResource, (LPCWSTR) idIcon); }
+        void SetClassSmallIcon(size_t idIcon)
+        {
+            m_WndClass.hIconSm = LoadIconW(ttlib::lang_info.hinstResource, (LPCWSTR) idIcon);
+        }
         void SetClassSmallIcon(HICON hIcon) { m_WndClass.hIconSm = hIcon; }
 
         /// Title will automatically be converted to UTF16
@@ -68,42 +71,42 @@ namespace ttlib
         // if hwnd is NULL, subclass our own window.
         bool SubClass(HWND hwnd = NULL);
 
-        template<typename T_MSG, typename T_WPARAM, typename T_LPARAM>
+        template <typename T_MSG, typename T_WPARAM, typename T_LPARAM>
         LRESULT SendMsg(T_MSG msg, T_WPARAM wParam, T_LPARAM lParam) const
         {
             // C-style case used to let compiler determine which cast is needed for specific parameter type
             return ::SendMessageW(m_hwnd, (UINT) msg, (WPARAM) wParam, (LPARAM) lParam);
         }
 
-        template<typename T_MSG, typename T_WPARAM>
+        template <typename T_MSG, typename T_WPARAM>
         LRESULT SendMsg(T_MSG msg, T_WPARAM wParam) const
         {
             // C-style case used to let compiler determine which cast is needed for specific parameter type
             return ::SendMessageW(m_hwnd, (UINT) msg, (WPARAM) wParam, NULL);
         }
 
-        template<typename T_MSG>
+        template <typename T_MSG>
         LRESULT SendMsg(T_MSG msg) const
         {
             // C-style case used to let compiler determine which cast is needed for specific parameter type
             return ::SendMessageW(m_hwnd, (UINT) msg, NULL, NULL);
         }
 
-        template<typename T_MSG, typename T_WPARAM, typename T_LPARAM>
+        template <typename T_MSG, typename T_WPARAM, typename T_LPARAM>
         LRESULT PostMsg(T_MSG msg, T_WPARAM wParam, T_LPARAM lParam) const
         {
             // C-style case used to let compiler determine which cast is needed for specific parameter type
             return ::PostMessageW(m_hwnd, (UINT) msg, (WPARAM) wParam, (LPARAM) lParam);
         }
 
-        template<typename T_MSG, typename T_WPARAM>
+        template <typename T_MSG, typename T_WPARAM>
         LRESULT PostMsg(T_MSG msg, T_WPARAM wParam) const
         {
             // C-style case used to let compiler determine which cast is needed for specific parameter type
             return ::PostMessageW(m_hwnd, (UINT) msg, (WPARAM) wParam, NULL);
         }
 
-        template<typename T_MSG>
+        template <typename T_MSG>
         LRESULT PostMsg(T_MSG msg) const
         {
             // C-style case used to let compiler determine which cast is needed for specific parameter type

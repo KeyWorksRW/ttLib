@@ -41,7 +41,7 @@
 
 #if !defined(INVALID_HANDLE_VALUE)
     // normally defined in <handleapi.h>
-    #define INVALID_HANDLE_VALUE ((HANDLE)(LONG_PTR) -1)
+    #define INVALID_HANDLE_VALUE ((HANDLE) (LONG_PTR) -1)
 #endif
 
 namespace ttlib
@@ -55,7 +55,8 @@ namespace ttlib
         {
             std::wstring str16;
             ttlib::utf8to16(filepattern, str16);
-            m_hfind = FindFirstFileExW(str16.c_str(), FindExInfoBasic, this, FindExSearchNameMatch, nullptr, FIND_FIRST_EX_LARGE_FETCH);
+            m_hfind = FindFirstFileExW(str16.c_str(), FindExInfoBasic, this, FindExSearchNameMatch, nullptr,
+                                       FIND_FIRST_EX_LARGE_FETCH);
 
             // Use same rule as std::filesystem directory_iterator and skip . and ..
             // If this is an empty directory, then the find handle will be closed and isvalid()
@@ -104,7 +105,8 @@ namespace ttlib
                 FindClose(m_hfind);
             std::wstring str16;
             ttlib::utf8to16(filepattern, str16);
-            m_hfind = FindFirstFileExW(str16.c_str(), FindExInfoBasic, this, FindExSearchNameMatch, nullptr, FIND_FIRST_EX_LARGE_FETCH);
+            m_hfind = FindFirstFileExW(str16.c_str(), FindExInfoBasic, this, FindExSearchNameMatch, nullptr,
+                                       FIND_FIRST_EX_LARGE_FETCH);
             m_filename.from_utf16(cFileName);
 
             // Use same rule as std::filesystem directory_iterator and skip . and ..

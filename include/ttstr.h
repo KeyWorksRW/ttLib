@@ -78,14 +78,20 @@ public:
     size_t locate_wx(const wxString& str, size_t posStart = 0, tt::CASE checkcase = tt::CASE::exact) const;
 
     /// Returns true if the sub string exists
-    bool contains(std::string_view sub, tt::CASE checkcase = tt::CASE::exact) const { return (locate(sub, 0, checkcase) != npos); }
+    bool contains(std::string_view sub, tt::CASE checkcase = tt::CASE::exact) const
+    {
+        return (locate(sub, 0, checkcase) != npos);
+    }
 
     // Returns true if the sub string exists
-    bool contains_wx(const wxString& sub, tt::CASE checkcase = tt::CASE::exact) const { return (locate_wx(sub, 0, checkcase) != npos); }
+    bool contains_wx(const wxString& sub, tt::CASE checkcase = tt::CASE::exact) const
+    {
+        return (locate_wx(sub, 0, checkcase) != npos);
+    }
 
     /// Returns true if any char* string in the iteration list appears somewhere in the the
     /// main string.
-    template<class iterT>
+    template <class iterT>
     bool strContains(iterT iter, tt::CASE checkcase = tt::CASE::exact)
     {
         for (auto& strIter: iter)
@@ -98,7 +104,7 @@ public:
 
     /// Returns true if any wxString in the iteration list appears somewhere in the the main
     /// string.
-    template<class iterT>
+    template <class iterT>
     bool strContains_wx(iterT iter, tt::CASE checkcase = tt::CASE::exact)
     {
         for (auto& strIter: iter)
@@ -233,13 +239,22 @@ public:
     ttString& forwardslashestoback();
 
     /// ext param should begin with a period (e.g., ".cpp")
-    bool has_extension(std::string_view ext, tt::CASE checkcase = tt::CASE::either) { return extension().is_sameas(ext, checkcase); }
+    bool has_extension(std::string_view ext, tt::CASE checkcase = tt::CASE::either)
+    {
+        return extension().is_sameas(ext, checkcase);
+    }
 
     /// ext param should begin with a period (e.g., ".cpp")
-    bool has_extension_wx(const wxString& ext, tt::CASE checkcase = tt::CASE::either) { return extension().is_sameas_wx(ext, checkcase); }
+    bool has_extension_wx(const wxString& ext, tt::CASE checkcase = tt::CASE::either)
+    {
+        return extension().is_sameas_wx(ext, checkcase);
+    }
 
     /// Returns true if current filename contains the specified case-insensitive file name.
-    bool has_filename(std::string_view name, tt::CASE checkcase = tt::CASE::either) const { return filename().is_sameas(name, checkcase); }
+    bool has_filename(std::string_view name, tt::CASE checkcase = tt::CASE::either) const
+    {
+        return filename().is_sameas(name, checkcase);
+    }
 
     /// Returns true if current filename contains the specified case-insensitive file name.
     bool has_filename_wx(const wxString& name, tt::CASE checkcase = tt::CASE::either) const

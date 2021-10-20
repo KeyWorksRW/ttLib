@@ -118,7 +118,7 @@ void* ttCDib::Create(DWORD dwWidth, DWORD dwHeight, WORD wBitCount)
 
     // use our bitmap info structure to fill in first part of
     // our DIB with the BITMAPINFOHEADER
-    lpbi = (LPBITMAPINFOHEADER)(m_dib);
+    lpbi = (LPBITMAPINFOHEADER) (m_dib);
     *lpbi = m_bi;
 
     return m_dib;  // return handle to the DIB
@@ -131,8 +131,8 @@ long ttCDib::Draw(HDC pDC, long xoffset, long yoffset)
         // palette must be correctly filled
         auto lpDIB = m_dib;  // set image to hdc...
         SetStretchBltMode(pDC, COLORONCOLOR);
-        SetDIBitsToDevice(pDC, xoffset, yoffset, m_bi.biWidth, m_bi.biHeight, 0, 0, 0, m_bi.biHeight, GetBits(), (BITMAPINFO*) lpDIB,
-                          DIB_RGB_COLORS);
+        SetDIBitsToDevice(pDC, xoffset, yoffset, m_bi.biWidth, m_bi.biHeight, 0, 0, 0, m_bi.biHeight, GetBits(),
+                          (BITMAPINFO*) lpDIB, DIB_RGB_COLORS);
         return 1;
     }
     return 0;
@@ -336,11 +336,11 @@ RGBQUAD ttCDib::RGBtoHSL(RGBQUAD lRGBColor)
         Bdelta = (((cMax - B) * (HSLMAX / 6)) + ((cMax - cMin) / 2)) / (cMax - cMin);
 
         if (R == cMax)
-            H = (BYTE)(Bdelta - Gdelta);
+            H = (BYTE) (Bdelta - Gdelta);
         else if (G == cMax)
-            H = (BYTE)((HSLMAX / 3) + Rdelta - Bdelta);
+            H = (BYTE) ((HSLMAX / 3) + Rdelta - Bdelta);
         else  // B == cMax
-            H = (BYTE)(((2 * HSLMAX) / 3) + Gdelta - Rdelta);
+            H = (BYTE) (((2 * HSLMAX) / 3) + Gdelta - Rdelta);
 
         if (H < 0)
             H += HSLMAX;
@@ -387,7 +387,7 @@ RGBQUAD ttCDib::HSLtoRGB(RGBQUAD lHSLColor)
 
     if (sat == 0)  // achromatic case
     {
-        R = G = B = (BYTE)((lum * RGBMAX) / HSLMAX);
+        R = G = B = (BYTE) ((lum * RGBMAX) / HSLMAX);
     }
     else
     {  // chromatic case
@@ -399,9 +399,9 @@ RGBQUAD ttCDib::HSLtoRGB(RGBQUAD lHSLColor)
         Magic1 = 2 * lum - Magic2;
 
         /* get RGB, change units from HSLMAX to RGBMAX */
-        R = (BYTE)(HueToRGB(Magic1, Magic2, (WORD)(hue + (HSLMAX / 3))) * RGBMAX + (HSLMAX / 2)) / HSLMAX;
-        G = (BYTE)(HueToRGB(Magic1, Magic2, hue) * RGBMAX + (HSLMAX / 2)) / HSLMAX;
-        B = (BYTE)(HueToRGB(Magic1, Magic2, (WORD)(hue - (HSLMAX / 3))) * RGBMAX + (HSLMAX / 2)) / HSLMAX;
+        R = (BYTE) (HueToRGB(Magic1, Magic2, (WORD) (hue + (HSLMAX / 3))) * RGBMAX + (HSLMAX / 2)) / HSLMAX;
+        G = (BYTE) (HueToRGB(Magic1, Magic2, hue) * RGBMAX + (HSLMAX / 2)) / HSLMAX;
+        B = (BYTE) (HueToRGB(Magic1, Magic2, (WORD) (hue - (HSLMAX / 3))) * RGBMAX + (HSLMAX / 2)) / HSLMAX;
     }
     RGBQUAD rgb = { B, G, R, 0 };
     return rgb;
@@ -455,9 +455,9 @@ void ttCDib::BlendPalette(COLORREF cr, long perc)
         perc = 100;
     for (i = 0; i < m_nColors; i++)
     {
-        pPal[i].rgbBlue = (BYTE)((pPal[i].rgbBlue * (100 - perc) + b * perc) / 100);
-        pPal[i].rgbGreen = (BYTE)((pPal[i].rgbGreen * (100 - perc) + g * perc) / 100);
-        pPal[i].rgbRed = (BYTE)((pPal[i].rgbRed * (100 - perc) + r * perc) / 100);
+        pPal[i].rgbBlue = (BYTE) ((pPal[i].rgbBlue * (100 - perc) + b * perc) / 100);
+        pPal[i].rgbGreen = (BYTE) ((pPal[i].rgbGreen * (100 - perc) + g * perc) / 100);
+        pPal[i].rgbRed = (BYTE) ((pPal[i].rgbRed * (100 - perc) + r * perc) / 100);
     }
 }
 

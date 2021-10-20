@@ -97,7 +97,7 @@ namespace ttlib
 
         // Windows both reads and writes to the filename buffer, so we use a vector to store the buffer,
         // and ttlib::utf8to16()/ttlib::utf16to8() to convert to/from UTF8/UTF16 strings.
-        std::unique_ptr<wchar_t []> m_filename16;
+        std::unique_ptr<wchar_t[]> m_filename16;
 
         std::wstring m_initialDir16;
         std::wstring m_filters16;

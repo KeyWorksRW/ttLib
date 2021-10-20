@@ -64,7 +64,7 @@ void win::InitWndClass()
     m_WndClass.hInstance = GetModuleHandle(NULL);
     m_WndClass.lpfnWndProc = ttlib::WndProc;
     m_WndClass.style = CS_HREDRAW | CS_VREDRAW;
-    m_WndClass.hbrBackground = (HBRUSH)(LONG_PTR)(COLOR_WINDOW + 1);
+    m_WndClass.hbrBackground = (HBRUSH) (LONG_PTR) (COLOR_WINDOW + 1);
     m_WndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
 
     // Note that m_WndClass.lpszClassName doesn't get set until the call to CreateWnd.
@@ -78,7 +78,8 @@ void win::SetClassName(std::string_view ClassName)
 }
 
 // If not already registered, this will register the class and delete m_pwc before calling CreateWindowExA.
-bool win::CreateWnd(const std::string& Title, DWORD dwExStyle, DWORD dwStyle, HWND hwndParent, RECT* prcPosition, HMENU hmenu)
+bool win::CreateWnd(const std::string& Title, DWORD dwExStyle, DWORD dwStyle, HWND hwndParent, RECT* prcPosition,
+                    HMENU hmenu)
 {
     if (!isRegistered)
     {
@@ -105,10 +106,11 @@ bool win::CreateWnd(const std::string& Title, DWORD dwExStyle, DWORD dwStyle, HW
 
     if (prcPosition != NULL)
         ::CreateWindowExW(dwExStyle, m_ClassName.c_str(), title16.c_str(), dwStyle, prcPosition->left, prcPosition->top,
-                          ttlib::rcWidth(prcPosition), ttlib::rcHeight(prcPosition), hwndParent, hmenu, m_WndClass.hInstance, (void*) this);
+                          ttlib::rcWidth(prcPosition), ttlib::rcHeight(prcPosition), hwndParent, hmenu, m_WndClass.hInstance,
+                          (void*) this);
     else
-        ::CreateWindowExW(dwExStyle, m_ClassName.c_str(), title16.c_str(), dwStyle, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-                          CW_USEDEFAULT, hwndParent, hmenu, m_WndClass.hInstance, (void*) this);
+        ::CreateWindowExW(dwExStyle, m_ClassName.c_str(), title16.c_str(), dwStyle, CW_USEDEFAULT, CW_USEDEFAULT,
+                          CW_USEDEFAULT, CW_USEDEFAULT, hwndParent, hmenu, m_WndClass.hInstance, (void*) this);
 
     return (m_hwnd && IsWindow(m_hwnd));
 }

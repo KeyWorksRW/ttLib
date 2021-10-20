@@ -40,7 +40,6 @@
     #define min(a, b) (((a) < (b)) ? (a) : (b))
 #endif
 
-
 using namespace ttlib;
 
 ShadeBtn::ShadeBtn()
@@ -169,7 +168,8 @@ void ShadeBtn::SetIcon(HICON hIcon, UINT nIconAlign, UINT nIconDown, UINT nIconH
         {
             case BS_RIGHT:
                 m_hIconAlign = BS_RIGHT;
-                OffsetRect(&m_rcIconBox, x - iinfo.xHotspot * 2 - m_FocusRectMargin, max(0, (long) (y / 2 - iinfo.yHotspot)));
+                OffsetRect(&m_rcIconBox, x - iinfo.xHotspot * 2 - m_FocusRectMargin,
+                           max(0, (long) (y / 2 - iinfo.yHotspot)));
                 break;
             case BS_LEFT:
                 m_hIconAlign = BS_LEFT;
@@ -177,7 +177,8 @@ void ShadeBtn::SetIcon(HICON hIcon, UINT nIconAlign, UINT nIconDown, UINT nIconH
                 break;
             default:
                 m_hIconAlign = BS_CENTER;
-                OffsetRect(&m_rcIconBox, max(0, (long) (x / 2 - iinfo.xHotspot)), max(0, (long) (y / 2 - 2 * iinfo.yHotspot)));
+                OffsetRect(&m_rcIconBox, max(0, (long) (x / 2 - iinfo.xHotspot)),
+                           max(0, (long) (y / 2 - 2 * iinfo.yHotspot)));
         }
 
         // release icon mask bitmaps (Orioli Alessandro <aorioli@temaweb.it>)
@@ -199,7 +200,8 @@ void ShadeBtn::SetIcon(HICON hIcon, UINT nIconAlign, UINT nIconDown, UINT nIconH
 
         if (nIconHighLight > 0)  // load highlighted icon
         {
-            m_hIconHighLight = (HICON)::LoadImageA(GetModuleHandle(NULL), MAKEINTRESOURCEA(nIconHighLight), IMAGE_ICON, 0, 0, 0);
+            m_hIconHighLight =
+                (HICON)::LoadImageA(GetModuleHandle(NULL), MAKEINTRESOURCEA(nIconHighLight), IMAGE_ICON, 0, 0, 0);
             if (m_hIconHighLight == NULL)
                 m_hIconHighLight = m_hIcon;
         }
@@ -273,9 +275,9 @@ void ShadeBtn::SetShade(tt::SHADE shadeID, BYTE granularity, BYTE highlight, BYT
         r = ((128 - i) * GetRValue(midcr & 0xFF) + i * GetRValue(hicr & 0xFF)) / 128;
         g = ((128 - i) * GetGValue(midcr & 0xFFFF) + i * GetGValue(hicr & 0xFFFF)) / 128;
         b = ((128 - i) * GetBValue(midcr & 0xFFFFFF) + i * GetBValue(hicr & 0xFFFFFF)) / 128;
-        m_dNormal.SetPaletteIndex((BYTE)(i + 127), (BYTE) r, (BYTE) g, (BYTE) b);
-        m_dh.SetPaletteIndex((BYTE)(i + 127), (BYTE) r, (BYTE) g, (BYTE) b);
-        m_dv.SetPaletteIndex((BYTE)(i + 127), (BYTE) r, (BYTE) g, (BYTE) b);
+        m_dNormal.SetPaletteIndex((BYTE) (i + 127), (BYTE) r, (BYTE) g, (BYTE) b);
+        m_dh.SetPaletteIndex((BYTE) (i + 127), (BYTE) r, (BYTE) g, (BYTE) b);
+        m_dv.SetPaletteIndex((BYTE) (i + 127), (BYTE) r, (BYTE) g, (BYTE) b);
     }
 
     m_dNormal.BlendPalette(color, coloring);  // color the palette
@@ -285,7 +287,7 @@ void ShadeBtn::SetShade(tt::SHADE shadeID, BYTE granularity, BYTE highlight, BYT
     for (i = 0; i < j; i++)
     {
         //      iDst[i]=64+127*(i%2);   //soft
-        iDst[i] = (BYTE)(255 * (i % 2));  // hard
+        iDst[i] = (BYTE) (255 * (i % 2));  // hard
     }
 
     iDst = m_dv.GetBits();  // build the vert. dotted focus bitmap
@@ -293,7 +295,7 @@ void ShadeBtn::SetShade(tt::SHADE shadeID, BYTE granularity, BYTE highlight, BYT
     for (i = 0; i < j; i++)
     {
         //      *iDst=64+127*(i%2);     //soft
-        *iDst = (BYTE)(255 * (i % 2));  // hard
+        *iDst = (BYTE) (255 * (i % 2));  // hard
         iDst += 4;
     }
 
@@ -369,9 +371,9 @@ void ShadeBtn::SetShade(tt::SHADE shadeID, BYTE granularity, BYTE highlight, BYT
                     x = j - sXSize / 2;
                     xs = sXSize / 2 - d + (y * y * d) / a;
                     if (x > xs)
-                        posDst[j] = (BYTE)(idxmin + (BYTE)(((sXSize - j) * 128) / d));
+                        posDst[j] = (BYTE) (idxmin + (BYTE) (((sXSize - j) * 128) / d));
                     if ((x + xs) < 0)
-                        posDst[j] = (BYTE)(idxmax - (BYTE)((j * 128) / d));
+                        posDst[j] = (BYTE) (idxmax - (BYTE) ((j * 128) / d));
                     posDst[j] = (posDst[j] + (rand() / grainx2 - granularity)) & 0xFF;
                 }
                 posDst += bytes;
@@ -433,7 +435,7 @@ void ShadeBtn::SetShade(tt::SHADE shadeID, BYTE granularity, BYTE highlight, BYT
             {
                 for (j = 0; j < sXSize; j++)
                 {
-                    posDst[j] = (BYTE)(idxmin + a * i / sYSize + a * (sXSize - j) / sXSize);
+                    posDst[j] = (BYTE) (idxmin + a * i / sYSize + a * (sXSize - j) / sXSize);
                     posDst[j] = (posDst[j] + (rand() / grainx2 - granularity)) & 0xFF;
                 }
                 posDst += bytes;
@@ -502,7 +504,8 @@ void ShadeBtn::OnPaint()
     int cy = abs(rcClient.bottom - rcClient.top);
 
     // get text box position
-    RECT tr = { rcClient.left + m_FocusRectMargin + 2, rcClient.top, rcClient.right - m_FocusRectMargin - 2, rcClient.bottom };
+    RECT tr = { rcClient.left + m_FocusRectMargin + 2, rcClient.top, rcClient.right - m_FocusRectMargin - 2,
+                rcClient.bottom };
 
     HDC hdcMem;  // create a memory DC to avoid flicker
     hdcMem = CreateCompatibleDC(hdcPaint);
@@ -541,12 +544,13 @@ void ShadeBtn::OnPaint()
         if (m_dDisabled.IsValid())  // paint the skin
             m_dDisabled.Draw(hdcMem, 0, 0);
         else  // no skin selected for disabled state -> standard button
-            ::FillRect(hdcMem, &rcClient, (HBRUSH)(ULONG_PTR) GetSysColor(COLOR_BTNFACE));
+            ::FillRect(hdcMem, &rcClient, (HBRUSH) (ULONG_PTR) GetSysColor(COLOR_BTNFACE));
 
         if (m_hIcon)  // draw the icon
         {
             ::DrawState(hdcMem, NULL, NULL, (LPARAM) m_hIcon, NULL, m_rcIconBox.left, m_rcIconBox.top,
-                        abs(m_rcIconBox.right - m_rcIconBox.left), abs(m_rcIconBox.bottom - m_rcIconBox.top), DST_ICON | DSS_DISABLED);
+                        abs(m_rcIconBox.right - m_rcIconBox.left), abs(m_rcIconBox.bottom - m_rcIconBox.top),
+                        DST_ICON | DSS_DISABLED);
         }
         // if needed, draw the standard 3D rectangular border
         if ((m_Border) && (m_flat == FALSE))
@@ -565,14 +569,15 @@ void ShadeBtn::OnPaint()
             if (m_dDown.IsValid())  // paint the skin
                 m_dDown.Draw(hdcMem, m_Border, m_Border);
             else  // no skin selected for selected state -> standard button
-                ::FillRect(hdcMem, &rcClient, (HBRUSH)(ULONG_PTR) GetSysColor(COLOR_BTNFACE));
+                ::FillRect(hdcMem, &rcClient, (HBRUSH) (ULONG_PTR) GetSysColor(COLOR_BTNFACE));
 
             if (m_hIconDown)  // draw the pushed icon
             {
                 if (m_IsPushLike)
                     OffsetRect(&m_rcIconBox, 1, 1);
                 ::DrawState(hdcMem, NULL, NULL, (LPARAM) m_hIcon, NULL, m_rcIconBox.left, m_rcIconBox.top,
-                            abs(m_rcIconBox.right - m_rcIconBox.left), abs(m_rcIconBox.bottom - m_rcIconBox.top), DST_ICON | DSS_NORMAL);
+                            abs(m_rcIconBox.right - m_rcIconBox.left), abs(m_rcIconBox.bottom - m_rcIconBox.top),
+                            DST_ICON | DSS_NORMAL);
                 if (m_IsPushLike)
                     OffsetRect(&m_rcIconBox, -1, -1);
             }
@@ -593,11 +598,12 @@ void ShadeBtn::OnPaint()
             if (m_dNormal.IsValid())  // paint the skin    // DEFAULT BUTTON
                 m_dNormal.Draw(hdcMem, 0, 0);
             else  // no skin selected for normal state -> standard button
-                ::FillRect(hdcMem, &rcClient, (HBRUSH)(ULONG_PTR) GetSysColor(COLOR_BTNFACE));
+                ::FillRect(hdcMem, &rcClient, (HBRUSH) (ULONG_PTR) GetSysColor(COLOR_BTNFACE));
 
             if (m_hIcon)  // draw the icon
                 ::DrawState(hdcMem, NULL, NULL, (LPARAM) m_hIcon, NULL, m_rcIconBox.left, m_rcIconBox.top,
-                            abs(m_rcIconBox.right - m_rcIconBox.left), abs(m_rcIconBox.bottom - m_rcIconBox.top), DST_ICON | DSS_NORMAL);
+                            abs(m_rcIconBox.right - m_rcIconBox.left), abs(m_rcIconBox.bottom - m_rcIconBox.top),
+                            DST_ICON | DSS_NORMAL);
             // if needed, draw the standard 3D rectangular border
             if (m_Border && (m_flat == FALSE))
             {
@@ -663,5 +669,5 @@ void ShadeBtn::Draw3dRect(HDC hdc, int x, int y, int cx, int cy, COLORREF clrTop
 void ShadeBtn::FillSolidRect(HDC hdc, int x, int y, int cx, int cy, COLORREF clr)
 {
     RECT rect = { x, y, x + cx, y + cy };
-    ::FillRect(hdc, &rect, (HBRUSH)(ULONG_PTR) clr);
+    ::FillRect(hdc, &rect, (HBRUSH) (ULONG_PTR) clr);
 }
