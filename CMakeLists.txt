@@ -15,6 +15,8 @@ if (MSVC)
     # This can considerably speed up build times at the cost of larger object files.
     string(REPLACE "/Zi" "/Z7" z_seven ${CMAKE_CXX_FLAGS_DEBUG})
     set(CMAKE_CXX_FLAGS_DEBUG ${z_seven} CACHE STRING "C++ Debug flags" FORCE)
+
+    add_compile_definitions(UNICODE)
 endif()
 
 get_property(isMultiConfig GLOBAL
@@ -35,7 +37,6 @@ if (NOT isMultiConfig)
     endif()
 endif()
 
-add_compile_definitions(UNICODE)
 
 # Create the cross-platform library
 add_library(ttLib STATIC
