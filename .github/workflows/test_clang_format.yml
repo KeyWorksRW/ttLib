@@ -2,12 +2,16 @@ name: Verify clang-format
 
 on:
   push:
+    branches:
+      - main
     paths-ignore:
-    - .github/workflows
+      - .github/workflows
+      - icons
 
   pull_request:
     paths-ignore:
-    - .github/workflows
+      - .github/workflows
+      - icons
 
 jobs:
   build:
@@ -17,7 +21,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: DoozyX/clang-format-lint-action@v0.12
       with:
-        source: './src'
+        source: '.'
         exclude: file
         extensions: 'h,cpp'
         clangFormatVersion: 12
