@@ -8,8 +8,6 @@
 
 //  Derived from:  http://code.msdn.microsoft.com/CppShellCommonFileDialog-17b20409
 
-#include "pch.h"
-
 #if !defined(_WIN32)
     #error "This module can only be compiled for Windows"
 #endif

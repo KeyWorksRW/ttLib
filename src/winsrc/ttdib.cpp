@@ -12,8 +12,6 @@
 // Copyright: Copyright (c) 2019-2020 KeyWorks Software (Ralph Walden)
 /////////////////////////////////////////////////////////////////////////////
 
-#include "pch.h"
-
 #if !defined(_WIN32)
     #error "This module can only be compiled for Windows"
 #endif

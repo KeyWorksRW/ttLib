@@ -5,8 +5,6 @@
 // License:   Apache License -- see LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
-#include "pch.h"
-
 #include <shellapi.h>
 
 #include "ttstr.h"  // ttString -- Enhanced version of wxString

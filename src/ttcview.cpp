@@ -6,8 +6,6 @@
 // License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
-#include "pch.h"
-
 #include <cassert>
 #include <cctype>
 #include <locale>

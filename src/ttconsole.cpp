@@ -6,8 +6,6 @@
 // License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
-#include "pch.h"
-
 #if !defined(_WIN32)
     #include <cstdlib>
 #endif

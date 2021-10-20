@@ -21,8 +21,6 @@
     important check will need to be in ttMultiBtn -- since that's where all the button subclassing is done.
 */
 
-#include "pch.h"
-
 #if !defined(_WIN32)
     #error "This module can only be compiled for Windows"
 #endif

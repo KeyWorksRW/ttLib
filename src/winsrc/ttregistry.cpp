@@ -6,8 +6,6 @@
 // License:   Apache License -- see ../../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
-#include "pch.h"
-
 #include <winreg.h>
 
 #include "ttlibspace.h"
