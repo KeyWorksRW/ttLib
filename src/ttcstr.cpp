@@ -937,9 +937,9 @@ cstr& cdecl cstr::Format(std::string_view format, ...)
                 if (width != WIDTH_LONG)
                 {
                     if (kflag)
-                        buffer << std::quoted(va_arg(args, std::string));
+                        buffer << std::quoted(va_arg(args, std::string_view));
                     else
-                        buffer << va_arg(args, std::string);
+                        buffer << va_arg(args, std::string_view);
                 }
                 else
                 {
