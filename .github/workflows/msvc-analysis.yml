@@ -21,7 +21,7 @@ on: pull_request
 env:
   # Path to the CMake build directory.
   build: '${{ github.workspace }}/build'
-  BUILD_TYPE: Release
+  BUILD_TYPE: Debug
 
 jobs:
   analyze:
@@ -48,7 +48,7 @@ jobs:
         # Provide a unique ID to access the sarif output path
         id: run-analysis
         with:
-          cmakeBuildDirectory: ${{ env.build }}
+          cmakeBuildDirectory: ${{ env.BUILD_TYPE }}
           # Ruleset file that will determine what checks will be run
           ruleset: NativeRecommendedRules.ruleset
 
