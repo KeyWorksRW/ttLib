@@ -212,6 +212,13 @@ namespace ttlib
         /// ending character was found.
         size_t ExtractSubString(std::string_view src, size_t offset = 0);
 
+        /// Identical to ExtractSubString only it returns ttlib::cstr& instead of a size_t
+        ttlib::cstr& CreateSubString(std::string_view src, size_t offset = 0)
+        {
+            ExtractSubString(src, offset);
+            return *this;
+        }
+
         /// Replace first (or all) occurrences of substring with another one
         size_t Replace(std::string_view oldtext, std::string_view newtext, bool replace_all = tt::REPLACE::once,
                        tt::CASE checkcase = tt::CASE::exact);
