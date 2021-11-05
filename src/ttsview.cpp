@@ -292,6 +292,26 @@ bool sview::moveto_filename() noexcept
     return true;
 }
 
+bool sview::moveto_substr(std::string_view substr, bool StepOverIfFound) noexcept
+{
+    auto pos = find(substr);
+    if (!ttlib::is_found(pos))
+    {
+        return false;
+    }
+
+    if (StepOverIfFound)
+    {
+        auto stepover_pos = find_nonspace(pos + substr.size());
+        if (ttlib::is_found(pos))
+        {
+            pos = stepover_pos;
+        }
+    }
+    remove_prefix(pos);
+    return true;
+}
+
 ttlib::sview sview::extension() const noexcept
 {
     if (empty())

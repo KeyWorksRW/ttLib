@@ -194,6 +194,13 @@ namespace ttlib
         /// sview.
         bool moveto_filename() noexcept;
 
+        /// Move start position to the substr in the current string, returning true if
+        /// found.
+        ///
+        /// If StepOverIfFound is true, start position is set to the first non-whitespace
+        /// character found after substr.
+        bool moveto_substr(std::string_view substr, bool StepOverIfFound = false) noexcept;
+
         bool operator==(ttlib::sview str) { return this->is_sameas(str); }
     };
 }  // namespace ttlib
