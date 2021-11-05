@@ -32,6 +32,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - run: mkdir ${{github.workspace}}/build/${{env.BUILD_TYPE}}
+
       - name: Configure CMake
         run: cmake -G "Visual Studio 16 2019" -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 #        run: cmake -B ${{ env.build }}
