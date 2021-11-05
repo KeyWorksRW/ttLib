@@ -158,11 +158,11 @@ namespace ttlib
         int atoi(size_t start = 0) const { return ttlib::atoi(c_str() + start); }
 
         /// If character is found, line is truncated from the character on, and then
-        /// any trailing space is removed;
+        /// any trailing space is removed.
         void erase_from(char ch);
 
         /// If string is found, line is truncated from the string on, and then
-        /// any trailing space is removed;
+        /// any trailing space is removed.
         void erase_from(std::string_view sub);
 
         /// Removes whitespace: ' ', \t, \r, \\n, \f
