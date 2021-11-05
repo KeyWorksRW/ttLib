@@ -213,7 +213,8 @@ namespace ttlib
         size_t ExtractSubString(std::string_view src, size_t offset = 0);
 
         /// Identical to ExtractSubString only it returns ttlib::cstr& instead of a size_t
-        ttlib::cstr& CreateSubString(std::string_view src, size_t offset = 0) {
+        ttlib::cstr& CreateSubString(std::string_view src, size_t offset = 0)
+        {
             ExtractSubString(src, offset);
             return *this;
         }
