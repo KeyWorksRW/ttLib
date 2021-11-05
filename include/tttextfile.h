@@ -35,7 +35,8 @@
 #include <string_view>
 #include <vector>
 
-#include "ttcstr.h"
+#include "ttcstr.h"   // cstr -- std::string with additional methods
+#include "ttsview.h"  // sview -- std::string_view with additional methods
 
 namespace ttlib
 {
@@ -147,9 +148,9 @@ namespace ttlib
 namespace ttlib
 {
     /// Almost identical to ttlib::textfile, only the entire file is stored as a single
-    /// string, and the vector contains a std::string_view for each line. This is
-    /// a faster way to read the file if you don't need to modify the contents.
-    class viewfile : public std::vector<std::string_view>
+    /// string, and the vector contains a ttlib::sview (std::string_view) for each line. This
+    /// is a faster way to read the file if you don't need to modify the contents.
+    class viewfile : public std::vector<ttlib::sview>
     {
     public:
         /// Reads a line-oriented file and converts each line into a std::string.
