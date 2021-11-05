@@ -580,3 +580,58 @@ sview sview::stepover(std::string_view str) noexcept
     else
         return sview(str.data() + pos, str.length() - pos);
 }
+
+sview& sview::trim(tt::TRIM where)
+{
+    if (empty())
+        return *this;
+
+    if (where == tt::TRIM::right || where == tt::TRIM::both)
+    {
+        auto len = length();
+        for (--len; len != std::string::npos; --len)
+        {
+            // char ch = at(len);
+            char ch = data()[len];
+            if (ch != ' ' && ch != '\t' && ch != '\r' && ch != '\n' && ch != '\f')
+            {
+                ++len;
+                break;
+            }
+        }
+
+        if (len < length())
+            remove_suffix(length() - len);
+    }
+
+    // If trim(right) was called above, the string may now be empty -- front() fails on an empty string
+    if (!empty() && (where == tt::TRIM::left || where == tt::TRIM::both))
+    {
+        // Assume that most strings won't start with whitespace, so return as quickly as possible if that is the
+        // case.
+        if (!ttlib::is_whitespace(front()))
+            return *this;
+
+        size_t pos;
+        for (pos = 1; pos < length(); ++pos)
+        {
+            if (!ttlib::is_whitespace(data()[pos]))
+                break;
+        }
+        remove_prefix(pos);
+    }
+
+    return *this;
+}
+
+sview& sview::erase_from(std::string_view sub, tt::CASE check)
+{
+    auto pos = locate(sub, 0, check);
+    if (pos != tt::npos)
+    {
+        remove_suffix(length() - pos);
+        trim();
+    }
+
+    return *this;
+}

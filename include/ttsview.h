@@ -125,6 +125,15 @@ namespace ttlib
         /// Returns true if the current string refers to an existing directory.
         bool dir_exists() const;
 
+        /// If string is found, line is truncated from the string on, and then
+        /// any trailing space is removed.
+        sview& erase_from(std::string_view sub, tt::CASE check = tt::CASE::exact);
+
+        /// Removes whitespace: ' ', \t, \r, \\n, \f
+        ///
+        /// where: TRIM::right, TRIM::left, or TRIM::both
+        sview& trim(tt::TRIM where = tt::TRIM::right);
+
         /// Unlike substr(), this will not throw an exception if start is out of range.
         sview subview(size_t start = 0) const
         {
