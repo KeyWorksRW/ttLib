@@ -27,6 +27,16 @@ bool ttAssertionMsg(const char* filename, const char* function, int line, const 
     std::unique_lock<std::mutex> classLock(ttdbg::mutexAssert);
 
     ttlib::cstr str;
+    // Start by creating a string to send to the debugger
+    if (cond)
+        str << "Expression: " << cond << "\n";
+    if (!msg.empty())
+        str << "Comment: " << msg << "\n";
+    str << filename << '(' << line << ')' << "\n";
+    str << "Function: " << function << "\n";
+    OutputDebugStringW(str.to_utf16().c_str());
+    str.clear();
+
     if (cond)
         str << "Expression: " << cond << "\n\n";
     if (!msg.empty())
