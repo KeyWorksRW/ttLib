@@ -568,23 +568,32 @@ void ttlib::utf8to16(std::string_view str, std::wstring& dest)
             uint32_t val = (str[pos] & 0xFF);
             if ((UINT8(str[pos]) >> 5) == 6)
             {
-                assert(pos + 1 < str.size());
-                val = ((val << 6) & 0x7FF) + (str[++pos] & 0x3F);
+                assertm(pos + 1 < str.size(), "Invalid UTF8 string");
+                if (pos + 1 < str.size())
+                {
+                    val = ((val << 6) & 0x7FF) + (str[++pos] & 0x3F);
+                }
             }
 
             else if ((UINT8(str[pos]) >> 4) == 14)
             {
-                assert(pos + 2 < str.size());
-                val = ((val << 12) & 0xFFFF) + ((str[++pos] << 6) & 0xFFF);
-                val += (str[++pos] & 0x3F);
+                assertm(pos + 2 < str.size(), "Invalid UTF8 string");
+                if (pos + 2 < str.size())
+                {
+                    val = ((val << 12) & 0xFFFF) + ((str[++pos] << 6) & 0xFFF);
+                    val += (str[++pos] & 0x3F);
+                }
             }
 
             else if ((UINT8(str[pos]) >> 3) == 30)
             {
-                assert(pos + 3 < str.size());
-                val = ((val << 18) & 0x1FFFFF) + ((str[++pos] << 12) & 0x3FFFF);
-                val += (str[++pos] << 6) & 0xFFF;
-                val += (str[++pos] & 0x3F);
+                assertm(pos + 3 < str.size(), "Invalid UTF8 string");
+                if (pos + 3 < str.size())
+                {
+                    val = ((val << 18) & 0x1FFFFF) + ((str[++pos] << 12) & 0x3FFFF);
+                    val += (str[++pos] << 6) & 0xFFF;
+                    val += (str[++pos] & 0x3F);
+                }
             }
             else
             {
