@@ -275,7 +275,7 @@ BYTE ttCDib::GetNearestIndex(RGBQUAD c)
     long distance = 200000;
     BYTE i, j = 0;
     long k, l;
-    for (i = 0, l = 0; i < m_nColors; i++, l += sizeof(RGBQUAD))
+    for (i = 0, l = 0; i < static_cast<BYTE>(m_nColors & 0xFF); i++, l += sizeof(RGBQUAD))
     {
         k = (iDst[l] - c.rgbBlue) * (iDst[l] - c.rgbBlue) + (iDst[l + 1] - c.rgbGreen) * (iDst[l + 1] - c.rgbGreen) +
             (iDst[l + 2] - c.rgbRed) * (iDst[l + 2] - c.rgbRed);
