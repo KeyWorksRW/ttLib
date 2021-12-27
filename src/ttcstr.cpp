@@ -318,8 +318,18 @@ size_t cstr::Replace(std::string_view oldtext, std::string_view newtext, bool re
     {
         do
         {
-            erase(pos, oldtext.length());
-            insert(pos, newtext);
+            if (oldtext.size() == newtext.size())
+            {
+                for (size_t idx = 0; idx < newtext.size(); ++idx)
+                {
+                    data()[pos + idx] = newtext[idx];
+                }
+            }
+            else
+            {
+                erase(pos, oldtext.length());
+                insert(pos, newtext);
+            }
             ++replacements;
             pos += newtext.length();
             if (pos >= size() || !replace_all)
