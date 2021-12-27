@@ -20,3 +20,5 @@ There are multiple licenses used by this project.
 All KeyWorks Software contributions use a Apache License 2.0 [LICENSE](LICENSE).
 
 The **ttdib** and **ttshadebtn** header and source files use a CPOL [LICENSE](license_code_project.htm)
+
+[![CodeQL](https://github.com/KeyWorksRW/ttLib/workflows/CodeQL/badge.svg)](https://github.com/KeyWorksRW/ttLib/actions?query=workflow:"CodeQL")
