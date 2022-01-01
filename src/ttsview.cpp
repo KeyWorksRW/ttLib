@@ -7,6 +7,7 @@
 
 #include <cassert>
 #include <cctype>
+#include <cstring>
 #include <locale>
 
 #include "ttsview.h"
@@ -271,7 +272,7 @@ bool sview::moveto_filename() noexcept
 
     auto pos = find_last_of('/');
 
-#if defined(_WIN32)
+#ifdef _WIN32
     // Windows filenames can contain both forward and back slashes, so check for a backslash as well.
     auto back = find_last_of('\\');
     if (back != npos)
@@ -338,7 +339,7 @@ ttlib::sview sview::filename() const noexcept
 
     auto pos = find_last_of('/');
 
-#if defined(_WIN32)
+#ifdef _WIN32
     // Windows filenames can contain both forward and back slashes, so check for a backslash as well.
     auto back = find_last_of('\\');
     if (back != npos)
@@ -362,7 +363,7 @@ bool sview::file_exists() const
 {
     if (empty())
         return false;
-#ifdef _MSC_VER
+#ifdef _WIN32
     auto file = std::filesystem::directory_entry(std::filesystem::path((to_utf16())));
 #else
     auto file = std::filesystem::directory_entry(std::filesystem::path(c_str()));
@@ -374,7 +375,7 @@ bool sview::dir_exists() const
 {
     if (empty())
         return false;
-#ifdef _MSC_VER
+#ifdef _WIN32
     auto file = std::filesystem::directory_entry(std::filesystem::path(to_utf16()));
 #else
     auto file = std::filesystem::directory_entry(std::filesystem::path(c_str()));

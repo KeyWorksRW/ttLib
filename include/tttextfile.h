@@ -76,7 +76,7 @@ namespace ttlib
         void ReadArray(const char** begin, size_t count);
 
         /// Writes each line to the file adding a '\n' to the end of the line.
-        bool WriteFile(std::string_view filename) const;
+        bool WriteFile(const std::string& filename) const;
 
         /// Writes to the same file that was previously read
         bool WriteFile() const { return !m_filename.empty() ? WriteFile(m_filename) : false; }
@@ -163,7 +163,7 @@ namespace ttlib
         void ReadString(std::string_view str);
 
         /// Writes each line to the file adding a '\n' to the end of the line.
-        bool WriteFile(std::string_view filename) const;
+        bool WriteFile(const std::string& filename) const;
 
         /// Returns the string storing the entire file. If you change this string, all
         /// the string_view vector entries will be invalid!

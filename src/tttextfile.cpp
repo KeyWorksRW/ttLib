@@ -18,7 +18,7 @@ bool textfile::ReadFile(std::string_view filename)
 {
     m_filename.assign(filename);
     clear();
-    std::ifstream file(filename, std::ios::binary);
+    std::ifstream file(m_filename, std::ios::binary);
     if (!file.is_open())
         return false;
     std::string buf(std::istreambuf_iterator<char>(file), {});
@@ -26,7 +26,7 @@ bool textfile::ReadFile(std::string_view filename)
     return true;
 }
 
-bool textfile::WriteFile(std::string_view filename) const
+bool textfile::WriteFile(const std::string& filename) const
 {
     std::ofstream file(filename, std::ios::binary);
     if (!file.is_open())
@@ -167,7 +167,7 @@ bool viewfile::ReadFile(std::string_view filename)
     m_filename.assign(filename);
 
     clear();
-    std::ifstream file(filename, std::ios::binary);
+    std::ifstream file(m_filename, std::ios::binary);
     if (!file.is_open())
         return false;
     m_buffer.assign(std::istreambuf_iterator<char>(file), {});
@@ -184,7 +184,7 @@ void viewfile::ReadString(std::string_view str)
     }
 }
 
-bool viewfile::WriteFile(std::string_view filename) const
+bool viewfile::WriteFile(const std::string& filename) const
 {
     std::ofstream file(filename, std::ios::binary);
     if (!file.is_open())

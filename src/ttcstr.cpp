@@ -10,6 +10,7 @@
 #include <cctype>
 #include <cstdarg>
 #include <cstdlib>
+#include <cstring>
 #include <filesystem>
 #include <iomanip>
 #include <ios>
@@ -520,7 +521,7 @@ ttlib::cview cstr::filename() const noexcept
 
     auto pos = find_last_of('/');
 
-#if defined(_WIN32)
+#ifdef _WIN32
     // Windows filenames can contain both forward and back slashes, so check for a backslash as well.
     auto back = find_last_of('\\');
     if (back != npos)
@@ -547,7 +548,7 @@ size_t cstr::find_filename() const noexcept
 
     auto pos = find_last_of('/');
 
-#if defined(_WIN32)
+#ifdef _WIN32
     // Windows filenames can contain both forward and back slashes, so check for a backslash as well.
     auto back = find_last_of('\\');
     if (back != npos)
@@ -577,7 +578,7 @@ cstr& cstr::replace_filename(std::string_view newFilename)
 
     auto pos = find_last_of('/');
 
-#if defined(_WIN32)
+#ifdef _WIN32
     // Windows filenames can contain both forward and back slashes, so check for a backslash as well.
     auto back = find_last_of('\\');
     if (back != npos)
@@ -621,7 +622,7 @@ cstr& cstr::append_filename(std::string_view filename)
 
 cstr& cstr::assignCwd()
 {
-#ifdef _MSC_VER
+#ifdef _WIN32
     clear();
     utf16to8(std::filesystem::current_path().c_str(), *this);
 #else
@@ -635,7 +636,7 @@ cstr& cstr::make_relative(ttlib::cview relative_to)
     if (empty())
         return *this;
 
-#ifdef _MSC_VER
+#ifdef _WIN32
     auto current = std::filesystem::absolute(std::filesystem::path(to_utf16()));
     auto rel_to = std::filesystem::absolute(std::filesystem::path(relative_to.to_utf16()));
     clear();
@@ -652,7 +653,7 @@ cstr& cstr::make_absolute()
 {
     if (!empty())
     {
-#ifdef _MSC_VER
+#ifdef _WIN32
         auto current = std::filesystem::path(to_utf16());
         clear();
         ttlib::utf16to8(std::filesystem::absolute(current).wstring(), *this);
@@ -668,7 +669,7 @@ bool cstr::file_exists() const
 {
     if (empty())
         return false;
-#ifdef _MSC_VER
+#ifdef _WIN32
     auto file = std::filesystem::directory_entry(std::filesystem::path(to_utf16()));
 #else
     auto file = std::filesystem::directory_entry(std::filesystem::path(c_str()));
@@ -680,7 +681,7 @@ bool cstr::dir_exists() const
 {
     if (empty())
         return false;
-#ifdef _MSC_VER
+#ifdef _WIN32
     auto file = std::filesystem::directory_entry(std::filesystem::path(to_utf16()));
 #else
     auto file = std::filesystem::directory_entry(std::filesystem::path(c_str()));
@@ -1110,23 +1111,18 @@ cstr& cdecl cstr::Format(std::string_view format, ...)
 
 #include <wx/string.h>  // wxString class
 
-#if defined(_WIN32)
-    // This ctor is only available on Windows builds where wxString is UTF16. For non-Windows builds,
-    // a ctor for std::wstring_view is used insted.
-
-    cstr::cstr(const wxString& str)
-    {
-    #if defined(_WIN32)
-        utf16to8(str.wx_str(), *this);
-    #else
-        *this = str.c_str();
-    #endif
+cstr::cstr(const wxString& str)
+{
+#ifdef _WIN32
+    utf16to8(str.wx_str(), *this);
+#else
+    *this = str.c_str();
+#endif
 }
-#endif  // _WIN32
 
 cstr& cstr::assign_wx(const wxString& str)
 {
-#if defined(_WIN32)
+#ifdef _WIN32
     clear();
     utf16to8(str.wx_str(), *this);
 #else
@@ -1137,7 +1133,7 @@ cstr& cstr::assign_wx(const wxString& str)
 
 cstr& cstr::append_wx(const wxString& str)
 {
-#if defined(_WIN32)
+#ifdef _WIN32
     utf16to8(str.wx_str(), *this);
 #else
     *this += str.c_str();

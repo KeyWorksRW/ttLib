@@ -8,6 +8,7 @@
 
 #include <cassert>
 #include <cctype>
+#include <cstring>
 #include <locale>
 
 #include "ttcview.h"
