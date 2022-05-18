@@ -171,6 +171,8 @@ namespace ttlib
                 return sview(data() + start, length() - start);
         }
 
+        sview sview::subview(size_t start, size_t len) const;
+
         /// Returns a sview of the characters between chBegin and chEnd. This is typically used
         /// to sview the contents of a quoted string.
         ///

@@ -525,6 +525,17 @@ sview sview::view_substr(size_t offset, char chBegin, char chEnd)
     }
 }
 
+sview sview::subview(size_t start, size_t len) const
+{
+    if (start >= size())
+        return sview(data(), 0);
+#ifdef min
+    return sview(data() + start, min(size() - start, len));
+#else
+    return sview(data() + start, std::min(size() - start, len));
+#endif
+}
+
 sview sview::find_space(std::string_view str) noexcept
 {
     if (str.empty())
