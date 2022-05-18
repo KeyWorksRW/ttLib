@@ -17,8 +17,11 @@
 #include <locale>
 #include <sstream>
 
-#include "ttcstr.h"
 #include "ttlibspace.h"
+
+#include "ttcstr.h"
+
+#include "ttcview.h"  // cview -- string_view functionality on a zero-terminated char string.
 
 using namespace ttlib;
 using namespace tt;
@@ -631,19 +634,19 @@ cstr& cstr::assignCwd()
     return *this;
 }
 
-cstr& cstr::make_relative(ttlib::cview relative_to)
+cstr& cstr::make_relative(std::string_view relative_to)
 {
     if (empty())
         return *this;
 
 #ifdef _WIN32
     auto current = std::filesystem::absolute(std::filesystem::path(to_utf16()));
-    auto rel_to = std::filesystem::absolute(std::filesystem::path(relative_to.to_utf16()));
+    auto rel_to = std::filesystem::absolute(std::filesystem::path(ttlib::utf8to16(relative_to)));
     clear();
     ttlib::utf16to8(current.lexically_relative(rel_to).wstring(), *this);
 #else
     auto current = std::filesystem::absolute(std::filesystem::path(c_str()));
-    auto rel_to = std::filesystem::absolute(std::filesystem::path(relative_to.c_str()));
+    auto rel_to = std::filesystem::absolute(std::filesystem::path(std::string(relative_to)));
     assign(current.lexically_relative(rel_to).string());
 #endif
     return *this;
@@ -758,15 +761,15 @@ std::string_view cstr::subview(size_t start, size_t len) const
 #endif
 }
 
-bool cstr::assignEnvVar(ttlib::cview env_var)
+bool cstr::assignEnvVar(const char* env_var)
 {
     clear();
-    if (env_var.empty())
+    if (!env_var || !*env_var)
         return false;
-    char* pszEnv = std::getenv(env_var);
-    if (!pszEnv)
+    auto pEnv = std::getenv(env_var);
+    if (!pEnv)
         return false;
-    assign(pszEnv);
+    assign(pEnv);
     return true;
 }
 
@@ -1103,6 +1106,19 @@ cstr& cdecl cstr::Format(std::string_view format, ...)
 
     return *this;
 }
+ttlib::cview cstr::subview(size_t start) const
+{
+    if (ttlib::is_error(start))
+        start = length();
+    assert(start <= length());
+    return ttlib::cview(c_str() + start, length() - start);
+}
+
+ttlib::cview cstr::view_space(size_t start) const { return subview(find_space(start)); }
+
+ttlib::cview cstr::view_nonspace(size_t start) const { return subview(find_nonspace(start)); }
+
+ttlib::cview cstr::view_stepover(size_t start) const { return subview(stepover(start)); }
 
 /////////////////// The following section is only built when building with wxWidgets header files ///////////////////
 

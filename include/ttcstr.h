@@ -28,6 +28,15 @@
 
 #include "ttlibspace.h"  // ttlib namespace functions and declarations
 
+#if !defined(_TTLIB_CVIEW_AVAILABLE_)
+
+namespace ttlib
+{
+    class cview;
+}
+
+#endif
+
 namespace ttlib
 {
     /// @brief basic_string with additional methods.
@@ -95,13 +104,7 @@ namespace ttlib
 #endif  // _WIN32
 
         /// Caution: ttlib::cview will be invalid if ttlib::cstr is modified or destroyed.
-        ttlib::cview subview(size_t start = 0) const
-        {
-            if (ttlib::is_error(start))
-                start = length();
-            assert(start <= length());
-            return ttlib::cview(c_str() + start, length() - start);
-        }
+        ttlib::cview subview(size_t start = 0) const;
 
         /// Case-insensitive comparison.
         int comparei(std::string_view str) const;
@@ -150,21 +153,21 @@ namespace ttlib
         ///
         /// A whitespace character is a space, tab, eol or form feed character.
         size_t find_space(size_t start = 0) const;
-        ttlib::cview view_space(size_t start = 0) const { return subview(find_space(start)); }
+        ttlib::cview view_space(size_t start = 0) const;
 
         /// Returns offset to the next non-whitespace character starting with pos. Returns npos
         /// if there are no more non-whitespace characters.
         ///
         /// A whitespace character is a space, tab, eol or form feed character.
         size_t find_nonspace(size_t start = 0) const;
-        ttlib::cview view_nonspace(size_t start = 0) const { return subview(find_nonspace(start)); }
+        ttlib::cview view_nonspace(size_t start = 0) const;
 
         /// Returns an offset to the next word -- i.e., find the first non-whitedspace character
         /// after the next whitespace character.
         ///
         /// Equivalent to find_nonspace(find_space(start)).
         size_t stepover(size_t start = 0) const;
-        ttlib::cview view_stepover(size_t start = 0) const { return subview(stepover(start)); }
+        ttlib::cview view_stepover(size_t start = 0) const;
 
         /// Returns true if the sub-string is identical to the first part of the main string
         bool is_sameas(std::string_view str, tt::CASE checkcase = tt::CASE::exact) const;
@@ -259,7 +262,7 @@ namespace ttlib
         /// Assign the specified environment variable, returning true if found.
         ///
         /// Current string is replaced if found, cleared if not.
-        bool assignEnvVar(ttlib::cview env_var);
+        bool assignEnvVar(const char* env_var);
 
         /// Similer to sprintf, but without floating point support.
         ///
@@ -337,7 +340,7 @@ namespace ttlib
         ///
         /// Unlike fs::relative(), this will not resolve symbolic links, allowing it to work
         /// even when you are using a directory with a symbolic link to a different drive.
-        cstr& make_relative(ttlib::cview relative_to);
+        cstr& make_relative(std::string_view relative_to);
 
         /// Changes any current path to an absolute path.
         cstr& make_absolute();
