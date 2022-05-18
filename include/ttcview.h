@@ -96,7 +96,7 @@ namespace ttlib
         /// Locates the position of a substring.
         size_t locate(std::string_view str, size_t posStart = 0, tt::CASE check = tt::CASE::exact) const;
 
-#if (__cplusplus > 202002L || (defined(_MSVC_LANG) && _MSVC_LANG > 202002L))
+#if ((__cplusplus > 202002L || (defined(_MSVC_LANG) && _MSVC_LANG > 202002L)) && defined(__cpp_lib_string_contains))
         // C++23 already has a contains() function, so we just declare our variation that supports
         // case-insensitive (normal and utf8).
 
