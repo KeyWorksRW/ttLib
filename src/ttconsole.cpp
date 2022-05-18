@@ -26,10 +26,7 @@ concolor::concolor(int clr)
     SetColor(clr);
 }
 
-concolor::~concolor()
-{
-    ResetColor();
-};
+concolor::~concolor() { ResetColor(); };
 
 void concolor::SetColor(int clr)
 {
