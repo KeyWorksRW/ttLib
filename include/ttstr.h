@@ -30,8 +30,12 @@
 #include <wx/filefn.h>  // File- and directory-related functions
 #include <wx/string.h>  // wxString class
 
-#include <ttcstr.h>   // cstr -- Classes for handling zero-terminated char strings.
-#include <ttcview.h>  // cview -- string_view functionality on a zero-terminated char string.
+#include "ttlibspace.h"  // ttlib namespace functions and declarations
+
+namespace ttlib
+{
+    class cstr;
+}
 
 /// Version of wxString that supports std::string_view and adds most of the same methods as
 /// ttlib::cstr.
@@ -135,7 +139,7 @@ public:
     /// pos. Returns an empty string if there are no more whitespaces.
     ///
     /// A whitespace character is a space, tab, eol or form feed character.
-    ttlib::cstr sub_find_space(size_t start = 0) const { return sub_cstr(find_space(start)); }
+    ttlib::cstr sub_find_space(size_t start = 0) const;
 
     /// Returns offset to the next non-whitespace character starting with pos. Returns npos
     /// if there are no more non-whitespace characters.
@@ -147,7 +151,8 @@ public:
     /// after pos. Returns an empty string if there are no more non-whitespaces.
     ///
     /// A whitespace character is a space, tab, eol or form feed character.
-    ttlib::cstr sub_find_nonspace(size_t start = 0) const { return sub_cstr(find_nonspace(start)); }
+    ttlib::cstr sub_find_nonspace(size_t start = 0) const;
+    // ttlib::cstr sub_find_nonspace(size_t start = 0) const { return sub_cstr(find_nonspace(start)); }
 
     /// Returns an offset to the next word -- i.e., find the first non-whitespace character
     /// after the next whitespace character.
@@ -159,7 +164,7 @@ public:
     /// string if there is no next word.
     ///
     /// Equivalent to sub_cstr(find_nonspace(find_space(start))).
-    ttlib::cstr sub_stepover(size_t start = 0) const { return sub_cstr(stepover(start)); }
+    ttlib::cstr sub_stepover(size_t start = 0) const;
 
     /// Returns true if the strings are identical.
     ///

@@ -780,3 +780,18 @@ bool ttString::ChangeDir(bool is_dir) const
     }
     return false;
 }
+
+ttlib::cstr ttString::sub_find_nonspace(size_t start) const
+{
+    return sub_cstr(find_nonspace(start));
+}
+
+ttlib::cstr ttString::sub_find_space(size_t start) const
+{
+    return sub_cstr(find_space(start));
+}
+
+ttlib::cstr ttString::sub_stepover(size_t start) const
+{
+    return sub_cstr(stepover(start));
+}

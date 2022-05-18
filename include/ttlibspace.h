@@ -91,6 +91,12 @@ namespace tt
         none
     };
 
+    enum REPLACE : bool
+    {
+        once = false,
+        all = true,
+    };
+
 }  // namespace tt
 
 namespace ttlib

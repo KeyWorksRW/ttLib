@@ -2,7 +2,7 @@
 // Name:      ttcview.h
 // Purpose:   string_view functionality on a zero-terminated char string.
 // Author:    Ralph Walden
-// Copyright: Copyright (c) 2020-2021 KeyWorks Software (Ralph Walden)
+// Copyright: Copyright (c) 2020-2022 KeyWorks Software (Ralph Walden)
 // License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
@@ -22,6 +22,10 @@
 
 #if !(__cplusplus >= 201703L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201703L))
     #error "The contents of <ttcview.h> are available only with C++17 or later."
+#endif
+
+#if defined(_WX_DEFS_H_)
+    #include "ttstr.h"  // ttString -- wxString with additional methods similar to ttlib::cstr
 #endif
 
 #include "ttlibspace.h"  // ttlib namespace functions and declarations
@@ -55,12 +59,24 @@ namespace ttlib
 #if defined(_WIN32)
         /// Returns a copy of the string converted to UTF16 on Windows, or a normal copy on other platforms
         std::wstring wx_str() const { return to_utf16(); };
+    #if defined(_WX_DEFS_H_)
+        // Calls FromUTF8() on Windows, normal conversion on other platforms
+        wxString as_wxStr() const { return wxString::FromUTF8(data(), size()); }
+
+        // Calls FromUTF8() on Windows, normal conversion on other platforms
+        ttString as_ttStr() const { return ttString::FromUTF8(data(), size()); }
+    #endif
 #else
         /// Returns a copy of the string converted to UTF16 on Windows, or a normal copy on other platforms
         std::string wx_str() const { return std::string(*this); }
+    #if defined(_WX_DEFS_H_)
+        wxString as_wxStr() const { return wxString(data(), size()); }
+        ttString as_ttStr() const { return ttString(data(), size()); }
+    #endif
 #endif  // _WIN32
 
         std::wstring to_utf16() const;
+        std::wstring as_utf16() const { return to_utf16(); };
 
         /// Returns a zero-terminated view. Unlike substr(), you can only specify the starting position.
         cview subview(size_t start = 0) const
@@ -80,11 +96,19 @@ namespace ttlib
         /// Locates the position of a substring.
         size_t locate(std::string_view str, size_t posStart = 0, tt::CASE check = tt::CASE::exact) const;
 
+#if (__cplusplus > 202002L || (defined(_MSVC_LANG) && _MSVC_LANG > 202002L))
+        // C++23 already has a contains() function, so we just declare our variation that supports
+        // case-insensitive (normal and utf8).
+
+        /// Returns true if the sub string exists
+        bool contains(std::string_view sub, tt::CASE checkcase) const { return (locate(sub, 0, checkcase) != npos); }
+#else
         /// Returns true if the sub string exists
         bool contains(std::string_view sub, tt::CASE checkcase = tt::CASE::exact) const
         {
             return (locate(sub, 0, checkcase) != npos);
         }
+#endif
 
         /// Returns true if any string in the iteration list appears somewhere in the the main string.
         template <class iterT>

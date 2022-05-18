@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Purpose:   std::string_view with additional methods
 // Author:    Ralph Walden
-// Copyright: Copyright (c) 2021 KeyWorks Software (Ralph Walden)
+// Copyright: Copyright (c) 2021-2022 KeyWorks Software (Ralph Walden)
 // License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
@@ -15,10 +15,15 @@
     #error "The contents of <ttview.h> are available only with C++17 or later."
 #endif
 
+#if defined(_WX_DEFS_H_)
+    #include "ttstr.h"  // ttString -- wxString with additional methods similar to ttlib::cstr
+#endif
+
+// This can be used to conditionalize code where <ttsview.h> is available or not
+#define _TTLIB_SVIEW_AVAILABLE_
+
 #include <string_view>
 
-#include "ttcstr.h"      // cstr -- std::string with additional methods
-#include "ttcview.h"     // cview -- string_view functionality on a zero-terminated char string.
 #include "ttlibspace.h"  // ttlib namespace functions and declarations
 
 namespace ttlib
@@ -32,16 +37,31 @@ namespace ttlib
         sview(const char* str, size_t len) : bsv(str, len) {}
         sview(const char* str) : bsv(str) {}
         sview(std::string_view view) : bsv(view) {}
+#if defined(_TTLIB_CVIEW_AVAILABLE_)
         sview(ttlib::cview view) : bsv(view) {}
-        sview(const cstr& str) : bsv(str) {}
+#endif
 
 #if defined(_WIN32)
         /// Returns a copy of the string converted to UTF16 on Windows, or a normal copy on other platforms
         std::wstring wx_str() const { return to_utf16(); };
+    #if defined(_WX_DEFS_H_)
+        // Calls FromUTF8() on Windows, normal conversion on other platforms
+        wxString as_wxStr() const { return wxString::FromUTF8(data(), size()); }
+
+        // Calls FromUTF8() on Windows, normal conversion on other platforms
+        ttString as_ttStr() const { return ttString::FromUTF8(data(), size()); }
+    #endif
 #else
         /// Returns a copy of the string converted to UTF16 on Windows, or a normal copy on other platforms
         std::string wx_str() const { return std::string(*this); }
+    #if defined(_WX_DEFS_H_)
+        wxString as_wxStr() const { return wxString(data(), size()); }
+        ttString as_ttStr() const { return ttString(data(), size()); }
+    #endif
 #endif  // _WIN32
+
+        std::string as_str() const { return std::string(*this); }
+        std::wstring as_utf16() const { return to_utf16(); };
 
         std::wstring to_utf16() const;
 
@@ -51,11 +71,19 @@ namespace ttlib
         /// Locates the position of a substring.
         size_t locate(std::string_view str, size_t posStart = 0, tt::CASE check = tt::CASE::exact) const;
 
+#if (__cplusplus > 202002L || (defined(_MSVC_LANG) && _MSVC_LANG > 202002L))
+        // C++23 already has a contains() function, so we just declare our variation that supports
+        // case-insensitive (normal and utf8).
+
+        /// Returns true if the sub string exists
+        bool contains(std::string_view sub, tt::CASE checkcase) const { return (locate(sub, 0, checkcase) != npos); }
+#else
         /// Returns true if the sub string exists
         bool contains(std::string_view sub, tt::CASE checkcase = tt::CASE::exact) const
         {
             return (locate(sub, 0, checkcase) != npos);
         }
+#endif
 
         /// Returns true if any string in the iteration list appears somewhere in the the main string.
         template <class iterT>

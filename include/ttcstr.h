@@ -2,7 +2,7 @@
 // Name:      ttcstr.h
 // Purpose:   std::string with additional methods
 // Author:    Ralph Walden
-// Copyright: Copyright (c) 2020-2021 KeyWorks Software (Ralph Walden)
+// Copyright: Copyright (c) 2020-2022 KeyWorks Software (Ralph Walden)
 // License:   Apache License -- see ../LICENSE
 /////////////////////////////////////////////////////////////////////////////
 
@@ -22,36 +22,33 @@
 #include <string>
 #include <string_view>
 
-#include "ttcview.h"
+#if defined(_WX_DEFS_H_)
+    #include "ttstr.h"  // ttString -- wxString with additional methods similar to ttlib::cstr
+#endif
 
-namespace tt
-{
-    enum REPLACE : bool
-    {
-        once = false,
-        all = true,
-    };
-}  // namespace tt
+#include "ttlibspace.h"  // ttlib namespace functions and declarations
 
 namespace ttlib
 {
     /// @brief basic_string with additional methods.
     class cstr : public std::basic_string<char, std::char_traits<char>, std::allocator<char>>
     {
-        using bs = std::basic_string<char, std::char_traits<char>, std::allocator<char>>;
+        using std_base = std::basic_string<char, std::char_traits<char>, std::allocator<char>>;
 
     public:
-        cstr(void) : bs() {}
-        cstr(const char* psz) : bs(psz) {}
-        cstr(std::string_view view) : bs(view) {}
-        cstr(ttlib::cview view) : bs(view) {}
-        cstr(const cstr& str) : bs(str) {}
-        cstr(const std::string& str) : bs(str) {}
+        cstr(void) : std_base() {}
+        cstr(const char* psz) : std_base(psz) {}
+        cstr(std::string_view view) : std_base(view) {}
+#if defined(_TTLIB_CVIEW_AVAILABLE_)
+        cstr(ttlib::cview view) : std_base(view) {}
+#endif
+        cstr(const cstr& str) : std_base(str) {}
+        cstr(const std::string& str) : std_base(str) {}
 
-        cstr(const std::filesystem::directory_entry& dir) : bs(dir.path().string(), dir.path().string().size()) {}
+        cstr(const std::filesystem::directory_entry& dir) : std_base(dir.path().string(), dir.path().string().size()) {}
 
 #if !defined(_WX_DEFS_H_) || !defined(_WIN32)
-        cstr(std::wstring_view view) : bs(std::move(utf16to8(view))) {}
+        cstr(std::wstring_view view) : std_base(std::move(utf16to8(view))) {}
 #else
         cstr(const wxString& str);
 #endif
@@ -63,6 +60,7 @@ namespace ttlib
             return *this;
         }
         std::wstring to_utf16() const;
+        std::wstring as_utf16() const { return to_utf16(); };
 
         cstr& utf(std::wstring_view str)
         {
@@ -80,9 +78,20 @@ namespace ttlib
 #if defined(_WIN32)
         /// Returns a copy of the string converted to UTF16 on Windows, or a normal copy on other platforms
         std::wstring wx_str() const { return to_utf16(); };
+    #if defined(_WX_DEFS_H_)
+        // Calls FromUTF8() on Windows, normal conversion on other platforms
+        wxString as_wxStr() const { return wxString::FromUTF8(data(), size()); }
+
+        // Calls FromUTF8() on Windows, normal conversion on other platforms
+        ttString as_ttStr() const { return wxString::FromUTF8(data(), size()); }
+    #endif
 #else
         /// Returns a copy of the string converted to UTF16 on Windows, or a normal copy on other platforms
         std::string wx_str() const { return substr(); }
+    #if defined(_WX_DEFS_H_)
+        wxString as_wxStr() const { return wxString(data(), size()); }
+        ttString as_ttStr() const { return ttString(data(), size()); }
+    #endif
 #endif  // _WIN32
 
         /// Caution: ttlib::cview will be invalid if ttlib::cstr is modified or destroyed.
@@ -100,11 +109,19 @@ namespace ttlib
         /// Locates the position of a substring.
         size_t locate(std::string_view str, size_t posStart = 0, tt::CASE check = tt::CASE::exact) const;
 
+#if (__cplusplus > 202002L || (defined(_MSVC_LANG) && _MSVC_LANG > 202002L))
+        // C++23 already has a contains() function, so we just declare our variation that supports
+        // case-insensitive (normal and utf8).
+
+        /// Returns true if the sub string exists
+        bool contains(std::string_view sub, tt::CASE checkcase) const { return (locate(sub, 0, checkcase) != npos); }
+#else
         /// Returns true if the sub string exists
         bool contains(std::string_view sub, tt::CASE checkcase = tt::CASE::exact) const
         {
             return (locate(sub, 0, checkcase) != npos);
         }
+#endif
 
         /// Returns true if any string in the iteration list appears somewhere in the the main string.
         template <class iterT>
@@ -388,7 +405,7 @@ namespace ttlib
         /// All text functions will call the Wide version of the Windows API and convert the UTF16 string to UTF8.
         /// If the call fails, cstr will be empty.
 
-        cstr(HWND hwnd) : bs() { GetWndText(hwnd); };
+        cstr(HWND hwnd) : std_base() { GetWndText(hwnd); };
 
         cstr& GetWndText(HWND hwnd);
 
