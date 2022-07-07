@@ -44,4 +44,11 @@
 
 #include "ttlibspace.h"
 
+#if defined(_WIN32)
+    #include <ttdebug.h>  // ttASSERT macros
+#endif
+
+#include <ttcstr.h>   // Classes for handling zero-terminated char strings.
+#include <ttcview.h>  // cview -- string_view functionality on a zero-terminated char string.
+
 #undef TT_ASSERT
