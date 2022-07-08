@@ -22,7 +22,30 @@ bool textfile::ReadFile(std::string_view filename)
     if (!file.is_open())
         return false;
     std::string buf(std::istreambuf_iterator<char>(file), {});
-    ParseLines(buf);
+    if (buf.size() > 2)
+    {
+        // Check for BOM LE or BOM UTF-8 -- other types are not supported.
+        if (buf[0] == static_cast<char>(0xFF) && buf[1] == static_cast<char>(0xFE))
+        {
+            // BOM LE format, so convert to utf-8 before parsing
+            auto utf8_buf = ttlib::utf16to8(reinterpret_cast<const wchar_t*>(buf.c_str() + 2));
+            ParseLines(utf8_buf);
+        }
+        else if (buf[0] == static_cast<char>(0xEF) && buf[1] == static_cast<char>(0xBB) && buf[1] == static_cast<char>(0xBF))
+        {
+            // BOM utf-8 string, so skip over the BOM and process normally
+            ParseLines(buf.c_str() + 3);
+        }
+        else
+        {
+            ParseLines(buf);
+        }
+    }
+    else
+    {
+        // A file with only 2 bytes or less is probably worthless, but parse it anyway.
+        ParseLines(buf);
+    }
     return true;
 }
 
@@ -171,7 +194,34 @@ bool viewfile::ReadFile(std::string_view filename)
     if (!file.is_open())
         return false;
     m_buffer.assign(std::istreambuf_iterator<char>(file), {});
-    ParseLines(m_buffer);
+    if (m_buffer.size() > 2)
+    {
+        // Check for BOM LE or BOM UTF-8 -- other types are not supported.
+        if (m_buffer[0] == static_cast<char>(0xFF) && m_buffer[1] == static_cast<char>(0xFE))
+        {
+            // BOM LE format, so convert to utf-8 before parsing
+            auto utf8_buf = ttlib::utf16to8(reinterpret_cast<const wchar_t*>(m_buffer.c_str() + 2));
+            m_buffer.clear();
+            m_buffer = std::move(utf8_buf);
+            ParseLines(m_buffer);
+        }
+        else if (m_buffer[0] == static_cast<char>(0xEF) && m_buffer[1] == static_cast<char>(0xBB) &&
+                 m_buffer[1] == static_cast<char>(0xBF))
+        {
+            // BOM utf-8 string, so skip over the BOM and process normally
+            ParseLines(m_buffer.c_str() + 3);
+        }
+        else
+        {
+            ParseLines(m_buffer);
+        }
+    }
+    else
+    {
+        // A file with only 2 bytes or less is probably worthless, but parse it anyway.
+        ParseLines(m_buffer);
+    }
+
     return true;
 }
 
