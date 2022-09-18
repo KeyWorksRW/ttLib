@@ -55,6 +55,9 @@ namespace ttlib
         /// This will be the filename passed to ReadFile()
         ttlib::cstr& filename() { return m_filename; }
 
+        /// Call this if ReadFile() was not used and you need to store a filename.
+        void set_filename(std::string_view filename) { m_filename = filename; }
+
         /// Reads a string as if it was a file (see ReadFile).
         void ReadString(std::string_view str);
 
@@ -158,6 +161,9 @@ namespace ttlib
 
         /// This will be the filename passed to ReadFile()
         ttlib::cstr& filename() { return m_filename; }
+
+        /// Call this if ReadFile() was not used and you need to store a filename.
+        void set_filename(std::string_view filename) { m_filename = filename; }
 
         /// Reads a string as if it was a file (see ReadFile).
         void ReadString(std::string_view str);
